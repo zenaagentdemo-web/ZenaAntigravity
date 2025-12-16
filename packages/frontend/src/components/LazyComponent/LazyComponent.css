@@ -1,0 +1,121 @@
+/**
+ * LazyComponent Styles
+ * Provides loading states and animations for lazy-loaded components
+ */
+
+.lazy-component {
+  position: relative;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity var(--transition-base), transform var(--transition-base);
+}
+
+.lazy-component--loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Skeleton Loading State */
+.lazy-component__skeleton {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.lazy-component__skeleton-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-surface-hover) 50%,
+    transparent 100%
+  );
+  animation: lazy-shimmer 1.5s infinite;
+}
+
+@keyframes lazy-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Error State */
+.lazy-component--error {
+  opacity: 1;
+  transform: none;
+}
+
+.lazy-component__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-6);
+  background: var(--color-error-50);
+  border: 1px solid var(--color-error-200);
+  border-radius: var(--radius-md);
+  text-align: center;
+  min-height: 100px;
+}
+
+.lazy-component__error-message {
+  color: var(--color-error-700);
+  font-size: var(--font-size-sm);
+  margin: 0 0 var(--spacing-3) 0;
+}
+
+.lazy-component__retry-button {
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--color-error-600);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+}
+
+.lazy-component__retry-button:hover {
+  background: var(--color-error-700);
+}
+
+.lazy-component__retry-button:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Dark Mode */
+[data-theme="night"] .lazy-component__error {
+  background: var(--color-error-900);
+  border-color: var(--color-error-700);
+}
+
+[data-theme="night"] .lazy-component__error-message {
+  color: var(--color-error-200);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .lazy-component {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  
+  .lazy-component__skeleton-shimmer {
+    animation: none;
+    background: var(--color-surface-hover);
+  }
+}

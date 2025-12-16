@@ -1,0 +1,362 @@
+/**
+ * PageTransition Component Styles
+ * 
+ * Smooth fade and slide transitions between pages
+ * with glow effects for high-tech aesthetic.
+ * 
+ * Requirements: 3.3
+ * Performance: Uses only transform and opacity for 60fps
+ */
+
+/* ============================================
+   CSS Custom Properties
+   ============================================ */
+
+.page-transition {
+  --transition-duration-fast: 200ms;
+  --transition-duration-normal: 300ms;
+  --transition-duration-slow: 500ms;
+  --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --transition-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --glow-color: var(--neon-cyan, #00D4FF);
+  --glow-color-dim: var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
+}
+
+/* ============================================
+   Base Container
+   ============================================ */
+
+.page-transition {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+}
+
+.page-transition__content {
+  /* GPU acceleration for smooth animations */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* ============================================
+   Duration Variants
+   ============================================ */
+
+.page-transition--fast .page-transition__content {
+  transition-duration: var(--transition-duration-fast);
+}
+
+.page-transition--normal .page-transition__content {
+  transition-duration: var(--transition-duration-normal);
+}
+
+.page-transition--slow .page-transition__content {
+  transition-duration: var(--transition-duration-slow);
+}
+
+/* ============================================
+   Fade Transition
+   ============================================ */
+
+.page-transition--fade .page-transition__content {
+  transition: opacity var(--transition-duration-normal) var(--transition-ease);
+}
+
+.page-transition--fade.page-transition--exit .page-transition__content {
+  opacity: 0;
+}
+
+.page-transition--fade.page-transition--enter .page-transition__content {
+  animation: fade-enter var(--transition-duration-normal) var(--transition-ease-out) forwards;
+}
+
+@keyframes fade-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   Slide Up Transition
+   ============================================ */
+
+.page-transition--slide-up .page-transition__content {
+  transition: 
+    transform var(--transition-duration-normal) var(--transition-ease),
+    opacity var(--transition-duration-normal) var(--transition-ease);
+}
+
+.page-transition--slide-up.page-transition--exit .page-transition__content {
+  transform: translateY(-20px);
+  opacity: 0;
+}
+
+.page-transition--slide-up.page-transition--enter .page-transition__content {
+  animation: slide-up-enter var(--transition-duration-normal) var(--transition-ease-out) forwards;
+}
+
+@keyframes slide-up-enter {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   Slide Left Transition
+   ============================================ */
+
+.page-transition--slide-left .page-transition__content {
+  transition: 
+    transform var(--transition-duration-normal) var(--transition-ease),
+    opacity var(--transition-duration-normal) var(--transition-ease);
+}
+
+.page-transition--slide-left.page-transition--exit .page-transition__content {
+  transform: translateX(-30px);
+  opacity: 0;
+}
+
+.page-transition--slide-left.page-transition--enter .page-transition__content {
+  animation: slide-left-enter var(--transition-duration-normal) var(--transition-ease-out) forwards;
+}
+
+@keyframes slide-left-enter {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   Slide Right Transition
+   ============================================ */
+
+.page-transition--slide-right .page-transition__content {
+  transition: 
+    transform var(--transition-duration-normal) var(--transition-ease),
+    opacity var(--transition-duration-normal) var(--transition-ease);
+}
+
+.page-transition--slide-right.page-transition--exit .page-transition__content {
+  transform: translateX(30px);
+  opacity: 0;
+}
+
+.page-transition--slide-right.page-transition--enter .page-transition__content {
+  animation: slide-right-enter var(--transition-duration-normal) var(--transition-ease-out) forwards;
+}
+
+@keyframes slide-right-enter {
+  from {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   Scale Transition
+   ============================================ */
+
+.page-transition--scale .page-transition__content {
+  transition: 
+    transform var(--transition-duration-normal) var(--transition-ease),
+    opacity var(--transition-duration-normal) var(--transition-ease);
+}
+
+.page-transition--scale.page-transition--exit .page-transition__content {
+  transform: scale(0.95);
+  opacity: 0;
+}
+
+.page-transition--scale.page-transition--enter .page-transition__content {
+  animation: scale-enter var(--transition-duration-normal) var(--transition-ease-out) forwards;
+}
+
+@keyframes scale-enter {
+  from {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   Glow Fade Transition (High-Tech)
+   ============================================ */
+
+.page-transition--glow-fade .page-transition__content {
+  transition: 
+    transform var(--transition-duration-normal) var(--transition-ease),
+    opacity var(--transition-duration-normal) var(--transition-ease),
+    filter var(--transition-duration-normal) var(--transition-ease);
+}
+
+.page-transition--glow-fade.page-transition--exit .page-transition__content {
+  transform: scale(0.98);
+  opacity: 0;
+  filter: brightness(1.2);
+}
+
+.page-transition--glow-fade.page-transition--enter .page-transition__content {
+  animation: glow-fade-enter var(--transition-duration-normal) var(--transition-ease-out) forwards;
+}
+
+@keyframes glow-fade-enter {
+  from {
+    transform: scale(1.02);
+    opacity: 0;
+    filter: brightness(1.2);
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+/* ============================================
+   Glow Overlay
+   ============================================ */
+
+.page-transition__glow-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse at center,
+    var(--glow-color-dim) 0%,
+    transparent 70%
+  );
+  animation: glow-pulse-overlay var(--transition-duration-normal) var(--transition-ease) forwards;
+}
+
+@keyframes glow-pulse-overlay {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+/* Glow overlay variants */
+.page-transition--glow .page-transition__glow-overlay {
+  display: block;
+}
+
+.page-transition:not(.page-transition--glow) .page-transition__glow-overlay {
+  display: none;
+}
+
+/* ============================================
+   Transitioning State
+   ============================================ */
+
+.page-transition--transitioning {
+  overflow: hidden;
+}
+
+/* ============================================
+   Reduced Motion Support
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition__content {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .page-transition__glow-overlay {
+    display: none !important;
+  }
+  
+  .page-transition--exit .page-transition__content,
+  .page-transition--enter .page-transition__content {
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+}
+
+/* ============================================
+   High-Tech Theme Integration
+   ============================================ */
+
+[data-theme="high-tech"] .page-transition {
+  --glow-color: var(--neon-cyan);
+  --glow-color-dim: var(--neon-cyan-dim);
+}
+
+[data-theme="high-tech"] .page-transition__glow-overlay {
+  background: radial-gradient(
+    ellipse at center,
+    var(--neon-cyan-subtle) 0%,
+    var(--neon-magenta-subtle) 30%,
+    transparent 70%
+  );
+}
+
+/* ============================================
+   Mobile Optimizations
+   ============================================ */
+
+@media (max-width: 768px) {
+  .page-transition--slide-left.page-transition--exit .page-transition__content,
+  .page-transition--slide-right.page-transition--exit .page-transition__content {
+    transform: translateX(-15px);
+  }
+  
+  @keyframes slide-left-enter {
+    from {
+      transform: translateX(15px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slide-right-enter {
+    from {
+      transform: translateX(-15px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+}

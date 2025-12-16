@@ -1,0 +1,425 @@
+/**
+ * NewPage Styles
+ * 
+ * High-tech styling for the enhanced New page with glassmorphism,
+ * ambient background, and staggered card animations.
+ * 
+ * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6
+ */
+
+/* Import accessibility styles */
+@import './NewPage.accessibility.css';
+
+/* Import high-tech theme enhancements */
+@import './NewPage.hightech.css';
+
+/* ============================================
+ * PAGE CONTAINER WITH HIGH-TECH THEME
+ * Deep dark background with ambient gradient
+ * ============================================ */
+
+.new-page {
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: 100px; /* Space for bottom navigation */
+  
+  /* High-tech dark gradient background */
+  background: linear-gradient(
+    180deg, 
+    var(--bg-primary, #0A0A0F) 0%, 
+    var(--bg-secondary, #12121A) 50%, 
+    var(--bg-tertiary, #1A1A2E) 100%
+  );
+  
+  /* Apply high-tech theme */
+  color: var(--text-primary-ht, #FFFFFF);
+}
+
+/* Ensure ambient background is visible */
+.new-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at 50% 20%,
+    rgba(0, 212, 255, 0.03) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.new-page__container {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ============================================
+ * HEADER
+ * ============================================ */
+
+.new-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding: 8px 0;
+}
+
+.new-page__header-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.new-page__title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, var(--neon-cyan, #00D4FF), var(--neon-purple, #8B5CF6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+}
+
+.new-page__header-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.new-page__count {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.new-page__urgent-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(255, 68, 68, 0.15);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #FF4444;
+  animation: pulse-urgent 2s ease-in-out infinite;
+}
+
+@keyframes pulse-urgent {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.new-page__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Sync indicator */
+.new-page__sync-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.new-page__sync-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--neon-cyan, #00D4FF);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Refresh button */
+.new-page__refresh-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.new-page__refresh-button:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+  color: var(--neon-cyan, #00D4FF);
+}
+
+.new-page__refresh-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.new-page__refresh-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ============================================
+ * FILTERS
+ * ============================================ */
+
+.new-page__filters {
+  margin-bottom: 20px;
+}
+
+/* ============================================
+ * THREAD LIST
+ * Enhanced ThreadCard components with inline dropdowns
+ * No longer using ThreadPreviewPanel overlay
+ * ============================================ */
+
+.new-page__thread-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Increased gap for enhanced cards with inline dropdowns */
+}
+
+/* Virtual list container */
+.new-page__virtual-list {
+  height: 600px; /* Fixed height for virtual scrolling */
+  overflow-y: auto;
+}
+
+/* Ensure virtual list items maintain proper spacing for enhanced cards */
+.new-page__virtual-list .new-page__thread-item {
+  margin-bottom: 16px; /* Increased for inline dropdown expansion */
+}
+
+.new-page__thread-item {
+  opacity: 0;
+  animation: thread-fade-in 300ms ease forwards;
+}
+
+@keyframes thread-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+ * LOADING SKELETON
+ * ============================================ */
+
+.new-page__skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 60px;
+}
+
+/* ============================================
+ * ERROR STATE
+ * ============================================ */
+
+.new-page__error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 20px;
+}
+
+.new-page__error-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 68, 68, 0.2);
+  border-radius: 20px;
+  max-width: 400px;
+}
+
+.new-page__error-icon {
+  width: 48px;
+  height: 48px;
+  color: #FF4444;
+  margin-bottom: 16px;
+}
+
+.new-page__error-card h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.new-page__error-card p {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.new-page__retry-button {
+  padding: 12px 24px;
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 12px;
+  color: var(--neon-cyan, #00D4FF);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.new-page__retry-button:hover {
+  background: rgba(0, 212, 255, 0.25);
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+/* ============================================
+ * BATCH MODE HINT
+ * ============================================ */
+
+.new-page__batch-hint {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  z-index: 100;
+  animation: slide-up 200ms ease;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.new-page__batch-hint span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.new-page__batch-hint button {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.new-page__batch-hint button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+}
+
+/* ============================================
+ * PULL-TO-REFRESH INDICATOR
+ * Requirements: 8.5
+ * ============================================ */
+
+.new-page__pull-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  margin-bottom: 12px;
+  color: var(--neon-cyan, #00D4FF);
+}
+
+.new-page__pull-icon {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.2s ease;
+}
+
+.new-page__pull-icon--spinning {
+  animation: spin 1s linear infinite;
+}
+
+/* ============================================
+ * REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .new-page__thread-item {
+    animation: none;
+    opacity: 1;
+  }
+  
+  .new-page__sync-icon {
+    animation: none;
+  }
+  
+  .new-page__urgent-badge {
+    animation: none;
+  }
+  
+  .new-page__batch-hint {
+    animation: none;
+  }
+}
+
+/* ============================================
+ * RESPONSIVE
+ * ============================================ */
+
+@media (max-width: 480px) {
+  .new-page__container {
+    padding: 12px;
+  }
+  
+  .new-page__title {
+    font-size: 28px;
+  }
+  
+  .new-page__header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .new-page__header-actions {
+    align-self: flex-end;
+  }
+}

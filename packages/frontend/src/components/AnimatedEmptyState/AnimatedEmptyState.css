@@ -1,0 +1,375 @@
+/**
+ * AnimatedEmptyState Component Styles
+ * 
+ * High-tech empty state with glassmorphism and animated elements.
+ * 
+ * Requirements: 1.2 - AI Avatar with subtle breathing animations
+ */
+
+/* ============================================
+   BASE CONTAINER
+   ============================================ */
+
+.animated-empty-state {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: var(--spacing-2xl);
+  
+  /* Glassmorphism background */
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 24px;
+  
+  /* Subtle floating effect */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  
+  overflow: hidden;
+}
+
+/* Top gradient accent line */
+.animated-empty-state::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0.5;
+}
+
+/* ============================================
+   CONTENT CONTAINER
+   ============================================ */
+
+.animated-empty-state__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 400px;
+}
+
+/* ============================================
+   AVATAR CONTAINER
+   ============================================ */
+
+.animated-empty-state__avatar-container {
+  margin-bottom: var(--spacing-xl);
+  animation: float 4s var(--ease-smooth) infinite;
+}
+
+/* Custom icon styling */
+.animated-empty-state__custom-icon {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  box-shadow: var(--glow-cyan);
+  animation: breathe var(--duration-breathe) var(--ease-glow) infinite;
+}
+
+.animated-empty-state__custom-icon svg {
+  width: 60px;
+  height: 60px;
+  color: var(--text-primary-ht);
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* ============================================
+   MESSAGE STYLING
+   ============================================ */
+
+.animated-empty-state__message {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary-ht);
+  margin: 0 0 var(--spacing-sm) 0;
+  line-height: var(--line-height-tight);
+  
+  /* Subtle text glow */
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.animated-empty-state__sub-message {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary-ht);
+  margin: 0 0 var(--spacing-lg) 0;
+  line-height: var(--line-height-relaxed);
+  max-width: 320px;
+}
+
+/* ============================================
+   ACTION BUTTON
+   ============================================ */
+
+.animated-empty-state__action {
+  padding: var(--spacing-sm) var(--spacing-xl);
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--bg-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  box-shadow: var(--glow-cyan);
+  transition: all var(--duration-normal) var(--ease-smooth);
+  min-height: var(--touch-target-min);
+}
+
+.animated-empty-state__action:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 0 30px var(--neon-cyan),
+    0 0 60px var(--neon-cyan-dim);
+}
+
+.animated-empty-state__action:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   AMBIENT BACKGROUND EFFECT
+   ============================================ */
+
+.animated-empty-state__ambient {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 212, 255, 0.1) 0%,
+    rgba(139, 92, 246, 0.05) 50%,
+    transparent 70%
+  );
+  animation: ambient-pulse 6s var(--ease-glow) infinite;
+  pointer-events: none;
+}
+
+@keyframes ambient-pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+/* ============================================
+   GLASSMORPHISM FALLBACK
+   ============================================ */
+
+@supports not (backdrop-filter: blur(20px)) {
+  .animated-empty-state {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-empty-state__avatar-container,
+  .animated-empty-state__custom-icon,
+  .animated-empty-state__ambient {
+    animation: none;
+  }
+  
+  .animated-empty-state__action:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .animated-empty-state {
+    min-height: 300px;
+    padding: var(--spacing-xl);
+    border-radius: 20px;
+  }
+  
+  .animated-empty-state__message {
+    font-size: var(--font-size-lg);
+  }
+  
+  .animated-empty-state__sub-message {
+    font-size: var(--font-size-sm);
+  }
+  
+  .animated-empty-state__custom-icon {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .animated-empty-state__custom-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ============================================
+   VARIANT: SUCCESS
+   ============================================ */
+
+.animated-empty-state--success::before {
+  background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+}
+
+.animated-empty-state--success .animated-empty-state__message {
+  text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.animated-empty-state--success .animated-empty-state__ambient {
+  background: radial-gradient(
+    circle,
+    rgba(0, 255, 136, 0.1) 0%,
+    rgba(0, 212, 255, 0.05) 50%,
+    transparent 70%
+  );
+}
+
+/* ============================================
+   VARIANT: COMPACT
+   ============================================ */
+
+.animated-empty-state--compact {
+  min-height: 200px;
+  padding: var(--spacing-lg);
+}
+
+.animated-empty-state--compact .animated-empty-state__avatar-container {
+  margin-bottom: var(--spacing-md);
+}
+
+.animated-empty-state--compact .animated-empty-state__custom-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.animated-empty-state--compact .animated-empty-state__custom-icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+.animated-empty-state--compact .animated-empty-state__message {
+  font-size: var(--font-size-lg);
+}
+
+/* ============================================
+   PARTICLE ANIMATIONS
+   Requirements: 9.5 - Subtle particle animations
+   ============================================ */
+
+.animated-empty-state__particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.animated-empty-state__particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--neon-cyan, #00D4FF);
+  opacity: 0;
+  animation: particle-float 8s ease-in-out infinite;
+}
+
+.animated-empty-state__particle:nth-child(1) {
+  left: 20%;
+  top: 30%;
+  animation-delay: 0s;
+  animation-duration: 7s;
+}
+
+.animated-empty-state__particle:nth-child(2) {
+  left: 80%;
+  top: 20%;
+  animation-delay: 1s;
+  animation-duration: 9s;
+  background: var(--neon-purple, #8B5CF6);
+}
+
+.animated-empty-state__particle:nth-child(3) {
+  left: 10%;
+  top: 70%;
+  animation-delay: 2s;
+  animation-duration: 6s;
+}
+
+.animated-empty-state__particle:nth-child(4) {
+  left: 90%;
+  top: 60%;
+  animation-delay: 3s;
+  animation-duration: 8s;
+  background: var(--neon-purple, #8B5CF6);
+}
+
+.animated-empty-state__particle:nth-child(5) {
+  left: 50%;
+  top: 10%;
+  animation-delay: 4s;
+  animation-duration: 10s;
+}
+
+.animated-empty-state__particle:nth-child(6) {
+  left: 30%;
+  top: 80%;
+  animation-delay: 5s;
+  animation-duration: 7s;
+  background: var(--neon-purple, #8B5CF6);
+}
+
+@keyframes particle-float {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  10% {
+    opacity: 0.6;
+    transform: translateY(-10px) scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translateY(-30px) scale(0.8);
+  }
+  90% {
+    opacity: 0.6;
+    transform: translateY(-50px) scale(1);
+  }
+}
+
+/* Reduced motion: disable particles */
+@media (prefers-reduced-motion: reduce) {
+  .animated-empty-state__particle {
+    animation: none;
+    opacity: 0.3;
+  }
+}

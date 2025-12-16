@@ -1,0 +1,836 @@
+/**
+ * High-Tech AI Aesthetic Design Token System
+ * 
+ * This file defines the futuristic, dark-mode-only design tokens
+ * inspired by advanced AI interfaces like Cortana (Halo) and Jarvis (Iron Man).
+ * 
+ * Requirements: 2.1, 8.5
+ */
+
+:root {
+  /* ============================================
+   * HIGH-TECH DARK BACKGROUND SYSTEM
+   * Deep, rich dark backgrounds that make neon elements pop
+   * ============================================ */
+  
+  /* Primary Background Gradients */
+  --bg-primary: #0A0A0F;
+  --bg-secondary: #12121A;
+  --bg-tertiary: #1A1A2E;
+  
+  /* Elevated/Glass Backgrounds */
+  --bg-elevated: rgba(26, 26, 46, 0.8);
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --bg-glass-hover: rgba(255, 255, 255, 0.08);
+  --bg-glass-border: rgba(255, 255, 255, 0.1);
+  
+  /* ============================================
+   * NEON ACCENT COLOR SYSTEM
+   * Vibrant colors for highlights and interactions
+   * ============================================ */
+  
+  /* Primary Neon Colors */
+  --neon-cyan: #00D4FF;
+  --neon-cyan-dim: rgba(0, 212, 255, 0.5);
+  --neon-cyan-subtle: rgba(0, 212, 255, 0.2);
+  
+  --neon-magenta: #FF00FF;
+  --neon-magenta-dim: rgba(255, 0, 255, 0.5);
+  --neon-magenta-subtle: rgba(255, 0, 255, 0.2);
+  
+  --neon-purple: #8B5CF6;
+  --neon-purple-dim: rgba(139, 92, 246, 0.5);
+  --neon-purple-subtle: rgba(139, 92, 246, 0.2);
+  
+  /* Secondary Neon Colors */
+  --neon-orange: #FF6B35;
+  --neon-orange-dim: rgba(255, 107, 53, 0.5);
+  
+  --neon-green: #00FF88;
+  --neon-green-dim: rgba(0, 255, 136, 0.5);
+  
+  /* ============================================
+   * HIGH-TECH TEXT COLOR SYSTEM
+   * High-contrast text for dark backgrounds
+   * ============================================ */
+  
+  --text-primary-ht: #FFFFFF;
+  --text-secondary-ht: rgba(255, 255, 255, 0.7);
+  --text-tertiary-ht: rgba(255, 255, 255, 0.5);
+  --text-muted-ht: rgba(255, 255, 255, 0.3);
+  
+  /* Text Glow Effect */
+  --text-glow: 0 0 10px currentColor;
+  --text-glow-strong: 0 0 20px currentColor;
+  
+  /* ============================================
+   * STATUS COLORS (High-Tech Variants)
+   * ============================================ */
+  
+  --status-urgent: #FF4444;
+  --status-urgent-dim: rgba(255, 68, 68, 0.5);
+  --status-warning: #FFAA00;
+  --status-warning-dim: rgba(255, 170, 0, 0.5);
+  --status-success: #00FF88;
+  --status-success-dim: rgba(0, 255, 136, 0.5);
+  --status-info: #00D4FF;
+  --status-info-dim: rgba(0, 212, 255, 0.5);
+  
+  /* ============================================
+   * GLOW EFFECTS SYSTEM
+   * Luminous visual effects using CSS box-shadow
+   * ============================================ */
+  
+  /* Glow Intensities */
+  --glow-subtle: 0 0 10px;
+  --glow-medium: 0 0 20px;
+  --glow-strong: 0 0 30px;
+  --glow-intense: 0 0 40px, 0 0 80px;
+  
+  /* Pre-defined Glow Colors */
+  --glow-cyan: 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan-dim);
+  --glow-magenta: 0 0 20px var(--neon-magenta), 0 0 40px var(--neon-magenta-dim);
+  --glow-purple: 0 0 20px var(--neon-purple), 0 0 40px var(--neon-purple-dim);
+  --glow-orange: 0 0 20px var(--neon-orange), 0 0 40px var(--neon-orange-dim);
+  --glow-green: 0 0 20px var(--neon-green), 0 0 40px var(--neon-green-dim);
+  
+  /* Status Glows */
+  --glow-urgent: 0 0 20px var(--status-urgent), 0 0 40px var(--status-urgent-dim);
+  --glow-warning: 0 0 20px var(--status-warning), 0 0 40px var(--status-warning-dim);
+  --glow-success: 0 0 20px var(--status-success), 0 0 40px var(--status-success-dim);
+  
+  /* Border Glow */
+  --border-glow: 1px solid rgba(0, 212, 255, 0.3);
+  --border-glow-hover: 1px solid rgba(0, 212, 255, 0.6);
+  --border-glow-active: 1px solid var(--neon-cyan);
+}
+
+
+/* ============================================
+ * GLASSMORPHISM SYSTEM
+ * Frosted glass effects with backdrop blur
+ * Requirements: 2.3, 8.3
+ * ============================================ */
+
+:root {
+  /* Glass Effect Values */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg-hover: rgba(255, 255, 255, 0.08);
+  --glass-bg-active: rgba(255, 255, 255, 0.1);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+  --glass-border-hover: 1px solid rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(20px);
+  --glass-blur-strong: blur(40px);
+  --glass-blur-subtle: blur(10px);
+  
+  /* Fallback for browsers without backdrop-filter */
+  --glass-fallback-bg: rgba(26, 26, 46, 0.95);
+}
+
+/* Glass Card Utility Class */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 16px;
+}
+
+.glass-card:hover {
+  background: var(--glass-bg-hover);
+  border: var(--glass-border-hover);
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(20px)) {
+  .glass-card {
+    background: var(--glass-fallback-bg);
+  }
+  
+  .glass-card:hover {
+    background: rgba(30, 30, 50, 0.98);
+  }
+}
+
+/* Glass Panel Variant */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur-strong);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  border: var(--glass-border);
+}
+
+@supports not (backdrop-filter: blur(40px)) {
+  .glass-panel {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+/* Glass Navigation */
+.glass-nav {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: var(--border-glow);
+}
+
+@supports not (backdrop-filter: blur(20px)) {
+  .glass-nav {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+/* ============================================
+ * ANIMATION TIMING TOKENS
+ * Smooth, continuous animations for high-tech feel
+ * Requirements: 3.1, 8.1
+ * ============================================ */
+
+:root {
+  /* Timing Functions */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-glow: cubic-bezier(0.4, 0, 0.6, 1);
+  --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  
+  /* Durations */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-pulse: 2s;
+  --duration-breathe: 4s;
+  --duration-ring: 2s;
+  --duration-shimmer: 1.5s;
+}
+
+/* ============================================
+ * ANIMATION KEYFRAMES
+ * Core animations for high-tech aesthetic
+ * ============================================ */
+
+/* Pulse Glow - For AI avatar and interactive elements */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* Breathe - Color-shifting glow for idle states */
+@keyframes breathe {
+  0%, 100% {
+    box-shadow: var(--glow-cyan);
+  }
+  33% {
+    box-shadow: var(--glow-magenta);
+  }
+  66% {
+    box-shadow: var(--glow-purple);
+  }
+}
+
+/* Ring Expand - Pulsing rings emanating from AI avatar */
+@keyframes ring-expand {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Shimmer - Loading state gradient animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Spin - For loading indicators */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pop In - For notification badges */
+@keyframes pop-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Pulse Border - For urgent notifications */
+@keyframes pulse-border {
+  0%, 100% {
+    box-shadow: 0 0 10px var(--status-urgent);
+  }
+  50% {
+    box-shadow: 0 0 25px var(--status-urgent), 0 0 50px var(--status-urgent-dim);
+  }
+}
+
+/* Glow Pulse - Subtle glow intensity variation */
+@keyframes glow-pulse {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.2);
+  }
+}
+
+/* Float - Subtle floating animation for cards */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* ============================================
+ * REDUCED MOTION SUPPORT
+ * Accessibility: Respect user preferences
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .glass-card,
+  .glass-panel,
+  .glass-nav {
+    transition: none !important;
+  }
+}
+
+/* ============================================
+ * HIGH-TECH THEME APPLICATION
+ * Apply high-tech theme to data-theme="high-tech"
+ * ============================================ */
+
+[data-theme="high-tech"] {
+  /* Override base colors with high-tech dark theme */
+  --color-background: var(--bg-primary);
+  --color-background-secondary: var(--bg-secondary);
+  --color-surface: var(--bg-tertiary);
+  --color-surface-hover: var(--bg-elevated);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-text: var(--text-primary-ht);
+  --color-text-primary: var(--text-primary-ht);
+  --color-text-secondary: var(--text-secondary-ht);
+  --color-text-tertiary: var(--text-tertiary-ht);
+  --color-text-muted: var(--text-muted-ht);
+  
+  /* Override primary colors with neon cyan */
+  --color-primary: var(--neon-cyan);
+  --color-primary-hover: var(--neon-cyan-dim);
+  
+  /* Override semantic colors */
+  --color-success: var(--status-success);
+  --color-warning: var(--status-warning);
+  --color-error: var(--status-urgent);
+  --color-info: var(--status-info);
+}
+
+[data-theme="high-tech"] body {
+  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+  min-height: 100vh;
+}
+
+
+/* ============================================
+ * HIGH-TECH WIDGET CARD SYSTEM
+ * Glassmorphism widget cards with neon accents
+ * Requirements: 5.1, 5.3, 5.5
+ * ============================================ */
+
+/* Base Widget Card - Glassmorphism */
+.widget-card-ht {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 20px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+/* Top gradient line accent */
+.widget-card-ht::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0.5;
+}
+
+/* Subtle neon accent border on hover */
+.widget-card-ht:hover {
+  background: var(--glass-bg-hover);
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  .widget-card-ht {
+    background: var(--glass-fallback-bg);
+  }
+  
+  .widget-card-ht:hover {
+    background: rgba(30, 30, 50, 0.98);
+  }
+}
+
+/* Widget Card Title */
+.widget-card-ht__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary-ht);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.widget-card-ht__title-icon {
+  color: var(--neon-cyan);
+  filter: drop-shadow(0 0 4px var(--neon-cyan-dim));
+}
+
+/* Widget Card Content */
+.widget-card-ht__content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+ * GRADIENT TEXT FOR METRICS
+ * Large glowing numbers with gradient effects
+ * Requirements: 5.3
+ * ============================================ */
+
+.metric-value-ht {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px var(--neon-cyan-dim);
+  line-height: 1.1;
+}
+
+.metric-value-ht--small {
+  font-size: 32px;
+}
+
+.metric-value-ht--large {
+  font-size: 64px;
+}
+
+/* Metric with glow effect */
+.metric-value-ht--glow {
+  position: relative;
+}
+
+.metric-value-ht--glow::after {
+  content: attr(data-value);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: blur(8px);
+  opacity: 0.5;
+  z-index: -1;
+}
+
+/* Metric Label */
+.metric-label-ht {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary-ht);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* Metric Unit */
+.metric-unit-ht {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-secondary-ht);
+  margin-left: 4px;
+}
+
+/* ============================================
+ * ANIMATED STATUS INDICATORS
+ * Pulsing dots with color-coded status
+ * Requirements: 5.5
+ * ============================================ */
+
+.status-indicator-ht {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-dot-ht {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: status-pulse 2s var(--ease-glow) infinite;
+}
+
+/* Success Status */
+.status-dot-ht--success {
+  background: var(--status-success);
+  box-shadow: 0 0 10px var(--status-success), 0 0 20px var(--status-success-dim);
+}
+
+/* Warning Status */
+.status-dot-ht--warning {
+  background: var(--status-warning);
+  box-shadow: 0 0 10px var(--status-warning), 0 0 20px var(--status-warning-dim);
+}
+
+/* Error/Urgent Status */
+.status-dot-ht--error {
+  background: var(--status-urgent);
+  box-shadow: 0 0 10px var(--status-urgent), 0 0 20px var(--status-urgent-dim);
+  animation: status-pulse-urgent 1s var(--ease-glow) infinite;
+}
+
+/* Info Status */
+.status-dot-ht--info {
+  background: var(--status-info);
+  box-shadow: 0 0 10px var(--status-info), 0 0 20px var(--status-info-dim);
+}
+
+/* Status Label */
+.status-label-ht {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary-ht);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Status Pulse Animation */
+@keyframes status-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* Urgent Status Pulse - Faster */
+@keyframes status-pulse-urgent {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+/* ============================================
+ * WIDGET CARD VARIANTS
+ * Different accent colors for widget types
+ * ============================================ */
+
+/* Cyan Accent (Default) */
+.widget-card-ht--cyan::before {
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+}
+
+.widget-card-ht--cyan:hover {
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
+}
+
+/* Magenta Accent */
+.widget-card-ht--magenta::before {
+  background: linear-gradient(90deg, transparent, var(--neon-magenta), transparent);
+}
+
+.widget-card-ht--magenta:hover {
+  border-color: rgba(255, 0, 255, 0.3);
+  box-shadow: 0 0 30px rgba(255, 0, 255, 0.1);
+}
+
+/* Purple Accent */
+.widget-card-ht--purple::before {
+  background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+}
+
+.widget-card-ht--purple:hover {
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.1);
+}
+
+/* Success Accent */
+.widget-card-ht--success::before {
+  background: linear-gradient(90deg, transparent, var(--status-success), transparent);
+}
+
+.widget-card-ht--success:hover {
+  border-color: rgba(0, 255, 136, 0.3);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);
+}
+
+/* Warning Accent */
+.widget-card-ht--warning::before {
+  background: linear-gradient(90deg, transparent, var(--status-warning), transparent);
+}
+
+.widget-card-ht--warning:hover {
+  border-color: rgba(255, 170, 0, 0.3);
+  box-shadow: 0 0 30px rgba(255, 170, 0, 0.1);
+}
+
+/* Urgent Accent */
+.widget-card-ht--urgent::before {
+  background: linear-gradient(90deg, transparent, var(--status-urgent), transparent);
+}
+
+.widget-card-ht--urgent:hover {
+  border-color: rgba(255, 68, 68, 0.3);
+  box-shadow: 0 0 30px rgba(255, 68, 68, 0.1);
+}
+
+/* ============================================
+ * HIGH-TECH THEME WIDGET OVERRIDES
+ * Apply glassmorphism to existing widgets
+ * ============================================ */
+
+[data-theme="high-tech"] .smart-summary-widget,
+[data-theme="high-tech"] .calendar-widget,
+[data-theme="high-tech"] .weather-time-widget,
+[data-theme="high-tech"] .contextual-insights-widget,
+[data-theme="high-tech"] .quick-actions-panel,
+[data-theme="high-tech"] .priority-notifications-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+/* Top gradient line for all widgets */
+[data-theme="high-tech"] .smart-summary-widget::before,
+[data-theme="high-tech"] .calendar-widget::before,
+[data-theme="high-tech"] .weather-time-widget::before,
+[data-theme="high-tech"] .contextual-insights-widget::before,
+[data-theme="high-tech"] .quick-actions-panel::before,
+[data-theme="high-tech"] .priority-notifications-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0.5;
+  z-index: 1;
+}
+
+/* Hover effects for all widgets */
+[data-theme="high-tech"] .smart-summary-widget:hover,
+[data-theme="high-tech"] .calendar-widget:hover,
+[data-theme="high-tech"] .weather-time-widget:hover,
+[data-theme="high-tech"] .contextual-insights-widget:hover,
+[data-theme="high-tech"] .quick-actions-panel:hover,
+[data-theme="high-tech"] .priority-notifications-panel:hover {
+  background: var(--glass-bg-hover);
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  [data-theme="high-tech"] .smart-summary-widget,
+  [data-theme="high-tech"] .calendar-widget,
+  [data-theme="high-tech"] .weather-time-widget,
+  [data-theme="high-tech"] .contextual-insights-widget,
+  [data-theme="high-tech"] .quick-actions-panel,
+  [data-theme="high-tech"] .priority-notifications-panel {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+/* Widget titles in high-tech theme */
+[data-theme="high-tech"] .smart-summary-widget__title,
+[data-theme="high-tech"] .calendar-widget__title,
+[data-theme="high-tech"] .contextual-insights-widget__title,
+[data-theme="high-tech"] .quick-actions-panel__title,
+[data-theme="high-tech"] .priority-notifications-panel__title {
+  color: var(--text-secondary-ht);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 14px;
+}
+
+/* Metric values in high-tech theme */
+[data-theme="high-tech"] .smart-summary-metric__value,
+[data-theme="high-tech"] .insight-metric__value {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Inner cards/items in high-tech theme */
+[data-theme="high-tech"] .smart-summary-metric,
+[data-theme="high-tech"] .appointment-item,
+[data-theme="high-tech"] .insight-metric,
+[data-theme="high-tech"] .trend-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+[data-theme="high-tech"] .smart-summary-metric:hover,
+[data-theme="high-tech"] .appointment-item:hover,
+[data-theme="high-tech"] .insight-metric:hover,
+[data-theme="high-tech"] .trend-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.05);
+}
+
+/* Status indicators in high-tech theme */
+[data-theme="high-tech"] .smart-summary-metric--urgent,
+[data-theme="high-tech"] .smart-summary-metric--critical {
+  border-color: rgba(255, 68, 68, 0.3);
+  background: rgba(255, 68, 68, 0.1);
+}
+
+[data-theme="high-tech"] .smart-summary-metric--warning {
+  border-color: rgba(255, 170, 0, 0.3);
+  background: rgba(255, 170, 0, 0.1);
+}
+
+/* Weather widget specific overrides */
+[data-theme="high-tech"] .weather-time-widget__time {
+  color: var(--text-primary-ht);
+}
+
+[data-theme="high-tech"] .weather-time-widget__temperature {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="high-tech"] .weather-time-widget__location,
+[data-theme="high-tech"] .weather-time-widget__detail {
+  color: var(--text-secondary-ht);
+}
+
+/* Calendar widget specific overrides */
+[data-theme="high-tech"] .appointment-item--urgent {
+  border-left: 3px solid var(--status-urgent);
+  background: rgba(255, 68, 68, 0.1);
+}
+
+[data-theme="high-tech"] .appointment-item--medium {
+  border-left: 3px solid var(--status-warning);
+  background: rgba(255, 170, 0, 0.1);
+}
+
+[data-theme="high-tech"] .appointment-item--low {
+  border-left: 3px solid var(--status-success);
+  background: rgba(0, 255, 136, 0.1);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .widget-card-ht,
+  .status-dot-ht,
+  [data-theme="high-tech"] .smart-summary-widget,
+  [data-theme="high-tech"] .calendar-widget,
+  [data-theme="high-tech"] .weather-time-widget,
+  [data-theme="high-tech"] .contextual-insights-widget,
+  [data-theme="high-tech"] .quick-actions-panel,
+  [data-theme="high-tech"] .priority-notifications-panel {
+    transition: none;
+    animation: none;
+  }
+  
+  .status-dot-ht {
+    animation: none;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .widget-card-ht {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  
+  .metric-value-ht {
+    font-size: 36px;
+  }
+  
+  .metric-value-ht--large {
+    font-size: 48px;
+  }
+  
+  .metric-value-ht--small {
+    font-size: 24px;
+  }
+}

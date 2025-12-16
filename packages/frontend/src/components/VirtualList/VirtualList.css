@@ -1,0 +1,24 @@
+.virtual-list {
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.virtual-list__spacer {
+  position: relative;
+  width: 100%;
+}
+
+.virtual-list__content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  will-change: transform;
+}
+
+.virtual-list__item {
+  overflow: hidden;
+}

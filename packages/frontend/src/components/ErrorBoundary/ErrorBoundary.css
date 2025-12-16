@@ -1,0 +1,263 @@
+/* Error Boundary Styles */
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: var(--spacing-lg, 24px);
+  background-color: var(--color-background, #ffffff);
+  border: 1px solid var(--color-error-light, #ffebee);
+  border-radius: var(--border-radius-md, 8px);
+}
+
+.error-boundary__container {
+  text-align: center;
+  max-width: 500px;
+}
+
+.error-boundary__icon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.error-boundary__title {
+  color: var(--color-error, #d32f2f);
+  font-size: var(--font-size-xl, 24px);
+  font-weight: var(--font-weight-semibold, 600);
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.error-boundary__message {
+  color: var(--color-text-secondary, #666666);
+  font-size: var(--font-size-base, 16px);
+  line-height: 1.5;
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.error-boundary__actions {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.error-boundary__button {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  border: none;
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-base, 16px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.error-boundary__button--primary {
+  background-color: var(--color-primary, #1976d2);
+  color: white;
+}
+
+.error-boundary__button--primary:hover {
+  background-color: var(--color-primary-dark, #1565c0);
+}
+
+.error-boundary__button--secondary {
+  background-color: var(--color-surface, #f5f5f5);
+  color: var(--color-text, #333333);
+  border: 1px solid var(--color-border, #e0e0e0);
+}
+
+.error-boundary__button--secondary:hover {
+  background-color: var(--color-surface-hover, #eeeeee);
+}
+
+.error-boundary__button--tertiary {
+  background-color: transparent;
+  color: var(--color-text-secondary, #666666);
+  border: 1px solid var(--color-border, #e0e0e0);
+}
+
+.error-boundary__button--tertiary:hover {
+  background-color: var(--color-surface, #f5f5f5);
+  color: var(--color-text, #333333);
+}
+
+.error-boundary__details {
+  margin-top: var(--spacing-lg, 24px);
+  text-align: left;
+  background-color: var(--color-surface, #f5f5f5);
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: var(--border-radius-sm, 4px);
+  padding: var(--spacing-md, 16px);
+}
+
+.error-boundary__details-summary {
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text, #333333);
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.error-boundary__error-info h3 {
+  color: var(--color-error, #d32f2f);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-semibold, 600);
+  margin: var(--spacing-sm, 8px) 0 var(--spacing-xs, 4px) 0;
+}
+
+.error-boundary__error-text {
+  background-color: var(--color-background, #ffffff);
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: var(--border-radius-sm, 4px);
+  padding: var(--spacing-sm, 8px);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-error, #d32f2f);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Widget Error Boundary Styles */
+.widget-error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: var(--spacing-md, 16px);
+  background-color: var(--color-surface, #f5f5f5);
+  border: 1px solid var(--color-warning-light, #fff3e0);
+  border-radius: var(--border-radius-md, 8px);
+  margin: var(--spacing-sm, 8px) 0;
+}
+
+.widget-error-boundary__content {
+  text-align: center;
+  max-width: 300px;
+}
+
+.widget-error-boundary__icon {
+  font-size: 32px;
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.widget-error-boundary__title {
+  color: var(--color-warning, #f57c00);
+  font-size: var(--font-size-md, 18px);
+  font-weight: var(--font-weight-semibold, 600);
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.widget-error-boundary__message {
+  color: var(--color-text-secondary, #666666);
+  font-size: var(--font-size-sm, 14px);
+  line-height: 1.4;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.widget-error-boundary__retry {
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  background-color: var(--color-warning, #f57c00);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.widget-error-boundary__retry:hover {
+  background-color: var(--color-warning-dark, #ef6c00);
+}
+
+/* Dark theme support */
+[data-theme="night"] .error-boundary {
+  background-color: var(--color-background-dark, #1a1a1a);
+  border-color: var(--color-error-dark, #f44336);
+}
+
+[data-theme="night"] .error-boundary__title {
+  color: var(--color-error-light, #ff5252);
+}
+
+[data-theme="night"] .error-boundary__message {
+  color: var(--color-text-secondary-dark, #b0b0b0);
+}
+
+[data-theme="night"] .error-boundary__button--secondary {
+  background-color: var(--color-surface-dark, #2a2a2a);
+  color: var(--color-text-dark, #ffffff);
+  border-color: var(--color-border-dark, #404040);
+}
+
+[data-theme="night"] .error-boundary__button--secondary:hover {
+  background-color: var(--color-surface-hover-dark, #3a3a3a);
+}
+
+[data-theme="night"] .error-boundary__details {
+  background-color: var(--color-surface-dark, #2a2a2a);
+  border-color: var(--color-border-dark, #404040);
+}
+
+[data-theme="night"] .error-boundary__details-summary {
+  color: var(--color-text-dark, #ffffff);
+}
+
+[data-theme="night"] .error-boundary__error-text {
+  background-color: var(--color-background-dark, #1a1a1a);
+  border-color: var(--color-border-dark, #404040);
+  color: var(--color-error-light, #ff5252);
+}
+
+[data-theme="night"] .widget-error-boundary {
+  background-color: var(--color-surface-dark, #2a2a2a);
+  border-color: var(--color-warning-dark, #ff9800);
+}
+
+[data-theme="night"] .widget-error-boundary__title {
+  color: var(--color-warning-light, #ffb74d);
+}
+
+[data-theme="night"] .widget-error-boundary__message {
+  color: var(--color-text-secondary-dark, #b0b0b0);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .error-boundary {
+    min-height: 300px;
+    padding: var(--spacing-md, 16px);
+  }
+  
+  .error-boundary__icon {
+    font-size: 36px;
+  }
+  
+  .error-boundary__title {
+    font-size: var(--font-size-lg, 20px);
+  }
+  
+  .error-boundary__actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .error-boundary__button {
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .widget-error-boundary {
+    min-height: 150px;
+    padding: var(--spacing-sm, 8px);
+  }
+  
+  .widget-error-boundary__icon {
+    font-size: 24px;
+  }
+  
+  .widget-error-boundary__title {
+    font-size: var(--font-size-base, 16px);
+  }
+}

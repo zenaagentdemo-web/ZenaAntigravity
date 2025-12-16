@@ -1,0 +1,375 @@
+/**
+ * BatchActionBar Component Styles
+ * 
+ * Glassmorphism floating action bar for batch operations.
+ * Features: fixed positioning, safe area insets, slide-up animation, glow effects.
+ * 
+ * Requirements: 7.2
+ */
+
+/* ============================================
+ * BASE BATCH ACTION BAR
+ * Glassmorphism floating bar at bottom
+ * ============================================ */
+
+.batch-action-bar {
+  position: fixed !important;
+  bottom: 70px !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 99998 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: none !important;
+
+  /* Glassmorphism styling */
+  background: rgba(26, 26, 46, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+  /* Layout */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 16px !important;
+  gap: 12px !important;
+
+  /* Slide-up entrance animation */
+  animation: batch-bar-slide-up 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+
+  /* Glow effect */
+  box-shadow:
+    0 -4px 20px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(0, 212, 255, 0.1) !important;
+}
+
+
+/* Top gradient accent line */
+.batch-action-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan, #00D4FF), transparent);
+  opacity: 0.6;
+}
+
+/* Slide-up animation */
+@keyframes batch-bar-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  .batch-action-bar {
+    background: rgba(26, 26, 46, 0.98);
+  }
+}
+
+/* ============================================
+ * SELECTION COUNT
+ * Animated counter display
+ * ============================================ */
+
+.batch-action-bar__count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 80px;
+}
+
+.batch-action-bar__count-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  background: rgba(0, 212, 255, 0.2);
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--neon-cyan, #00D4FF);
+
+  /* Counter animation */
+  animation: count-pop 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes count-pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.batch-action-bar__count-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+
+/* ============================================
+ * ACTION BUTTONS CONTAINER
+ * ============================================ */
+
+.batch-action-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+
+/* ============================================
+ * ACTION BUTTON BASE
+ * ============================================ */
+
+.batch-action-bar__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+
+  /* Minimum touch target */
+  min-height: 44px;
+}
+
+.batch-action-bar__button svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.batch-action-bar__button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.batch-action-bar__button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.batch-action-bar__button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.batch-action-bar__button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.5);
+}
+
+/* ============================================
+ * SNOOZE BUTTON
+ * Amber accent
+ * ============================================ */
+
+.batch-action-bar__button--snooze {
+  color: #FFAA00;
+  border-color: rgba(255, 170, 0, 0.3);
+}
+
+.batch-action-bar__button--snooze:hover:not(:disabled) {
+  background: rgba(255, 170, 0, 0.15);
+  border-color: rgba(255, 170, 0, 0.4);
+  box-shadow: 0 0 15px rgba(255, 170, 0, 0.2);
+}
+
+/* ============================================
+ * ARCHIVE BUTTON
+ * Purple accent
+ * ============================================ */
+
+.batch-action-bar__button--archive {
+  color: #8B5CF6;
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.batch-action-bar__button--archive:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+/* ============================================
+ * MARK READ BUTTON
+ * Cyan accent
+ * ============================================ */
+
+.batch-action-bar__button--read {
+  color: var(--neon-cyan, #00D4FF);
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.batch-action-bar__button--read:hover:not(:disabled) {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+}
+
+/* ============================================
+ * DELETE BUTTON
+ * Red accent
+ * ============================================ */
+
+.batch-action-bar__button--delete {
+  color: #FF4444;
+  border-color: rgba(255, 68, 68, 0.3);
+}
+
+.batch-action-bar__button--delete:hover:not(:disabled) {
+  background: rgba(255, 68, 68, 0.15);
+  border-color: rgba(255, 68, 68, 0.4);
+  box-shadow: 0 0 15px rgba(255, 68, 68, 0.2);
+}
+
+/* ============================================
+ * CANCEL BUTTON
+ * ============================================ */
+
+.batch-action-bar__cancel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 200ms ease;
+  flex-shrink: 0;
+}
+
+.batch-action-bar__cancel svg {
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 200ms ease;
+}
+
+.batch-action-bar__cancel:hover {
+  background: rgba(255, 68, 68, 0.15);
+  border-color: rgba(255, 68, 68, 0.3);
+}
+
+.batch-action-bar__cancel:hover svg {
+  color: #FF4444;
+}
+
+.batch-action-bar__cancel:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.5);
+}
+
+/* ============================================
+ * ACCESSIBILITY
+ * ============================================ */
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .batch-action-bar {
+    animation: none;
+  }
+
+  .batch-action-bar__count-number {
+    animation: none;
+  }
+
+  .batch-action-bar__button,
+  .batch-action-bar__cancel {
+    transition: none;
+  }
+
+  .batch-action-bar__button:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* ============================================
+ * RESPONSIVE ADJUSTMENTS
+ * ============================================ */
+
+@media (max-width: 480px) {
+  .batch-action-bar {
+    padding: 10px 12px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    gap: 8px;
+  }
+
+  .batch-action-bar__count {
+    min-width: auto;
+  }
+
+  .batch-action-bar__count-label {
+    display: none;
+  }
+
+  .batch-action-bar__actions {
+    gap: 6px;
+  }
+
+  .batch-action-bar__button {
+    padding: 8px 10px;
+    font-size: 12px;
+    min-height: 40px;
+  }
+
+  .batch-action-bar__button span {
+    display: none;
+  }
+
+  .batch-action-bar__button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .batch-action-bar__cancel {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Larger screens - more spacing */
+@media (min-width: 768px) {
+  .batch-action-bar {
+    padding: 16px 24px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .batch-action-bar__button {
+    padding: 12px 20px;
+  }
+}

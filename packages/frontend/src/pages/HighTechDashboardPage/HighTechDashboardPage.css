@@ -1,0 +1,33 @@
+/**
+ * HighTechDashboardPage Styles
+ * 
+ * Page-specific styles for the high-tech AI dashboard.
+ * Global high-tech theme styles are imported in index.css.
+ */
+
+.high-tech-dashboard-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--bg-primary, #0A0A0F) 0%, var(--bg-secondary, #12121A) 50%, var(--bg-tertiary, #1A1A2E) 100%);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ensure the page takes full height minus bottom nav */
+.high-tech-dashboard-page .high-tech-dashboard {
+  min-height: calc(100vh - var(--bottom-nav-height, 80px));
+  padding-bottom: calc(var(--bottom-nav-height, 80px) + var(--spacing-md, 16px));
+}
+
+/* Mobile safe area handling */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .high-tech-dashboard-page .high-tech-dashboard {
+    padding-bottom: calc(var(--bottom-nav-height, 80px) + env(safe-area-inset-bottom) + var(--spacing-md, 16px));
+  }
+}
+
+/* Desktop layout adjustments */
+@media (min-width: 768px) {
+  .high-tech-dashboard-page .high-tech-dashboard {
+    padding-bottom: var(--spacing-xl, 32px);
+  }
+}

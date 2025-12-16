@@ -1,0 +1,82 @@
+/**
+ * SkipLink Styles
+ * 
+ * Skip links are hidden by default and become visible when focused.
+ * This allows keyboard users to quickly navigate to main content.
+ */
+
+.skip-links {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: var(--z-index-modal);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--color-primary);
+  color: var(--color-white);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  transition: top var(--transition-fast);
+  white-space: nowrap;
+  z-index: var(--z-index-modal);
+}
+
+.skip-link:focus {
+  top: var(--spacing-2);
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.skip-link:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Multiple skip links stack vertically */
+.skip-links .skip-link:nth-child(2):focus {
+  top: calc(var(--spacing-2) + 40px);
+}
+
+.skip-links .skip-link:nth-child(3):focus {
+  top: calc(var(--spacing-2) + 80px);
+}
+
+/* Dark mode */
+[data-theme="night"] .skip-link {
+  background: var(--color-primary);
+  color: var(--color-neutral-900);
+}
+
+[data-theme="night"] .skip-link:hover {
+  background: var(--color-primary-hover);
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .skip-link {
+    background: var(--color-text-high-contrast);
+    color: var(--color-background-high-contrast);
+    border: 2px solid var(--color-text-high-contrast);
+  }
+  
+  .skip-link:focus {
+    outline-width: 3px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}

@@ -1,0 +1,618 @@
+/* Professional Quick Actions Panel */
+.quick-actions-panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-actions-panel:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.quick-actions-panel--loading {
+  pointer-events: none;
+}
+
+/* Professional Header */
+.quick-actions-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-5);
+  padding-bottom: var(--spacing-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.quick-actions-panel__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  font-family: var(--font-family-sans);
+  letter-spacing: -0.025em;
+}
+
+.quick-actions-panel__customize {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  padding: var(--spacing-2);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-xs);
+}
+
+.quick-actions-panel__customize:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-primary-300);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.quick-actions-panel__customize:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-xs);
+}
+
+/* Modern Professional Grid Layout */
+.quick-actions-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns, 2), 1fr);
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.quick-actions-panel__grid--2-columns {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.quick-actions-panel__grid--3-columns {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.quick-actions-panel__grid--4-columns {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Professional Quick Action Button Base Styles */
+.quick-action-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-background);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 120px;
+  min-width: var(--touch-target-min);
+  position: relative;
+  font-family: var(--font-family-sans);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  /* Entry animation */
+  animation: actionButtonEnter var(--duration-slow, 300ms) var(--ease-out) forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* Staggered entry animations for action buttons */
+.quick-action-button:nth-child(1) { animation-delay: 0ms; }
+.quick-action-button:nth-child(2) { animation-delay: 50ms; }
+.quick-action-button:nth-child(3) { animation-delay: 100ms; }
+.quick-action-button:nth-child(4) { animation-delay: 150ms; }
+.quick-action-button:nth-child(5) { animation-delay: 200ms; }
+.quick-action-button:nth-child(6) { animation-delay: 250ms; }
+.quick-action-button:nth-child(7) { animation-delay: 300ms; }
+.quick-action-button:nth-child(8) { animation-delay: 350ms; }
+
+@keyframes actionButtonEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.quick-action-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.quick-action-button:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary-300);
+}
+
+.quick-action-button:hover::before {
+  opacity: 1;
+}
+
+.quick-action-button:active {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.quick-action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  pointer-events: none;
+}
+
+.quick-action-button:disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-border);
+}
+
+.quick-action-button:disabled::before {
+  opacity: 0;
+}
+
+/* Loading State */
+.quick-action-button--loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.quick-action-button--loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Focus State */
+.quick-action-button--focused {
+  border-color: var(--color-primary-500);
+  box-shadow: var(--shadow-md), 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+/* Professional Quick Action Button Variants */
+.quick-action-button--primary {
+  border-color: var(--color-primary-200);
+  background: linear-gradient(135deg, var(--color-primary-50), var(--color-background));
+}
+
+.quick-action-button--primary:hover {
+  border-color: var(--color-primary-400);
+  background: linear-gradient(135deg, var(--color-primary-100), var(--color-primary-50));
+}
+
+.quick-action-button--secondary {
+  border-color: var(--color-neutral-200);
+  background: linear-gradient(135deg, var(--color-neutral-50), var(--color-background));
+}
+
+.quick-action-button--secondary:hover {
+  border-color: var(--color-neutral-400);
+  background: linear-gradient(135deg, var(--color-neutral-100), var(--color-neutral-50));
+}
+
+.quick-action-button--success {
+  border-color: var(--color-success-200);
+  background: linear-gradient(135deg, var(--color-success-50), var(--color-background));
+}
+
+.quick-action-button--success:hover {
+  border-color: var(--color-success-400);
+  background: linear-gradient(135deg, var(--color-success-100), var(--color-success-50));
+}
+
+.quick-action-button--warning {
+  border-color: var(--color-warning-200);
+  background: linear-gradient(135deg, var(--color-warning-50), var(--color-background));
+}
+
+.quick-action-button--warning:hover {
+  border-color: var(--color-warning-400);
+  background: linear-gradient(135deg, var(--color-warning-100), var(--color-warning-50));
+}
+
+.quick-action-button--error {
+  border-color: var(--color-error-200);
+  background: linear-gradient(135deg, var(--color-error-50), var(--color-background));
+}
+
+.quick-action-button--error:hover {
+  border-color: var(--color-error-400);
+  background: linear-gradient(135deg, var(--color-error-100), var(--color-error-50));
+}
+
+.quick-action-button--info {
+  border-color: var(--color-primary-200);
+  background: linear-gradient(135deg, var(--color-primary-50), var(--color-background));
+}
+
+.quick-action-button--info:hover {
+  border-color: var(--color-primary-400);
+  background: linear-gradient(135deg, var(--color-primary-100), var(--color-primary-50));
+}
+
+/* Active state for recording */
+.quick-action-button--active {
+  border-color: var(--color-error);
+  background: linear-gradient(135deg, var(--color-error-light), var(--color-background));
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* Professional Quick Action Button Elements */
+.quick-action-button__icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-3);
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.quick-action-button__spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--color-border);
+  border-top: 3px solid var(--color-primary-500);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.quick-action-button__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  text-align: center;
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--spacing-2);
+  position: relative;
+  z-index: 1;
+  letter-spacing: -0.025em;
+}
+
+.quick-action-button__shortcut {
+  position: absolute;
+  top: var(--spacing-2);
+  right: var(--spacing-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  background: var(--color-surface-secondary);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xs);
+  z-index: 2;
+}
+
+.quick-action-button__usage {
+  position: absolute;
+  top: var(--spacing-2);
+  left: var(--spacing-2);
+  font-size: var(--font-size-xs);
+  background: var(--color-primary-500);
+  color: white;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+  min-width: 20px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  z-index: 2;
+}
+
+/* Recording Indicator */
+.quick-actions-panel__recording-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--color-error-light);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  color: var(--color-error-dark);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--spacing-md);
+}
+
+.recording-pulse {
+  width: 12px;
+  height: 12px;
+  background: var(--color-error);
+  border-radius: 50%;
+  animation: recording-pulse 1s infinite;
+}
+
+@keyframes recording-pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Professional Responsive Design */
+@media (max-width: 768px) {
+  .quick-actions-panel {
+    padding: var(--spacing-4);
+  }
+  
+  .quick-actions-panel__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+  }
+  
+  .quick-actions-panel__grid--3-columns,
+  .quick-actions-panel__grid--4-columns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .quick-action-button {
+    min-height: 100px;
+    padding: var(--spacing-4);
+  }
+  
+  .quick-action-button__icon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-2);
+  }
+  
+  .quick-action-button__label {
+    font-size: var(--font-size-xs);
+  }
+  
+  .quick-actions-panel__title {
+    font-size: var(--font-size-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-actions-panel {
+    padding: var(--spacing-3);
+  }
+  
+  .quick-actions-panel__header {
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-2);
+  }
+  
+  .quick-actions-panel__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-2);
+  }
+  
+  .quick-action-button {
+    min-height: 85px;
+    padding: var(--spacing-3);
+  }
+  
+  .quick-action-button__icon {
+    font-size: 1.75rem;
+  }
+  
+  .quick-action-button__shortcut {
+    display: none; /* Hide shortcuts on very small screens */
+  }
+  
+  .quick-action-button__usage {
+    top: var(--spacing-1);
+    left: var(--spacing-1);
+    padding: 2px var(--spacing-1);
+    font-size: 10px;
+    min-width: 16px;
+  }
+}
+
+/* Large screens - show more columns */
+@media (min-width: 1024px) {
+  .quick-actions-panel__grid--2-columns {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .quick-actions-panel__grid--3-columns {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .quick-actions-panel__grid--4-columns {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Enhanced Focus and Accessibility */
+.quick-action-button:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: var(--shadow-lg), 0 0 0 4px rgba(14, 165, 233, 0.2);
+  border-color: var(--color-primary-500);
+  z-index: 10;
+}
+
+.quick-action-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.quick-actions-panel__customize:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: var(--shadow-sm), 0 0 0 3px rgba(14, 165, 233, 0.2);
+  border-color: var(--color-primary-500);
+}
+
+.quick-actions-panel__customize:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Keyboard navigation indicators */
+.keyboard-navigation .quick-action-button:focus {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: var(--shadow-lg), 0 0 0 4px rgba(14, 165, 233, 0.2);
+  border-color: var(--color-primary-500);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .quick-action-button {
+    border-width: 3px;
+  }
+  
+  .quick-action-button__label {
+    font-weight: var(--font-weight-bold);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .quick-action-button {
+    transition: none;
+  }
+  
+  .quick-action-button:hover {
+    transform: none;
+  }
+  
+  .quick-action-button--active {
+    animation: none;
+  }
+  
+  .recording-pulse {
+    animation: none;
+  }
+}
+/* Professional Skeleton Loading Styles */
+.skeleton {
+  background: linear-gradient(90deg, var(--color-neutral-100) 25%, var(--color-neutral-200) 50%, var(--color-neutral-100) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.quick-actions-panel--loading {
+  opacity: 0.8;
+}
+
+.skeleton--panel-title {
+  height: 24px;
+  width: 140px;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton--customize-button {
+  height: var(--touch-target-min);
+  width: var(--touch-target-min);
+  border-radius: var(--radius-md);
+}
+
+.quick-action-button--skeleton {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  cursor: default;
+  pointer-events: none;
+}
+
+.quick-action-button--skeleton:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.skeleton--action-icon {
+  height: 40px;
+  width: 40px;
+  border-radius: var(--radius-full);
+  margin: 0 auto var(--spacing-3) auto;
+}
+
+.skeleton--action-label {
+  height: 16px;
+  width: 70px;
+  margin: 0 auto var(--spacing-2) auto;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton--action-shortcut {
+  height: 12px;
+  width: 45px;
+  margin: 0 auto;
+  border-radius: var(--radius-sm);
+}
+
+/* Dark theme skeleton styles */
+[data-theme="night"] .skeleton {
+  background: linear-gradient(90deg, var(--color-neutral-200) 25%, var(--color-neutral-300) 50%, var(--color-neutral-200) 75%);
+  background-size: 200% 100%;
+}

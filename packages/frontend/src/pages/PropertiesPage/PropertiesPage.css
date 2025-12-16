@@ -1,0 +1,115 @@
+.properties-page {
+  min-height: 100vh;
+  background-color: var(--color-background);
+  padding-bottom: 80px;
+}
+
+.properties-page__loading,
+.properties-page__error {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.properties-page__error {
+  color: var(--color-error);
+}
+
+.properties-page__retry-btn,
+.properties-page__refresh-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.properties-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem 1rem;
+  background-color: white;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.properties-page__title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.properties-page__description {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.properties-page__empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.properties-page__list {
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.property-card {
+  background-color: white;
+  padding: 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.property-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.property-card__address {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 0.75rem 0;
+}
+
+.property-card__milestones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background-color: var(--color-background);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.property-card__milestone-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.property-card__milestone-latest {
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+}
+
+.property-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.property-card__date {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}

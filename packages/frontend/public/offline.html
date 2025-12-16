@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - Zena</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .offline-container {
+      background: white;
+      border-radius: 16px;
+      padding: 48px 32px;
+      max-width: 480px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .offline-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      color: #667eea;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #1a202c;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    p {
+      font-size: 16px;
+      color: #4a5568;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .retry-button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .retry-button:hover {
+      background: #5568d3;
+    }
+
+    .retry-button:active {
+      transform: scale(0.98);
+    }
+
+    .status {
+      margin-top: 24px;
+      font-size: 14px;
+      color: #718096;
+    }
+
+    .status.online {
+      color: #48bb78;
+    }
+
+    .status.offline {
+      color: #f56565;
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <svg class="offline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="1" y1="1" x2="23" y2="23" />
+      <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+      <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+      <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
+      <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+      <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+      <line x1="12" y1="20" x2="12.01" y2="20" />
+    </svg>
+
+    <h1>You're Offline</h1>
+    <p>
+      It looks like you've lost your internet connection. Don't worry - you can still access
+      recently synced data. We'll automatically sync any changes when you're back online.
+    </p>
+
+    <button class="retry-button" onclick="retryConnection()">
+      Try Again
+    </button>
+
+    <div class="status" id="status">
+      Checking connection...
+    </div>
+  </div>
+
+  <script>
+    const statusEl = document.getElementById('status');
+
+    function updateStatus() {
+      if (navigator.onLine) {
+        statusEl.textContent = 'Connection restored!';
+        statusEl.className = 'status online';
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
+      } else {
+        statusEl.textContent = 'Still offline';
+        statusEl.className = 'status offline';
+      }
+    }
+
+    function retryConnection() {
+      statusEl.textContent = 'Checking connection...';
+      statusEl.className = 'status';
+      
+      // Try to fetch a small resource to check connectivity
+      fetch('/', { method: 'HEAD', cache: 'no-cache' })
+        .then(() => {
+          statusEl.textContent = 'Connection restored!';
+          statusEl.className = 'status online';
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 500);
+        })
+        .catch(() => {
+          updateStatus();
+        });
+    }
+
+    // Listen for online/offline events
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+
+    // Initial status check
+    updateStatus();
+  </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+/* Loading Spinner Component */
+.loading-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner__circle {
+  position: relative;
+  border-radius: 50%;
+  border: 2px solid var(--color-neutral-200);
+  border-top-color: var(--color-primary-500);
+  animation: loading-spinner-rotate 1s linear infinite;
+}
+
+.loading-spinner__path {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--color-primary-500);
+  animation: loading-spinner-dash 1.5s ease-in-out infinite;
+}
+
+/* Size Variants */
+.loading-spinner--sm .loading-spinner__circle {
+  width: 16px;
+  height: 16px;
+}
+
+.loading-spinner--md .loading-spinner__circle {
+  width: 24px;
+  height: 24px;
+}
+
+.loading-spinner--lg .loading-spinner__circle {
+  width: 32px;
+  height: 32px;
+}
+
+.loading-spinner--xl .loading-spinner__circle {
+  width: 48px;
+  height: 48px;
+  border-width: 3px;
+}
+
+.loading-spinner--xl .loading-spinner__path {
+  border-width: 3px;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+}
+
+/* Color Variants */
+.loading-spinner--primary .loading-spinner__circle {
+  border-top-color: var(--color-primary-500);
+}
+
+.loading-spinner--primary .loading-spinner__path {
+  border-top-color: var(--color-primary-500);
+}
+
+.loading-spinner--secondary .loading-spinner__circle {
+  border-top-color: var(--color-neutral-500);
+}
+
+.loading-spinner--secondary .loading-spinner__path {
+  border-top-color: var(--color-neutral-500);
+}
+
+.loading-spinner--neutral .loading-spinner__circle {
+  border-color: var(--color-neutral-300);
+  border-top-color: var(--color-neutral-600);
+}
+
+.loading-spinner--neutral .loading-spinner__path {
+  border-top-color: var(--color-neutral-600);
+}
+
+/* Animations */
+@keyframes loading-spinner-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loading-spinner-dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+/* Dark Mode Support */
+[data-theme="night"] .loading-spinner__circle {
+  border-color: var(--color-neutral-700);
+}
+
+[data-theme="night"] .loading-spinner--neutral .loading-spinner__circle {
+  border-color: var(--color-neutral-600);
+  border-top-color: var(--color-neutral-300);
+}
+
+[data-theme="night"] .loading-spinner--neutral .loading-spinner__path {
+  border-top-color: var(--color-neutral-300);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner__circle,
+  .loading-spinner__path {
+    animation: none;
+  }
+  
+  .loading-spinner__circle {
+    border-top-color: var(--color-primary-500);
+    opacity: 0.6;
+  }
+}

@@ -1,0 +1,258 @@
+.avatar-demo-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at center, #0a0a1a 0%, #050510 100%);
+    color: #fff;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.avatar-demo-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    width: 100%;
+}
+
+.avatar-demo-content h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, #00e5ff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.state-label {
+    color: #888;
+    margin-bottom: 1.5rem;
+}
+
+.state-label strong {
+    color: #00e5ff;
+    font-family: 'Courier New', monospace;
+}
+
+.avatar-stage {
+    margin: 2rem 0;
+    position: relative;
+    background: radial-gradient(circle at center, rgba(0, 255, 255, 0.08) 0%, transparent 60%);
+    border-radius: 50%;
+    padding: 2rem;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+.state-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.state-button {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: capitalize;
+}
+
+.state-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(0, 229, 255, 0.5);
+}
+
+.state-button.active {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.3), rgba(255, 0, 255, 0.3));
+    border-color: #00e5ff;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+}
+
+.cycle-button {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 2rem;
+    border: 2px solid #00e5ff;
+    background: transparent;
+    color: #00e5ff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cycle-button:hover {
+    background: rgba(0, 229, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+    transform: scale(1.02);
+}
+
+.size-demo {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    width: 100%;
+}
+
+.size-demo p {
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.mini-demo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mini-demo span {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+/* Avatar Toggle Buttons */
+.avatar-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding: 0.25rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+}
+
+.avatar-toggle button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border: none;
+    background: transparent;
+    color: #888;
+    cursor: pointer;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+}
+
+.avatar-toggle button:hover {
+    color: #fff;
+}
+
+.avatar-toggle button.active {
+    background: linear-gradient(135deg, #00e5ff, #8b5cf6);
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Audio Controls */
+.audio-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.audio-button {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 2rem;
+    border: 2px solid #00e5ff;
+    background: transparent;
+    color: #00e5ff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.audio-button:hover {
+    background: rgba(0, 229, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+    transform: scale(1.02);
+}
+
+.audio-button.playing {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.3), rgba(255, 0, 255, 0.3));
+    animation: pulse-glow 1s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(0, 229, 255, 0.8);
+    }
+}
+
+.audio-hint {
+    color: #666;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* New Avatar Controls Container */
+.new-avatar-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    width: 100%;
+}
+
+/* Expression Buttons */
+.expression-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.expression-buttons p {
+    color: #888;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.expression-button {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.expression-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(0, 229, 255, 0.5);
+}
+
+.expression-button.active {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.3), rgba(139, 92, 246, 0.3));
+    border-color: #00e5ff;
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+}

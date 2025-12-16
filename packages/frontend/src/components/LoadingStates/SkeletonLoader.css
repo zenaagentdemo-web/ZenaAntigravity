@@ -1,0 +1,106 @@
+/* Skeleton Loader Component */
+.skeleton-loader {
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200) 25%,
+    var(--color-neutral-100) 50%,
+    var(--color-neutral-200) 75%
+  );
+  background-size: 200% 100%;
+  display: block;
+}
+
+.skeleton-loader--animated {
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-loader--text-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.skeleton-loader__item {
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200) 25%,
+    var(--color-neutral-100) 50%,
+    var(--color-neutral-200) 75%
+  );
+  background-size: 200% 100%;
+}
+
+/* Variant Styles */
+.skeleton-loader--text {
+  height: 1em;
+  border-radius: var(--radius-sm);
+  width: 100%;
+}
+
+.skeleton-loader--circular {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.skeleton-loader--rectangular {
+  border-radius: 0;
+  width: 100%;
+  height: 200px;
+}
+
+.skeleton-loader--rounded {
+  border-radius: var(--radius-md);
+  width: 100%;
+  height: 200px;
+}
+
+/* Animation */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark Mode Support */
+[data-theme="night"] .skeleton-loader,
+[data-theme="night"] .skeleton-loader__item {
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-700) 25%,
+    var(--color-neutral-600) 50%,
+    var(--color-neutral-700) 75%
+  );
+  background-size: 200% 100%;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-loader--animated,
+  .skeleton-loader__item {
+    animation: none;
+    background: var(--color-neutral-200);
+  }
+  
+  [data-theme="night"] .skeleton-loader--animated,
+  [data-theme="night"] .skeleton-loader__item {
+    background: var(--color-neutral-700);
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .skeleton-loader,
+  .skeleton-loader__item {
+    background: var(--color-neutral-400);
+    border: 1px solid var(--color-text-primary);
+  }
+  
+  [data-theme="night"] .skeleton-loader,
+  [data-theme="night"] .skeleton-loader__item {
+    background: var(--color-neutral-600);
+  }
+}

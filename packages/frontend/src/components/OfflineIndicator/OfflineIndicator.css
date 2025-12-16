@@ -1,0 +1,168 @@
+/* ============================================
+   Offline Indicator - Enhanced Animations
+   Requirements: 1.3, 3.5, 4.5
+   ============================================ */
+
+.offline-indicator {
+  position: fixed;
+  top: var(--header-height, 60px);
+  left: 0;
+  right: 0;
+  z-index: var(--z-index-fixed, 1000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2, 8px);
+  padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  box-shadow: var(--shadow-md);
+  animation: slideDown var(--duration-slow, 300ms) var(--ease-out, cubic-bezier(0, 0, 0.2, 1));
+  transition: background-color var(--duration-normal, 200ms) var(--ease-in-out),
+              color var(--duration-normal, 200ms) var(--ease-in-out),
+              box-shadow var(--duration-normal, 200ms) var(--ease-in-out);
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Smooth exit animation */
+.offline-indicator.offline-indicator--exiting {
+  animation: slideUp var(--duration-slow, 300ms) var(--ease-in, cubic-bezier(0.4, 0, 1, 1)) forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+/* State-based color transitions */
+.offline-indicator--offline {
+  background-color: var(--color-error, #ef4444);
+  color: var(--color-white, white);
+}
+
+.offline-indicator--syncing {
+  background-color: var(--color-primary, #3b82f6);
+  color: var(--color-white, white);
+}
+
+.offline-indicator--online {
+  background-color: var(--color-success, #22c55e);
+  color: var(--color-white, white);
+}
+
+/* Icon animations */
+.offline-indicator__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform var(--duration-normal, 200ms) var(--ease-out);
+}
+
+.offline-indicator__icon--spinning {
+  animation: spin 1s linear infinite;
+}
+
+.offline-indicator__icon--pulse {
+  animation: iconPulse 2s var(--ease-in-out) infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Status change animation */
+.offline-indicator--status-change {
+  animation: statusChange var(--duration-slow, 300ms) var(--ease-spring);
+}
+
+@keyframes statusChange {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.offline-indicator__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+
+.offline-indicator__text {
+  text-align: center;
+}
+
+.offline-indicator__pending {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+  .offline-indicator {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    border-radius: 8px;
+    top: calc(var(--header-height, 60px) + 16px);
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translate(-50%, -100%);
+      opacity: 0;
+    }
+    to {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+    to {
+      transform: translate(-50%, -100%);
+      opacity: 0;
+    }
+  }
+}

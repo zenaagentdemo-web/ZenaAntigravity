@@ -1,0 +1,251 @@
+/**
+ * High-Tech Theme Performance Optimizations
+ * 
+ * Optimizes animations and glow effects for smooth 60fps performance,
+ * especially on mobile devices.
+ * 
+ * Requirements: 8.1
+ */
+
+/* ============================================
+ * GPU ACCELERATION FOR ANIMATED ELEMENTS
+ * Force GPU compositing for smooth animations
+ * ============================================ */
+
+[data-theme="high-tech"] .zena-avatar,
+[data-theme="high-tech"] .zena-avatar-fullscreen,
+[data-theme="high-tech"] .floating-metric-orb,
+[data-theme="high-tech"] .bottom-nav-ht__zena-orb,
+[data-theme="high-tech"] .ambient-background__particle,
+[data-theme="high-tech"] .shimmer-skeleton,
+[data-theme="high-tech"] .loading-orb,
+[data-theme="high-tech"] .status-dot-ht,
+[data-theme="high-tech"] .page-transition {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* ============================================
+ * MOBILE GLOW OPTIMIZATION
+ * Reduce glow complexity on mobile for better performance
+ * ============================================ */
+
+@media (max-width: 768px) {
+  /* Reduce glow intensity on mobile */
+  [data-theme="high-tech"] {
+    --glow-subtle: 0 0 6px;
+    --glow-medium: 0 0 12px;
+    --glow-strong: 0 0 18px;
+    --glow-intense: 0 0 24px;
+    
+    /* Simplified glow colors - single layer instead of double */
+    --glow-cyan: 0 0 15px var(--neon-cyan-dim);
+    --glow-magenta: 0 0 15px var(--neon-magenta-dim);
+    --glow-purple: 0 0 15px var(--neon-purple-dim);
+    --glow-orange: 0 0 15px var(--neon-orange-dim);
+    --glow-green: 0 0 15px var(--neon-green-dim);
+    
+    /* Simplified status glows */
+    --glow-urgent: 0 0 15px var(--status-urgent-dim);
+    --glow-warning: 0 0 15px var(--status-warning-dim);
+    --glow-success: 0 0 15px var(--status-success-dim);
+  }
+  
+  /* Reduce Zena avatar glow complexity */
+  [data-theme="high-tech"] .zena-avatar {
+    box-shadow: 0 0 20px var(--neon-cyan-dim);
+  }
+  
+  [data-theme="high-tech"] .zena-avatar--active {
+    box-shadow: 0 0 30px var(--neon-cyan-dim);
+  }
+  
+  /* Simplify navigation orb glow */
+  [data-theme="high-tech"] .bottom-nav-ht__zena-orb-inner {
+    box-shadow: 0 0 15px var(--neon-cyan-dim);
+  }
+  
+  /* Reduce widget card hover glow */
+  [data-theme="high-tech"] .widget-card-ht:hover,
+  [data-theme="high-tech"] .glass-card:hover {
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
+  }
+  
+  /* Simplify button glow effects */
+  [data-theme="high-tech"] .btn-neon-primary {
+    box-shadow: 0 0 15px var(--neon-cyan-dim);
+  }
+  
+  [data-theme="high-tech"] .btn-neon-primary:hover:not(:disabled) {
+    box-shadow: 0 0 25px var(--neon-cyan-dim);
+  }
+  
+  /* Reduce input focus glow */
+  [data-theme="high-tech"] .input-neon:focus {
+    box-shadow: 0 0 15px var(--neon-cyan-dim);
+  }
+}
+
+/* ============================================
+ * LOW POWER MODE OPTIMIZATIONS
+ * Further reduce effects when battery is low
+ * ============================================ */
+
+@media (prefers-reduced-motion: no-preference) and (max-width: 768px) {
+  /* Reduce animation complexity on mobile */
+  [data-theme="high-tech"] .zena-avatar::before,
+  [data-theme="high-tech"] .zena-avatar::after {
+    /* Reduce ring count to 1 */
+    animation-duration: 3s;
+  }
+  
+  [data-theme="high-tech"] .zena-avatar::after {
+    display: none;
+  }
+  
+  /* Reduce particle count in ambient background */
+  [data-theme="high-tech"] .ambient-background__particle:nth-child(n+6) {
+    display: none;
+  }
+  
+  /* Simplify shimmer animation */
+  [data-theme="high-tech"] .shimmer-skeleton {
+    animation-duration: 2s;
+  }
+}
+
+/* ============================================
+ * ANIMATION PERFORMANCE RULES
+ * Ensure all animations use transform/opacity only
+ * ============================================ */
+
+/* Override any animations that might use expensive properties */
+[data-theme="high-tech"] .animate-glow {
+  animation-name: optimized-glow;
+}
+
+@keyframes optimized-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+/* Optimized pulse animation */
+[data-theme="high-tech"] .animate-pulse {
+  animation-name: optimized-pulse;
+}
+
+@keyframes optimized-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* ============================================
+ * PAINT CONTAINMENT
+ * Isolate repaints to specific elements
+ * ============================================ */
+
+[data-theme="high-tech"] .high-tech-dashboard__hero,
+[data-theme="high-tech"] .high-tech-dashboard__metrics,
+[data-theme="high-tech"] .high-tech-dashboard__alerts,
+[data-theme="high-tech"] .high-tech-dashboard__actions,
+[data-theme="high-tech"] .ambient-background {
+  contain: layout paint;
+}
+
+/* ============================================
+ * SCROLL PERFORMANCE
+ * Optimize scrolling performance
+ * ============================================ */
+
+[data-theme="high-tech"] .quick-actions-carousel__container {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="high-tech"] .quick-actions-carousel__container {
+    scroll-behavior: auto;
+  }
+}
+
+/* ============================================
+ * FONT RENDERING OPTIMIZATION
+ * Optimize text rendering for dark backgrounds
+ * ============================================ */
+
+[data-theme="high-tech"] {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Disable subpixel antialiasing for glowing text */
+[data-theme="high-tech"] .metric-value-ht,
+[data-theme="high-tech"] .greeting-name,
+[data-theme="high-tech"] .title-glow {
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================
+ * LAYER PROMOTION HINTS
+ * Hint browser to promote elements to their own layer
+ * ============================================ */
+
+[data-theme="high-tech"] .bottom-nav-ht {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+[data-theme="high-tech"] .collapsible-alerts-panel__content {
+  will-change: height, opacity;
+}
+
+/* ============================================
+ * REDUCE BLUR ON LOW-END DEVICES
+ * Detect and reduce blur effects on slower devices
+ * ============================================ */
+
+/* Fallback for devices that struggle with blur */
+@supports not (backdrop-filter: blur(20px)) {
+  [data-theme="high-tech"] .glass-card,
+  [data-theme="high-tech"] .glass-panel,
+  [data-theme="high-tech"] .glass-nav,
+  [data-theme="high-tech"] .widget-card-ht {
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Reduce blur on mobile for better performance */
+@media (max-width: 768px) {
+  [data-theme="high-tech"] {
+    --glass-blur: blur(10px);
+    --glass-blur-strong: blur(20px);
+    --glass-blur-subtle: blur(5px);
+  }
+}
+
+/* ============================================
+ * INTERSECTION OBSERVER HINTS
+ * Optimize off-screen elements
+ * ============================================ */
+
+[data-theme="high-tech"] .floating-metric-orb,
+[data-theme="high-tech"] .quick-actions-carousel__action {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100px;
+}

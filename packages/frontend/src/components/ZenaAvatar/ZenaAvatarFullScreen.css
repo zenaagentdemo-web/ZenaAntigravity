@@ -1,0 +1,377 @@
+/**
+ * ZenaAvatarFullScreen Component Styles
+ * 
+ * Full-screen AI avatar with voice waveform visualization
+ * for the Ask Zena page.
+ * 
+ * Requirements: 1.1, 1.5
+ */
+
+/* ============================================
+   Base Container
+   ============================================ */
+
+.zena-avatar-fullscreen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: var(--spacing-xl, 32px);
+  overflow: hidden;
+}
+
+/* ============================================
+   Ambient Background Particles
+   ============================================ */
+
+.zena-avatar-fullscreen__ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.zena-avatar-fullscreen__particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  opacity: 0;
+  left: var(--particle-x);
+  top: var(--particle-y);
+  animation: particle-float 8s var(--ease-smooth) infinite;
+  animation-delay: var(--particle-delay);
+}
+
+@keyframes particle-float {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  10% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+    transform: translateY(-50px) scale(1);
+  }
+  90% {
+    opacity: 0.6;
+  }
+}
+
+/* ============================================
+   Avatar Container with Outer Rings
+   ============================================ */
+
+.zena-avatar-fullscreen__avatar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 280px;
+  height: 280px;
+}
+
+/* Outer glow rings - larger ambient rings */
+.zena-avatar-fullscreen__outer-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--neon-cyan-subtle, rgba(0, 212, 255, 0.2));
+  pointer-events: none;
+  animation: outer-ring-pulse 4s var(--ease-glow) infinite;
+}
+
+.zena-avatar-fullscreen__outer-ring--1 {
+  width: 220px;
+  height: 220px;
+  animation-delay: 0s;
+}
+
+.zena-avatar-fullscreen__outer-ring--2 {
+  width: 260px;
+  height: 260px;
+  animation-delay: 0.5s;
+  border-color: var(--neon-magenta-subtle, rgba(255, 0, 255, 0.15));
+}
+
+.zena-avatar-fullscreen__outer-ring--3 {
+  width: 300px;
+  height: 300px;
+  animation-delay: 1s;
+  border-color: var(--neon-purple-subtle, rgba(139, 92, 246, 0.1));
+}
+
+@keyframes outer-ring-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+/* State-based outer ring animations */
+.zena-avatar-fullscreen[data-state="listening"] .zena-avatar-fullscreen__outer-ring,
+.zena-avatar-fullscreen[data-state="active"] .zena-avatar-fullscreen__outer-ring {
+  animation: outer-ring-active 2s var(--ease-glow) infinite;
+}
+
+@keyframes outer-ring-active {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+}
+
+.zena-avatar-fullscreen[data-state="processing"] .zena-avatar-fullscreen__outer-ring {
+  animation: outer-ring-processing 1.5s linear infinite;
+}
+
+@keyframes outer-ring-processing {
+  0% {
+    transform: rotate(0deg);
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 0.4;
+  }
+}
+
+/* ============================================
+   Main Avatar Styling
+   ============================================ */
+
+.zena-avatar-fullscreen__avatar {
+  z-index: 2;
+}
+
+/* ============================================
+   Voice Waveform Visualization
+   ============================================ */
+
+.zena-avatar-fullscreen__waveform {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 60px;
+  margin-top: var(--spacing-xl, 32px);
+  opacity: 0.3;
+  transition: opacity var(--duration-normal, 300ms) var(--ease-smooth);
+}
+
+.zena-avatar-fullscreen__waveform--active {
+  opacity: 1;
+}
+
+.zena-avatar-fullscreen__waveform-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 3px;
+}
+
+.zena-avatar-fullscreen__waveform-bar {
+  width: 4px;
+  height: var(--bar-height, 10%);
+  min-height: 4px;
+  background: linear-gradient(
+    180deg,
+    var(--neon-cyan) 0%,
+    var(--neon-magenta) 50%,
+    var(--neon-purple) 100%
+  );
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
+  transition: height 0.05s ease-out;
+  animation: bar-glow 2s var(--ease-glow) infinite;
+  animation-delay: var(--bar-delay, 0s);
+}
+
+@keyframes bar-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
+  }
+  50% {
+    box-shadow: 0 0 12px var(--neon-cyan, #00D4FF);
+  }
+}
+
+/* Waveform state variations */
+.zena-avatar-fullscreen[data-state="speaking"] .zena-avatar-fullscreen__waveform-bar {
+  background: linear-gradient(
+    180deg,
+    var(--neon-magenta) 0%,
+    var(--neon-purple) 50%,
+    var(--neon-cyan) 100%
+  );
+  box-shadow: 0 0 8px var(--neon-magenta-dim, rgba(255, 0, 255, 0.5));
+}
+
+/* ============================================
+   Messages (Greeting and Status)
+   ============================================ */
+
+.zena-avatar-fullscreen__messages {
+  text-align: center;
+  margin-top: var(--spacing-lg, 24px);
+  z-index: 1;
+}
+
+.zena-avatar-fullscreen__greeting {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary-ht, #FFFFFF);
+  margin: 0 0 var(--spacing-sm, 8px) 0;
+  text-shadow: var(--text-glow, 0 0 10px currentColor);
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--text-primary-ht, #FFFFFF) 50%, var(--neon-magenta) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.zena-avatar-fullscreen__status {
+  font-size: 14px;
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+/* State-based status styling */
+.zena-avatar-fullscreen[data-state="listening"] .zena-avatar-fullscreen__status {
+  color: var(--neon-cyan);
+  animation: status-pulse 1.5s var(--ease-glow) infinite;
+}
+
+.zena-avatar-fullscreen[data-state="processing"] .zena-avatar-fullscreen__status {
+  color: var(--neon-purple);
+}
+
+.zena-avatar-fullscreen[data-state="speaking"] .zena-avatar-fullscreen__status {
+  color: var(--neon-magenta);
+}
+
+@keyframes status-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+  .zena-avatar-fullscreen {
+    min-height: 250px;
+    padding: var(--spacing-lg, 24px);
+  }
+
+  .zena-avatar-fullscreen__avatar-container {
+    width: 220px;
+    height: 220px;
+  }
+
+  .zena-avatar-fullscreen__outer-ring--1 {
+    width: 180px;
+    height: 180px;
+  }
+
+  .zena-avatar-fullscreen__outer-ring--2 {
+    width: 210px;
+    height: 210px;
+  }
+
+  .zena-avatar-fullscreen__outer-ring--3 {
+    width: 240px;
+    height: 240px;
+  }
+
+  .zena-avatar-fullscreen__waveform {
+    max-width: 300px;
+    height: 50px;
+    margin-top: var(--spacing-lg, 24px);
+  }
+
+  .zena-avatar-fullscreen__waveform-bar {
+    width: 3px;
+  }
+
+  .zena-avatar-fullscreen__greeting {
+    font-size: 20px;
+  }
+
+  .zena-avatar-fullscreen__status {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .zena-avatar-fullscreen__avatar-container {
+    width: 180px;
+    height: 180px;
+  }
+
+  .zena-avatar-fullscreen__outer-ring--1 {
+    width: 150px;
+    height: 150px;
+  }
+
+  .zena-avatar-fullscreen__outer-ring--2 {
+    width: 175px;
+    height: 175px;
+  }
+
+  .zena-avatar-fullscreen__outer-ring--3 {
+    width: 200px;
+    height: 200px;
+  }
+
+  .zena-avatar-fullscreen__waveform {
+    max-width: 250px;
+    height: 40px;
+  }
+
+  .zena-avatar-fullscreen__waveform-bar {
+    width: 2px;
+    gap: 2px;
+  }
+}
+
+/* ============================================
+   Reduced Motion Support
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .zena-avatar-fullscreen__particle,
+  .zena-avatar-fullscreen__outer-ring,
+  .zena-avatar-fullscreen__waveform-bar,
+  .zena-avatar-fullscreen__status {
+    animation: none !important;
+  }
+
+  .zena-avatar-fullscreen__particle {
+    opacity: 0.3;
+  }
+
+  .zena-avatar-fullscreen__outer-ring {
+    opacity: 0.4;
+  }
+}

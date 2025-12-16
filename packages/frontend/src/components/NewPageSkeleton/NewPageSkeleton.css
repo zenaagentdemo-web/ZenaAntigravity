@@ -1,0 +1,149 @@
+/**
+ * NewPageSkeleton Component Styles
+ * 
+ * High-tech loading skeleton styles with glassmorphism and staggered animations.
+ * 
+ * Requirements: 9.1
+ */
+
+/* ============================================
+   BASE CONTAINER
+   ============================================ */
+
+.new-page-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ============================================
+   SKELETON CARD
+   ============================================ */
+
+.new-page-skeleton__card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  
+  /* Glassmorphism styling */
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+  border: var(--glass-border, 1px solid rgba(255, 255, 255, 0.1));
+  border-radius: 20px;
+  
+  /* Top gradient accent line */
+  position: relative;
+  overflow: hidden;
+  
+  /* Staggered fade-in animation */
+  opacity: 0;
+  animation: skeleton-fade-in 300ms ease forwards;
+}
+
+.new-page-skeleton__card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan, #00D4FF), transparent);
+  opacity: 0.3;
+}
+
+@keyframes skeleton-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   CARD SECTIONS
+   ============================================ */
+
+.new-page-skeleton__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.new-page-skeleton__subject {
+  margin-top: 4px;
+}
+
+.new-page-skeleton__participants {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.new-page-skeleton__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.new-page-skeleton__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ============================================
+   GLASSMORPHISM FALLBACK
+   ============================================ */
+
+@supports not (backdrop-filter: blur(20px)) {
+  .new-page-skeleton__card {
+    background: var(--glass-fallback-bg, rgba(26, 26, 46, 0.95));
+  }
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .new-page-skeleton__card {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   SCREEN READER ONLY
+   ============================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
+
+@media (max-width: 480px) {
+  .new-page-skeleton__card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  
+  .new-page-skeleton__actions {
+    flex-wrap: wrap;
+  }
+}

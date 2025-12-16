@@ -1,0 +1,180 @@
+.performance-debug-panel {
+  position: fixed;
+  z-index: 9999;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+}
+
+.performance-debug-panel--top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.performance-debug-panel--top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.performance-debug-panel--bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+.performance-debug-panel--bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+.performance-debug-panel__toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.performance-debug-panel__toggle:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+}
+
+.performance-debug-panel__content {
+  position: absolute;
+  bottom: 50px;
+  right: 0;
+  width: 300px;
+  max-height: 400px;
+  background: rgba(0, 0, 0, 0.95);
+  color: white;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.performance-debug-panel--top-right .performance-debug-panel__content,
+.performance-debug-panel--top-left .performance-debug-panel__content {
+  top: 50px;
+  bottom: auto;
+}
+
+.performance-debug-panel--bottom-left .performance-debug-panel__content,
+.performance-debug-panel--top-left .performance-debug-panel__content {
+  right: auto;
+  left: 0;
+}
+
+.performance-debug-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.performance-debug-panel__header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.performance-debug-panel__close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.performance-debug-panel__close:hover {
+  color: #ff6b6b;
+}
+
+.performance-debug-panel__section {
+  margin-bottom: 12px;
+}
+
+.performance-debug-panel__section h4 {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  font-weight: bold;
+  color: #4ecdc4;
+}
+
+.performance-requirement,
+.performance-metric,
+.performance-widget-time,
+.performance-interaction-time {
+  margin-bottom: 4px;
+  padding: 2px 0;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.performance-requirement {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.performance-widget-times,
+.performance-interaction-times {
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.performance-widget-time,
+.performance-interaction-time {
+  padding-left: 8px;
+  color: #b8b8b8;
+}
+
+.performance-debug-panel__actions {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.performance-debug-panel__clear {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.performance-debug-panel__clear:hover {
+  background: #ff5252;
+}
+
+/* Dark theme adjustments */
+[data-theme="night"] .performance-debug-panel__toggle {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+[data-theme="night"] .performance-debug-panel__toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="night"] .performance-debug-panel__content {
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}

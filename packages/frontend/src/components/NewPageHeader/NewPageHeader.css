@@ -1,0 +1,551 @@
+/**
+ * NewPageHeader Component Styles
+ * 
+ * High-tech header with gradient text, glassmorphism blur,
+ * compact mode transitions, and pulsing notification dot.
+ * 
+ * Requirements: 12.1, 12.4, 12.6
+ */
+
+/* ============================================
+ * BASE HEADER STYLES
+ * ============================================ */
+
+.new-page-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 20px 16px;
+  background: rgba(10, 10, 15, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Intensify blur on scroll (compact mode) */
+.new-page-header--compact {
+  padding: 12px 16px;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  background: rgba(10, 10, 15, 0.95);
+}
+
+.new-page-header__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 16px;
+  position: relative;
+}
+
+/* ============================================
+ * TITLE SECTION
+ * ============================================ */
+
+.new-page-header__title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Compact mode: horizontal layout */
+.new-page-header--compact .new-page-header__title-section {
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ============================================
+ * GRADIENT TITLE WITH TEXT GLOW
+ * Requirements: 12.1
+ * ============================================ */
+
+.new-page-header__title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  /* Gradient text: cyan to purple */
+  background: linear-gradient(135deg, var(--neon-cyan, #00D4FF), var(--neon-purple, #8B5CF6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  /* Text glow effect */
+  filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.3));
+
+  transition: font-size var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Compact mode: smaller title */
+.new-page-header--compact .new-page-header__title {
+  font-size: 24px;
+}
+
+/* ============================================
+ * PULSING NOTIFICATION DOT
+ * Requirements: 12.6
+ * ============================================ */
+
+.new-page-header__notification-dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--status-urgent, #FF4444);
+  box-shadow: 0 0 10px var(--status-urgent, #FF4444),
+    0 0 20px rgba(255, 68, 68, 0.5);
+  animation: notification-pulse 2s var(--ease-glow, cubic-bezier(0.4, 0, 0.6, 1)) infinite;
+}
+
+@keyframes notification-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 10px var(--status-urgent, #FF4444),
+      0 0 20px rgba(255, 68, 68, 0.5);
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+    box-shadow: 0 0 15px var(--status-urgent, #FF4444),
+      0 0 30px rgba(255, 68, 68, 0.6),
+      0 0 45px rgba(255, 68, 68, 0.3);
+  }
+}
+
+/* ============================================
+ * STATS AND BADGES
+ * Requirements: 12.2
+ * ============================================ */
+
+.new-page-header__stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.new-page-header__count {
+  font-size: 14px;
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  font-weight: 500;
+}
+
+.new-page-header__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Urgent badge - red with glow */
+.new-page-header__badge--urgent {
+  background: rgba(255, 68, 68, 0.2);
+  color: var(--status-urgent, #FF4444);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.2);
+}
+
+/* Normal badge - cyan */
+.new-page-header__badge--normal {
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--neon-cyan, #00D4FF);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+/* ============================================
+ * ASK ZENA GLOBE CENTER
+ * ============================================ */
+
+.new-page-header__center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin: 0 16px;
+}
+
+.new-page-header__ask-zena {
+  cursor: pointer;
+  transition: all var(--duration-fast, 150ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.new-page-header__ask-zena:hover {
+  transform: scale(1.05);
+}
+
+.new-page-header__ask-zena:focus-visible {
+  outline: 2px solid var(--neon-cyan, #00D4FF);
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+/* Hide Ask Zena globe in compact mode on small screens */
+@media (max-width: 480px) {
+  .new-page-header--compact .new-page-header__center {
+    display: none;
+  }
+}
+
+/* ============================================
+ * ACTIONS SECTION
+ * ============================================ */
+
+.new-page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ============================================
+ * ACTION BUTTONS
+ * Requirements: 12.3
+ * ============================================ */
+
+.new-page-header__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  cursor: pointer;
+  transition: all var(--duration-fast, 150ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.new-page-header__action-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+}
+
+.new-page-header__action-btn:focus-visible {
+  outline: 2px solid var(--neon-cyan, #00D4FF);
+  outline-offset: 2px;
+}
+
+.new-page-header__action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.new-page-header__action-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Active state for select button */
+.new-page-header__select-btn--active {
+  color: var(--neon-cyan, #00D4FF);
+  background: rgba(0, 212, 255, 0.15);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+/* ============================================
+ * REFRESH BUTTON WITH ROTATION
+ * Requirements: 12.3
+ * ============================================ */
+
+.new-page-header__refresh-btn svg {
+  transition: transform var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.new-page-header__refresh-btn--spinning svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+ * SYNC STATUS INDICATOR
+ * Requirements: 8.4, 8.6
+ * ============================================ */
+
+.new-page-header__sync-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  transition: all var(--duration-fast, 150ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Syncing state - cyan with rotating icon */
+.new-page-header__sync-indicator--syncing {
+  color: var(--neon-cyan, #00D4FF);
+  background: rgba(0, 212, 255, 0.1);
+}
+
+/* Offline state - amber/orange */
+.new-page-header__sync-indicator--offline {
+  color: var(--status-warning, #FFAA00);
+  background: rgba(255, 170, 0, 0.15);
+  animation: offline-pulse 2s ease-in-out infinite;
+}
+
+/* Error state - red */
+.new-page-header__sync-indicator--error {
+  color: var(--status-urgent, #FF4444);
+  background: rgba(255, 68, 68, 0.15);
+}
+
+.new-page-header__sync-icon,
+.new-page-header__offline-icon,
+.new-page-header__error-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Rotating animation for sync icon */
+.new-page-header__sync-icon--rotating {
+  animation: spin 1.5s linear infinite;
+}
+
+/* Pulse animation for offline indicator */
+@keyframes offline-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* ============================================
+ * SEARCH INPUT (EXPANDABLE)
+ * ============================================ */
+
+.new-page-header__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  transition: all var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.new-page-header__search--open {
+  flex: 1;
+  max-width: 300px;
+}
+
+.new-page-header__search-input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary-ht, #FFFFFF);
+  font-size: 14px;
+  outline: none;
+  transition: all var(--duration-fast, 150ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.new-page-header__search-input::placeholder {
+  color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.5));
+}
+
+.new-page-header__search-input:focus {
+  border-color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+}
+
+.new-page-header__search-toggle {
+  flex-shrink: 0;
+}
+
+/* ============================================
+ * GLASSMORPHISM FALLBACK
+ * ============================================ */
+
+@supports not (backdrop-filter: blur(20px)) {
+  .new-page-header {
+    background: rgba(10, 10, 15, 0.98);
+  }
+
+  .new-page-header--compact {
+    background: rgba(10, 10, 15, 0.99);
+  }
+}
+
+/* ============================================
+ * REDUCED MOTION SUPPORT
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .new-page-header,
+  .new-page-header__title,
+  .new-page-header__action-btn,
+  .new-page-header__search,
+  .new-page-header__search-input {
+    transition: none;
+  }
+
+  .new-page-header__notification-dot {
+    animation: none;
+  }
+
+  .new-page-header__refresh-btn--spinning svg,
+  .new-page-header__sync-icon {
+    animation: none;
+  }
+}
+
+/* ============================================
+ * RESPONSIVE STYLES
+ * ============================================ */
+
+@media (max-width: 768px) {
+  .new-page-header {
+    padding: 16px;
+  }
+
+  .new-page-header--compact {
+    padding: 10px 16px;
+  }
+
+  .new-page-header__title {
+    font-size: 28px;
+  }
+
+  .new-page-header--compact .new-page-header__title {
+    font-size: 20px;
+  }
+
+  .new-page-header__stats {
+    gap: 8px;
+  }
+
+  .new-page-header__badge {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+
+  .new-page-header__search--open {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .new-page-header__container {
+    gap: 12px;
+  }
+
+  .new-page-header__title {
+    font-size: 24px;
+  }
+
+  .new-page-header--compact .new-page-header__title {
+    font-size: 18px;
+  }
+
+  /* Hide stats in compact mode on small screens */
+  .new-page-header--compact .new-page-header__stats {
+    display: none;
+  }
+
+  .new-page-header__search--open {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    max-width: none;
+    background: rgba(10, 10, 15, 0.95);
+    padding: 8px;
+    border-radius: 12px;
+    z-index: 10;
+  }
+}
+
+/* ============================================
+ * NAVIGATION & INTERACTIVE ELEMENTS
+ * ============================================ */
+
+.new-page-header__back-btn-prominent {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  color: var(--neon-cyan, #00D4FF);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-right: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.1);
+}
+
+.new-page-header__back-btn-prominent:hover {
+  background: rgba(0, 212, 255, 0.2);
+  color: #FFFFFF;
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+  border-color: rgba(0, 212, 255, 0.5);
+}
+
+.new-page-header__back-btn-prominent:active {
+  transform: scale(0.95);
+}
+
+.new-page-header__back-btn-prominent svg {
+  width: 24px;
+  height: 24px;
+}
+
+.new-page-header__badge.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.new-page-header__badge.clickable:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+  filter: brightness(1.2);
+}
+
+.new-page-header__badge.clickable:active {
+  transform: translateY(0);
+}

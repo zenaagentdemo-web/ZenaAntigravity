@@ -1,0 +1,519 @@
+/**
+ * SnoozeOverlay Component Styles
+ * 
+ * Glassmorphism modal overlay for snooze functionality.
+ * Features: fade-in animation, backdrop blur, neon accents.
+ * 
+ * Requirements: 4.2
+ */
+
+/* ============================================
+ * OVERLAY BACKDROP
+ * Full-screen backdrop with blur effect
+ * ============================================ */
+
+.snooze-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  
+  /* Backdrop styling */
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  
+  /* Fade-in animation */
+  animation: snooze-overlay-fade-in 200ms ease-out forwards;
+}
+
+@keyframes snooze-overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(8px)) {
+  .snooze-overlay {
+    background: rgba(0, 0, 0, 0.85);
+  }
+}
+
+/* ============================================
+ * MODAL CONTAINER
+ * Glassmorphism card with neon accents
+ * ============================================ */
+
+.snooze-overlay__modal {
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  
+  /* Glassmorphism styling */
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  
+  /* Shadow and glow */
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(0, 212, 255, 0.1);
+  
+  /* Scale-in animation */
+  animation: snooze-modal-scale-in 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  
+  /* Positioning */
+  position: relative;
+}
+
+/* Top gradient accent line */
+.snooze-overlay__modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #FFAA00, transparent);
+  border-radius: 20px 20px 0 0;
+}
+
+@keyframes snooze-modal-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  .snooze-overlay__modal {
+    background: rgba(26, 26, 46, 0.98);
+  }
+}
+
+/* ============================================
+ * HEADER
+ * ============================================ */
+
+.snooze-overlay__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 12px;
+}
+
+.snooze-overlay__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFAA00;
+}
+
+.snooze-overlay__title svg {
+  width: 24px;
+  height: 24px;
+  color: #FFAA00;
+  filter: drop-shadow(0 0 6px rgba(255, 170, 0, 0.5));
+}
+
+.snooze-overlay__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.snooze-overlay__close svg {
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 200ms ease;
+}
+
+.snooze-overlay__close:hover {
+  background: rgba(255, 68, 68, 0.15);
+  border-color: rgba(255, 68, 68, 0.3);
+}
+
+.snooze-overlay__close:hover svg {
+  color: #FF4444;
+}
+
+.snooze-overlay__close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.5);
+}
+
+/* ============================================
+ * THREAD SUBJECT
+ * ============================================ */
+
+.snooze-overlay__subject {
+  margin: 0;
+  padding: 0 20px 16px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================
+ * PRESET OPTIONS
+ * Grid of snooze duration buttons
+ * ============================================ */
+
+.snooze-overlay__options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 20px;
+}
+
+.snooze-overlay__option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Minimum touch target */
+  min-height: 80px;
+}
+
+.snooze-overlay__option:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 170, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.snooze-overlay__option:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 170, 0, 0.5);
+}
+
+.snooze-overlay__option--selected {
+  background: rgba(255, 170, 0, 0.15);
+  border-color: rgba(255, 170, 0, 0.5);
+  box-shadow: 0 0 20px rgba(255, 170, 0, 0.2);
+}
+
+.snooze-overlay__option--selected:hover {
+  background: rgba(255, 170, 0, 0.2);
+}
+
+.snooze-overlay__option-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.snooze-overlay__option-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.snooze-overlay__option--selected .snooze-overlay__option-label {
+  color: #FFAA00;
+}
+
+/* Custom option styling */
+.snooze-overlay__option--custom {
+  grid-column: span 2;
+}
+
+/* ============================================
+ * CUSTOM DATE PICKER
+ * ============================================ */
+
+.snooze-overlay__custom-picker {
+  padding: 0 20px 16px;
+  animation: custom-picker-slide-in 200ms ease-out forwards;
+}
+
+@keyframes custom-picker-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.snooze-overlay__custom-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.snooze-overlay__custom-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  font-size: 14px;
+  color: #FFFFFF;
+  transition: all 200ms ease;
+}
+
+.snooze-overlay__custom-input:hover {
+  border-color: rgba(255, 170, 0, 0.3);
+}
+
+.snooze-overlay__custom-input:focus {
+  outline: none;
+  border-color: rgba(255, 170, 0, 0.5);
+  box-shadow: 0 0 0 3px rgba(255, 170, 0, 0.15);
+}
+
+/* Style the datetime-local input for dark theme */
+.snooze-overlay__custom-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+.snooze-overlay__custom-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ============================================
+ * PREVIEW
+ * Shows when the thread will reappear
+ * ============================================ */
+
+.snooze-overlay__preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 20px 16px;
+  padding: 12px 16px;
+  background: rgba(255, 170, 0, 0.1);
+  border: 1px solid rgba(255, 170, 0, 0.2);
+  border-radius: 10px;
+}
+
+.snooze-overlay__preview-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.snooze-overlay__preview-date {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFAA00;
+}
+
+/* ============================================
+ * FOOTER ACTIONS
+ * ============================================ */
+
+.snooze-overlay__footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.snooze-overlay__cancel-btn,
+.snooze-overlay__confirm-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Minimum touch target */
+  min-height: 48px;
+}
+
+.snooze-overlay__cancel-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.snooze-overlay__cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.snooze-overlay__cancel-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.5);
+}
+
+.snooze-overlay__confirm-btn {
+  background: linear-gradient(135deg, #FFAA00, #FF8800);
+  border: none;
+  color: #000000;
+  box-shadow: 0 4px 15px rgba(255, 170, 0, 0.3);
+}
+
+.snooze-overlay__confirm-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.snooze-overlay__confirm-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 170, 0, 0.4);
+}
+
+.snooze-overlay__confirm-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.snooze-overlay__confirm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.snooze-overlay__confirm-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 170, 0, 0.5), 0 4px 15px rgba(255, 170, 0, 0.3);
+}
+
+/* ============================================
+ * ACCESSIBILITY
+ * ============================================ */
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .snooze-overlay {
+    animation: none;
+  }
+  
+  .snooze-overlay__modal {
+    animation: none;
+  }
+  
+  .snooze-overlay__custom-picker {
+    animation: none;
+  }
+  
+  .snooze-overlay__option,
+  .snooze-overlay__close,
+  .snooze-overlay__cancel-btn,
+  .snooze-overlay__confirm-btn {
+    transition: none;
+  }
+  
+  .snooze-overlay__option:hover,
+  .snooze-overlay__confirm-btn:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* ============================================
+ * RESPONSIVE ADJUSTMENTS
+ * ============================================ */
+
+@media (max-width: 480px) {
+  .snooze-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+  
+  .snooze-overlay__modal {
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    max-height: 85vh;
+  }
+  
+  .snooze-overlay__modal::before {
+    border-radius: 20px 20px 0 0;
+  }
+  
+  .snooze-overlay__options {
+    gap: 10px;
+    padding: 16px;
+  }
+  
+  .snooze-overlay__option {
+    padding: 14px 10px;
+    min-height: 70px;
+  }
+  
+  .snooze-overlay__option-icon {
+    font-size: 24px;
+  }
+  
+  .snooze-overlay__option-label {
+    font-size: 12px;
+  }
+  
+  .snooze-overlay__footer {
+    padding: 12px 16px 16px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+  
+  .snooze-overlay__cancel-btn,
+  .snooze-overlay__confirm-btn {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+}
+
+/* Larger screens */
+@media (min-width: 768px) {
+  .snooze-overlay__modal {
+    max-width: 440px;
+  }
+  
+  .snooze-overlay__options {
+    gap: 14px;
+    padding: 24px;
+  }
+  
+  .snooze-overlay__option {
+    padding: 20px 16px;
+    min-height: 90px;
+  }
+}

@@ -1,0 +1,310 @@
+# Implementation Plan
+
+- [x] 1. Set up enhanced New page foundation and data models
+  - [x] 1.1 Create TypeScript interfaces for Thread, Participant, PriorityFactors, and action models
+    - Define all interfaces in `packages/frontend/src/models/newPage.types.ts`
+    - Include Thread, Participant, MessagePreview, PriorityConfig, SwipeState, FilterType, BatchAction
+    - _Requirements: 2.1, 3.1_
+  - [x] 1.2 Write property test for priority score calculation
+    - **Property 1: Priority Score Calculation Consistency**
+    - **Validates: Requirements 2.1**
+  - [x] 1.3 Implement priority score calculator utility
+    - Create `packages/frontend/src/utils/threadPriorityCalculator.ts`
+    - Implement weighted scoring: risk (40%), age (30%), classification (30%)
+    - Export calculatePriorityScore function
+    - _Requirements: 2.1_
+  - [x] 1.4 Write property test for thread sorting
+    - **Property 2: Thread Sort Order Invariant**
+    - **Validates: Requirements 2.2**
+
+- [x] 2. Implement core state management hooks
+  - [x] 2.1 Create useThreadsState hook
+    - Create `packages/frontend/src/hooks/useThreadsState.ts`
+    - Implement thread fetching, caching, and real-time updates
+    - Include refresh, updateThread, removeThread, mergeNewThreads functions
+    - _Requirements: 8.1, 8.2, 8.3_
+  - [x] 2.2 Write property test for thread update reflection
+    - **Property 22: Thread Update Reflection**
+    - **Validates: Requirements 8.3**
+  - [x] 2.3 Create useFilterState hook
+    - Create `packages/frontend/src/hooks/useFilterState.ts`
+    - Implement filter application with AND logic for multiple filters
+    - Include search query filtering with 300ms debounce
+    - _Requirements: 6.2, 6.3, 6.5_
+  - [x] 2.4 Write property test for filter application
+    - **Property 15: Filter Application Correctness**
+    - **Property 16: Multi-Filter AND Logic**
+    - **Property 17: Search Filter Correctness**
+    - **Validates: Requirements 6.2, 6.3, 6.5**
+  - [x] 2.5 Create useBatchState hook
+    - Create `packages/frontend/src/hooks/useBatchState.ts`
+    - Implement batch mode entry/exit, selection toggle, select all, clear
+    - _Requirements: 7.1, 7.3, 7.5_
+  - [x] 2.6 Write property test for batch selection
+    - **Property 18: Batch Mode Selection Toggle**
+    - **Property 19: Batch Selection Count Accuracy**
+    - **Validates: Requirements 7.3, 7.4**
+
+- [x] 3. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 4. Build ThreadCard component with high-tech styling
+  - [x] 4.1 Create ThreadCard component structure
+    - Create `packages/frontend/src/components/ThreadCard/ThreadCard.tsx`
+    - Implement glassmorphism card with all required elements
+    - Include classification badge, risk indicator, subject, participants, summary, timestamp
+    - _Requirements: 1.2, 1.3, 3.1_
+  - [x] 4.2 Write property test for thread card required elements
+    - **Property 5: Thread Card Required Elements**
+    - **Validates: Requirements 3.1**
+  - [x] 4.3 Create ThreadCard CSS with high-tech theme
+    - Create `packages/frontend/src/components/ThreadCard/ThreadCard.css`
+    - Implement glassmorphism: rgba(255,255,255,0.05) bg, 20px blur, gradient accent line
+    - Add hover animations with translateY(-4px) and glow effects
+    - _Requirements: 1.2, 1.3, 1.4_
+  - [x] 4.4 Write property test for risk level indicator styling
+    - **Property 3: Risk Level Indicator Styling**
+    - **Validates: Requirements 2.3, 2.4**
+  - [x] 4.5 Implement participant display with limit
+    - Show max 3 participants with "+N more" indicator
+    - _Requirements: 3.3_
+  - [x] 4.6 Write property test for participant display limit
+    - **Property 6: Participant Display Limit**
+    - **Validates: Requirements 3.3**
+  - [x] 4.7 Implement conditional badges (draft, property, deal, overdue)
+    - Add draft ready indicator when draftResponse exists
+    - Add property badge when propertyId exists
+    - Add deal stage indicator when dealId exists
+    - Add "Response Overdue" badge when >48 hours since last message
+    - _Requirements: 3.2, 3.4, 3.5, 2.5_
+  - [x] 4.8 Write property tests for conditional badges
+    - **Property 4: Response Overdue Badge Display**
+    - **Property 7: Linked Entity Badge Presence**
+    - **Property 8: Draft Indicator Presence**
+    - **Validates: Requirements 2.5, 3.2, 3.4, 3.5**
+
+- [x] 5. Implement swipe gesture handling
+  - [x] 5.1 Create useSwipeGesture hook
+    - Create `packages/frontend/src/hooks/useSwipeGesture.ts`
+    - Implement touch event handlers with 80px threshold
+    - Calculate swipe direction and offset
+    - Prevent vertical scroll interference during swipe
+    - _Requirements: 5.1, 5.2, 5.6_
+  - [x] 5.2 Write property tests for swipe gestures
+    - **Property 11: Swipe Threshold Action Reveal**
+    - **Property 12: Swipe Action Execution**
+    - **Property 13: Swipe Cancel Reset**
+    - **Property 14: Swipe Indicator Opacity Proportionality**
+    - **Validates: Requirements 5.1, 5.2, 5.3, 5.4, 5.5**
+  - [x] 5.3 Add swipe action indicators to ThreadCard
+    - Create left swipe indicator (snooze - amber)
+    - Create right swipe indicator (view - cyan)
+    - Implement proportional opacity based on swipe distance
+    - _Requirements: 5.1, 5.2, 5.5_
+
+- [x] 6. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 7. Build ThreadPreviewPanel component
+  - [x] 7.1 Create ThreadPreviewPanel component
+    - Create `packages/frontend/src/components/ThreadPreviewPanel/ThreadPreviewPanel.tsx`
+    - Display full AI summary, message previews, linked contacts
+    - Show up to 3 suggested reply options as tappable chips
+    - _Requirements: 11.1, 11.2, 11.6_
+  - [x] 7.2 Write property tests for preview panel
+    - **Property 32: Single Expansion Invariant**
+    - **Property 33: Expanded Panel Required Content**
+    - **Property 34: Suggested Reply Limit**
+    - **Validates: Requirements 11.2, 11.3, 11.6**
+  - [x] 7.3 Create ThreadPreviewPanel CSS
+    - Create `packages/frontend/src/components/ThreadPreviewPanel/ThreadPreviewPanel.css`
+    - Implement smooth expand/collapse animations
+    - Style message previews with sender info
+    - Style suggested reply chips with glassmorphism
+    - _Requirements: 11.1, 11.4_
+
+- [x] 8. Build FilterChips component
+  - [x] 8.1 Create FilterChips component
+    - Create `packages/frontend/src/components/FilterChips/FilterChips.tsx`
+    - Implement horizontal scrollable filter chips
+    - Include: All, Buyers, Vendors, Market, Lawyers/Brokers, High Risk
+    - Show active state with cyan glow
+    - _Requirements: 6.1, 6.2_
+  - [x] 8.2 Create FilterChips CSS
+    - Create `packages/frontend/src/components/FilterChips/FilterChips.css`
+    - Implement glassmorphism pill styling
+    - Add active state with cyan border and glow
+    - Smooth transition animations
+    - _Requirements: 6.1, 6.2_
+
+- [x] 9. Build BatchActionBar component
+  - [x] 9.1 Create BatchActionBar component
+    - Create `packages/frontend/src/components/BatchActionBar/BatchActionBar.tsx`
+    - Implement floating action bar with Snooze All, Archive All, Mark Read buttons
+    - Display animated selection count
+    - Include cancel button
+    - _Requirements: 7.2, 7.4, 7.6_
+  - [x] 9.2 Write property test for batch action bar visibility
+    - **Property 20: Batch Action Bar Visibility**
+    - **Validates: Requirements 7.2**
+  - [x] 9.3 Create BatchActionBar CSS
+    - Create `packages/frontend/src/components/BatchActionBar/BatchActionBar.css`
+    - Implement glassmorphism floating bar
+    - Position fixed at bottom with safe area inset
+    - Add slide-up entrance animation
+    - _Requirements: 7.2_
+
+- [x] 10. Build NewPageHeader component
+  - [x] 10.1 Create NewPageHeader component
+    - Create `packages/frontend/src/components/NewPageHeader/NewPageHeader.tsx`
+    - Display "New" title with gradient text (cyan to purple)
+    - Show thread count with urgency breakdown badges
+    - Include refresh button and search toggle
+    - Implement scroll-aware compact mode
+    - _Requirements: 12.1, 12.2, 12.3, 12.5_
+  - [x] 10.2 Write property tests for header
+    - **Property 35: Header Thread Count Accuracy**
+    - **Property 36: Urgent Notification Dot Display**
+    - **Property 37: Header Compact on Scroll**
+    - **Validates: Requirements 12.2, 12.5, 12.6**
+  - [x] 10.3 Create NewPageHeader CSS
+    - Create `packages/frontend/src/components/NewPageHeader/NewPageHeader.css`
+    - Implement gradient text with text-glow
+    - Add glassmorphism blur that intensifies on scroll
+    - Style compact mode transition
+    - Add pulsing notification dot animation
+    - _Requirements: 12.1, 12.4, 12.6_
+
+- [x] 11. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 12. Build quick actions and snooze functionality
+  - [x] 12.1 Create SnoozeOverlay component
+    - Create `packages/frontend/src/components/SnoozeOverlay/SnoozeOverlay.tsx`
+    - Implement glassmorphism modal with preset options (1h, 4h, Tomorrow, Next Week)
+    - Include custom date picker option
+    - _Requirements: 4.2_
+  - [x] 12.2 Create SnoozeOverlay CSS
+    - Create `packages/frontend/src/components/SnoozeOverlay/SnoozeOverlay.css`
+    - Implement glassmorphism overlay styling
+    - Add fade-in animation
+    - _Requirements: 4.2_
+  - [x] 12.3 Implement action handlers with visual feedback
+    - Create snooze action with slide-out animation
+    - Create send draft action with pulsing glow animation
+    - Implement success/error toast notifications
+    - _Requirements: 4.3, 4.4, 4.5, 4.6_
+  - [x] 12.4 Write property tests for actions
+    - **Property 9: Snooze Action Thread Removal**
+    - **Property 10: Action Feedback Toast Display**
+    - **Validates: Requirements 4.3, 4.5, 4.6**
+
+- [x] 13. Implement loading, empty, and error states
+  - [x] 13.1 Create NewPageSkeleton component
+    - Create `packages/frontend/src/components/NewPageSkeleton/NewPageSkeleton.tsx`
+    - Render 3-5 shimmer skeleton cards
+    - Use existing ShimmerSkeleton component
+    - _Requirements: 9.1_
+  - [x] 13.2 Write property test for loading skeleton count
+    - **Property 24: Loading Skeleton Count**
+    - **Validates: Requirements 9.1**
+  - [x] 13.3 Implement empty state with Zena avatar
+    - Use AnimatedEmptyState component with "idle" avatar state
+    - Display congratulatory message
+    - Add subtle particle animations
+    - _Requirements: 9.2, 9.5_
+  - [x] 13.4 Write property test for empty state display
+    - **Property 25: Empty State Display**
+    - **Validates: Requirements 9.2**
+  - [x] 13.5 Implement error state with retry
+    - Create glassmorphism error card
+    - Display error message and retry button with glow
+    - _Requirements: 9.3_
+  - [x] 13.6 Write property test for error state display
+    - **Property 26: Error State Display**
+    - **Validates: Requirements 9.3**
+
+- [x] 14. Implement real-time updates and sync
+  - [x] 14.1 Create new threads banner component
+    - Create `packages/frontend/src/components/NewThreadsBanner/NewThreadsBanner.tsx`
+    - Display "New threads available" with pulse animation
+    - Handle tap to merge new threads
+    - _Requirements: 8.1, 8.2_
+  - [x] 14.2 Write property test for new threads banner
+    - **Property 21: New Threads Banner Display**
+    - **Validates: Requirements 8.1**
+  - [x] 14.3 Implement sync status indicator
+    - Add rotating sync icon to header
+    - Show offline indicator when disconnected
+    - _Requirements: 8.4, 8.6_
+  - [x] 14.4 Write property test for sync status indicator
+    - **Property 23: Sync Status Indicator Visibility**
+    - **Validates: Requirements 8.4**
+  - [x] 14.5 Implement pull-to-refresh
+    - Use existing usePullToRefresh hook
+    - Trigger manual refresh on pull gesture
+    - _Requirements: 8.5_
+
+- [x] 15. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 16. Implement accessibility features
+  - [x] 16.1 Add reduced motion support
+    - Detect prefers-reduced-motion media query
+    - Disable non-essential animations when enabled
+    - _Requirements: 10.1_
+  - [x] 16.2 Write property test for reduced motion
+    - **Property 27: Reduced Motion Animation Disable**
+    - **Validates: Requirements 10.1**
+  - [x] 16.3 Ensure touch target sizes
+    - Verify all interactive elements are minimum 44x44px
+    - Add padding where needed
+    - _Requirements: 10.2_
+  - [x] 16.4 Write property test for touch targets
+    - **Property 28: Touch Target Minimum Size**
+    - **Validates: Requirements 10.2**
+  - [x] 16.5 Verify text contrast compliance
+    - Ensure all text meets WCAG AA 4.5:1 ratio
+    - Adjust colors if needed
+    - _Requirements: 10.3_
+  - [x] 16.6 Write property test for text contrast
+    - **Property 29: Text Contrast Compliance**
+    - **Validates: Requirements 10.3**
+  - [x] 16.7 Add ARIA labels and focus indicators
+    - Add aria-label to all interactive elements
+    - Implement visible focus indicators with cyan glow
+    - _Requirements: 10.5, 10.6_
+  - [x] 16.8 Write property test for ARIA labels
+    - **Property 31: ARIA Label Presence**
+    - **Validates: Requirements 10.6**
+
+- [x] 17. Implement virtual scrolling for performance
+  - [x] 17.1 Integrate virtual scrolling for large lists
+    - Use existing VirtualList component or implement new
+    - Activate when thread count > 20
+    - Maintain 60fps scroll performance
+    - _Requirements: 10.4_
+  - [x] 17.2 Write property test for virtual scrolling
+    - **Property 30: Virtual Scrolling Activation**
+    - **Validates: Requirements 10.4**
+
+- [x] 18. Assemble NewPage container component
+  - [x] 18.1 Create NewPage container
+    - Create `packages/frontend/src/pages/NewPage/NewPage.tsx`
+    - Compose all sub-components
+    - Wire up state management hooks
+    - Implement staggered card entrance animations
+    - _Requirements: 1.1, 9.4_
+  - [x] 18.2 Create NewPage CSS
+    - Create `packages/frontend/src/pages/NewPage/NewPage.css`
+    - Apply ambient background
+    - Set up page layout and spacing
+    - _Requirements: 1.1_
+  - [x] 18.3 Update routing to use NewPage
+    - Update App.tsx to route /new to NewPage component
+    - Ensure page transitions work correctly
+    - _Requirements: 4.1_
+
+- [x] 19. Final Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+

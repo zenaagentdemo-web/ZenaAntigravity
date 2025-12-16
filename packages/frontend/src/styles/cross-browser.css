@@ -1,0 +1,772 @@
+/* ==========================================================================
+   Cross-Browser Compatibility Styles
+   Professional UI/UX Redesign - Browser Normalization and Fixes
+   Validates: Requirements 7.4, 7.5
+   ========================================================================== */
+
+/* ==========================================================================
+   CSS Reset and Normalization
+   Ensures consistent baseline across all browsers
+   ========================================================================== */
+
+/* Prevent iOS text size adjustment after orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Improve text rendering across browsers */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ==========================================================================
+   Flexbox Cross-Browser Fixes
+   ========================================================================== */
+
+/* Fix flexbox gap support for older Safari versions */
+@supports not (gap: 1rem) {
+  .responsive-flex > * + * {
+    margin-left: var(--responsive-gap);
+  }
+  
+  .responsive-flex--column > * + * {
+    margin-left: 0;
+    margin-top: var(--responsive-gap);
+  }
+  
+  .responsive-stack > * + * {
+    margin-top: var(--responsive-gap);
+  }
+}
+
+/* ==========================================================================
+   Grid Cross-Browser Fixes
+   ========================================================================== */
+
+/* Ensure grid gap works consistently */
+@supports not (gap: 1rem) {
+  .responsive-grid {
+    margin: calc(var(--responsive-gap) / -2);
+  }
+  
+  .responsive-grid > * {
+    margin: calc(var(--responsive-gap) / 2);
+  }
+}
+
+/* ==========================================================================
+   Form Element Normalization
+   ========================================================================== */
+
+/* Remove default button styles across browsers */
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+  appearance: button;
+  cursor: pointer;
+}
+
+/* Remove inner border and padding in Firefox */
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+/* Restore focus styles unset by previous rule */
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+  outline: 1px dotted ButtonText;
+}
+
+/* Fix input appearance in iOS Safari */
+input,
+textarea,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+
+/* Ensure standard appearance property is defined */
+input,
+textarea,
+select,
+button {
+  appearance: none;
+}
+
+/* Ensure button appearance is properly set */
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  appearance: button;
+}
+
+/* Restore select dropdown arrow */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23737373' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* Fix textarea resize in Firefox */
+textarea {
+  overflow: auto;
+  resize: vertical;
+}
+
+/* Remove search input decoration in Chrome/Safari */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+}
+
+/* Fix number input spinner in Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ==========================================================================
+   Scrollbar Styling (Cross-Browser)
+   ========================================================================== */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-400);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-neutral-100);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-500);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-neutral-400) var(--color-neutral-100);
+}
+
+/* Dark theme scrollbar */
+[data-theme="night"] ::-webkit-scrollbar-track {
+  background: var(--color-neutral-800);
+}
+
+[data-theme="night"] ::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-600);
+  border-color: var(--color-neutral-800);
+}
+
+[data-theme="night"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-500);
+}
+
+[data-theme="night"] * {
+  scrollbar-color: var(--color-neutral-600) var(--color-neutral-800);
+}
+
+/* ==========================================================================
+   Backdrop Filter Fallback
+   ========================================================================== */
+
+/* Fallback for browsers that don't support backdrop-filter */
+@supports not (backdrop-filter: blur(8px)) {
+  .dashboard-header,
+  .modal-backdrop,
+  .dropdown-menu {
+    background-color: var(--color-background);
+  }
+  
+  [data-theme="night"] .dashboard-header,
+  [data-theme="night"] .modal-backdrop,
+  [data-theme="night"] .dropdown-menu {
+    background-color: var(--color-background);
+  }
+}
+
+/* ==========================================================================
+   CSS Custom Properties Fallback
+   ========================================================================== */
+
+/* Fallback for browsers that don't support CSS custom properties */
+@supports not (--test: 0) {
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #171717;
+    background-color: #ffffff;
+  }
+}
+
+/* ==========================================================================
+   Touch Action Normalization
+   ========================================================================== */
+
+/* Prevent double-tap zoom on touch devices */
+button,
+a,
+[role="button"],
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+/* Enable smooth scrolling on iOS */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Improve touch responsiveness */
+@media (pointer: coarse) {
+  /* Increase touch target sizes */
+  button,
+  a,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  .clickable {
+    min-height: var(--touch-target-min, 44px);
+    min-width: var(--touch-target-min, 44px);
+  }
+  
+  /* Add touch feedback */
+  button:active,
+  a:active,
+  [role="button"]:active {
+    opacity: 0.8;
+  }
+  
+  /* Prevent text selection on interactive elements */
+  button,
+  [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Disable hover effects on touch devices */
+@media (hover: none) {
+  .hover-lift:hover,
+  .hover-scale:hover,
+  .card-hover:hover {
+    transform: none;
+    box-shadow: inherit;
+  }
+}
+
+/* ==========================================================================
+   Image and Media Fixes
+   ========================================================================== */
+
+/* Prevent images from being draggable */
+img {
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Fix SVG overflow in IE */
+svg {
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+/* Responsive images */
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ==========================================================================
+   Typography Cross-Browser Fixes
+   ========================================================================== */
+
+/* Prevent font boosting in mobile browsers */
+p,
+span,
+div {
+  max-height: 999999px;
+}
+
+/* Fix font rendering in Windows */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  body {
+    font-feature-settings: "liga" 0;
+  }
+}
+
+/* Improve font rendering on Windows Chrome */
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
+  body {
+    font-feature-settings: "kern" 1;
+    font-kerning: normal;
+  }
+}
+
+/* Consistent font rendering across browsers */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Fix Inter font rendering on Windows */
+@supports (font-variation-settings: normal) {
+  body {
+    font-family: 'Inter var', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+}
+
+/* Ensure consistent letter-spacing across browsers */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.025em;
+}
+
+/* Fix subpixel rendering on retina displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  body {
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
+}
+
+/* ==========================================================================
+   Animation Performance Fixes
+   ========================================================================== */
+
+/* Force GPU acceleration for animated elements */
+.animate-fade-in,
+.animate-fade-out,
+.animate-fade-in-up,
+.animate-fade-in-down,
+.animate-scale-in,
+.animate-scale-out,
+.animate-slide-in-up,
+.animate-slide-in-down,
+.animate-slide-in-left,
+.animate-slide-in-right {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Fix animation flickering in Safari */
+.card-hover,
+.hover-lift,
+.hover-scale {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+/* ==========================================================================
+   Focus Styles Cross-Browser
+   ========================================================================== */
+
+/* Consistent focus outline across browsers */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: var(--focus-ring-width, 2px) var(--focus-ring-style, solid) var(--focus-ring-color, #2563eb);
+  outline-offset: var(--focus-ring-offset, 2px);
+}
+
+/* Firefox focus-visible polyfill */
+@supports not selector(:focus-visible) {
+  *:focus {
+    outline: var(--focus-ring-width, 2px) var(--focus-ring-style, solid) var(--focus-ring-color, #2563eb);
+    outline-offset: var(--focus-ring-offset, 2px);
+  }
+}
+
+/* ==========================================================================
+   Box Shadow Cross-Browser Fixes
+   ========================================================================== */
+
+/* Ensure consistent shadow rendering */
+.shadow-sm,
+.shadow-base,
+.shadow-md,
+.shadow-lg,
+.shadow-xl {
+  -webkit-box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================================================
+   Border Radius Cross-Browser Fixes
+   ========================================================================== */
+
+/* Ensure consistent border-radius rendering */
+.rounded-sm { -webkit-border-radius: var(--radius-sm); border-radius: var(--radius-sm); }
+.rounded-md { -webkit-border-radius: var(--radius-md); border-radius: var(--radius-md); }
+.rounded-lg { -webkit-border-radius: var(--radius-lg); border-radius: var(--radius-lg); }
+.rounded-full { -webkit-border-radius: var(--radius-full); border-radius: var(--radius-full); }
+
+/* ==========================================================================
+   Gradient Text Cross-Browser Fix
+   ========================================================================== */
+
+/* Ensure gradient text works across browsers */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-400));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Fallback for browsers that don't support background-clip: text */
+@supports not (-webkit-background-clip: text) {
+  .gradient-text {
+    background: none;
+    color: var(--color-primary-600);
+  }
+}
+
+/* ==========================================================================
+   Position Sticky Cross-Browser Fix
+   ========================================================================== */
+
+/* Ensure sticky positioning works */
+.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+}
+
+/* ==========================================================================
+   Aspect Ratio Cross-Browser Fix
+   ========================================================================== */
+
+/* Fallback for browsers that don't support aspect-ratio */
+@supports not (aspect-ratio: 1) {
+  .aspect-square {
+    position: relative;
+  }
+  
+  .aspect-square::before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+  }
+  
+  .aspect-square > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .aspect-video {
+    position: relative;
+  }
+  
+  .aspect-video::before {
+    content: "";
+    display: block;
+    padding-top: 56.25%;
+  }
+  
+  .aspect-video > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* ==========================================================================
+   Safe Area Insets (Notched Devices)
+   ========================================================================== */
+
+/* iOS safe area support */
+@supports (padding: max(0px)) {
+  .safe-area-inset-top {
+    padding-top: max(var(--spacing-4), env(safe-area-inset-top));
+  }
+  
+  .safe-area-inset-bottom {
+    padding-bottom: max(var(--spacing-4), env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-inset-left {
+    padding-left: max(var(--spacing-4), env(safe-area-inset-left));
+  }
+  
+  .safe-area-inset-right {
+    padding-right: max(var(--spacing-4), env(safe-area-inset-right));
+  }
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+  
+  a[href]::after {
+    content: " (" attr(href) ")";
+  }
+  
+  abbr[title]::after {
+    content: " (" attr(title) ")";
+  }
+  
+  /* Don't show links for images or javascript/internal links */
+  a[href^="#"]::after,
+  a[href^="javascript:"]::after {
+    content: "";
+  }
+  
+  pre,
+  blockquote {
+    border: 1px solid #999;
+    page-break-inside: avoid;
+  }
+  
+  thead {
+    display: table-header-group;
+  }
+  
+  tr,
+  img {
+    page-break-inside: avoid;
+  }
+  
+  img {
+    max-width: 100% !important;
+  }
+  
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+  
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+  
+  /* Hide non-essential elements */
+  .no-print,
+  .bottom-navigation,
+  .dashboard-header__mobile-toggle,
+  .dashboard-header__mobile-nav {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   High Contrast Mode Support
+   ========================================================================== */
+
+@media (forced-colors: active) {
+  /* Ensure buttons are visible */
+  button,
+  [role="button"] {
+    border: 2px solid currentColor;
+  }
+  
+  /* Ensure focus is visible */
+  *:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+  }
+  
+  /* Ensure links are distinguishable */
+  a {
+    text-decoration: underline;
+  }
+}
+
+/* ==========================================================================
+   Vendor Prefix Utilities
+   ========================================================================== */
+
+/* User select */
+.user-select-none {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.user-select-text {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.user-select-all {
+  -webkit-user-select: all;
+  -moz-user-select: all;
+  -ms-user-select: all;
+  user-select: all;
+}
+
+/* Appearance */
+.appearance-none {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Transform */
+.transform-gpu {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Overflow scrolling */
+.overflow-touch {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================================================
+   Browser-Specific Hacks (Use Sparingly)
+   ========================================================================== */
+
+/* Safari-only styles */
+@supports (-webkit-touch-callout: none) {
+  /* Fix for Safari's handling of 100vh on mobile */
+  .full-height-mobile {
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Fix Safari flexbox gap issues */
+  .safari-flex-gap-fix {
+    margin: calc(var(--spacing-2) * -1);
+  }
+  
+  .safari-flex-gap-fix > * {
+    margin: var(--spacing-2);
+  }
+}
+
+/* Firefox-only styles */
+@-moz-document url-prefix() {
+  /* Firefox-specific fixes can go here */
+  select {
+    text-indent: 0.01px;
+    text-overflow: '';
+  }
+  
+  /* Fix Firefox scrollbar styling */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-neutral-400) var(--color-neutral-100);
+  }
+}
+
+/* Edge/Chromium specific fixes */
+@supports (-ms-ime-align: auto) {
+  /* Edge-specific fixes */
+  input::placeholder {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   Cross-Browser Input Placeholder Styling
+   ========================================================================== */
+
+::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+::-webkit-input-placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+::-moz-placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Cross-Browser Selection Styling
+   ========================================================================== */
+
+::selection {
+  background-color: var(--color-primary-200);
+  color: var(--color-text);
+}
+
+::-moz-selection {
+  background-color: var(--color-primary-200);
+  color: var(--color-text);
+}
+
+/* Dark theme selection */
+[data-theme="night"] ::selection {
+  background-color: var(--color-primary-700);
+  color: var(--color-text);
+}
+
+[data-theme="night"] ::-moz-selection {
+  background-color: var(--color-primary-700);
+  color: var(--color-text);
+}

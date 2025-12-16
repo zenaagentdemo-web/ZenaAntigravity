@@ -1,0 +1,330 @@
+/**
+ * ThemeProvider CSS
+ * 
+ * This file contains global theme-related styles that are applied
+ * when the ThemeProvider is mounted. These styles ensure consistent
+ * theme behavior across all components.
+ */
+
+/* Theme transition wrapper - ensures smooth transitions during theme changes */
+.theme-provider {
+  min-height: 100%;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  transition: background-color var(--transition-slow) ease-in-out,
+              color var(--transition-slow) ease-in-out;
+}
+
+/* Global theme transition class - applied during theme switching */
+.theme-transitioning {
+  transition: background-color var(--transition-slow) ease-in-out,
+              color var(--transition-slow) ease-in-out,
+              border-color var(--transition-slow) ease-in-out,
+              box-shadow var(--transition-slow) ease-in-out !important;
+}
+
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition: background-color var(--transition-slow) ease-in-out,
+              color var(--transition-slow) ease-in-out,
+              border-color var(--transition-slow) ease-in-out,
+              box-shadow var(--transition-slow) ease-in-out,
+              fill var(--transition-slow) ease-in-out,
+              stroke var(--transition-slow) ease-in-out !important;
+}
+
+/* Respect user's reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .theme-transitioning,
+  .theme-transitioning *,
+  .theme-transitioning *::before,
+  .theme-transitioning *::after {
+    transition: none !important;
+  }
+}
+
+/* Theme-aware scrollbar styling */
+:root {
+  scrollbar-color: var(--color-neutral-400) var(--color-background);
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-400);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-500);
+}
+
+/* Dark theme scrollbar adjustments */
+[data-theme="night"] {
+  scrollbar-color: var(--color-neutral-600) var(--color-background);
+}
+
+[data-theme="night"]::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-600);
+  border-color: var(--color-background);
+}
+
+[data-theme="night"]::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-500);
+}
+
+/* Theme-aware selection styling */
+::selection {
+  background-color: var(--color-primary-200);
+  color: var(--color-primary-900);
+}
+
+[data-theme="night"] ::selection {
+  background-color: var(--color-primary-700);
+  color: var(--color-primary-100);
+}
+
+/* Theme-aware focus ring */
+:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Theme-aware placeholder text */
+::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+/* Theme-aware form elements */
+input,
+textarea,
+select {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+[data-theme="night"] input:focus,
+[data-theme="night"] textarea:focus,
+[data-theme="night"] select:focus {
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+/* Theme-aware disabled states */
+:disabled,
+[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Theme-aware link styling */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+a:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-sm);
+}
+
+/* Theme-aware code blocks */
+code,
+pre {
+  font-family: var(--font-family-mono);
+  background-color: var(--color-neutral-100);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+}
+
+[data-theme="night"] code,
+[data-theme="night"] pre {
+  background-color: var(--color-neutral-200);
+}
+
+/* Theme-aware horizontal rules */
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--spacing-lg) 0;
+}
+
+/* Theme-aware table styling */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+th {
+  font-weight: var(--font-weight-semibold);
+  background-color: var(--color-surface-hover);
+}
+
+tr:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Theme-aware blockquote */
+blockquote {
+  border-left: 4px solid var(--color-primary);
+  padding-left: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* Theme-aware mark/highlight */
+mark {
+  background-color: var(--color-warning-200);
+  color: var(--color-warning-900);
+  padding: 0 var(--spacing-1);
+  border-radius: var(--radius-sm);
+}
+
+[data-theme="night"] mark {
+  background-color: var(--color-warning-700);
+  color: var(--color-warning-100);
+}
+
+
+/* ============================================
+ * HIGH-TECH THEME STYLES
+ * Futuristic AI aesthetic with neon accents
+ * ============================================ */
+
+/* High-tech theme scrollbar */
+[data-theme="high-tech"] {
+  scrollbar-color: var(--neon-cyan-dim) var(--bg-primary);
+}
+
+[data-theme="high-tech"]::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+[data-theme="high-tech"]::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--neon-cyan-dim), var(--neon-purple-dim));
+  border-color: var(--bg-primary);
+}
+
+[data-theme="high-tech"]::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--neon-cyan), var(--neon-purple));
+  box-shadow: 0 0 10px var(--neon-cyan-dim);
+}
+
+/* High-tech theme selection */
+[data-theme="high-tech"] ::selection {
+  background-color: rgba(0, 212, 255, 0.3);
+  color: var(--text-primary-ht);
+}
+
+/* High-tech theme focus ring */
+[data-theme="high-tech"] :focus-visible {
+  outline-color: var(--neon-cyan);
+  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.25);
+}
+
+/* High-tech theme form elements */
+[data-theme="high-tech"] input,
+[data-theme="high-tech"] textarea,
+[data-theme="high-tech"] select {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary-ht);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="high-tech"] input:focus,
+[data-theme="high-tech"] textarea:focus,
+[data-theme="high-tech"] select:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 20px var(--neon-cyan-dim);
+}
+
+[data-theme="high-tech"] ::placeholder {
+  color: var(--text-tertiary-ht);
+}
+
+/* High-tech theme links */
+[data-theme="high-tech"] a {
+  color: var(--neon-cyan);
+}
+
+[data-theme="high-tech"] a:hover {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px var(--neon-cyan-dim);
+}
+
+/* High-tech theme code blocks */
+[data-theme="high-tech"] code,
+[data-theme="high-tech"] pre {
+  background-color: var(--bg-tertiary);
+  color: var(--neon-cyan);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+/* High-tech theme horizontal rules */
+[data-theme="high-tech"] hr {
+  border-top-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 10px var(--neon-cyan-dim);
+}
+
+/* High-tech theme tables */
+[data-theme="high-tech"] th {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary-ht);
+}
+
+[data-theme="high-tech"] th,
+[data-theme="high-tech"] td {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="high-tech"] tr:hover {
+  background-color: rgba(0, 212, 255, 0.05);
+}
+
+/* High-tech theme blockquote */
+[data-theme="high-tech"] blockquote {
+  border-left-color: var(--neon-cyan);
+  color: var(--text-secondary-ht);
+  background: rgba(0, 212, 255, 0.05);
+  padding: var(--spacing-md);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* High-tech theme mark/highlight */
+[data-theme="high-tech"] mark {
+  background-color: rgba(0, 212, 255, 0.3);
+  color: var(--text-primary-ht);
+}

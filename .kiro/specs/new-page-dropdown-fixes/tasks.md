@@ -1,0 +1,273 @@
+# Implementation Plan
+
+- [x] 1. Fix dropdown blur issues and enhance ThreadCard component
+  - [x] 1.1 Update ThreadCard component structure for inline dropdown
+    - Modify `packages/frontend/src/components/ThreadCard/ThreadCard.tsx`
+    - Add inline dropdown container within ThreadCard
+    - Remove dependency on external ThreadPreviewPanel overlay
+    - Add dropdown state management props
+    - _Requirements: 1.1, 2.1, 4.1_
+  - [x] 1.2 Write property test for dropdown blur prevention
+    - **Property 1: Dropdown Blur Prevention**
+    - **Validates: Requirements 1.1, 1.2, 1.3, 1.4**
+  - [x] 1.3 Update ThreadCard CSS to prevent backdrop filter conflicts
+    - Modify `packages/frontend/src/components/ThreadCard/ThreadCard.css`
+    - Add CSS containment and isolation properties
+    - Implement smooth height transitions without backdrop filters
+    - Add will-change optimization for animations
+    - _Requirements: 1.4, 7.1_
+  - [x] 1.4 Write property test for animation timing consistency
+    - **Property 5: Animation Timing Consistency**
+    - **Validates: Requirements 2.3, 7.1**
+
+- [x] 2. Create AI Summary Dropdown component
+  - [x] 2.1 Create AISummaryDropdown component
+    - Create `packages/frontend/src/components/AISummaryDropdown/AISummaryDropdown.tsx`
+    - Implement inline expansion with enhanced content display
+    - Include AI summary, sentiment analysis, urgency indicators
+    - Add recommended action buttons (max 3)
+    - _Requirements: 2.2, 6.1, 6.3_
+  - [x] 2.2 Write property test for dropdown content completeness
+    - **Property 4: Dropdown Content Completeness**
+    - **Validates: Requirements 2.2, 6.1, 6.3**
+  - [x] 2.3 Create AISummaryDropdown CSS
+    - Create `packages/frontend/src/components/AISummaryDropdown/AISummaryDropdown.css`
+    - Implement glassmorphism styling for dropdown content
+    - Add entity highlighting styles for names, properties, dates, amounts
+    - Style action buttons and participant cards
+    - _Requirements: 6.2, 6.4, 6.5_
+  - [x] 2.4 Write property test for entity highlighting
+    - **Property 12: Entity Highlighting Presence**
+    - **Validates: Requirements 6.2**
+
+- [x] 3. Implement dropdown state management
+  - [x] 3.1 Create useDropdownState hook
+    - Create `packages/frontend/src/hooks/useDropdownState.ts`
+    - Implement single dropdown expansion logic
+    - Add toggle and close all functionality
+    - Ensure only one dropdown open at a time
+    - _Requirements: 2.5_
+  - [x] 3.2 Write property test for single dropdown expansion
+    - **Property 2: Single Dropdown Expansion**
+    - **Validates: Requirements 2.5**
+  - [x] 3.3 Write property test for consistent dropdown behavior
+    - **Property 3: Consistent Dropdown Behavior**
+    - **Validates: Requirements 2.1, 2.4**
+
+- [x] 4. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 5. Create Quick Reply Button component
+  - [x] 5.1 Create QuickReplyButton component
+    - Create `packages/frontend/src/components/QuickReplyButton/QuickReplyButton.tsx`
+    - Implement prominent button with cyan glow styling
+    - Add click handler for opening reply composer
+    - Ensure 44px minimum touch target
+    - _Requirements: 3.1, 4.3_
+  - [x] 5.2 Write property test for quick reply button presence
+    - **Property 6: Quick Reply Button Presence**
+    - **Validates: Requirements 3.1**
+  - [x] 5.3 Create QuickReplyButton CSS
+    - Create `packages/frontend/src/components/QuickReplyButton/QuickReplyButton.css`
+    - Implement cyan glow effect and hover animations
+    - Ensure accessibility with focus indicators
+    - Add responsive styling for mobile
+    - _Requirements: 3.1, 4.4, 4.5_
+  - [x] 5.4 Write property test for touch target accessibility
+    - **Property 11: Touch Target Accessibility**
+    - **Validates: Requirements 4.3**
+
+- [x] 6. Build Reply Composer modal
+  - [x] 6.1 Create ReplyComposer component
+    - Create `packages/frontend/src/components/ReplyComposer/ReplyComposer.tsx`
+    - Implement glassmorphism modal with recipient chips, subject, message input
+    - Add template selection chips (max 5)
+    - Include send/cancel buttons with validation
+    - _Requirements: 3.2, 5.1, 5.2_
+  - [x] 6.2 Write property test for reply composer initialization
+    - **Property 7: Reply Composer Initialization**
+    - **Validates: Requirements 3.2, 3.3**
+  - [x] 6.3 Create ReplyComposer CSS
+    - Create `packages/frontend/src/components/ReplyComposer/ReplyComposer.css`
+    - Implement glassmorphism modal styling
+    - Style template chips and form elements
+    - Add loading and error states
+    - _Requirements: 5.1_
+  - [x] 6.4 Write property test for template limit enforcement
+    - **Property 8: Template Limit Enforcement**
+    - **Validates: Requirements 5.2**
+
+- [x] 7. Implement reply template system
+  - [x] 7.1 Create reply template data models
+    - Update `packages/frontend/src/models/newPage.types.ts`
+    - Add ReplyTemplate, TemplateCategory, TemplateVariable interfaces
+    - Include classification-based template filtering
+    - _Requirements: 3.4, 5.2_
+  - [x] 7.2 Write property test for template classification matching
+    - **Property 25: Template Classification Matching**
+    - **Validates: Requirements 3.4**
+  - [x] 7.3 Create template service
+    - Create `packages/frontend/src/services/replyTemplateService.ts`
+    - Implement template loading by classification
+    - Add template variable substitution
+    - Include usage tracking and effectiveness scoring
+    - _Requirements: 3.4, 3.5_
+
+- [x] 8. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 9. Implement reply composer state management
+  - [x] 9.1 Create useReplyComposer hook
+    - Create `packages/frontend/src/hooks/useReplyComposer.ts`
+    - Implement composer open/close state
+    - Add template loading and selection
+    - Handle send operation with loading states
+    - _Requirements: 3.2, 3.5, 5.5_
+  - [x] 9.2 Write property test for send button validation
+    - **Property 13: Send Button Validation**
+    - **Validates: Requirements 5.4**
+  - [x] 9.3 Write property test for duplicate send prevention
+    - **Property 14: Duplicate Send Prevention**
+    - **Validates: Requirements 5.5**
+
+- [x] 10. Build reply sending service
+  - [x] 10.1 Create reply sending service
+    - Create `packages/frontend/src/services/replySendingService.ts`
+    - Implement reply sending with error handling
+    - Add offline queuing and retry logic
+    - Include conflict detection for concurrent edits
+    - _Requirements: 3.6, 5.6, 8.2, 8.5_
+  - [x] 10.2 Write property test for thread removal after reply
+    - **Property 9: Thread Removal After Reply**
+    - **Validates: Requirements 3.7**
+  - [x] 10.3 Write property test for error message preservation
+    - **Property 15: Error Message Preservation**
+    - **Validates: Requirements 5.7, 8.3**
+  - [x] 10.4 Write property test for offline reply queuing
+    - **Property 21: Offline Reply Queuing**
+    - **Validates: Requirements 8.2**
+
+- [x] 11. Enhance ThreadCard layout for action row
+  - [x] 11.1 Update ThreadCard layout structure
+    - Modify ThreadCard component to include action row
+    - Position Quick Reply button and dropdown arrow
+    - Ensure proper spacing and mobile optimization
+    - _Requirements: 4.1, 4.2, 4.4_
+  - [x] 11.2 Write property test for action row layout order
+    - **Property 10: Action Row Layout Order**
+    - **Validates: Requirements 4.1, 4.2**
+  - [x] 11.3 Update ThreadCard CSS for enhanced layout
+    - Add action row styling with proper spacing
+    - Implement hover effects for both buttons
+    - Ensure responsive behavior on mobile
+    - _Requirements: 4.2, 4.5_
+
+- [x] 12. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 13. Implement accessibility features
+  - [x] 13.1 Add keyboard navigation support
+    - Implement tab order through dropdown content
+    - Add focus indicators for all interactive elements
+    - Ensure logical navigation flow
+    - _Requirements: 7.3_
+  - [x] 13.2 Write property test for keyboard navigation order
+    - **Property 17: Keyboard Navigation Order**
+    - **Validates: Requirements 7.3**
+  - [x] 13.3 Add ARIA labels and live regions
+    - Add appropriate ARIA attributes to all components
+    - Implement live region updates for state changes
+    - Include screen reader announcements
+    - _Requirements: 7.4_
+  - [x] 13.4 Write property test for ARIA state announcements
+    - **Property 18: ARIA State Announcements**
+    - **Validates: Requirements 7.4**
+  - [x] 13.5 Implement reduced motion support
+    - Detect prefers-reduced-motion preference
+    - Use instant transitions when motion is reduced
+    - Maintain functionality without animations
+    - _Requirements: 7.5_
+  - [x] 13.6 Write property test for reduced motion compliance
+    - **Property 19: Reduced Motion Compliance**
+    - **Validates: Requirements 7.5**
+
+- [x] 14. Add haptic feedback and performance optimizations
+  - [x] 14.1 Implement haptic feedback
+    - Add haptic feedback for button interactions
+    - Include feedback for successful actions
+    - Ensure graceful fallback on unsupported devices
+    - _Requirements: 7.6_
+  - [x] 14.2 Write property test for haptic feedback activation
+    - **Property 20: Haptic Feedback Activation**
+    - **Validates: Requirements 7.6**
+  - [x] 14.3 Add performance monitoring and animation throttling
+    - Implement frame rate monitoring
+    - Limit concurrent animations for performance
+    - Add CSS containment and optimization
+    - _Requirements: 7.1, 7.2_
+  - [x] 14.4 Write property test for performance animation limit
+    - **Property 24: Performance Animation Limit**
+    - **Validates: Requirements 7.2**
+
+- [x] 15. Implement error handling and fallback states
+  - [x] 15.1 Add fallback content for missing AI data
+    - Display regular summary when AI summary unavailable
+    - Show "AI analysis pending" note
+    - Provide basic recommended actions
+    - _Requirements: 2.6, 8.1_
+  - [x] 15.2 Write property test for fallback content display
+    - **Property 16: Fallback Content Display**
+    - **Validates: Requirements 2.6, 8.1**
+  - [x] 15.3 Implement conflict detection and real-time updates
+    - Add conflict detection for concurrent thread modifications
+    - Show non-disruptive notifications during composition
+    - Handle real-time updates gracefully
+    - _Requirements: 8.5, 8.6_
+  - [x] 15.4 Write property test for conflict detection
+    - **Property 22: Conflict Detection**
+    - **Validates: Requirements 8.5**
+  - [x] 15.5 Write property test for real-time update notification
+    - **Property 23: Real-time Update Notification**
+    - **Validates: Requirements 8.6**
+
+- [x] 16. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 17. Update NewPage container to use enhanced components
+  - [x] 17.1 Update NewPage to use enhanced ThreadCard
+    - Modify `packages/frontend/src/pages/NewPage/NewPage.tsx`
+    - Replace ThreadPreviewPanel with inline dropdown system
+    - Add dropdown state management
+    - Wire up quick reply functionality
+    - _Requirements: 1.1, 3.1_
+  - [x] 17.2 Update NewPage CSS for enhanced layout
+    - Remove ThreadPreviewPanel overlay styles
+    - Ensure proper spacing for enhanced ThreadCards
+    - Add any necessary container styles
+    - _Requirements: 1.1_
+  - [x] 17.3 Remove old ThreadPreviewPanel usage
+    - Remove ThreadPreviewPanel import and usage
+    - Clean up related state management
+    - Update prop passing to ThreadCard components
+    - _Requirements: 1.1_
+
+- [x] 18. Final integration and testing
+  - [x] 18.1 Integration testing of complete workflow
+    - Test dropdown expansion without blur effects
+    - Verify quick reply end-to-end flow
+    - Test error handling and recovery
+    - Validate accessibility features
+    - _Requirements: All_
+  - [x] 18.2 Performance testing and optimization
+    - Test with multiple thread cards
+    - Verify animation performance
+    - Check memory usage and cleanup
+    - _Requirements: 7.1, 7.2_
+  - [x] 18.3 Cross-browser and device testing
+    - Test on various browsers and devices
+    - Verify touch interactions on mobile
+    - Check haptic feedback where supported
+    - _Requirements: 4.4, 7.6_
+
+- [x] 19. Final Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.

@@ -1,0 +1,436 @@
+/**
+ * CollapsibleAlertsPanel Component Styles
+ * 
+ * Glassmorphism expandable panel with priority-based glow colors
+ * and smooth expand/collapse animations.
+ * 
+ * Requirements: 7.1, 7.2, 7.3
+ */
+
+/* ============================================
+   Panel Container
+   ============================================ */
+
+.collapsible-alerts-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: box-shadow var(--duration-normal, 300ms) var(--ease-smooth);
+}
+
+@supports not (backdrop-filter: blur(20px)) {
+  .collapsible-alerts-panel {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+.collapsible-alerts-panel:hover {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+}
+
+/* ============================================
+   Header
+   ============================================ */
+
+.collapsible-alerts-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-4, 16px);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary-ht);
+  transition: background var(--duration-fast, 150ms) var(--ease-smooth);
+}
+
+.collapsible-alerts-panel__header:hover {
+  background: var(--glass-bg-hover);
+}
+
+.collapsible-alerts-panel__header:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: -2px;
+}
+
+.collapsible-alerts-panel__header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3, 12px);
+}
+
+.collapsible-alerts-panel__title {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary-ht);
+}
+
+.collapsible-alerts-panel__badges {
+  display: flex;
+  gap: var(--spacing-2, 8px);
+}
+
+.alert-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.alert-badge--urgent {
+  background: var(--status-urgent);
+  color: white;
+  box-shadow: 0 0 10px var(--status-urgent-dim);
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+.alert-badge--warning {
+  background: var(--status-warning);
+  color: var(--bg-primary);
+  box-shadow: 0 0 10px var(--status-warning-dim);
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px var(--status-urgent-dim);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--status-urgent);
+  }
+}
+
+.collapsible-alerts-panel__toggle {
+  font-size: 12px;
+  color: var(--text-tertiary-ht);
+  transition: transform var(--duration-normal, 300ms) var(--ease-smooth);
+}
+
+.collapsible-alerts-panel__toggle--expanded {
+  transform: rotate(180deg);
+}
+
+/* ============================================
+   Content Area
+   ============================================ */
+
+.collapsible-alerts-panel__content {
+  overflow: hidden;
+  transition: max-height var(--duration-normal, 300ms) var(--ease-smooth);
+}
+
+.collapsible-alerts-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2, 8px);
+  padding: 0 var(--spacing-4, 16px) var(--spacing-4, 16px);
+}
+
+/* ============================================
+   Alert Item
+   ============================================ */
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3, 12px);
+  padding: var(--spacing-3, 12px);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: 
+    background var(--duration-fast, 150ms) var(--ease-smooth),
+    border-color var(--duration-fast, 150ms) var(--ease-smooth),
+    box-shadow var(--duration-fast, 150ms) var(--ease-smooth);
+}
+
+.alert-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================
+   Priority-Based Glow Colors
+   Requirements: 7.1, 7.2, 7.3
+   ============================================ */
+
+/* Urgent - Red/Orange pulsing glow */
+.alert-item--urgent {
+  border-color: var(--status-urgent-dim);
+  box-shadow: 
+    0 0 10px var(--status-urgent-dim),
+    inset 0 0 20px rgba(255, 68, 68, 0.05);
+  animation: urgent-glow 2s ease-in-out infinite;
+}
+
+.alert-item--urgent:hover {
+  box-shadow: 
+    0 0 20px var(--status-urgent-dim),
+    0 0 40px rgba(255, 68, 68, 0.2),
+    inset 0 0 20px rgba(255, 68, 68, 0.1);
+}
+
+@keyframes urgent-glow {
+  0%, 100% {
+    box-shadow: 
+      0 0 10px var(--status-urgent-dim),
+      inset 0 0 20px rgba(255, 68, 68, 0.05);
+  }
+  50% {
+    box-shadow: 
+      0 0 20px var(--status-urgent),
+      0 0 40px var(--status-urgent-dim),
+      inset 0 0 30px rgba(255, 68, 68, 0.1);
+  }
+}
+
+/* Warning - Amber/Yellow glow */
+.alert-item--warning {
+  border-color: var(--status-warning-dim);
+  box-shadow: 
+    0 0 10px var(--status-warning-dim),
+    inset 0 0 20px rgba(255, 170, 0, 0.05);
+}
+
+.alert-item--warning:hover {
+  box-shadow: 
+    0 0 15px var(--status-warning-dim),
+    0 0 30px rgba(255, 170, 0, 0.15),
+    inset 0 0 20px rgba(255, 170, 0, 0.08);
+}
+
+/* Success - Cyan/Green glow */
+.alert-item--success {
+  border-color: var(--status-success-dim);
+  box-shadow: 
+    0 0 10px var(--status-success-dim),
+    inset 0 0 20px rgba(0, 255, 136, 0.05);
+}
+
+.alert-item--success:hover {
+  box-shadow: 
+    0 0 15px var(--status-success-dim),
+    0 0 30px rgba(0, 255, 136, 0.15),
+    inset 0 0 20px rgba(0, 255, 136, 0.08);
+}
+
+/* Info - Cyan glow */
+.alert-item--info {
+  border-color: var(--status-info-dim);
+  box-shadow: 
+    0 0 10px var(--status-info-dim),
+    inset 0 0 20px rgba(0, 212, 255, 0.05);
+}
+
+.alert-item--info:hover {
+  box-shadow: 
+    0 0 15px var(--status-info-dim),
+    0 0 30px rgba(0, 212, 255, 0.15),
+    inset 0 0 20px rgba(0, 212, 255, 0.08);
+}
+
+/* ============================================
+   Alert Indicator
+   ============================================ */
+
+.alert-item__indicator {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.alert-item__icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.alert-item__pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--status-urgent);
+  opacity: 0;
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   Alert Content
+   ============================================ */
+
+.alert-item__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-item__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary-ht);
+  margin: 0 0 4px 0;
+}
+
+.alert-item--urgent .alert-item__title {
+  color: var(--status-urgent);
+  text-shadow: 0 0 10px var(--status-urgent-dim);
+}
+
+.alert-item--warning .alert-item__title {
+  color: var(--status-warning);
+}
+
+.alert-item__message {
+  font-size: 12px;
+  color: var(--text-secondary-ht);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.alert-item__timestamp {
+  font-size: 10px;
+  color: var(--text-tertiary-ht);
+  margin-top: 4px;
+  display: block;
+}
+
+/* ============================================
+   Alert Actions
+   ============================================ */
+
+.alert-item__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2, 8px);
+  align-items: flex-end;
+}
+
+.alert-action {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary-ht);
+  cursor: pointer;
+  transition: all var(--duration-fast, 150ms) var(--ease-smooth);
+  white-space: nowrap;
+}
+
+.alert-action:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--neon-cyan-dim);
+  color: var(--text-primary-ht);
+}
+
+.alert-action--primary {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  border-color: transparent;
+  color: var(--bg-primary);
+  box-shadow: 0 0 10px var(--neon-cyan-dim);
+}
+
+.alert-action--primary:hover {
+  box-shadow: 0 0 20px var(--neon-cyan-dim);
+  transform: translateY(-1px);
+}
+
+.alert-dismiss {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: var(--text-tertiary-ht);
+  cursor: pointer;
+  transition: all var(--duration-fast, 150ms) var(--ease-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alert-dismiss:hover {
+  background: rgba(255, 68, 68, 0.2);
+  border-color: var(--status-urgent-dim);
+  color: var(--status-urgent);
+}
+
+/* ============================================
+   More Indicator
+   ============================================ */
+
+.collapsible-alerts-panel__more {
+  text-align: center;
+  padding: var(--spacing-2, 8px);
+  font-size: 12px;
+  color: var(--text-tertiary-ht);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 480px) {
+  .alert-item {
+    flex-wrap: wrap;
+  }
+  
+  .alert-item__actions {
+    flex-direction: row;
+    width: 100%;
+    margin-top: var(--spacing-2, 8px);
+    padding-top: var(--spacing-2, 8px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .alert-action {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+/* ============================================
+   Reduced Motion Support
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .alert-item--urgent,
+  .alert-badge--urgent {
+    animation: none !important;
+  }
+  
+  .alert-item__pulse {
+    display: none;
+  }
+  
+  .collapsible-alerts-panel__content {
+    transition: none;
+  }
+  
+  .collapsible-alerts-panel__toggle {
+    transition: none;
+  }
+}

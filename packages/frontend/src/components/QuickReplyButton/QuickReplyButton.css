@@ -1,0 +1,300 @@
+/**
+ * QuickReplyButton Component Styles
+ * 
+ * Prominent button with cyan glow styling for quick reply functionality.
+ * Follows high-tech design system with neon aesthetics and accessibility features.
+ * 
+ * Requirements: 3.1, 4.3, 4.4, 4.5
+ */
+
+/* ============================================
+ * BASE QUICK REPLY BUTTON STYLES
+ * Cyan glow styling with glassmorphism background
+ * Requirements: 3.1
+ * ============================================ */
+
+.quick-reply-button {
+  /* Base layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  
+  /* Typography */
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  white-space: nowrap;
+  
+  /* Layout - ensuring minimum touch target */
+  padding: 10px 16px;
+  min-height: var(--touch-target-min); /* 44px minimum for accessibility */
+  min-width: var(--touch-target-min);
+  border-radius: var(--radius-lg);
+  border: none;
+  cursor: pointer;
+  
+  /* Glassmorphism background with cyan accent */
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--neon-cyan, #00D4FF);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  
+  /* Cyan glow effect */
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2), 
+              inset 0 0 20px rgba(0, 212, 255, 0.05);
+  
+  /* Smooth transitions for 60fps performance */
+  transition: transform var(--transition-base, 200ms) ease-out,
+              box-shadow var(--transition-base, 200ms) ease-out,
+              background-color var(--transition-base, 200ms) ease-out,
+              border-color var(--transition-base, 200ms) ease-out;
+  
+  /* Focus styles */
+  outline: none;
+  position: relative;
+  overflow: hidden;
+  
+  /* Ensure proper z-index for interactions */
+  z-index: 1;
+}
+
+/* ============================================
+ * BUTTON CONTENT ELEMENTS
+ * Icon and text styling
+ * ============================================ */
+
+.quick-reply-button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-base);
+  line-height: 1;
+  color: inherit;
+}
+
+.quick-reply-button__text {
+  font-weight: var(--font-weight-semibold);
+  color: inherit;
+  line-height: 1;
+}
+
+/* ============================================
+ * INTERACTIVE STATES
+ * Hover, active, focus, and disabled states
+ * Requirements: 3.1, 4.5
+ * ============================================ */
+
+/* Hover state - enhanced glow and lift effect */
+.quick-reply-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: rgba(0, 212, 255, 0.15);
+  border-color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 25px rgba(0, 212, 255, 0.4), 
+              0 0 50px rgba(0, 212, 255, 0.2),
+              inset 0 0 20px rgba(0, 212, 255, 0.1);
+}
+
+/* Active/Press state - intensified glow */
+.quick-reply-button:active:not(:disabled) {
+  transform: translateY(0);
+  background: rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 35px rgba(0, 212, 255, 0.6), 
+              0 0 70px rgba(0, 212, 255, 0.3),
+              inset 0 0 30px rgba(0, 212, 255, 0.15);
+}
+
+/* Focus visible state - accessibility outline */
+.quick-reply-button:focus-visible {
+  outline: 2px solid var(--neon-cyan, #00D4FF);
+  outline-offset: 3px;
+}
+
+/* Disabled state */
+.quick-reply-button:disabled,
+.quick-reply-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  filter: grayscale(0.5);
+  transform: none;
+}
+
+.quick-reply-button:disabled:hover,
+.quick-reply-button--disabled:hover {
+  transform: none;
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2), 
+              inset 0 0 20px rgba(0, 212, 255, 0.05);
+}
+
+/* ============================================
+ * RESPONSIVE DESIGN
+ * Mobile-optimized styling
+ * Requirements: 4.4, 4.5
+ * ============================================ */
+
+/* Mobile devices - larger touch targets and adjusted spacing */
+@media (max-width: 768px) {
+  .quick-reply-button {
+    padding: 12px 18px;
+    font-size: var(--font-size-sm);
+    min-height: 48px; /* Slightly larger for mobile */
+    gap: var(--spacing-2);
+  }
+  
+  .quick-reply-button__icon {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* Touch devices - ensure proper touch targets */
+@media (pointer: coarse) {
+  .quick-reply-button {
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+    padding: 12px 20px;
+  }
+}
+
+/* ============================================
+ * HIGH-TECH THEME INTEGRATION
+ * Enhanced styling for high-tech aesthetic
+ * ============================================ */
+
+[data-theme="high-tech"] .quick-reply-button {
+  /* Enhanced glassmorphism background */
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  
+  /* Stronger glow effect in high-tech theme */
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3), 
+              inset 0 0 25px rgba(0, 212, 255, 0.08);
+}
+
+[data-theme="high-tech"] .quick-reply-button:hover:not(:disabled) {
+  background: rgba(0, 212, 255, 0.12);
+  border-color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.5), 
+              0 0 60px rgba(0, 212, 255, 0.25),
+              inset 0 0 30px rgba(0, 212, 255, 0.12);
+}
+
+[data-theme="high-tech"] .quick-reply-button:active:not(:disabled) {
+  background: rgba(0, 212, 255, 0.18);
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.7), 
+              0 0 80px rgba(0, 212, 255, 0.35),
+              inset 0 0 40px rgba(0, 212, 255, 0.2);
+}
+
+/* ============================================
+ * ACCESSIBILITY FEATURES
+ * Focus indicators, reduced motion, high contrast
+ * Requirements: 4.3, 4.5
+ * ============================================ */
+
+/* Enhanced focus indicators for keyboard navigation */
+.quick-reply-button:focus-visible {
+  outline: 2px solid var(--neon-cyan, #00D4FF);
+  outline-offset: 3px;
+  border-radius: var(--radius-lg);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .quick-reply-button {
+    border-width: 2px;
+    border-color: currentColor;
+    background: transparent;
+  }
+  
+  .quick-reply-button:hover:not(:disabled) {
+    background: rgba(0, 212, 255, 0.2);
+  }
+  
+  .quick-reply-button:focus-visible {
+    outline-width: 3px;
+    outline-offset: 2px;
+  }
+}
+
+/* Reduced motion support - remove animations for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .quick-reply-button {
+    transition: none;
+  }
+  
+  .quick-reply-button:hover:not(:disabled),
+  .quick-reply-button:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* ============================================
+ * DARK MODE COMPATIBILITY
+ * Ensure proper contrast in dark themes
+ * ============================================ */
+
+[data-theme="night"] .quick-reply-button,
+[data-theme="dark"] .quick-reply-button {
+  background: rgba(0, 212, 255, 0.12);
+  border-color: rgba(0, 212, 255, 0.4);
+  color: var(--neon-cyan, #00D4FF);
+}
+
+[data-theme="night"] .quick-reply-button:hover:not(:disabled),
+[data-theme="dark"] .quick-reply-button:hover:not(:disabled) {
+  background: rgba(0, 212, 255, 0.18);
+  border-color: var(--neon-cyan, #00D4FF);
+}
+
+/* ============================================
+ * LOADING STATE (for future enhancement)
+ * Optional loading indicator styling
+ * ============================================ */
+
+.quick-reply-button--loading {
+  cursor: wait;
+  opacity: 0.8;
+}
+
+.quick-reply-button--loading .quick-reply-button__text {
+  opacity: 0.7;
+}
+
+.quick-reply-button--loading .quick-reply-button__icon {
+  animation: quick-reply-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes quick-reply-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+}
+
+/* Disable pulse animation for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .quick-reply-button--loading .quick-reply-button__icon {
+    animation: none;
+  }
+}
+
+/* ============================================
+ * PRINT STYLES
+ * Ensure button is visible in print media
+ * ============================================ */
+
+@media print {
+  .quick-reply-button {
+    background: transparent !important;
+    border: 1px solid #000 !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+}

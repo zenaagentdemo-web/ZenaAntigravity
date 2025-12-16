@@ -1,0 +1,693 @@
+/**
+ * High-Tech Interactive Elements
+ * 
+ * Neon buttons, inputs, and toggle switches for the high-tech AI aesthetic.
+ * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
+ */
+
+/* ============================================
+ * NEON PRIMARY BUTTONS
+ * Gradient background with glow effects
+ * Requirements: 6.1, 6.3
+ * ============================================ */
+
+.btn-neon-primary {
+  /* Base styles */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  
+  /* Typography */
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  text-decoration: none;
+  white-space: nowrap;
+  
+  /* Layout */
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  
+  /* Neon gradient background */
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  color: var(--bg-primary);
+  
+  /* Glow effect */
+  box-shadow: var(--glow-cyan);
+  
+  /* Transitions - using transform and opacity for 60fps */
+  transition: transform var(--duration-normal) var(--ease-smooth),
+              box-shadow var(--duration-normal) var(--ease-smooth),
+              filter var(--duration-normal) var(--ease-smooth);
+  
+  /* Focus styles */
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover state - intensified glow and lift */
+.btn-neon-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px var(--neon-cyan), 0 0 80px var(--neon-cyan-dim);
+  filter: brightness(1.1);
+}
+
+/* Active/Press state - flash effect */
+.btn-neon-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 0 60px var(--neon-cyan), 0 0 100px var(--neon-cyan-dim), inset 0 0 20px rgba(255, 255, 255, 0.3);
+  filter: brightness(1.2);
+}
+
+/* Focus visible state */
+.btn-neon-primary:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 3px;
+}
+
+/* Disabled state */
+.btn-neon-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  filter: grayscale(0.5);
+}
+
+/* Flash effect pseudo-element for press state */
+.btn-neon-primary::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width var(--duration-fast) var(--ease-smooth),
+              height var(--duration-fast) var(--ease-smooth),
+              opacity var(--duration-fast) var(--ease-smooth);
+  opacity: 0;
+}
+
+.btn-neon-primary:active:not(:disabled)::after {
+  width: 200%;
+  height: 200%;
+  opacity: 0;
+  animation: btn-flash var(--duration-normal) var(--ease-smooth);
+}
+
+@keyframes btn-flash {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.6;
+  }
+  100% {
+    width: 200%;
+    height: 200%;
+    opacity: 0;
+  }
+}
+
+/* Size variants */
+.btn-neon-primary--sm {
+  padding: 8px 16px;
+  font-size: var(--font-size-sm);
+  border-radius: 8px;
+}
+
+.btn-neon-primary--lg {
+  padding: 16px 32px;
+  font-size: var(--font-size-lg);
+  border-radius: 16px;
+}
+
+
+
+/* ============================================
+ * NEON SECONDARY BUTTONS
+ * Transparent background with neon border
+ * Requirements: 6.2
+ * ============================================ */
+
+.btn-neon-secondary {
+  /* Base styles */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  
+  /* Typography */
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  text-decoration: none;
+  white-space: nowrap;
+  
+  /* Layout */
+  padding: 12px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  
+  /* Transparent background with neon border */
+  background: transparent;
+  color: var(--neon-cyan);
+  border: 1px solid var(--neon-cyan);
+  
+  /* Inner glow */
+  box-shadow: inset 0 0 20px rgba(0, 212, 255, 0.1);
+  
+  /* Transitions */
+  transition: transform var(--duration-normal) var(--ease-smooth),
+              box-shadow var(--duration-normal) var(--ease-smooth),
+              background-color var(--duration-normal) var(--ease-smooth),
+              border-color var(--duration-normal) var(--ease-smooth);
+  
+  /* Focus styles */
+  outline: none;
+  position: relative;
+}
+
+/* Hover state - background fill and glow */
+.btn-neon-secondary:hover:not(:disabled) {
+  background: rgba(0, 212, 255, 0.1);
+  box-shadow: var(--glow-cyan), inset 0 0 20px rgba(0, 212, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Active/Press state */
+.btn-neon-secondary:active:not(:disabled) {
+  background: rgba(0, 212, 255, 0.15);
+  box-shadow: var(--glow-cyan), inset 0 0 30px rgba(0, 212, 255, 0.3);
+  transform: translateY(0);
+}
+
+/* Focus visible state */
+.btn-neon-secondary:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 3px;
+}
+
+/* Disabled state */
+.btn-neon-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Size variants */
+.btn-neon-secondary--sm {
+  padding: 8px 16px;
+  font-size: var(--font-size-sm);
+  border-radius: 8px;
+}
+
+.btn-neon-secondary--lg {
+  padding: 16px 32px;
+  font-size: var(--font-size-lg);
+  border-radius: 16px;
+}
+
+/* Color variants */
+.btn-neon-secondary--magenta {
+  color: var(--neon-magenta);
+  border-color: var(--neon-magenta);
+  box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.1);
+}
+
+.btn-neon-secondary--magenta:hover:not(:disabled) {
+  background: rgba(255, 0, 255, 0.1);
+  box-shadow: var(--glow-magenta), inset 0 0 20px rgba(255, 0, 255, 0.2);
+}
+
+.btn-neon-secondary--purple {
+  color: var(--neon-purple);
+  border-color: var(--neon-purple);
+  box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+.btn-neon-secondary--purple:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: var(--glow-purple), inset 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+/* ============================================
+ * NEON INPUT FIELDS
+ * Dark background with neon focus states
+ * Requirements: 6.4
+ * ============================================ */
+
+.input-neon {
+  /* Base styles */
+  width: 100%;
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-base);
+  
+  /* Layout */
+  padding: 12px 16px;
+  border-radius: 12px;
+  
+  /* Dark background styling */
+  background-color: var(--bg-secondary);
+  color: var(--text-primary-ht);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* Transitions */
+  transition: border-color var(--duration-normal) var(--ease-smooth),
+              box-shadow var(--duration-normal) var(--ease-smooth),
+              background-color var(--duration-normal) var(--ease-smooth);
+  
+  /* Remove default styles */
+  outline: none;
+  appearance: none;
+}
+
+.input-neon::placeholder {
+  color: var(--text-tertiary-ht);
+}
+
+/* Hover state */
+.input-neon:hover:not(:disabled):not(:focus) {
+  border-color: rgba(0, 212, 255, 0.3);
+  background-color: var(--bg-tertiary);
+}
+
+/* Focus state - neon border and glow */
+.input-neon:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 20px var(--neon-cyan-dim), inset 0 0 10px rgba(0, 212, 255, 0.05);
+  background-color: var(--bg-tertiary);
+}
+
+/* Focus visible state */
+.input-neon:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+/* Error state */
+.input-neon--error {
+  border-color: var(--status-urgent);
+}
+
+.input-neon--error:focus {
+  border-color: var(--status-urgent);
+  box-shadow: 0 0 20px var(--status-urgent-dim), inset 0 0 10px rgba(255, 68, 68, 0.05);
+}
+
+/* Success state */
+.input-neon--success {
+  border-color: var(--status-success);
+}
+
+.input-neon--success:focus {
+  border-color: var(--status-success);
+  box-shadow: 0 0 20px var(--status-success-dim), inset 0 0 10px rgba(0, 255, 136, 0.05);
+}
+
+/* Disabled state */
+.input-neon:disabled {
+  background-color: rgba(26, 26, 46, 0.5);
+  border-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted-ht);
+  cursor: not-allowed;
+}
+
+/* Size variants */
+.input-neon--sm {
+  padding: 8px 12px;
+  font-size: var(--font-size-sm);
+  border-radius: 8px;
+}
+
+.input-neon--lg {
+  padding: 16px 20px;
+  font-size: var(--font-size-lg);
+  border-radius: 16px;
+}
+
+/* Input wrapper for labels */
+.input-neon-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.input-neon-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary-ht);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-neon-helper {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary-ht);
+}
+
+.input-neon-helper--error {
+  color: var(--status-urgent);
+}
+
+
+
+/* ============================================
+ * NEON TOGGLE SWITCHES
+ * Animated sliding toggle with glow indicators
+ * Requirements: 6.5
+ * ============================================ */
+
+.toggle-neon {
+  /* Base styles */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-neon__input {
+  /* Hide the actual checkbox */
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-neon__track {
+  /* Track styling */
+  position: relative;
+  width: 52px;
+  height: 28px;
+  border-radius: 14px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* Transitions */
+  transition: background-color var(--duration-normal) var(--ease-smooth),
+              border-color var(--duration-normal) var(--ease-smooth),
+              box-shadow var(--duration-normal) var(--ease-smooth);
+}
+
+.toggle-neon__thumb {
+  /* Thumb/knob styling */
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--text-tertiary-ht);
+  
+  /* Transitions - using transform for 60fps */
+  transition: transform var(--duration-normal) var(--ease-smooth),
+              background-color var(--duration-normal) var(--ease-smooth),
+              box-shadow var(--duration-normal) var(--ease-smooth);
+}
+
+/* Hover state */
+.toggle-neon:hover .toggle-neon__track {
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.toggle-neon:hover .toggle-neon__thumb {
+  background-color: var(--text-secondary-ht);
+}
+
+/* Checked/Active state */
+.toggle-neon__input:checked + .toggle-neon__track {
+  background-color: rgba(0, 212, 255, 0.2);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px var(--neon-cyan-dim);
+}
+
+.toggle-neon__input:checked + .toggle-neon__track .toggle-neon__thumb {
+  transform: translateX(24px);
+  background-color: var(--neon-cyan);
+  box-shadow: 0 0 15px var(--neon-cyan), 0 0 30px var(--neon-cyan-dim);
+}
+
+/* Focus state */
+.toggle-neon__input:focus-visible + .toggle-neon__track {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+.toggle-neon__input:disabled + .toggle-neon__track {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle-neon__input:disabled + .toggle-neon__track .toggle-neon__thumb {
+  background-color: var(--text-muted-ht);
+}
+
+/* Toggle with label */
+.toggle-neon__label {
+  margin-left: var(--spacing-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary-ht);
+}
+
+/* Size variants */
+.toggle-neon--sm .toggle-neon__track {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+}
+
+.toggle-neon--sm .toggle-neon__thumb {
+  width: 16px;
+  height: 16px;
+}
+
+.toggle-neon--sm .toggle-neon__input:checked + .toggle-neon__track .toggle-neon__thumb {
+  transform: translateX(18px);
+}
+
+.toggle-neon--lg .toggle-neon__track {
+  width: 64px;
+  height: 34px;
+  border-radius: 17px;
+}
+
+.toggle-neon--lg .toggle-neon__thumb {
+  width: 28px;
+  height: 28px;
+}
+
+.toggle-neon--lg .toggle-neon__input:checked + .toggle-neon__track .toggle-neon__thumb {
+  transform: translateX(30px);
+}
+
+/* Color variants */
+.toggle-neon--magenta .toggle-neon__input:checked + .toggle-neon__track {
+  background-color: rgba(255, 0, 255, 0.2);
+  border-color: var(--neon-magenta);
+  box-shadow: 0 0 15px var(--neon-magenta-dim);
+}
+
+.toggle-neon--magenta .toggle-neon__input:checked + .toggle-neon__track .toggle-neon__thumb {
+  background-color: var(--neon-magenta);
+  box-shadow: 0 0 15px var(--neon-magenta), 0 0 30px var(--neon-magenta-dim);
+}
+
+.toggle-neon--purple .toggle-neon__input:checked + .toggle-neon__track {
+  background-color: rgba(139, 92, 246, 0.2);
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 15px var(--neon-purple-dim);
+}
+
+.toggle-neon--purple .toggle-neon__input:checked + .toggle-neon__track .toggle-neon__thumb {
+  background-color: var(--neon-purple);
+  box-shadow: 0 0 15px var(--neon-purple), 0 0 30px var(--neon-purple-dim);
+}
+
+.toggle-neon--success .toggle-neon__input:checked + .toggle-neon__track {
+  background-color: rgba(0, 255, 136, 0.2);
+  border-color: var(--status-success);
+  box-shadow: 0 0 15px var(--status-success-dim);
+}
+
+.toggle-neon--success .toggle-neon__input:checked + .toggle-neon__track .toggle-neon__thumb {
+  background-color: var(--status-success);
+  box-shadow: 0 0 15px var(--status-success), 0 0 30px var(--status-success-dim);
+}
+
+/* ============================================
+ * HIGH-TECH THEME BUTTON OVERRIDES
+ * Apply neon styling to existing buttons in high-tech theme
+ * ============================================ */
+
+[data-theme="high-tech"] .btn--primary {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  color: var(--bg-primary);
+  border: none;
+  box-shadow: var(--glow-cyan);
+}
+
+[data-theme="high-tech"] .btn--primary:hover:not(.btn--disabled) {
+  box-shadow: 0 0 40px var(--neon-cyan), 0 0 80px var(--neon-cyan-dim);
+  filter: brightness(1.1);
+}
+
+[data-theme="high-tech"] .btn--primary:active:not(.btn--disabled) {
+  box-shadow: 0 0 60px var(--neon-cyan), 0 0 100px var(--neon-cyan-dim);
+  filter: brightness(1.2);
+}
+
+[data-theme="high-tech"] .btn--secondary {
+  background: transparent;
+  color: var(--neon-cyan);
+  border: 1px solid var(--neon-cyan);
+  box-shadow: inset 0 0 20px rgba(0, 212, 255, 0.1);
+}
+
+[data-theme="high-tech"] .btn--secondary:hover:not(.btn--disabled) {
+  background: rgba(0, 212, 255, 0.1);
+  box-shadow: var(--glow-cyan), inset 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+[data-theme="high-tech"] .btn--outline {
+  background: transparent;
+  color: var(--neon-cyan);
+  border: 1px solid var(--neon-cyan);
+}
+
+[data-theme="high-tech"] .btn--outline:hover:not(.btn--disabled) {
+  background: rgba(0, 212, 255, 0.1);
+  box-shadow: var(--glow-cyan);
+}
+
+[data-theme="high-tech"] .btn--ghost {
+  color: var(--text-secondary-ht);
+}
+
+[data-theme="high-tech"] .btn--ghost:hover:not(.btn--disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--neon-cyan);
+}
+
+[data-theme="high-tech"] .btn--danger {
+  background: linear-gradient(135deg, var(--status-urgent), #FF6B6B);
+  box-shadow: var(--glow-urgent);
+}
+
+[data-theme="high-tech"] .btn--danger:hover:not(.btn--disabled) {
+  box-shadow: 0 0 40px var(--status-urgent), 0 0 80px var(--status-urgent-dim);
+}
+
+/* ============================================
+ * HIGH-TECH THEME INPUT OVERRIDES
+ * Apply neon styling to existing inputs in high-tech theme
+ * ============================================ */
+
+[data-theme="high-tech"] .input {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary-ht);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="high-tech"] .input::placeholder {
+  color: var(--text-tertiary-ht);
+}
+
+[data-theme="high-tech"] .input:hover:not(:disabled):not(:focus) {
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+[data-theme="high-tech"] .input:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 20px var(--neon-cyan-dim);
+}
+
+[data-theme="high-tech"] .input--error {
+  border-color: var(--status-urgent);
+}
+
+[data-theme="high-tech"] .input--error:focus {
+  box-shadow: 0 0 20px var(--status-urgent-dim);
+}
+
+[data-theme="high-tech"] .input:disabled {
+  background-color: rgba(26, 26, 46, 0.5);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="high-tech"] .input-label {
+  color: var(--text-secondary-ht);
+}
+
+/* ============================================
+ * REDUCED MOTION SUPPORT
+ * Accessibility: Respect user preferences
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-neon-primary,
+  .btn-neon-secondary,
+  .input-neon,
+  .toggle-neon__track,
+  .toggle-neon__thumb {
+    transition: none;
+  }
+  
+  .btn-neon-primary:hover:not(:disabled),
+  .btn-neon-primary:active:not(:disabled),
+  .btn-neon-secondary:hover:not(:disabled),
+  .btn-neon-secondary:active:not(:disabled) {
+    transform: none;
+  }
+  
+  .btn-neon-primary::after {
+    animation: none;
+  }
+}
+
+/* ============================================
+ * TOUCH DEVICE OPTIMIZATIONS
+ * ============================================ */
+
+@media (pointer: coarse) {
+  .btn-neon-primary,
+  .btn-neon-secondary {
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+  }
+  
+  .input-neon {
+    min-height: var(--touch-target-min);
+  }
+  
+  .toggle-neon__track {
+    min-width: 52px;
+    min-height: 28px;
+  }
+}
+
+/* ============================================
+ * MOBILE RESPONSIVE
+ * ============================================ */
+
+@media (max-width: 768px) {
+  .btn-neon-primary,
+  .btn-neon-secondary {
+    padding: 10px 20px;
+    font-size: var(--font-size-sm);
+  }
+  
+  .btn-neon-primary--lg,
+  .btn-neon-secondary--lg {
+    padding: 14px 28px;
+    font-size: var(--font-size-base);
+  }
+}

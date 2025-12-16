@@ -1,0 +1,1060 @@
+/**
+ * ThreadCard Component Styles
+ * 
+ * High-tech glassmorphism styling for email thread cards.
+ * Features: glassmorphism background, gradient accent line, hover animations, glow effects.
+ * 
+ * Requirements: 1.2, 1.3, 1.4
+ */
+
+/* ============================================
+ * BASE THREAD CARD - HIGH-TECH GLASSMORPHISM
+ * Enhanced glassmorphism card with all required styling
+ * Requirements: 1.2, 1.3, 1.4
+ * ============================================ */
+
+.thread-card {
+  position: relative;
+
+  /* Enhanced glassmorphism background */
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+
+  /* Glassmorphism border */
+  border: var(--glass-border, 1px solid rgba(255, 255, 255, 0.1));
+  border-radius: 16px;
+
+  /* Layout */
+  padding: 20px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  overflow: hidden;
+
+  /* DO NOT use CSS containment - it breaks position:fixed for child/sibling elements */
+  isolation: isolate;
+
+  /* Smooth high-tech transitions without backdrop filters */
+  transition: transform var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    box-shadow var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    border-color var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+
+  /* Will-change optimization for animations */
+  will-change: transform, box-shadow, border-color;
+
+  /* Subtle base glow */
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  /* Performance Optimizations - Requirement 7.2 */
+  content-visibility: auto;
+  contain-intrinsic-size: 0 200px;
+  /* Approximate height to prevent scroll bar jumping */
+  contain: paint layout style;
+}
+
+/* Top gradient accent line - cyan neon */
+.thread-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent,
+      var(--neon-cyan, #00D4FF),
+      transparent);
+  opacity: 0.6;
+  z-index: 1;
+}
+
+/* Enhanced hover state with lift and intensified glow */
+.thread-card:hover {
+  /* Card lift animation */
+  transform: translateY(-4px);
+
+  /* Enhanced glassmorphism */
+  background: var(--glass-bg-hover, rgba(255, 255, 255, 0.08));
+  border-color: rgba(0, 212, 255, 0.3);
+
+  /* Intensified glow effects */
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(0, 212, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Selected state in batch mode */
+.thread-card--selected {
+  border-color: var(--neon-cyan, #00D4FF);
+  background: rgba(0, 212, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+/* Expanded state with dropdown */
+.thread-card--expanded {
+  background: rgba(255, 255, 255, 0.08);
+
+  /* Smooth height transition for dropdown expansion */
+  transition: transform var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    box-shadow var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    border-color var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    background var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  .thread-card {
+    background: rgba(26, 26, 46, 0.95);
+  }
+
+  .thread-card:hover {
+    background: rgba(30, 30, 50, 0.98);
+  }
+}
+
+/* ============================================
+ * BATCH MODE CHECKBOX - CUSTOM GLOWING GREEN TICK
+ * ============================================ */
+
+/* When in batch mode, shift card content to make room for checkbox 
+ * Requirements: Must not touch or overlay any text or icons.
+ */
+.thread-card--batch-mode {
+  padding-left: 72px !important;
+}
+
+.thread-card__checkbox {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  left: 24px !important;
+  z-index: 99 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.thread-card__checkbox input[type="checkbox"] {
+  /* Reset appearance */
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+
+  /* Rigid sizing */
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
+
+  /* Styles */
+  border-radius: 6px !important;
+  background-color: rgba(20, 20, 30, 0.6) !important;
+  border: 2px solid #00FF88 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  box-sizing: border-box !important;
+
+  display: grid !important;
+  place-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.thread-card__checkbox input[type="checkbox"]:hover {
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.4) !important;
+  background-color: rgba(0, 255, 136, 0.1) !important;
+}
+
+.thread-card__checkbox input[type="checkbox"]:checked {
+  background-color: rgba(0, 255, 136, 0.2) !important;
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.5) !important;
+}
+
+/* Tick mark using ::before content */
+.thread-card__checkbox input[type="checkbox"]::before {
+  content: "" !important;
+  width: 14px !important;
+  height: 14px !important;
+  background-color: #00FF88 !important;
+  transform: scale(0) !important;
+  transition: 0.2s transform ease-in-out !important;
+  box-shadow: 0 0 10px #00FF88 !important;
+  border-radius: 2px !important;
+  /* Option for actual tick shape if preferred over square fill: */
+  /* clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%) !important; */
+  /* Standard tick shape with clip-path */
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%) !important;
+}
+
+.thread-card__checkbox input[type="checkbox"]:checked::before {
+  transform: scale(1) !important;
+}
+
+
+
+/* ============================================
+ * HEADER ROW
+ * Classification badge, risk indicator, timestamp
+ * ============================================ */
+
+.thread-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.thread-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ============================================
+ * CLASSIFICATION BADGE
+ * ============================================ */
+
+.thread-card__classification {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.thread-card__classification--buyer {
+  background: rgba(0, 212, 255, 0.15);
+  color: #00D4FF;
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.thread-card__classification--vendor {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8B5CF6;
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.thread-card__classification--market {
+  background: rgba(0, 255, 136, 0.15);
+  color: #00FF88;
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+.thread-card__classification--lawyer_broker {
+  background: rgba(255, 170, 0, 0.15);
+  color: #FFAA00;
+  border-color: rgba(255, 170, 0, 0.3);
+}
+
+.thread-card__classification--noise {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+ * RISK INDICATOR
+ * Animated pulsing indicator with color-coded status
+ * Requirements: 2.3, 2.4
+ * ============================================ */
+
+.thread-card__risk {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.thread-card__risk-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: risk-pulse 2s ease-in-out infinite;
+}
+
+/* High risk - Red with pulsing animation */
+.thread-card__risk--high {
+  background: rgba(255, 68, 68, 0.15);
+  color: #FF4444;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+.thread-card__risk--high .thread-card__risk-dot {
+  background: #FF4444;
+  box-shadow: 0 0 10px #FF4444, 0 0 20px rgba(255, 68, 68, 0.5);
+  animation: risk-pulse-urgent 1s ease-in-out infinite;
+}
+
+/* Medium risk - Amber */
+.thread-card__risk--medium {
+  background: rgba(255, 170, 0, 0.15);
+  color: #FFAA00;
+  border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+.thread-card__risk--medium .thread-card__risk-dot {
+  background: #FFAA00;
+  box-shadow: 0 0 10px #FFAA00, 0 0 20px rgba(255, 170, 0, 0.5);
+}
+
+/* Low risk - Green */
+.thread-card__risk--low {
+  background: rgba(0, 255, 136, 0.15);
+  color: #00FF88;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.thread-card__risk--low .thread-card__risk-dot {
+  background: #00FF88;
+  box-shadow: 0 0 10px #00FF88, 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+/* Risk pulse animations */
+@keyframes risk-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes risk-pulse-urgent {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+/* ============================================
+ * OVERDUE BADGE
+ * Requirements: 2.5
+ * ============================================ */
+
+.thread-card__overdue {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(255, 68, 68, 0.2);
+  color: #FF4444;
+  border: 1px solid rgba(255, 68, 68, 0.4);
+  animation: overdue-pulse 2s ease-in-out infinite;
+}
+
+@keyframes overdue-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(255, 68, 68, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+  }
+}
+
+/* ============================================
+ * DRAFT READY INDICATOR
+ * Requirements: 3.2
+ * ============================================ */
+
+.thread-card__draft {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(0, 212, 255, 0.15);
+  color: #00D4FF;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+}
+
+/* ============================================
+ * TIMESTAMP
+ * ============================================ */
+
+.thread-card__timestamp {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ============================================
+ * SUBJECT LINE
+ * ============================================ */
+
+.thread-card__subject {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================
+ * PARTICIPANTS
+ * Requirements: 3.3
+ * ============================================ */
+
+.thread-card__participants {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.thread-card__participant {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.thread-card__participant-more {
+  color: var(--neon-cyan, #00D4FF);
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+/* ============================================
+ * SUMMARY
+ * ============================================ */
+
+.thread-card__summary {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================
+ * LINKED ENTITY BADGES
+ * Property and Deal badges
+ * Requirements: 3.4, 3.5
+ * ============================================ */
+
+.thread-card__entities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.thread-card__property-badge,
+.thread-card__deal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.thread-card__badge-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.thread-card__property-badge {
+  color: var(--neon-cyan, #00D4FF);
+  border-color: rgba(0, 212, 255, 0.2);
+}
+
+/* Deal stage colors */
+.thread-card__deal-badge--inquiry,
+.thread-card__deal-badge--viewing {
+  color: #00D4FF;
+  border-color: rgba(0, 212, 255, 0.2);
+}
+
+.thread-card__deal-badge--offer,
+.thread-card__deal-badge--negotiation {
+  color: #FFAA00;
+  border-color: rgba(255, 170, 0, 0.2);
+}
+
+.thread-card__deal-badge--conditional,
+.thread-card__deal-badge--unconditional {
+  color: #8B5CF6;
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.thread-card__deal-badge--settled {
+  color: #00FF88;
+  border-color: rgba(0, 255, 136, 0.2);
+}
+
+/* ============================================
+ * ACTION ROW
+ * Quick Reply button and dropdown toggle
+ * Requirements: 4.1, 4.2, 4.3, 4.5
+ * ============================================ */
+
+.thread-card__action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Spacer to push dropdown to the right when no quick reply */
+.thread-card__action-spacer {
+  flex: 1;
+}
+
+/* Quick Reply Button */
+.thread-card__quick-reply {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  color: var(--neon-cyan, #00D4FF);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Ensure 44px minimum touch target - Requirements: 4.3 */
+  min-height: 44px;
+  min-width: 44px;
+
+  /* Enhanced glassmorphism effect */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.thread-card__quick-reply svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.thread-card__quick-reply:hover {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.thread-card__quick-reply:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.5);
+}
+
+.thread-card__quick-reply:active {
+  transform: translateY(0);
+}
+
+/* Dropdown Toggle Button */
+.thread-card__dropdown-toggle {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  flex-shrink: 0;
+
+  /* Enhanced glassmorphism effect */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.thread-card__dropdown-toggle svg {
+  width: 16px;
+  height: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 200ms ease, transform 200ms ease;
+}
+
+.thread-card__dropdown-toggle:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.thread-card__dropdown-toggle:hover svg {
+  color: var(--neon-cyan, #00D4FF);
+}
+
+.thread-card__dropdown-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.5);
+}
+
+.thread-card__dropdown-toggle:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+ * INLINE DROPDOWN CONTAINER
+ * AI Summary dropdown with smooth height transitions
+ * Requirements: 1.4, 2.3, 7.1
+ * ============================================ */
+
+.thread-card__dropdown-container {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* Smooth height animation */
+  animation: dropdown-expand 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* CSS containment for performance */
+  contain: layout style;
+}
+
+@keyframes dropdown-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 1000px;
+  }
+}
+
+.thread-card__dropdown-section {
+  margin-bottom: 20px;
+}
+
+.thread-card__dropdown-section:last-child {
+  margin-bottom: 0;
+}
+
+.thread-card__dropdown-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.thread-card__dropdown-title svg {
+  width: 16px;
+  height: 16px;
+  color: var(--neon-cyan, #00D4FF);
+  flex-shrink: 0;
+}
+
+.thread-card__dropdown-summary {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ============================================
+ * DROPDOWN ACTIONS
+ * Recommended action buttons (max 3)
+ * Requirements: 6.3
+ * ============================================ */
+
+.thread-card__dropdown-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.thread-card__action-button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 200ms ease;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+
+  /* Ensure minimum touch target */
+  min-height: 32px;
+}
+
+.thread-card__action-button--primary {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+  color: var(--neon-cyan, #00D4FF);
+}
+
+.thread-card__action-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.thread-card__action-button--primary:hover {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+}
+
+/* ============================================
+ * DROPDOWN ENTITIES
+ * Linked property and deal cards
+ * Requirements: 6.4, 6.5
+ * ============================================ */
+
+.thread-card__dropdown-entities {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.thread-card__entity-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.thread-card__entity-card svg {
+  width: 16px;
+  height: 16px;
+  color: var(--neon-cyan, #00D4FF);
+  flex-shrink: 0;
+}
+
+/* ============================================
+ * DROPDOWN PARTICIPANTS
+ * Participant cards with avatars
+ * Requirements: 6.5
+ * ============================================ */
+
+.thread-card__dropdown-participants {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.thread-card__participant-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+}
+
+.thread-card__participant-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 212, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--neon-cyan, #00D4FF);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.thread-card__participant-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thread-card__participant-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.thread-card__participant-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.thread-card__participant-email {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================
+ * ACCESSIBILITY
+ * ============================================ */
+
+/* Focus indicator */
+.thread-card:focus-visible {
+  outline: 2px solid var(--neon-cyan, #00D4FF);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+  .thread-card,
+  .thread-card__risk-dot,
+  .thread-card__overdue,
+  .thread-card__dropdown-toggle,
+  .thread-card__quick-reply,
+  .thread-card__dropdown-container {
+    animation: none;
+    transition: none;
+  }
+
+  .thread-card:hover {
+    transform: none;
+  }
+
+  .thread-card__dropdown-container {
+    animation: none;
+  }
+
+  @keyframes dropdown-expand {
+
+    from,
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      max-height: none;
+    }
+  }
+}
+
+/* ============================================
+ * RESPONSIVE ADJUSTMENTS
+ * ============================================ */
+
+@media (max-width: 480px) {
+  .thread-card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .thread-card__header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .thread-card__timestamp {
+    align-self: flex-start;
+  }
+
+  .thread-card__subject {
+    font-size: 15px;
+  }
+
+  .thread-card__summary {
+    font-size: 13px;
+  }
+
+  /* Action row mobile adjustments - Requirements: 4.2, 4.5 */
+  .thread-card__action-row {
+    gap: 10px;
+    padding-top: 10px;
+  }
+
+  .thread-card__quick-reply {
+    padding: 10px 14px;
+    font-size: 14px;
+    /* Ensure adequate touch target on mobile */
+    min-height: 48px;
+  }
+
+  .thread-card__dropdown-toggle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .thread-card__dropdown-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Dropdown adjustments */
+  .thread-card__dropdown-actions {
+    flex-direction: column;
+  }
+
+  .thread-card__action-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* ============================================
+ * ACTION ANIMATIONS
+ * Slide-out, pulse-glow, and fade-out animations
+ * Requirements: 4.3, 4.4
+ * ============================================ */
+
+/* Slide-out animation for snooze action */
+.thread-card--slide-out {
+  animation: thread-slide-out 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes thread-slide-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+
+/* Pulse-glow animation for send draft action */
+.thread-card--pulse-glow {
+  animation: thread-pulse-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes thread-pulse-glow {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(0, 212, 255, 0.3),
+      0 0 40px rgba(0, 212, 255, 0.2);
+    border-color: rgba(0, 212, 255, 0.5);
+  }
+
+  50% {
+    box-shadow:
+      0 0 30px rgba(0, 212, 255, 0.5),
+      0 0 60px rgba(0, 212, 255, 0.3);
+    border-color: rgba(0, 212, 255, 0.8);
+  }
+}
+
+/* Fade-out animation for archive action */
+.thread-card--fade-out {
+  animation: thread-fade-out 300ms ease-out forwards;
+}
+
+@keyframes thread-fade-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Disable hover effects during animations */
+.thread-card--slide-out:hover,
+.thread-card--pulse-glow:hover,
+.thread-card--fade-out:hover {
+  transform: none;
+}
+
+/* Reduced motion support for action animations */
+@media (prefers-reduced-motion: reduce) {
+
+  .thread-card--slide-out,
+  .thread-card--pulse-glow,
+  .thread-card--fade-out {
+    animation: none;
+  }
+
+  .thread-card--slide-out {
+    opacity: 0;
+  }
+
+  .thread-card--fade-out {
+    opacity: 0;
+  }
+}

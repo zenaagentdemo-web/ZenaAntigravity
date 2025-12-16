@@ -1,0 +1,352 @@
+/**
+ * High-Tech Theme Cross-Browser Compatibility
+ * 
+ * Ensures glassmorphism fallbacks and glow effects work across all browsers.
+ * Requirements: 8.3
+ */
+
+/* ============================================
+ * GLASSMORPHISM FALLBACKS
+ * Fallback styles for browsers without backdrop-filter support
+ * ============================================ */
+
+/* Feature detection for backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  /* Glass card fallback */
+  [data-theme="high-tech"] .glass-card {
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    /* Add subtle gradient to simulate depth */
+    background-image: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+  }
+  
+  /* Glass panel fallback */
+  [data-theme="high-tech"] .glass-panel {
+    background: rgba(26, 26, 46, 0.98);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  /* Glass navigation fallback */
+  [data-theme="high-tech"] .glass-nav,
+  [data-theme="high-tech"] .bottom-nav-ht__glass-bg {
+    background: rgba(10, 10, 15, 0.98);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  /* Widget card fallback */
+  [data-theme="high-tech"] .widget-card-ht {
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  /* Collapsible alerts panel fallback */
+  [data-theme="high-tech"] .collapsible-alerts-panel {
+    background: rgba(26, 26, 46, 0.98);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  /* Quick actions carousel fallback */
+  [data-theme="high-tech"] .quick-actions-carousel__action {
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  /* Floating metric orbs fallback */
+  [data-theme="high-tech"] .floating-metric-orb {
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* ============================================
+ * WEBKIT BACKDROP-FILTER PREFIX
+ * Ensure Safari compatibility
+ * ============================================ */
+
+[data-theme="high-tech"] .glass-card,
+[data-theme="high-tech"] .glass-panel,
+[data-theme="high-tech"] .glass-nav,
+[data-theme="high-tech"] .widget-card-ht,
+[data-theme="high-tech"] .bottom-nav-ht__glass-bg {
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+/* ============================================
+ * GLOW EFFECTS CROSS-BROWSER
+ * Ensure box-shadow glow effects work consistently
+ * ============================================ */
+
+/* Normalize box-shadow rendering */
+[data-theme="high-tech"] .zena-avatar,
+[data-theme="high-tech"] .bottom-nav-ht__zena-orb-inner,
+[data-theme="high-tech"] .btn-neon-primary,
+[data-theme="high-tech"] .btn-neon-secondary,
+[data-theme="high-tech"] .status-dot-ht {
+  -webkit-box-shadow: var(--glow-cyan);
+  -moz-box-shadow: var(--glow-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* ============================================
+ * GRADIENT TEXT CROSS-BROWSER
+ * Ensure gradient text works in all browsers
+ * ============================================ */
+
+[data-theme="high-tech"] .metric-value-ht,
+[data-theme="high-tech"] .greeting-name,
+[data-theme="high-tech"] .title-glow {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Fallback for browsers that don't support background-clip: text */
+@supports not (-webkit-background-clip: text) {
+  [data-theme="high-tech"] .metric-value-ht,
+  [data-theme="high-tech"] .greeting-name,
+  [data-theme="high-tech"] .title-glow {
+    background: none;
+    -webkit-text-fill-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+  }
+}
+
+/* ============================================
+ * CSS CUSTOM PROPERTIES FALLBACK
+ * Fallback for browsers without CSS custom properties
+ * ============================================ */
+
+@supports not (--test: 0) {
+  [data-theme="high-tech"] {
+    background-color: #0A0A0F;
+    color: #FFFFFF;
+  }
+  
+  [data-theme="high-tech"] .glass-card {
+    background-color: rgba(26, 26, 46, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  [data-theme="high-tech"] .btn-neon-primary {
+    background: linear-gradient(135deg, #00D4FF, #8B5CF6);
+    color: #0A0A0F;
+  }
+  
+  [data-theme="high-tech"] .btn-neon-secondary {
+    background: transparent;
+    color: #00D4FF;
+    border: 1px solid #00D4FF;
+  }
+}
+
+/* ============================================
+ * ANIMATION CROSS-BROWSER
+ * Ensure animations work consistently
+ * ============================================ */
+
+/* Webkit animation prefix */
+@-webkit-keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+  }
+}
+
+@-webkit-keyframes breathe {
+  0%, 100% {
+    -webkit-box-shadow: 0 0 20px #00D4FF, 0 0 40px rgba(0, 212, 255, 0.5);
+    box-shadow: 0 0 20px #00D4FF, 0 0 40px rgba(0, 212, 255, 0.5);
+  }
+  33% {
+    -webkit-box-shadow: 0 0 20px #FF00FF, 0 0 40px rgba(255, 0, 255, 0.5);
+    box-shadow: 0 0 20px #FF00FF, 0 0 40px rgba(255, 0, 255, 0.5);
+  }
+  66% {
+    -webkit-box-shadow: 0 0 20px #8B5CF6, 0 0 40px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 20px #8B5CF6, 0 0 40px rgba(139, 92, 246, 0.5);
+  }
+}
+
+@-webkit-keyframes ring-expand {
+  0% {
+    -webkit-transform: scale(0.8);
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(2);
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================
+ * FILTER EFFECTS CROSS-BROWSER
+ * Ensure filter effects work consistently
+ * ============================================ */
+
+[data-theme="high-tech"] .bottom-nav-ht__icon--active {
+  -webkit-filter: drop-shadow(0 0 8px var(--neon-cyan));
+  filter: drop-shadow(0 0 8px var(--neon-cyan));
+}
+
+/* Fallback for browsers without filter support */
+@supports not (filter: drop-shadow(0 0 8px #00D4FF)) {
+  [data-theme="high-tech"] .bottom-nav-ht__icon--active {
+    color: #00D4FF;
+    text-shadow: 0 0 8px #00D4FF;
+  }
+}
+
+/* ============================================
+ * FLEXBOX GAP FALLBACK
+ * For older Safari versions
+ * ============================================ */
+
+@supports not (gap: 1rem) {
+  [data-theme="high-tech"] .high-tech-dashboard__content > * + * {
+    margin-top: var(--spacing-lg, 24px);
+  }
+  
+  [data-theme="high-tech"] .floating-metric-orbs > * + * {
+    margin-left: var(--spacing-md, 16px);
+  }
+  
+  [data-theme="high-tech"] .quick-actions-carousel__container > * + * {
+    margin-left: var(--spacing-sm, 8px);
+  }
+}
+
+/* ============================================
+ * SCROLL SNAP CROSS-BROWSER
+ * Ensure scroll snap works in all browsers
+ * ============================================ */
+
+[data-theme="high-tech"] .quick-actions-carousel__container {
+  -webkit-scroll-snap-type: x mandatory;
+  -ms-scroll-snap-type: x mandatory;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+[data-theme="high-tech"] .quick-actions-carousel__action {
+  -webkit-scroll-snap-align: start;
+  -ms-scroll-snap-align: start;
+  scroll-snap-align: start;
+}
+
+/* ============================================
+ * SAFE AREA INSETS
+ * Handle notched devices (iPhone X+)
+ * ============================================ */
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  [data-theme="high-tech"] .bottom-nav-ht {
+    padding-bottom: env(safe-area-inset-bottom);
+    height: calc(80px + env(safe-area-inset-bottom));
+  }
+  
+  [data-theme="high-tech"] .high-tech-dashboard {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom) + var(--spacing-md, 16px));
+  }
+}
+
+/* ============================================
+ * TOUCH ACTION NORMALIZATION
+ * Ensure consistent touch behavior
+ * ============================================ */
+
+[data-theme="high-tech"] .btn-neon-primary,
+[data-theme="high-tech"] .btn-neon-secondary,
+[data-theme="high-tech"] .bottom-nav-ht__item,
+[data-theme="high-tech"] .bottom-nav-ht__zena-orb,
+[data-theme="high-tech"] .floating-metric-orb,
+[data-theme="high-tech"] .quick-actions-carousel__action {
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+}
+
+/* ============================================
+ * HIGH CONTRAST MODE
+ * Ensure visibility in Windows High Contrast Mode
+ * ============================================ */
+
+@media (forced-colors: active) {
+  [data-theme="high-tech"] .glass-card,
+  [data-theme="high-tech"] .widget-card-ht,
+  [data-theme="high-tech"] .btn-neon-primary,
+  [data-theme="high-tech"] .btn-neon-secondary {
+    border: 2px solid currentColor;
+    forced-color-adjust: none;
+  }
+  
+  [data-theme="high-tech"] .zena-avatar,
+  [data-theme="high-tech"] .bottom-nav-ht__zena-orb-inner {
+    border: 3px solid currentColor;
+    background: Canvas;
+  }
+  
+  [data-theme="high-tech"] .status-dot-ht {
+    border: 2px solid currentColor;
+  }
+}
+
+/* ============================================
+ * PRINT STYLES
+ * Ensure printability
+ * ============================================ */
+
+@media print {
+  [data-theme="high-tech"] {
+    background: white !important;
+    color: black !important;
+  }
+  
+  [data-theme="high-tech"] .glass-card,
+  [data-theme="high-tech"] .widget-card-ht {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+  
+  [data-theme="high-tech"] .zena-avatar,
+  [data-theme="high-tech"] .ambient-background,
+  [data-theme="high-tech"] .bottom-nav-ht {
+    display: none !important;
+  }
+  
+  [data-theme="high-tech"] .metric-value-ht {
+    background: none !important;
+    -webkit-text-fill-color: black !important;
+    color: black !important;
+  }
+}

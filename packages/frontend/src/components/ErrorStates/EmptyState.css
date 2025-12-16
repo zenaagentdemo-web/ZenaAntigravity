@@ -1,0 +1,217 @@
+/* Empty State Component */
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8);
+  text-align: center;
+  min-height: 300px;
+}
+
+.empty-state__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
+  max-width: 400px;
+}
+
+.empty-state__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state__icon {
+  font-size: 4rem;
+  color: var(--color-text-tertiary);
+  line-height: 1;
+}
+
+.empty-state__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.empty-state__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.empty-state__description {
+  margin: 0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+}
+
+.empty-state__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+.empty-state__button {
+  padding: var(--spacing-3) var(--spacing-6);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  min-height: var(--touch-target-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+}
+
+.empty-state__button:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--color-primary-500);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.empty-state__button:active {
+  transform: translateY(1px);
+}
+
+.empty-state__button--primary {
+  background-color: var(--color-primary-500);
+  color: var(--color-white);
+}
+
+.empty-state__button--primary:hover {
+  background-color: var(--color-primary-600);
+}
+
+.empty-state__button--secondary {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+.empty-state__button--secondary:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+  border-color: var(--color-neutral-300);
+}
+
+/* Size Variants */
+.empty-state--sm {
+  padding: var(--spacing-6);
+  min-height: 200px;
+}
+
+.empty-state--sm .empty-state__content {
+  gap: var(--spacing-3);
+  max-width: 300px;
+}
+
+.empty-state--sm .empty-state__icon {
+  font-size: 3rem;
+}
+
+.empty-state--sm .empty-state__title {
+  font-size: var(--font-size-lg);
+}
+
+.empty-state--sm .empty-state__description {
+  font-size: var(--font-size-sm);
+}
+
+.empty-state--lg {
+  padding: var(--spacing-12);
+  min-height: 400px;
+}
+
+.empty-state--lg .empty-state__content {
+  gap: var(--spacing-6);
+  max-width: 500px;
+}
+
+.empty-state--lg .empty-state__icon {
+  font-size: 5rem;
+}
+
+.empty-state--lg .empty-state__title {
+  font-size: var(--font-size-2xl);
+}
+
+.empty-state--lg .empty-state__description {
+  font-size: var(--font-size-lg);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .empty-state {
+    padding: var(--spacing-6);
+  }
+  
+  .empty-state__actions {
+    width: 100%;
+  }
+  
+  .empty-state__button {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .empty-state {
+    padding: var(--spacing-4);
+  }
+  
+  .empty-state__content {
+    max-width: none;
+    width: 100%;
+  }
+  
+  .empty-state__icon {
+    font-size: 3rem !important;
+  }
+  
+  .empty-state__title {
+    font-size: var(--font-size-lg) !important;
+  }
+  
+  .empty-state__description {
+    font-size: var(--font-size-sm) !important;
+  }
+}
+
+/* Dark Mode Support */
+[data-theme="night"] .empty-state__icon {
+  color: var(--color-text-tertiary);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .empty-state__button {
+    transition: none;
+  }
+  
+  .empty-state__button:active {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .empty-state__button {
+    border-width: 2px;
+  }
+  
+  .empty-state__button--primary {
+    border-color: var(--color-primary-700);
+  }
+  
+  .empty-state__button--secondary {
+    border-color: var(--color-text-primary);
+  }
+}

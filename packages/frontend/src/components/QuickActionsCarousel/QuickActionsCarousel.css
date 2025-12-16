@@ -1,0 +1,428 @@
+/**
+ * QuickActionsCarousel Component Styles
+ * 
+ * Horizontal swipeable action buttons with neon glow effects.
+ * 
+ * Requirements: 6.1, 6.2
+ */
+
+/* ============================================
+   Container
+   ============================================ */
+
+.quick-actions-carousel {
+  position: relative;
+  padding: var(--spacing-4, 16px) 0;
+}
+
+.quick-actions-carousel__title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary-ht);
+  margin: 0 0 var(--spacing-3, 12px) var(--spacing-2, 8px);
+}
+
+/* ============================================
+   Scroll Container
+   ============================================ */
+
+.quick-actions-carousel__scroll {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-3, 12px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: var(--spacing-2, 8px);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+}
+
+.quick-actions-carousel__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-actions-carousel__scroll--dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+/* ============================================
+   Action Button Base
+   ============================================ */
+
+.carousel-action {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2, 8px);
+  min-width: 85px;
+  height: 95px;
+  padding: var(--spacing-3, 12px);
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur-subtle, blur(10px));
+  -webkit-backdrop-filter: var(--glass-blur-subtle, blur(10px));
+  cursor: pointer;
+  transition: 
+    transform var(--duration-fast, 150ms) var(--ease-smooth),
+    box-shadow var(--duration-fast, 150ms) var(--ease-smooth),
+    border-color var(--duration-fast, 150ms) var(--ease-smooth),
+    background var(--duration-fast, 150ms) var(--ease-smooth);
+  flex-shrink: 0;
+  user-select: none;
+  /* Subtle inner glow */
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.03);
+}
+
+@supports not (backdrop-filter: blur(10px)) {
+  .carousel-action {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+/* ============================================
+   Glow Effect Layer
+   ============================================ */
+
+.carousel-action__glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity var(--duration-fast, 150ms) var(--ease-smooth);
+  pointer-events: none;
+}
+
+/* ============================================
+   Color Variants with Neon Glow
+   ============================================ */
+
+/* Cyan */
+.carousel-action--cyan {
+  border-color: var(--neon-cyan-dim);
+}
+
+.carousel-action--cyan .carousel-action__glow {
+  background: radial-gradient(ellipse at center, var(--neon-cyan-dim) 0%, transparent 70%);
+}
+
+.carousel-action--cyan:hover,
+.carousel-action--cyan:focus-visible {
+  border-color: var(--neon-cyan);
+  box-shadow: 
+    0 0 20px var(--neon-cyan-dim),
+    inset 0 0 20px rgba(0, 212, 255, 0.1);
+}
+
+.carousel-action--cyan:hover .carousel-action__glow,
+.carousel-action--cyan:focus-visible .carousel-action__glow {
+  opacity: 0.3;
+}
+
+.carousel-action--cyan.carousel-action--active {
+  box-shadow: 
+    0 0 30px var(--neon-cyan),
+    0 0 60px var(--neon-cyan-dim),
+    inset 0 0 30px rgba(0, 212, 255, 0.2);
+}
+
+/* Magenta */
+.carousel-action--magenta {
+  border-color: var(--neon-magenta-dim);
+}
+
+.carousel-action--magenta .carousel-action__glow {
+  background: radial-gradient(ellipse at center, var(--neon-magenta-dim) 0%, transparent 70%);
+}
+
+.carousel-action--magenta:hover,
+.carousel-action--magenta:focus-visible {
+  border-color: var(--neon-magenta);
+  box-shadow: 
+    0 0 20px var(--neon-magenta-dim),
+    inset 0 0 20px rgba(255, 0, 255, 0.1);
+}
+
+.carousel-action--magenta:hover .carousel-action__glow,
+.carousel-action--magenta:focus-visible .carousel-action__glow {
+  opacity: 0.3;
+}
+
+.carousel-action--magenta.carousel-action--active {
+  box-shadow: 
+    0 0 30px var(--neon-magenta),
+    0 0 60px var(--neon-magenta-dim),
+    inset 0 0 30px rgba(255, 0, 255, 0.2);
+}
+
+/* Purple */
+.carousel-action--purple {
+  border-color: var(--neon-purple-dim);
+}
+
+.carousel-action--purple .carousel-action__glow {
+  background: radial-gradient(ellipse at center, var(--neon-purple-dim) 0%, transparent 70%);
+}
+
+.carousel-action--purple:hover,
+.carousel-action--purple:focus-visible {
+  border-color: var(--neon-purple);
+  box-shadow: 
+    0 0 20px var(--neon-purple-dim),
+    inset 0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+.carousel-action--purple:hover .carousel-action__glow,
+.carousel-action--purple:focus-visible .carousel-action__glow {
+  opacity: 0.3;
+}
+
+.carousel-action--purple.carousel-action--active {
+  box-shadow: 
+    0 0 30px var(--neon-purple),
+    0 0 60px var(--neon-purple-dim),
+    inset 0 0 30px rgba(139, 92, 246, 0.2);
+}
+
+/* Green */
+.carousel-action--green {
+  border-color: var(--neon-green-dim);
+}
+
+.carousel-action--green .carousel-action__glow {
+  background: radial-gradient(ellipse at center, var(--neon-green-dim) 0%, transparent 70%);
+}
+
+.carousel-action--green:hover,
+.carousel-action--green:focus-visible {
+  border-color: var(--neon-green);
+  box-shadow: 
+    0 0 20px var(--neon-green-dim),
+    inset 0 0 20px rgba(0, 255, 136, 0.1);
+}
+
+.carousel-action--green:hover .carousel-action__glow,
+.carousel-action--green:focus-visible .carousel-action__glow {
+  opacity: 0.3;
+}
+
+.carousel-action--green.carousel-action--active {
+  box-shadow: 
+    0 0 30px var(--neon-green),
+    0 0 60px var(--neon-green-dim),
+    inset 0 0 30px rgba(0, 255, 136, 0.2);
+}
+
+/* Orange */
+.carousel-action--orange {
+  border-color: var(--neon-orange-dim);
+}
+
+.carousel-action--orange .carousel-action__glow {
+  background: radial-gradient(ellipse at center, var(--neon-orange-dim) 0%, transparent 70%);
+}
+
+.carousel-action--orange:hover,
+.carousel-action--orange:focus-visible {
+  border-color: var(--neon-orange);
+  box-shadow: 
+    0 0 20px var(--neon-orange-dim),
+    inset 0 0 20px rgba(255, 107, 53, 0.1);
+}
+
+.carousel-action--orange:hover .carousel-action__glow,
+.carousel-action--orange:focus-visible .carousel-action__glow {
+  opacity: 0.3;
+}
+
+.carousel-action--orange.carousel-action--active {
+  box-shadow: 
+    0 0 30px var(--neon-orange),
+    0 0 60px var(--neon-orange-dim),
+    inset 0 0 30px rgba(255, 107, 53, 0.2);
+}
+
+/* ============================================
+   Active State (Click Flash)
+   ============================================ */
+
+.carousel-action--active {
+  transform: scale(0.95);
+}
+
+.carousel-action--active .carousel-action__glow {
+  opacity: 0.5 !important;
+}
+
+/* ============================================
+   Disabled State
+   ============================================ */
+
+.carousel-action--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ============================================
+   Loading State
+   ============================================ */
+
+.carousel-action--loading {
+  pointer-events: none;
+}
+
+.carousel-action__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--neon-cyan);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   Icon and Label
+   ============================================ */
+
+.carousel-action__icon {
+  font-size: 28px;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+  transition: transform var(--duration-fast, 150ms) var(--ease-smooth),
+              filter var(--duration-fast, 150ms) var(--ease-smooth);
+}
+
+.carousel-action__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary-ht);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color var(--duration-fast, 150ms) var(--ease-smooth),
+              text-shadow var(--duration-fast, 150ms) var(--ease-smooth);
+}
+
+/* ============================================
+   Hover Effects
+   ============================================ */
+
+.carousel-action:hover {
+  transform: translateY(-6px) scale(1.02);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.carousel-action:hover .carousel-action__label {
+  color: var(--text-primary-ht);
+}
+
+.carousel-action:hover .carousel-action__icon {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.5));
+}
+
+/* ============================================
+   Focus States
+   ============================================ */
+
+.carousel-action:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   Scroll Indicators
+   ============================================ */
+
+.quick-actions-carousel__indicators {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+}
+
+.scroll-indicator {
+  width: 30px;
+  height: 60px;
+  opacity: 0.3;
+}
+
+.scroll-indicator--left {
+  background: linear-gradient(to right, var(--bg-primary), transparent);
+}
+
+.scroll-indicator--right {
+  background: linear-gradient(to left, var(--bg-primary), transparent);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (min-width: 768px) {
+  .carousel-action {
+    min-width: 100px;
+    height: 110px;
+  }
+  
+  .carousel-action__icon {
+    font-size: 28px;
+  }
+  
+  .carousel-action__label {
+    font-size: 12px;
+  }
+}
+
+/* ============================================
+   Reduced Motion Support
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-action {
+    transition: none;
+  }
+  
+  .carousel-action:hover {
+    transform: none;
+  }
+  
+  .carousel-action--active {
+    transform: none;
+  }
+  
+  .carousel-action__spinner {
+    animation: none;
+  }
+  
+  .quick-actions-carousel__scroll {
+    scroll-behavior: auto;
+  }
+}

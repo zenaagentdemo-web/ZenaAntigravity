@@ -1,0 +1,311 @@
+/**
+ * Toast Component Styles
+ * 
+ * Glassmorphism toast notifications with slide-in animations.
+ * 
+ * Requirements: 4.5, 4.6
+ */
+
+/* ============================================
+ * TOAST CONTAINER
+ * Fixed position container for all toasts
+ * ============================================ */
+
+.toast-container {
+  position: fixed;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 400px;
+  padding: 0 16px;
+  pointer-events: none;
+}
+
+/* ============================================
+ * INDIVIDUAL TOAST
+ * Glassmorphism card with type-specific styling
+ * ============================================ */
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  
+  /* Glassmorphism styling */
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  
+  /* Shadow */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(0, 0, 0, 0.2);
+  
+  /* Animation */
+  animation: toast-slide-in 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  
+  /* Enable pointer events */
+  pointer-events: auto;
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toast--exiting {
+  animation: toast-slide-out 200ms ease-in forwards;
+}
+
+@keyframes toast-slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  .toast {
+    background: rgba(26, 26, 46, 0.98);
+  }
+}
+
+/* ============================================
+ * TOAST VARIANTS
+ * Type-specific colors and accents
+ * ============================================ */
+
+/* Success Toast */
+.toast--success {
+  border-color: rgba(0, 255, 136, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(0, 255, 136, 0.1);
+}
+
+.toast--success::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00FF88, transparent);
+  border-radius: 14px 14px 0 0;
+}
+
+.toast--success .toast__icon {
+  color: #00FF88;
+  filter: drop-shadow(0 0 6px rgba(0, 255, 136, 0.5));
+}
+
+/* Error Toast */
+.toast--error {
+  border-color: rgba(255, 68, 68, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(255, 68, 68, 0.1);
+}
+
+.toast--error::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #FF4444, transparent);
+  border-radius: 14px 14px 0 0;
+}
+
+.toast--error .toast__icon {
+  color: #FF4444;
+  filter: drop-shadow(0 0 6px rgba(255, 68, 68, 0.5));
+}
+
+/* Info Toast */
+.toast--info {
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(0, 212, 255, 0.1);
+}
+
+.toast--info::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00D4FF, transparent);
+  border-radius: 14px 14px 0 0;
+}
+
+.toast--info .toast__icon {
+  color: #00D4FF;
+  filter: drop-shadow(0 0 6px rgba(0, 212, 255, 0.5));
+}
+
+/* ============================================
+ * TOAST ELEMENTS
+ * ============================================ */
+
+.toast__icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+.toast__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.toast__message {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
+
+.toast__action {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #00D4FF;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.toast__action:hover {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.toast__action:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.5);
+}
+
+.toast--error .toast__action {
+  color: #FF4444;
+}
+
+.toast--error .toast__action:hover {
+  background: rgba(255, 68, 68, 0.15);
+  border-color: rgba(255, 68, 68, 0.3);
+}
+
+.toast__dismiss {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.toast__dismiss svg {
+  width: 16px;
+  height: 16px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 200ms ease;
+}
+
+.toast__dismiss:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.toast__dismiss:hover svg {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.toast__dismiss:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.5);
+}
+
+/* ============================================
+ * ACCESSIBILITY
+ * ============================================ */
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  
+  .toast--exiting {
+    animation: none;
+    opacity: 0;
+  }
+  
+  .toast__action,
+  .toast__dismiss {
+    transition: none;
+  }
+}
+
+/* ============================================
+ * RESPONSIVE ADJUSTMENTS
+ * ============================================ */
+
+@media (max-width: 480px) {
+  .toast-container {
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+    padding: 0 12px;
+  }
+  
+  .toast {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  
+  .toast__message {
+    font-size: 13px;
+  }
+  
+  .toast__action {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+/* Larger screens */
+@media (min-width: 768px) {
+  .toast-container {
+    max-width: 450px;
+  }
+}

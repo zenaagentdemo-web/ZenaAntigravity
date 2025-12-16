@@ -1,0 +1,437 @@
+/**
+ * Ask Zena Page - High-Tech AI Aesthetic Styles
+ * 
+ * Glassmorphism chat interface with floating suggested prompts
+ * and futuristic styling for the AI conversation experience.
+ * 
+ * Requirements: 2.3, 5.1
+ */
+
+/* ============================================
+   High-Tech Theme Container
+   ============================================ */
+
+[data-theme="high-tech"] .ask-zena-page {
+  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  color: var(--text-primary-ht);
+}
+
+[data-theme="high-tech"] .ask-zena-page__container {
+  position: relative;
+}
+
+/* ============================================
+   Header Styling
+   ============================================ */
+
+[data-theme="high-tech"] .ask-zena-page__header {
+  background: transparent;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+  position: relative;
+}
+
+[data-theme="high-tech"] .ask-zena-page__header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0.5;
+}
+
+[data-theme="high-tech"] .ask-zena-page__title {
+  color: var(--text-primary-ht);
+  text-shadow: var(--text-glow);
+  background: linear-gradient(135deg, var(--neon-cyan), var(--text-primary-ht));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="high-tech"] .ask-zena-page__description {
+  color: var(--text-secondary-ht);
+}
+
+/* ============================================
+   Conversation Area
+   ============================================ */
+
+[data-theme="high-tech"] .ask-zena-page__conversation {
+  background: transparent;
+}
+
+/* ============================================
+   Welcome Screen - High-Tech
+   ============================================ */
+
+[data-theme="high-tech"] .ask-zena-page__welcome {
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+[data-theme="high-tech"] .ask-zena-page__welcome-icon {
+  display: none; /* Hidden in favor of ZenaAvatarFullScreen */
+}
+
+[data-theme="high-tech"] .ask-zena-page__welcome-title {
+  color: var(--text-primary-ht);
+  text-shadow: var(--text-glow);
+  font-size: var(--font-size-2xl, 28px);
+}
+
+[data-theme="high-tech"] .ask-zena-page__welcome-text {
+  color: var(--text-secondary-ht);
+}
+
+/* ============================================
+   Floating Suggested Prompts
+   ============================================ */
+
+[data-theme="high-tech"] .ask-zena-page__suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  max-width: 600px;
+}
+
+[data-theme="high-tech"] .ask-zena-page__suggestions-label {
+  width: 100%;
+  text-align: center;
+  color: var(--text-tertiary-ht);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  margin-bottom: var(--spacing-sm);
+}
+
+[data-theme="high-tech"] .ask-zena-page__suggestion-btn {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 20px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--text-secondary-ht);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="high-tech"] .ask-zena-page__suggestion-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--neon-cyan-subtle), transparent);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-smooth);
+}
+
+[data-theme="high-tech"] .ask-zena-page__suggestion-btn:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 20px var(--neon-cyan-dim);
+  transform: translateY(-2px);
+}
+
+[data-theme="high-tech"] .ask-zena-page__suggestion-btn:hover::before {
+  opacity: 1;
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  [data-theme="high-tech"] .ask-zena-page__suggestion-btn {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+/* ============================================
+   Glass Bubble Chat Messages
+   ============================================ */
+
+[data-theme="high-tech"] .ask-zena-page__message {
+  animation: message-fade-in 0.4s var(--ease-smooth);
+}
+
+@keyframes message-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* User Message Avatar */
+[data-theme="high-tech"] .ask-zena-page__message--user .ask-zena-page__message-avatar {
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-magenta));
+  box-shadow: 0 0 15px var(--neon-purple-dim);
+  font-size: 16px;
+}
+
+/* Assistant Message Avatar */
+[data-theme="high-tech"] .ask-zena-page__message--assistant .ask-zena-page__message-avatar {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  box-shadow: 0 0 15px var(--neon-cyan-dim);
+  font-size: 16px;
+}
+
+/* Message Header */
+[data-theme="high-tech"] .ask-zena-page__message-role {
+  color: var(--text-primary-ht);
+}
+
+[data-theme="high-tech"] .ask-zena-page__message--assistant .ask-zena-page__message-role {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 8px var(--neon-cyan-dim);
+}
+
+[data-theme="high-tech"] .ask-zena-page__message-time {
+  color: var(--text-muted-ht);
+}
+
+/* Glass Bubble - User Message */
+[data-theme="high-tech"] .ask-zena-page__message--user .ask-zena-page__message-text {
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-magenta));
+  border: none;
+  border-radius: 20px 20px 4px 20px;
+  box-shadow: 0 0 20px var(--neon-purple-dim);
+  color: var(--text-primary-ht);
+}
+
+/* Glass Bubble - Assistant Message */
+[data-theme="high-tech"] .ask-zena-page__message--assistant .ask-zena-page__message-text {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 20px 20px 20px 4px;
+  color: var(--text-primary-ht);
+  position: relative;
+}
+
+[data-theme="high-tech"] .ask-zena-page__message--assistant .ask-zena-page__message-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--neon-cyan), transparent);
+  opacity: 0.5;
+  border-radius: 20px 20px 0 0;
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  [data-theme="high-tech"] .ask-zena-page__message--assistant .ask-zena-page__message-text {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+/* Message Content */
+[data-theme="high-tech"] .ask-zena-page__message-paragraph {
+  color: var(--text-primary-ht);
+}
+
+[data-theme="high-tech"] .ask-zena-page__message-bullet {
+  color: var(--text-secondary-ht);
+}
+
+/* Typing Indicator */
+[data-theme="high-tech"] .ask-zena-page__typing-indicator {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 8px var(--neon-cyan);
+}
+
+/* ============================================
+   Typing Animation - High-Tech
+   ============================================ */
+
+[data-theme="high-tech"] .ask-zena-page__typing span {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  box-shadow: 0 0 8px var(--neon-cyan-dim);
+}
+
+@keyframes typing-ht {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+    box-shadow: 0 0 8px var(--neon-cyan-dim);
+  }
+  30% {
+    transform: translateY(-12px);
+    opacity: 1;
+    box-shadow: 0 0 15px var(--neon-cyan);
+  }
+}
+
+[data-theme="high-tech"] .ask-zena-page__typing span {
+  animation: typing-ht 1.4s infinite;
+}
+
+/* ============================================
+   Error Message - High-Tech
+   ============================================ */
+
+[data-theme="high-tech"] .ask-zena-page__error {
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid var(--status-urgent);
+  box-shadow: 0 0 20px var(--status-urgent-dim);
+  color: var(--status-urgent);
+}
+
+/* ============================================
+   Input Area - High-Tech
+   ============================================ */
+
+[data-theme="high-tech"] .ask-zena-page__input-container {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid rgba(0, 212, 255, 0.2);
+  position: relative;
+}
+
+[data-theme="high-tech"] .ask-zena-page__input-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0.5;
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  [data-theme="high-tech"] .ask-zena-page__input-container {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+[data-theme="high-tech"] .ask-zena-page__input-wrapper {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 16px;
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+[data-theme="high-tech"] .ask-zena-page__input-wrapper:focus-within {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 20px var(--neon-cyan-dim);
+}
+
+[data-theme="high-tech"] .ask-zena-page__textarea {
+  color: var(--text-primary-ht);
+  background: transparent;
+}
+
+[data-theme="high-tech"] .ask-zena-page__textarea::placeholder {
+  color: var(--text-muted-ht);
+}
+
+/* Voice Button - High-Tech */
+[data-theme="high-tech"] .ask-zena-page__voice-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  color: var(--neon-cyan);
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+[data-theme="high-tech"] .ask-zena-page__voice-btn:hover:not(:disabled) {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px var(--neon-cyan-dim);
+}
+
+[data-theme="high-tech"] .ask-zena-page__voice-btn--active {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  border-color: transparent;
+  color: var(--text-primary-ht);
+  box-shadow: 0 0 20px var(--neon-cyan-dim);
+}
+
+/* Send Button - High-Tech */
+[data-theme="high-tech"] .ask-zena-page__send-btn {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  border: none;
+  box-shadow: 0 0 15px var(--neon-cyan-dim);
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+[data-theme="high-tech"] .ask-zena-page__send-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px var(--neon-cyan);
+}
+
+[data-theme="high-tech"] .ask-zena-page__send-btn:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+/* Hint Text */
+[data-theme="high-tech"] .ask-zena-page__hint {
+  color: var(--text-muted-ht);
+}
+
+/* ============================================
+   Voice Recorder Container - High-Tech
+   ============================================ */
+
+[data-theme="high-tech"] .ask-zena-page__voice-recorder-container {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  [data-theme="high-tech"] .ask-zena-page__voice-recorder-container {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+/* ============================================
+   Reduced Motion Support
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="high-tech"] .ask-zena-page__message,
+  [data-theme="high-tech"] .ask-zena-page__suggestion-btn,
+  [data-theme="high-tech"] .ask-zena-page__typing span {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ============================================
+   Mobile Responsive
+   ============================================ */
+
+@media (max-width: 768px) {
+  [data-theme="high-tech"] .ask-zena-page__suggestion-btn {
+    font-size: 12px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  [data-theme="high-tech"] .ask-zena-page__message--user .ask-zena-page__message-text,
+  [data-theme="high-tech"] .ask-zena-page__message--assistant .ask-zena-page__message-text {
+    border-radius: 16px;
+  }
+
+  [data-theme="high-tech"] .ask-zena-page__message--user .ask-zena-page__message-text {
+    border-bottom-right-radius: 4px;
+  }
+
+  [data-theme="high-tech"] .ask-zena-page__message--assistant .ask-zena-page__message-text {
+    border-bottom-left-radius: 4px;
+  }
+}

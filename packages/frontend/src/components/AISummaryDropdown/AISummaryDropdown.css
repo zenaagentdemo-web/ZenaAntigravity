@@ -1,0 +1,763 @@
+/**
+ * AI Summary Dropdown Component Styles
+ * 
+ * Implements glassmorphism styling for dropdown content with entity highlighting,
+ * action buttons, and participant cards following the high-tech design system.
+ * 
+ * Requirements: 6.2, 6.4, 6.5
+ */
+
+/* ============================================================================
+ * BASE DROPDOWN CONTAINER
+ * ============================================================================ */
+
+.ai-summary-dropdown {
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+  border: var(--glass-border, 1px solid rgba(255, 255, 255, 0.1));
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 12px;
+  position: relative;
+  overflow: hidden;
+  
+  /* Smooth expansion animation with reduced motion support */
+  animation: dropdown-expand var(--dropdown-animation-duration, var(--duration-normal, 300ms)) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+  
+  /* CSS containment for performance */
+  contain: layout style paint;
+}
+
+/* Reduced motion variant */
+.ai-summary-dropdown--reduced-motion {
+  animation: none;
+  transition: none;
+}
+
+/* Top gradient accent line */
+.ai-summary-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan, #00D4FF), transparent);
+  opacity: 0.5;
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  .ai-summary-dropdown {
+    background: var(--glass-fallback-bg, rgba(26, 26, 46, 0.95));
+  }
+}
+
+/* ============================================================================
+ * LOADING STATE
+ * ============================================================================ */
+
+.ai-summary-dropdown--loading {
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+  border: var(--glass-border, 1px solid rgba(255, 255, 255, 0.1));
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 12px;
+}
+
+.ai-summary-dropdown__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-summary-dropdown__skeleton-line {
+  height: 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 8px;
+  animation: shimmer var(--duration-shimmer, 1.5s) ease-in-out infinite;
+}
+
+.ai-summary-dropdown__skeleton-line--long {
+  width: 100%;
+}
+
+.ai-summary-dropdown__skeleton-line--medium {
+  width: 75%;
+}
+
+.ai-summary-dropdown__skeleton-line--short {
+  width: 50%;
+}
+
+/* ============================================================================
+ * ERROR STATE
+ * ============================================================================ */
+
+.ai-summary-dropdown--error {
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 12px;
+}
+
+.ai-summary-dropdown__error {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.2);
+  border-radius: 8px;
+}
+
+.ai-summary-dropdown__error-message {
+  color: var(--status-urgent, #FF4444);
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0 0 4px 0;
+}
+
+.ai-summary-dropdown__error-details {
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  font-size: 12px;
+  margin: 0 0 8px 0;
+}
+
+.ai-summary-dropdown__retry-button {
+  background: var(--status-urgent, #FF4444);
+  color: var(--text-primary-ht, #FFFFFF);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration-fast, 150ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.ai-summary-dropdown__retry-button:hover {
+  background: rgba(255, 68, 68, 0.8);
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+}
+
+.ai-summary-dropdown__fallback {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
+}
+
+.ai-summary-dropdown__ai-pending {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.2);
+  border-radius: 8px;
+  color: var(--status-warning, #FFAA00);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ai-summary-dropdown__ai-pending-icon {
+  font-size: 14px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.ai-summary-dropdown__ai-pending-text {
+  flex: 1;
+  line-height: 1.4;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ============================================================================
+ * SECTION STRUCTURE
+ * ============================================================================ */
+
+.ai-summary-dropdown__section {
+  margin-bottom: 20px;
+}
+
+.ai-summary-dropdown__section:last-child {
+  margin-bottom: 0;
+}
+
+.ai-summary-dropdown__section-title {
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-summary-dropdown__section-title::before {
+  content: '';
+  width: 3px;
+  height: 12px;
+  background: var(--neon-cyan, #00D4FF);
+  border-radius: 2px;
+  box-shadow: 0 0 6px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
+}
+
+/* ============================================================================
+ * AI SUMMARY CONTENT
+ * ============================================================================ */
+
+.ai-summary-dropdown__summary {
+  color: var(--text-primary-ht, #FFFFFF);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ============================================================================
+ * ENTITY HIGHLIGHTING SYSTEM
+ * Color-coded highlighting for names, properties, dates, amounts
+ * Requirements: 6.2
+ * ============================================================================ */
+
+.ai-summary-dropdown__entity {
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-weight: 500;
+  position: relative;
+  cursor: help;
+  transition: all var(--duration-fast, 150ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Person entities - Cyan */
+.ai-summary-dropdown__entity--person {
+  background: rgba(0, 212, 255, 0.2);
+  color: var(--neon-cyan, #00D4FF);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.ai-summary-dropdown__entity--person:hover {
+  background: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+
+/* Property entities - Green */
+.ai-summary-dropdown__entity--property {
+  background: rgba(0, 255, 136, 0.2);
+  color: var(--neon-green, #00FF88);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.ai-summary-dropdown__entity--property:hover {
+  background: rgba(0, 255, 136, 0.3);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+}
+
+/* Date entities - Purple */
+.ai-summary-dropdown__entity--date {
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--neon-purple, #8B5CF6);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.ai-summary-dropdown__entity--date:hover {
+  background: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+}
+
+/* Amount entities - Orange */
+.ai-summary-dropdown__entity--amount {
+  background: rgba(255, 107, 53, 0.2);
+  color: var(--neon-orange, #FF6B35);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+.ai-summary-dropdown__entity--amount:hover {
+  background: rgba(255, 107, 53, 0.3);
+  box-shadow: 0 0 8px rgba(255, 107, 53, 0.4);
+}
+
+/* Location entities - Magenta */
+.ai-summary-dropdown__entity--location {
+  background: rgba(255, 0, 255, 0.2);
+  color: var(--neon-magenta, #FF00FF);
+  border: 1px solid rgba(255, 0, 255, 0.3);
+}
+
+.ai-summary-dropdown__entity--location:hover {
+  background: rgba(255, 0, 255, 0.3);
+  box-shadow: 0 0 8px rgba(255, 0, 255, 0.4);
+}
+
+/* ============================================================================
+ * SENTIMENT ANALYSIS
+ * ============================================================================ */
+
+.ai-summary-dropdown__sentiment {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-summary-dropdown__sentiment-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-summary-dropdown__sentiment-badge--positive {
+  background: rgba(0, 255, 136, 0.2);
+  color: var(--neon-green, #00FF88);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.ai-summary-dropdown__sentiment-badge--neutral {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ai-summary-dropdown__sentiment-badge--negative {
+  background: rgba(255, 68, 68, 0.2);
+  color: var(--status-urgent, #FF4444);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+.ai-summary-dropdown__sentiment-confidence {
+  color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.5));
+  font-size: 11px;
+}
+
+/* ============================================================================
+ * URGENCY INDICATORS
+ * ============================================================================ */
+
+.ai-summary-dropdown__urgency-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ai-summary-dropdown__urgency-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ai-summary-dropdown__urgency-item--low {
+  border-left: 3px solid var(--status-success, #00FF88);
+}
+
+.ai-summary-dropdown__urgency-item--medium {
+  border-left: 3px solid var(--status-warning, #FFAA00);
+}
+
+.ai-summary-dropdown__urgency-item--high {
+  border-left: 3px solid var(--status-urgent, #FF4444);
+  background: rgba(255, 68, 68, 0.05);
+}
+
+.ai-summary-dropdown__urgency-icon {
+  font-size: 14px;
+}
+
+.ai-summary-dropdown__urgency-text {
+  color: var(--text-primary-ht, #FFFFFF);
+  font-size: 13px;
+  flex: 1;
+}
+
+/* ============================================================================
+ * RECOMMENDED ACTIONS
+ * Action buttons with glow effects
+ * Requirements: 6.4
+ * ============================================================================ */
+
+.ai-summary-dropdown__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ai-summary-dropdown__action-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  color: var(--neon-cyan, #00D4FF);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--dropdown-transition-duration, var(--duration-fast, 150ms)) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+  
+  /* Minimum touch target */
+  min-height: 32px;
+  min-width: 80px;
+}
+
+.ai-summary-dropdown__action-button:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.ai-summary-dropdown__action-button:active {
+  transform: translateY(0);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.2);
+}
+
+.ai-summary-dropdown__action-icon {
+  font-size: 14px;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.ai-summary-dropdown__action-label {
+  white-space: nowrap;
+}
+
+/* ============================================================================
+ * LINKED ENTITIES
+ * Entity cards with navigation links
+ * Requirements: 6.5
+ * ============================================================================ */
+
+.ai-summary-dropdown__entities {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ai-summary-dropdown__entity-card {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  transition: all var(--dropdown-transition-duration, var(--duration-fast, 150ms)) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.ai-summary-dropdown__entity-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.1);
+}
+
+.ai-summary-dropdown__entity-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.ai-summary-dropdown__entity-type {
+  padding: 2px 6px;
+  background: rgba(0, 212, 255, 0.2);
+  color: var(--neon-cyan, #00D4FF);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-summary-dropdown__entity-name {
+  color: var(--text-primary-ht, #FFFFFF);
+  font-size: 13px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.ai-summary-dropdown__entity-link {
+  color: var(--neon-cyan, #00D4FF);
+  font-size: 11px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all var(--duration-fast, 150ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.ai-summary-dropdown__entity-link:hover {
+  text-shadow: 0 0 6px currentColor;
+  text-decoration: underline;
+}
+
+/* ============================================================================
+ * PARTICIPANT CARDS
+ * Contact information and interaction history
+ * Requirements: 6.5
+ * ============================================================================ */
+
+.ai-summary-dropdown__participants {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ai-summary-dropdown__participant-card {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  transition: all var(--dropdown-transition-duration, var(--duration-fast, 150ms)) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.ai-summary-dropdown__participant-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.1);
+}
+
+.ai-summary-dropdown__participant-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.ai-summary-dropdown__participant-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  object-fit: cover;
+}
+
+.ai-summary-dropdown__participant-info {
+  flex: 1;
+}
+
+.ai-summary-dropdown__participant-name {
+  color: var(--text-primary-ht, #FFFFFF);
+  font-size: 14px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.ai-summary-dropdown__participant-role {
+  color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.5));
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-summary-dropdown__participant-contact {
+  margin-bottom: 6px;
+}
+
+.ai-summary-dropdown__participant-email {
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  font-size: 12px;
+  font-family: monospace;
+}
+
+.ai-summary-dropdown__participant-interactions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ai-summary-dropdown__interaction {
+  color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.5));
+  font-size: 11px;
+  font-style: italic;
+}
+
+/* ============================================================================
+ * ANIMATIONS
+ * ============================================================================ */
+
+@keyframes dropdown-expand {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================================================
+ * ACCESSIBILITY & REDUCED MOTION
+ * ============================================================================ */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus indicators for keyboard navigation */
+.ai-summary-dropdown:focus-within {
+  border-color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+}
+
+.ai-summary-dropdown__action-button:focus,
+.ai-summary-dropdown__entity-link:focus,
+.ai-summary-dropdown__retry-button:focus {
+  outline: 2px solid var(--neon-cyan, #00D4FF);
+  outline-offset: 2px;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+}
+
+/* Enhanced focus for keyboard navigation */
+.keyboard-navigation .ai-summary-dropdown__action-button:focus,
+.keyboard-navigation .ai-summary-dropdown__entity-link:focus,
+.keyboard-navigation .ai-summary-dropdown__retry-button:focus {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: var(--neon-cyan, #00D4FF);
+  transform: translateY(-1px);
+}
+
+/* Focus trap indicator */
+.ai-summary-dropdown[data-focus-trap="true"] {
+  position: relative;
+}
+
+.ai-summary-dropdown[data-focus-trap="true"]::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid var(--neon-cyan, #00D4FF);
+  border-radius: 18px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .ai-summary-dropdown,
+  .ai-summary-dropdown__action-button,
+  .ai-summary-dropdown__entity-card,
+  .ai-summary-dropdown__participant-card,
+  .ai-summary-dropdown__entity,
+  .ai-summary-dropdown__retry-button {
+    animation: none;
+    transition: none;
+  }
+  
+  .ai-summary-dropdown__skeleton-line,
+  .ai-summary-dropdown__ai-pending-icon {
+    animation: none;
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Enhanced reduced motion support for programmatic control */
+.ai-summary-dropdown--reduced-motion,
+.ai-summary-dropdown--reduced-motion .ai-summary-dropdown__action-button,
+.ai-summary-dropdown--reduced-motion .ai-summary-dropdown__entity-card,
+.ai-summary-dropdown--reduced-motion .ai-summary-dropdown__participant-card,
+.ai-summary-dropdown--reduced-motion .ai-summary-dropdown__entity,
+.ai-summary-dropdown--reduced-motion .ai-summary-dropdown__retry-button {
+  animation: none !important;
+  transition: none !important;
+}
+
+.ai-summary-dropdown--reduced-motion .ai-summary-dropdown__skeleton-line,
+.ai-summary-dropdown--reduced-motion .ai-summary-dropdown__ai-pending-icon {
+  animation: none !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ============================================================================
+ * RESPONSIVE DESIGN
+ * ============================================================================ */
+
+@media (max-width: 768px) {
+  .ai-summary-dropdown {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .ai-summary-dropdown__actions {
+    flex-direction: column;
+  }
+  
+  .ai-summary-dropdown__action-button {
+    justify-content: center;
+    min-width: 100%;
+  }
+  
+  .ai-summary-dropdown__participants {
+    gap: 8px;
+  }
+  
+  .ai-summary-dropdown__participant-card {
+    padding: 10px;
+  }
+  
+  .ai-summary-dropdown__participant-avatar {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ai-summary-dropdown {
+    padding: 12px;
+    margin-top: 8px;
+  }
+  
+  .ai-summary-dropdown__section {
+    margin-bottom: 16px;
+  }
+  
+  .ai-summary-dropdown__section-title {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+  
+  .ai-summary-dropdown__summary {
+    font-size: 13px;
+  }
+}

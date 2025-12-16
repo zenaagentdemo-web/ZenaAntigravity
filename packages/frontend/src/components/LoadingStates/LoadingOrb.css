@@ -1,0 +1,297 @@
+/**
+ * LoadingOrb Component Styles
+ * 
+ * High-tech spinning gradient ring loader with glow effects.
+ * Uses CSS transforms and opacity for 60fps performance.
+ * 
+ * Requirements: 3.5, 8.1
+ */
+
+/* Base Loading Orb Container */
+.loading-orb {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+/* Ring Elements - Spinning gradient borders */
+.loading-orb__ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+/* Outer Ring - Primary spinning element */
+.loading-orb__ring--outer {
+  inset: 0;
+  border-top-color: var(--neon-cyan, #00D4FF);
+  border-right-color: var(--neon-magenta, #FF00FF);
+  animation: loading-orb-spin var(--loading-orb-duration, 1s) linear infinite;
+}
+
+/* Inner Ring - Counter-rotating for visual depth */
+.loading-orb__ring--inner {
+  inset: 6px;
+  border-bottom-color: var(--neon-purple, #8B5CF6);
+  border-left-color: var(--neon-cyan, #00D4FF);
+  animation: loading-orb-spin-reverse var(--loading-orb-duration, 1s) linear infinite;
+  opacity: 0.7;
+}
+
+/* Core - Glowing center point */
+.loading-orb__core {
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neon-cyan, #00D4FF), var(--neon-magenta, #FF00FF));
+  animation: loading-orb-pulse 2s var(--ease-glow, ease-in-out) infinite;
+}
+
+/* ============================================
+ * SIZE VARIANTS
+ * ============================================ */
+
+.loading-orb--sm {
+  width: 32px;
+  height: 32px;
+}
+
+.loading-orb--sm .loading-orb__ring {
+  border-width: 2px;
+}
+
+.loading-orb--sm .loading-orb__ring--inner {
+  inset: 4px;
+}
+
+.loading-orb--md {
+  width: 60px;
+  height: 60px;
+}
+
+.loading-orb--md .loading-orb__ring {
+  border-width: 3px;
+}
+
+.loading-orb--md .loading-orb__ring--inner {
+  inset: 6px;
+}
+
+.loading-orb--lg {
+  width: 80px;
+  height: 80px;
+}
+
+.loading-orb--lg .loading-orb__ring {
+  border-width: 4px;
+}
+
+.loading-orb--lg .loading-orb__ring--inner {
+  inset: 8px;
+}
+
+.loading-orb--xl {
+  width: 120px;
+  height: 120px;
+}
+
+.loading-orb--xl .loading-orb__ring {
+  border-width: 5px;
+}
+
+.loading-orb--xl .loading-orb__ring--inner {
+  inset: 10px;
+}
+
+/* ============================================
+ * COLOR VARIANTS
+ * ============================================ */
+
+/* Cyan - Primary neon color */
+.loading-orb--cyan .loading-orb__ring--outer {
+  border-top-color: var(--neon-cyan, #00D4FF);
+  border-right-color: var(--neon-cyan, #00D4FF);
+}
+
+.loading-orb--cyan .loading-orb__ring--inner {
+  border-bottom-color: var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
+  border-left-color: var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
+}
+
+.loading-orb--cyan .loading-orb__core {
+  background: var(--neon-cyan, #00D4FF);
+}
+
+.loading-orb--cyan.loading-orb--glow {
+  box-shadow: var(--glow-cyan, 0 0 20px #00D4FF, 0 0 40px rgba(0, 212, 255, 0.5));
+}
+
+/* Magenta - Secondary neon color */
+.loading-orb--magenta .loading-orb__ring--outer {
+  border-top-color: var(--neon-magenta, #FF00FF);
+  border-right-color: var(--neon-magenta, #FF00FF);
+}
+
+.loading-orb--magenta .loading-orb__ring--inner {
+  border-bottom-color: var(--neon-magenta-dim, rgba(255, 0, 255, 0.5));
+  border-left-color: var(--neon-magenta-dim, rgba(255, 0, 255, 0.5));
+}
+
+.loading-orb--magenta .loading-orb__core {
+  background: var(--neon-magenta, #FF00FF);
+}
+
+.loading-orb--magenta.loading-orb--glow {
+  box-shadow: var(--glow-magenta, 0 0 20px #FF00FF, 0 0 40px rgba(255, 0, 255, 0.5));
+}
+
+/* Purple - Tertiary neon color */
+.loading-orb--purple .loading-orb__ring--outer {
+  border-top-color: var(--neon-purple, #8B5CF6);
+  border-right-color: var(--neon-purple, #8B5CF6);
+}
+
+.loading-orb--purple .loading-orb__ring--inner {
+  border-bottom-color: var(--neon-purple-dim, rgba(139, 92, 246, 0.5));
+  border-left-color: var(--neon-purple-dim, rgba(139, 92, 246, 0.5));
+}
+
+.loading-orb--purple .loading-orb__core {
+  background: var(--neon-purple, #8B5CF6);
+}
+
+.loading-orb--purple.loading-orb--glow {
+  box-shadow: var(--glow-purple, 0 0 20px #8B5CF6, 0 0 40px rgba(139, 92, 246, 0.5));
+}
+
+/* Gradient - Multi-color (default) */
+.loading-orb--gradient .loading-orb__ring--outer {
+  border-top-color: var(--neon-cyan, #00D4FF);
+  border-right-color: var(--neon-magenta, #FF00FF);
+}
+
+.loading-orb--gradient .loading-orb__ring--inner {
+  border-bottom-color: var(--neon-purple, #8B5CF6);
+  border-left-color: var(--neon-cyan, #00D4FF);
+}
+
+.loading-orb--gradient .loading-orb__core {
+  background: linear-gradient(135deg, var(--neon-cyan, #00D4FF), var(--neon-magenta, #FF00FF), var(--neon-purple, #8B5CF6));
+}
+
+.loading-orb--gradient.loading-orb--glow {
+  box-shadow: 
+    0 0 20px var(--neon-cyan, #00D4FF),
+    0 0 40px var(--neon-magenta-dim, rgba(255, 0, 255, 0.3)),
+    0 0 60px var(--neon-purple-dim, rgba(139, 92, 246, 0.2));
+}
+
+/* ============================================
+ * SPEED VARIANTS
+ * ============================================ */
+
+.loading-orb--speed-slow {
+  --loading-orb-duration: 2s;
+}
+
+.loading-orb--speed-normal {
+  --loading-orb-duration: 1s;
+}
+
+.loading-orb--speed-fast {
+  --loading-orb-duration: 0.6s;
+}
+
+/* ============================================
+ * GLOW EFFECT
+ * ============================================ */
+
+.loading-orb--glow {
+  animation: loading-orb-glow-pulse 2s var(--ease-glow, ease-in-out) infinite;
+}
+
+/* ============================================
+ * ANIMATIONS
+ * Using transform for 60fps performance (Requirement 8.1)
+ * ============================================ */
+
+@keyframes loading-orb-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loading-orb-spin-reverse {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes loading-orb-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes loading-orb-glow-pulse {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.3);
+  }
+}
+
+/* ============================================
+ * REDUCED MOTION SUPPORT
+ * Accessibility: Respect user preferences
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-orb__ring--outer,
+  .loading-orb__ring--inner,
+  .loading-orb__core,
+  .loading-orb--glow {
+    animation: none;
+  }
+  
+  /* Static fallback - show rings without animation */
+  .loading-orb__ring--outer {
+    border-color: var(--neon-cyan, #00D4FF);
+    opacity: 0.8;
+  }
+  
+  .loading-orb__ring--inner {
+    border-color: var(--neon-magenta, #FF00FF);
+    opacity: 0.5;
+  }
+}
+
+/* ============================================
+ * SCREEN READER ONLY
+ * ============================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

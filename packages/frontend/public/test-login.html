@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Test - Zena</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+    .error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    .info {
+      background: #d1ecf1;
+      border: 1px solid #bee5eb;
+      color: #0c5460;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Login Test</h1>
+    <p>Test the login API directly without the React app</p>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" value="demo@zena.ai" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" value="DemoSecure2024!" required>
+      </div>
+
+      <button type="submit" id="submitBtn">Test Login</button>
+      <button type="button" id="testMeBtn" style="background: #28a745; margin-top: 5px;">Test /api/auth/me</button>
+      <button type="button" id="clearBtn" style="background: #dc3545; margin-top: 5px;">Clear Tokens</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000';
+    const resultDiv = document.getElementById('result');
+    const submitBtn = document.getElementById('submitBtn');
+    const testMeBtn = document.getElementById('testMeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    function showResult(message, type = 'info') {
+      resultDiv.className = `result ${type}`;
+      resultDiv.textContent = message;
+    }
+
+    // Test login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      showResult('Sending login request...', 'info');
+
+      try {
+        const response = await fetch(`${API_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Store tokens
+          localStorage.setItem('authToken', data.accessToken);
+          localStorage.setItem('refreshToken', data.refreshToken);
+
+          showResult(
+            `✅ LOGIN SUCCESS!\n\n` +
+            `User: ${data.user.name} (${data.user.email})\n` +
+            `User ID: ${data.user.id}\n\n` +
+            `Access Token: ${data.accessToken.substring(0, 50)}...\n` +
+            `Refresh Token: ${data.refreshToken.substring(0, 50)}...\n\n` +
+            `Tokens saved to localStorage!\n` +
+            `Now click "Test /api/auth/me" to verify the token works.`,
+            'success'
+          );
+        } else {
+          showResult(
+            `❌ LOGIN FAILED\n\n` +
+            `Status: ${response.status} ${response.statusText}\n` +
+            `Error: ${JSON.stringify(data, null, 2)}`,
+            'error'
+          );
+        }
+      } catch (error) {
+        showResult(
+          `❌ REQUEST FAILED\n\n` +
+          `Error: ${error.message}\n\n` +
+          `Make sure the backend is running on ${API_URL}`,
+          'error'
+        );
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Test /api/auth/me
+    testMeBtn.addEventListener('click', async () => {
+      const token = localStorage.getItem('authToken');
+      
+      if (!token) {
+        showResult('❌ No token found! Login first.', 'error');
+        return;
+      }
+
+      testMeBtn.disabled = true;
+      showResult('Testing /api/auth/me...', 'info');
+
+      try {
+        const response = await fetch(`${API_URL}/api/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showResult(
+            `✅ /api/auth/me SUCCESS!\n\n` +
+            `User: ${data.user.name} (${data.user.email})\n` +
+            `User ID: ${data.user.id}\n\n` +
+            `Full response:\n${JSON.stringify(data, null, 2)}`,
+            'success'
+          );
+        } else {
+          showResult(
+            `❌ /api/auth/me FAILED\n\n` +
+            `Status: ${response.status} ${response.statusText}\n` +
+            `Error: ${JSON.stringify(data, null, 2)}`,
+            'error'
+          );
+        }
+      } catch (error) {
+        showResult(
+          `❌ REQUEST FAILED\n\n` +
+          `Error: ${error.message}`,
+          'error'
+        );
+      } finally {
+        testMeBtn.disabled = false;
+      }
+    });
+
+    // Clear tokens
+    clearBtn.addEventListener('click', () => {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('refreshToken');
+      showResult('✅ Tokens cleared from localStorage', 'success');
+    });
+
+    // Show current token status on load
+    window.addEventListener('load', () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        showResult(
+          `ℹ️ Found existing token in localStorage:\n${token.substring(0, 50)}...\n\n` +
+          `Click "Test /api/auth/me" to verify it works.`,
+          'info'
+        );
+      } else {
+        showResult('ℹ️ No token found. Enter credentials and click "Test Login".', 'info');
+      }
+    });
+  </script>
+</body>
+</html>

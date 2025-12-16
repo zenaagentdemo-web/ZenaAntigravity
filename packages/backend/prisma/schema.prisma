@@ -1,0 +1,344 @@
+// Prisma schema for Zena AI Real Estate PWA
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model with authentication fields
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  preferences  Json?    // UserPreferences as JSON
+
+  // Relations
+  emailAccounts    EmailAccount[]
+  calendarAccounts CalendarAccount[]
+  threads          Thread[]
+  contacts         Contact[]
+  properties       Property[]
+  deals            Deal[]
+  timelineEvents   TimelineEvent[]
+  tasks            Task[]
+  voiceNotes       VoiceNote[]
+  crmIntegrations  CRMIntegration[]
+  exports          Export[]
+  pushSubscriptions PushSubscription[]
+
+  @@index([email])
+}
+
+// Email account model
+model EmailAccount {
+  id           String   @id @default(uuid())
+  userId       String
+  provider     String   // 'gmail' | 'outlook' | 'icloud' | 'yahoo' | 'imap'
+  email        String
+  accessToken  String   // encrypted
+  refreshToken String   // encrypted
+  tokenExpiry  DateTime
+  lastSyncAt   DateTime?
+  syncEnabled  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  // Relations
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  threads Thread[]
+
+  @@index([userId])
+  @@index([email])
+}
+
+// Calendar account model
+model CalendarAccount {
+  id           String   @id @default(uuid())
+  userId       String
+  provider     String   // 'google' | 'microsoft' | 'icloud'
+  email        String
+  accessToken  String   // encrypted
+  refreshToken String   // encrypted
+  tokenExpiry  DateTime
+  lastSyncAt   DateTime?
+  syncEnabled  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([email])
+}
+
+// Thread model with classification and categorization
+model Thread {
+  id               String    @id @default(uuid())
+  userId           String
+  emailAccountId   String
+  externalId       String    // provider's thread ID
+  subject          String
+  participants     Json      // Participant[]
+  classification   String    // 'buyer' | 'vendor' | 'market' | 'lawyer_broker' | 'noise'
+  category         String    // 'focus' | 'waiting'
+  propertyId       String?
+  dealId           String?
+  stage            String?   // DealStage
+  riskLevel        String    @default("none") // 'none' | 'low' | 'medium' | 'high'
+  riskReason       String?
+  nextAction       String?
+  nextActionOwner  String    // 'agent' | 'other'
+  lastMessageAt    DateTime
+  lastReplyAt      DateTime?
+  summary          String    @db.Text
+  draftResponse    String?   @db.Text
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relations
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailAccount  EmailAccount  @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
+  property      Property?     @relation(fields: [propertyId], references: [id])
+  deal          Deal?         @relation(fields: [dealId], references: [id])
+  messages      Message[]
+
+  @@index([userId])
+  @@index([emailAccountId])
+  @@index([propertyId])
+  @@index([dealId])
+  @@index([category])
+  @@index([classification])
+  @@index([riskLevel])
+  @@index([lastMessageAt])
+}
+
+// Message model for storing individual email messages
+model Message {
+  id          String   @id @default(uuid())
+  threadId    String
+  externalId  String   // provider's message ID
+  from        Json     // { name: string, email: string }
+  to          Json[]   // Array of { name: string, email: string }
+  cc          Json[]   // Array of { name: string, email: string }
+  subject     String
+  body        String   @db.Text
+  bodyHtml    String?  @db.Text
+  sentAt      DateTime
+  receivedAt  DateTime
+  isFromUser  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@unique([threadId, externalId])
+  @@index([threadId])
+  @@index([sentAt])
+}
+
+// Contact model with deduplication support
+model Contact {
+  id               String   @id @default(uuid())
+  userId           String
+  name             String
+  emails           String[] // Array of email addresses
+  phones           String[] // Array of phone numbers
+  role             String   // 'buyer' | 'vendor' | 'market' | 'other'
+  relationshipNotes Json[]  // RelationshipNote[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deals      Deal[]     @relation("DealContacts")
+  vendorProperties Property[] @relation("VendorContacts")
+  buyerProperties  Property[] @relation("BuyerContacts")
+
+  @@index([userId])
+  @@index([emails])
+  @@index([role])
+}
+
+// Property model with milestone tracking
+model Property {
+  id         String   @id @default(uuid())
+  userId     String
+  address    String
+  milestones Json[]   // CampaignMilestone[]
+  riskOverview String? @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vendors  Contact[] @relation("VendorContacts")
+  buyers   Contact[] @relation("BuyerContacts")
+  threads  Thread[]
+  deals    Deal[]
+
+  @@index([userId])
+  @@index([address])
+}
+
+// Deal model with stage and risk tracking
+model Deal {
+  id              String   @id @default(uuid())
+  userId          String
+  threadId        String?
+  propertyId      String?
+  stage           String   // DealStage: 'lead' | 'qualified' | 'viewing' | 'offer' | 'conditional' | 'pre_settlement' | 'sold' | 'nurture'
+  riskLevel       String   @default("none") // 'none' | 'low' | 'medium' | 'high'
+  riskFlags       String[] // Array of risk indicators
+  nextAction      String?  @db.Text
+  nextActionOwner String   // 'agent' | 'other'
+  summary         String   @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id])
+  contacts Contact[] @relation("DealContacts")
+  threads  Thread[]
+
+  @@index([userId])
+  @@index([propertyId])
+  @@index([stage])
+  @@index([riskLevel])
+}
+
+// Timeline event model
+model TimelineEvent {
+  id         String   @id @default(uuid())
+  userId     String
+  type       String   // 'email' | 'call' | 'meeting' | 'task' | 'note' | 'voice_note'
+  entityType String   // 'thread' | 'contact' | 'property' | 'deal' | 'calendar_event'
+  entityId   String
+  summary    String   @db.Text
+  content    String?  @db.Text
+  metadata   Json?
+  timestamp  DateTime
+  createdAt  DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, entityType, entityId], name: "userId_entityType_entityId")
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([timestamp])
+}
+
+// Task model
+model Task {
+  id          String    @id @default(uuid())
+  userId      String
+  label       String
+  status      String    @default("open") // 'open' | 'completed'
+  dueDate     DateTime?
+  dealId      String?
+  propertyId  String?
+  contactId   String?
+  source      String    // 'email' | 'voice_note' | 'manual' | 'ai_suggested'
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+// Voice note model
+model VoiceNote {
+  id               String    @id @default(uuid())
+  userId           String
+  audioUrl         String
+  transcript       String    @db.Text
+  extractedEntities Json[]   // ExtractedEntity[]
+  processingStatus String    @default("pending") // 'pending' | 'processing' | 'completed' | 'failed'
+  createdAt        DateTime  @default(now())
+  processedAt      DateTime?
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([processingStatus])
+}
+
+// CRM integration model
+model CRMIntegration {
+  id          String    @id @default(uuid())
+  userId      String
+  provider    String    // 'mri_vault' | 'salesforce' | 'top_producer' | 'kvcore' | 'follow_up_boss'
+  credentials String    // encrypted
+  syncEnabled Boolean   @default(true)
+  lastSyncAt  DateTime?
+  syncConfig  Json      // CRMSyncConfig
+  createdAt   DateTime  @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([provider])
+}
+
+// Export model
+model Export {
+  id          String    @id @default(uuid())
+  userId      String
+  type        String    // 'contacts' | 'properties' | 'deals'
+  format      String    // 'csv' | 'xlsx' | 'vcard'
+  fileUrl     String
+  recordCount Int
+  status      String    @default("pending") // 'pending' | 'processing' | 'completed' | 'failed'
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+// Push subscription model for web push notifications
+model PushSubscription {
+  id         String   @id @default(uuid())
+  userId     String
+  endpoint   String   @unique
+  keys       Json     // { p256dh: string, auth: string }
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([endpoint])
+}
+
+// Notification preferences model
+model NotificationPreferences {
+  id                      String   @id @default(uuid())
+  userId                  String   @unique
+  highPriorityThreads     Boolean  @default(true)
+  riskDeals               Boolean  @default(true)
+  calendarReminders       Boolean  @default(true)
+  taskReminders           Boolean  @default(true)
+  newThreads              Boolean  @default(false)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@index([userId])
+}

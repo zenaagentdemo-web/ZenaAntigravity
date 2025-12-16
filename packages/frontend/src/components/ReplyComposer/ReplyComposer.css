@@ -1,0 +1,883 @@
+/**
+ * ReplyComposer Component Styles
+ * 
+ * Implements glassmorphism modal styling with high-tech aesthetic
+ * Style template chips and form elements
+ * Add loading and error states
+ * 
+ * Requirements: 5.1
+ */
+
+/* ============================================
+ * MODAL BACKDROP AND CONTAINER
+ * ============================================ */
+
+.reply-composer-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: backdrop-fade-in var(--composer-animation-duration, 300ms) ease-out;
+}
+
+.reply-composer-backdrop--reduced-motion {
+  animation: none;
+}
+
+@keyframes backdrop-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(8px)) {
+  .reply-composer-backdrop {
+    background: rgba(10, 10, 15, 0.9);
+  }
+}
+
+/* ============================================
+ * GLASSMORPHISM MODAL
+ * ============================================ */
+
+.reply-composer-modal {
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+  border: var(--glass-border, 1px solid rgba(255, 255, 255, 0.1));
+  border-radius: 20px;
+  padding: 24px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modal-slide-in var(--composer-animation-duration, 300ms) ease-out;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.reply-composer-modal--reduced-motion {
+  animation: none;
+}
+
+@keyframes modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Top gradient accent line */
+.reply-composer-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan, #00D4FF), transparent);
+  opacity: 0.5;
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  .reply-composer-modal {
+    background: var(--glass-fallback-bg, rgba(26, 26, 46, 0.95));
+  }
+}
+
+/* ============================================
+ * MODAL HEADER
+ * ============================================ */
+
+.reply-composer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reply-composer-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary-ht, #FFFFFF);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.reply-composer-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: all var(--composer-transition-duration, 200ms) ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.reply-composer-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary-ht, #FFFFFF);
+  transform: scale(1.1);
+}
+
+.reply-composer-close:focus {
+  outline: 2px solid var(--neon-cyan, #00D4FF);
+  outline-offset: 2px;
+}
+
+/* ============================================
+ * FORM FIELDS
+ * ============================================ */
+
+.reply-composer-field {
+  margin-bottom: 20px;
+}
+
+.reply-composer-field--message {
+  margin-bottom: 16px;
+}
+
+.reply-composer-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+ * RECIPIENTS SECTION
+ * ============================================ */
+
+.reply-composer-recipients {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  transition: border-color var(--composer-transition-duration, 200ms) ease;
+}
+
+.reply-composer-recipients:focus-within {
+  border-color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+}
+
+.recipient-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--neon-cyan, #00D4FF);
+  color: var(--bg-primary, #0A0A0F);
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  animation: chip-pop-in var(--composer-transition-duration, 200ms) ease-out;
+}
+
+@keyframes chip-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.recipient-email {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recipient-remove {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  font-weight: bold;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 150ms ease;
+}
+
+.recipient-remove:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+ * SUBJECT INPUT
+ * ============================================ */
+
+.reply-composer-subject {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-primary-ht, #FFFFFF);
+  font-size: 14px;
+  transition: all var(--composer-transition-duration, 200ms) ease;
+}
+
+.reply-composer-subject::placeholder {
+  color: var(--text-muted-ht, rgba(255, 255, 255, 0.3));
+}
+
+.reply-composer-subject:focus {
+  outline: none;
+  border-color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================
+ * STYLE SELECTION (Neon Chips)
+ * ============================================ */
+
+.reply-composer-styles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-height: 40px;
+}
+
+.style-chip {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--composer-transition-duration, 200ms) ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.style-chip:hover:not(:disabled) {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: var(--neon-cyan, #00D4FF);
+  color: var(--text-primary-ht, #FFFFFF);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.style-chip--selected {
+  background: rgba(0, 212, 255, 0.15) !important;
+  border-color: var(--neon-cyan, #00D4FF) !important;
+  color: var(--neon-cyan, #00D4FF) !important;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3) !important;
+  text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+.style-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Glass shine effect */
+.style-chip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent);
+  transform: skewX(-25deg);
+  transition: 0.5s;
+}
+
+.style-chip:hover::after {
+  left: 150%;
+  transition: 0.5s;
+}
+
+/* ============================================
+ * MESSAGE INPUT
+ * ============================================ */
+
+.reply-composer-message {
+  width: 100%;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-primary-ht, #FFFFFF);
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 120px;
+  transition: all var(--composer-transition-duration, 200ms) ease;
+}
+
+.reply-composer-message::placeholder {
+  color: var(--text-muted-ht, rgba(255, 255, 255, 0.3));
+}
+
+.reply-composer-message:focus {
+  outline: none;
+  border-color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.reply-composer-message-meta {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.character-count {
+  font-size: 12px;
+  color: var(--text-muted-ht, rgba(255, 255, 255, 0.3));
+}
+
+/* ============================================
+ * ERROR STATE
+ * ============================================ */
+
+.reply-composer-error {
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  color: var(--status-urgent, #FF4444);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: error-shake 400ms ease-out;
+}
+
+@keyframes error-shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.reply-composer-error::before {
+  content: '⚠';
+  font-size: 16px;
+}
+
+/* ============================================
+ * ACTION BUTTONS
+ * ============================================ */
+
+.reply-composer-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  align-items: center;
+}
+
+.reply-composer-cancel,
+.reply-composer-send {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--composer-transition-duration, 200ms) ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  /* Touch target accessibility */
+}
+
+/* Actions Layout */
+.actions-left {
+  margin-right: auto;
+}
+
+.actions-right {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.reply-composer-attach-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.reply-composer-attach-btn:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: var(--neon-cyan, #00D4FF);
+  color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.reply-composer-attach-btn:focus {
+  outline: none;
+  border-color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+}
+
+.reply-composer-regenerate {
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.8));
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 200ms ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.reply-composer-regenerate:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--neon-cyan, #00D4FF);
+  color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.reply-composer-regenerate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reply-composer-regenerate svg {
+  transition: transform 0.5s ease;
+}
+
+.reply-composer-regenerate:hover:not(:disabled) svg {
+  transform: rotate(180deg);
+}
+
+.reply-composer-cancel {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+}
+
+.reply-composer-cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary-ht, #FFFFFF);
+  transform: translateY(-1px);
+}
+
+.reply-composer-send {
+  background: var(--neon-cyan, #00D4FF);
+  border: 1px solid var(--neon-cyan, #00D4FF);
+  color: var(--bg-primary, #0A0A0F);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.reply-composer-send:hover:not(:disabled) {
+  background: var(--neon-cyan-dim, rgba(0, 212, 255, 0.8));
+  transform: translateY(-1px);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+}
+
+.reply-composer-send:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted-ht, rgba(255, 255, 255, 0.3));
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ============================================
+ * LOADING SPINNER
+ * ============================================ */
+
+.send-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+ * RESPONSIVE DESIGN
+ * ============================================ */
+
+@media (max-width: 768px) {
+  .reply-composer-backdrop {
+    padding: 16px;
+  }
+
+  .reply-composer-modal {
+    padding: 20px;
+    border-radius: 16px;
+    max-height: 95vh;
+  }
+
+  .reply-composer-title {
+    font-size: 16px;
+  }
+
+  .reply-composer-actions {
+    flex-direction: column-reverse;
+  }
+
+  .reply-composer-cancel,
+  .reply-composer-send {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .reply-composer-templates {
+    justify-content: center;
+  }
+
+  .template-chip {
+    flex: 1;
+    text-align: center;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .reply-composer-modal {
+    padding: 16px;
+  }
+
+  .reply-composer-header {
+    margin-bottom: 20px;
+  }
+
+  .reply-composer-field {
+    margin-bottom: 16px;
+  }
+
+  .recipient-chip {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+
+  .template-chip {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+/* ============================================
+ * ACCESSIBILITY ENHANCEMENTS
+ * ============================================ */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus indicators */
+.reply-composer-cancel:focus,
+.reply-composer-send:focus {
+  outline: 2px solid var(--neon-cyan, #00D4FF);
+  outline-offset: 2px;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+}
+
+.template-chip:focus {
+  outline: 2px solid var(--neon-cyan, #00D4FF);
+  outline-offset: 2px;
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+}
+
+.recipient-remove:focus {
+  outline: 2px solid var(--neon-cyan, #00D4FF);
+  outline-offset: 1px;
+  border-radius: 50%;
+}
+
+/* Enhanced keyboard navigation */
+.keyboard-navigation .reply-composer-modal {
+  border-color: var(--neon-cyan, #00D4FF);
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+}
+
+.keyboard-navigation .reply-composer-cancel:focus,
+.keyboard-navigation .reply-composer-send:focus {
+  background: rgba(0, 212, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.keyboard-navigation .template-chip:focus {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: var(--neon-cyan, #00D4FF);
+  transform: translateY(-1px);
+}
+
+/* Focus trap indicator for modal */
+.reply-composer-modal[data-focus-trap="true"] {
+  position: relative;
+}
+
+.reply-composer-modal[data-focus-trap="true"]::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border: 2px solid var(--neon-cyan, #00D4FF);
+  border-radius: 23px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .reply-composer-modal {
+    border: 2px solid var(--text-primary-ht, #FFFFFF);
+  }
+
+  .reply-composer-subject,
+  .reply-composer-message,
+  .reply-composer-recipients {
+    border: 2px solid var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  }
+
+  .template-chip {
+    border: 2px solid var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+  .reply-composer-backdrop,
+  .reply-composer-modal,
+  .recipient-chip,
+  .template-chip,
+  .reply-composer-cancel,
+  .reply-composer-send,
+  .reply-composer-close {
+    animation: none;
+    transition: none;
+  }
+
+  .send-spinner {
+    animation: none;
+  }
+
+  .reply-composer-error {
+    animation: none;
+  }
+}
+
+/* Enhanced reduced motion support for programmatic control */
+.reply-composer-backdrop--reduced-motion,
+.reply-composer-modal--reduced-motion,
+.reply-composer-backdrop--reduced-motion .recipient-chip,
+.reply-composer-modal--reduced-motion .template-chip,
+.reply-composer-modal--reduced-motion .reply-composer-cancel,
+.reply-composer-modal--reduced-motion .reply-composer-send,
+.reply-composer-modal--reduced-motion .reply-composer-close,
+.reply-composer-modal--reduced-motion .reply-composer-subject,
+.reply-composer-modal--reduced-motion .reply-composer-message,
+.reply-composer-modal--reduced-motion .reply-composer-recipients {
+  animation: none !important;
+  transition: none !important;
+}
+
+.reply-composer-modal--reduced-motion .send-spinner {
+  animation: none !important;
+}
+
+.reply-composer-modal--reduced-motion .reply-composer-error {
+  animation: none !important;
+}
+
+/* ============================================
+ * DARK THEME OVERRIDES
+ * ============================================ */
+
+[data-theme="high-tech"] .reply-composer-modal {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+}
+
+[data-theme="high-tech"] .reply-composer-title {
+  color: var(--text-primary-ht);
+}
+
+[data-theme="high-tech"] .reply-composer-label {
+  color: var(--text-secondary-ht);
+}
+
+[data-theme="high-tech"] .reply-composer-subject,
+[data-theme="high-tech"] .reply-composer-message {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary-ht);
+}
+
+[data-theme="high-tech"] .reply-composer-subject:focus,
+[data-theme="high-tech"] .reply-composer-message:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 0 2px var(--neon-cyan-subtle);
+}
+
+[data-theme="high-tech"] .template-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary-ht);
+}
+
+/* ============================================
+ * ATTACHMENT LIST
+ * ============================================ */
+
+.reply-composer-attachments {
+  margin-bottom: 16px;
+}
+
+.attachment-list {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px;
+  /* Space for focus rings/shadows */
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-secondary-ht, rgba(255, 255, 255, 0.3)) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.attachment-list::-webkit-scrollbar {
+  height: 6px;
+}
+
+.attachment-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.attachment-list::-webkit-scrollbar-thumb {
+  background-color: var(--text-secondary-ht, rgba(255, 255, 255, 0.3));
+  border-radius: 3px;
+}
+
+
+[data-theme="high-tech"] .template-chip--selected {
+  background: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+  color: var(--bg-primary);
+  box-shadow: var(--glow-cyan);
+}
+
+[data-theme="high-tech"] .reply-composer-send {
+  background: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+  color: var(--bg-primary);
+  box-shadow: var(--glow-cyan);
+}
+
+[data-theme="high-tech"] .reply-composer-send:hover:not(:disabled) {
+  box-shadow: var(--glow-cyan), 0 0 40px var(--neon-cyan-dim);
+}

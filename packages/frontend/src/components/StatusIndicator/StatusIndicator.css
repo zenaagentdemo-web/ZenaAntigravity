@@ -1,0 +1,73 @@
+/**
+ * StatusIndicator Component Styles
+ * 
+ * Animated pulsing dot indicators with color-coded status.
+ * Part of the High-Tech AI Aesthetic design system.
+ * 
+ * Requirements: 5.5
+ */
+
+/* Size variants for status indicator container */
+.status-indicator-ht--small {
+  padding: 2px 8px;
+  gap: 6px;
+}
+
+.status-indicator-ht--small .status-dot-ht {
+  width: 6px;
+  height: 6px;
+}
+
+.status-indicator-ht--small .status-label-ht {
+  font-size: 10px;
+}
+
+.status-indicator-ht--medium {
+  padding: 4px 12px;
+  gap: 8px;
+}
+
+.status-indicator-ht--medium .status-dot-ht {
+  width: 8px;
+  height: 8px;
+}
+
+.status-indicator-ht--medium .status-label-ht {
+  font-size: 12px;
+}
+
+.status-indicator-ht--large {
+  padding: 6px 16px;
+  gap: 10px;
+}
+
+.status-indicator-ht--large .status-dot-ht {
+  width: 10px;
+  height: 10px;
+}
+
+.status-indicator-ht--large .status-label-ht {
+  font-size: 14px;
+}
+
+/* Static (non-animated) variant */
+.status-dot-ht--static {
+  animation: none !important;
+}
+
+/* Focus styles for accessibility */
+.status-indicator-ht:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .status-dot-ht {
+    border: 2px solid currentColor;
+  }
+  
+  .status-indicator-ht {
+    border-width: 2px;
+  }
+}

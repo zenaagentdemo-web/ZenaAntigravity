@@ -1,0 +1,417 @@
+.smart-summary-widget {
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-border);
+  position: relative;
+}
+
+.smart-summary-widget--high {
+  border-left: 4px solid var(--color-danger);
+}
+
+.smart-summary-widget--medium {
+  border-left: 4px solid var(--color-warning);
+}
+
+.smart-summary-widget--low {
+  border-left: 4px solid var(--color-success);
+}
+
+.smart-summary-widget__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 20px 0;
+}
+
+.smart-summary-widget__metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.smart-summary-metric {
+  background: var(--color-surface-secondary);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid var(--color-border-light);
+  transition: all 0.2s ease;
+}
+
+.smart-summary-metric--urgent {
+  background: var(--color-danger-light);
+  border-color: var(--color-danger);
+  color: var(--color-danger-dark);
+}
+
+.smart-summary-metric--critical {
+  background: var(--color-danger-light);
+  border-color: var(--color-danger);
+  color: var(--color-danger-dark);
+  animation: pulse 2s infinite;
+}
+
+.smart-summary-metric--warning {
+  background: var(--color-warning-light);
+  border-color: var(--color-warning);
+  color: var(--color-warning-dark);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.smart-summary-metric__value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.smart-summary-metric--urgent .smart-summary-metric__value,
+.smart-summary-metric--critical .smart-summary-metric__value {
+  color: var(--color-danger);
+}
+
+.smart-summary-metric--warning .smart-summary-metric__value {
+  color: var(--color-warning);
+}
+
+.smart-summary-metric__label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.smart-summary-widget__message {
+  background: var(--color-info-light);
+  border: 1px solid var(--color-info);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  color: var(--color-info-dark);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.smart-summary-widget__appointments {
+  margin-top: 20px;
+}
+
+.smart-summary-appointments__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 12px 0;
+}
+
+.smart-summary-appointments__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.appointment-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--color-surface-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--color-border-light);
+}
+
+.appointment-item--empty {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.appointment-item__time {
+  font-weight: 600;
+  color: var(--color-primary);
+  min-width: 60px;
+  font-size: 0.875rem;
+}
+
+.appointment-item__content {
+  flex: 1;
+}
+
+.appointment-item__title {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.appointment-item__property {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.appointment-item__type {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.appointment-item__type--viewing {
+  background: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
+.appointment-item__type--meeting {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.appointment-item__type--call {
+  background: var(--color-info-light);
+  color: var(--color-info-dark);
+}
+
+.appointment-item__type--other {
+  background: var(--color-neutral-light);
+  color: var(--color-neutral-dark);
+}
+
+.urgency-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.urgency-indicator--high {
+  background: var(--color-danger-light);
+  color: var(--color-danger-dark);
+  border: 1px solid var(--color-danger);
+}
+
+.urgency-indicator__icon {
+  font-size: 0.9rem;
+}
+
+.urgency-indicator__text {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .smart-summary-widget {
+    padding: 16px;
+  }
+  
+  .smart-summary-widget__metrics {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+  }
+  
+  .smart-summary-metric {
+    padding: 12px;
+  }
+  
+  .smart-summary-metric__value {
+    font-size: 1.5rem;
+  }
+  
+  .appointment-item {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .appointment-item__time {
+    min-width: 50px;
+  }
+}
+/* Skeleton loading styles */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.smart-summary-widget--skeleton {
+  border-left: none;
+}
+
+.skeleton--title {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 20px;
+}
+
+.smart-summary-metric--skeleton {
+  background: transparent;
+  border: 1px solid var(--color-border-light);
+}
+
+.skeleton--metric-value {
+  height: 32px;
+  width: 50px;
+  margin: 0 auto 8px auto;
+}
+
+.skeleton--metric-label {
+  height: 14px;
+  width: 80px;
+  margin: 0 auto;
+}
+
+.skeleton--message {
+  height: 60px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.skeleton--appointments-title {
+  height: 18px;
+  width: 40%;
+  margin-bottom: 12px;
+}
+
+.appointment-item--skeleton {
+  background: transparent;
+  border: 1px solid var(--color-border-light);
+}
+
+.skeleton--appointment-time {
+  height: 14px;
+  width: 60px;
+}
+
+.skeleton--appointment-title {
+  height: 14px;
+  width: 120px;
+  margin-bottom: 4px;
+}
+
+.skeleton--appointment-property {
+  height: 12px;
+  width: 100px;
+}
+
+.skeleton--appointment-type {
+  height: 20px;
+  width: 60px;
+  border-radius: 4px;
+}
+
+/* Dark theme skeleton styles */
+[data-theme="night"] .skeleton {
+  background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+  background-size: 200% 100%;
+}
+/* Accessibility - Focus Indicators */
+.smart-summary-metric:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+.smart-summary-metric:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.appointment-item:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+.appointment-item:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Accessibility - Interactive States */
+.smart-summary-metric[role="button"]:hover {
+  background: var(--color-surface-hover);
+  cursor: pointer;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.appointment-item[tabindex="0"]:hover {
+  background: var(--color-surface-hover);
+  cursor: pointer;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Accessibility - Color Blind Friendly Patterns */
+.smart-summary-metric--urgent::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+.smart-summary-metric--critical::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 10px solid currentColor;
+}
+
+.smart-summary-metric--warning::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .smart-summary-metric {
+    border-width: 2px;
+  }
+  
+  .smart-summary-metric__value {
+    font-weight: var(--font-weight-bold);
+  }
+  
+  .urgency-indicator--high {
+    border-width: 2px;
+    font-weight: var(--font-weight-bold);
+  }
+}

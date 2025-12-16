@@ -1,0 +1,113 @@
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  border: none;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle:hover {
+  background-color: var(--color-surface-hover);
+  box-shadow: var(--shadow-md);
+  transform: scale(1.05);
+}
+
+.theme-toggle:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: var(--shadow-md), 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+.theme-toggle:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle--top-right {
+  position: fixed;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  z-index: var(--z-index-fixed);
+}
+
+.theme-toggle--header {
+  position: relative;
+}
+
+.theme-toggle--floating {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + var(--spacing-lg));
+  right: var(--spacing-lg);
+  z-index: var(--z-index-fixed);
+}
+
+.theme-toggle__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-slow);
+}
+
+.theme-toggle__icon--day {
+  transform: rotate(0deg);
+}
+
+.theme-toggle__icon--night {
+  transform: rotate(180deg);
+}
+
+.theme-toggle__sun,
+.theme-toggle__moon {
+  transition: all var(--transition-base);
+}
+
+.theme-toggle__sun {
+  color: #f59e0b;
+}
+
+.theme-toggle__moon {
+  color: #6366f1;
+}
+
+/* Animation for smooth icon transition */
+@keyframes rotate-in {
+  from {
+    transform: rotate(-180deg) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.theme-toggle__icon--day .theme-toggle__sun {
+  animation: rotate-in var(--transition-slow) ease-out;
+}
+
+.theme-toggle__icon--night .theme-toggle__moon {
+  animation: rotate-in var(--transition-slow) ease-out;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .theme-toggle--top-right {
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+  }
+  
+  .theme-toggle--floating {
+    bottom: calc(var(--bottom-nav-height) + var(--spacing-md));
+    right: var(--spacing-md);
+  }
+}

@@ -1,0 +1,335 @@
+/**
+ * NewPage High-Tech Aesthetic Enhancements
+ * 
+ * Additional high-tech styling specifically for the New page to ensure
+ * all visual features match the completed high-tech aesthetic tasks.
+ * 
+ * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6
+ */
+
+/* ============================================
+ * HIGH-TECH NEW PAGE THEME APPLICATION
+ * ============================================ */
+
+[data-theme="high-tech"] .new-page {
+  /* Enhanced dark gradient background */
+  background: 
+    radial-gradient(ellipse at 20% 10%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg-primary, #0A0A0F) 0%, var(--bg-secondary, #12121A) 50%, var(--bg-tertiary, #1A1A2E) 100%);
+  
+  /* Ensure high-tech text colors */
+  color: var(--text-primary-ht, #FFFFFF);
+}
+
+/* Enhanced ambient background overlay */
+[data-theme="high-tech"] .new-page::before {
+  background: 
+    radial-gradient(ellipse at 30% 20%, rgba(0, 212, 255, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(255, 0, 255, 0.03) 0%, transparent 60%);
+}
+
+/* ============================================
+ * ENHANCED THREAD CARDS IN HIGH-TECH THEME
+ * ============================================ */
+
+[data-theme="high-tech"] .thread-card {
+  /* Enhanced glassmorphism */
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+  border: var(--glass-border, 1px solid rgba(255, 255, 255, 0.1));
+  
+  /* Enhanced glow effects */
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    0 0 1px rgba(0, 212, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="high-tech"] .thread-card:hover {
+  /* Intensified hover glow */
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(0, 212, 255, 0.15),
+    0 0 60px rgba(0, 212, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  
+  /* Enhanced border glow */
+  border-color: rgba(0, 212, 255, 0.4);
+}
+
+/* Enhanced gradient accent line */
+[data-theme="high-tech"] .thread-card::before {
+  background: linear-gradient(
+    90deg, 
+    transparent, 
+    var(--neon-cyan, #00D4FF) 20%, 
+    var(--neon-magenta, #FF00FF) 50%,
+    var(--neon-purple, #8B5CF6) 80%,
+    transparent
+  );
+  opacity: 0.7;
+}
+
+/* ============================================
+ * ENHANCED FILTER CHIPS
+ * ============================================ */
+
+[data-theme="high-tech"] .filter-chip {
+  /* Enhanced glassmorphism */
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* Subtle glow */
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="high-tech"] .filter-chip:hover {
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(0, 212, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="high-tech"] .filter-chip--active {
+  /* Enhanced active glow */
+  box-shadow: 
+    0 0 15px rgba(0, 212, 255, 0.4),
+    0 0 30px rgba(0, 212, 255, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 0 15px rgba(0, 212, 255, 0.15);
+}
+
+/* ============================================
+ * ENHANCED HEADER STYLING
+ * ============================================ */
+
+[data-theme="high-tech"] .new-page-header {
+  /* Enhanced glassmorphism */
+  background: rgba(10, 10, 15, 0.8);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+  
+  /* Subtle glow */
+  box-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="high-tech"] .new-page-header--compact {
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  background: rgba(10, 10, 15, 0.95);
+  border-bottom-color: rgba(0, 212, 255, 0.3);
+}
+
+/* Enhanced title gradient */
+[data-theme="high-tech"] .new-page-header__title {
+  background: linear-gradient(
+    135deg, 
+    var(--neon-cyan, #00D4FF) 0%, 
+    var(--neon-magenta, #FF00FF) 50%,
+    var(--neon-purple, #8B5CF6) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  
+  /* Enhanced text glow */
+  filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.4));
+}
+
+/* ============================================
+ * ENHANCED LOADING STATES
+ * ============================================ */
+
+[data-theme="high-tech"] .new-page-skeleton__card {
+  /* Enhanced glassmorphism for skeleton */
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+  
+  /* Enhanced glow */
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    0 0 1px rgba(0, 212, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Enhanced shimmer effect */
+[data-theme="high-tech"] .new-page-skeleton__card::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 212, 255, 0.08) 30%,
+    rgba(255, 0, 255, 0.06) 50%,
+    rgba(139, 92, 246, 0.08) 70%,
+    transparent 100%
+  );
+}
+
+/* ============================================
+ * ENHANCED ERROR STATES
+ * ============================================ */
+
+[data-theme="high-tech"] .new-page-error-card {
+  /* Enhanced glassmorphism */
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  
+  /* Error glow */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(255, 68, 68, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="high-tech"] .new-page-retry-button {
+  /* Enhanced button styling */
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  box-shadow: 
+    0 0 10px rgba(0, 212, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="high-tech"] .new-page-retry-button:hover {
+  box-shadow: 
+    0 0 20px rgba(0, 212, 255, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* ============================================
+ * ENHANCED BATCH MODE HINT
+ * ============================================ */
+
+[data-theme="high-tech"] .new-page__batch-hint {
+  /* Enhanced glassmorphism */
+  background: var(--glass-bg, rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  
+  /* Enhanced glow */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(0, 212, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+ * ENHANCED PULL-TO-REFRESH INDICATOR
+ * ============================================ */
+
+[data-theme="high-tech"] .new-page__pull-indicator {
+  color: var(--neon-cyan, #00D4FF);
+  filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+}
+
+[data-theme="high-tech"] .new-page__pull-icon {
+  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.4));
+}
+
+/* ============================================
+ * ENHANCED ANIMATIONS
+ * ============================================ */
+
+/* Enhanced thread fade-in with glow */
+[data-theme="high-tech"] .new-page__thread-item {
+  animation: thread-fade-in-glow 400ms var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+@keyframes thread-fade-in-glow {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    filter: blur(2px);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(5px) scale(1.02);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+/* Enhanced urgent badge pulse */
+[data-theme="high-tech"] .new-page__urgent-badge {
+  animation: urgent-pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes urgent-pulse-glow {
+  0%, 100% { 
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+  }
+  50% { 
+    opacity: 0.8;
+    box-shadow: 
+      0 0 20px rgba(255, 68, 68, 0.5),
+      0 0 40px rgba(255, 68, 68, 0.2);
+  }
+}
+
+/* ============================================
+ * RESPONSIVE ENHANCEMENTS
+ * ============================================ */
+
+@media (max-width: 768px) {
+  [data-theme="high-tech"] .new-page {
+    /* Reduce background complexity on mobile */
+    background: linear-gradient(
+      180deg, 
+      var(--bg-primary, #0A0A0F) 0%, 
+      var(--bg-secondary, #12121A) 100%
+    );
+  }
+  
+  [data-theme="high-tech"] .thread-card {
+    /* Reduce glow effects on mobile for performance */
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  [data-theme="high-tech"] .thread-card:hover {
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      0 0 15px rgba(0, 212, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* ============================================
+ * REDUCED MOTION SUPPORT
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="high-tech"] .new-page__thread-item {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  
+  [data-theme="high-tech"] .new-page__urgent-badge {
+    animation: none;
+  }
+  
+  [data-theme="high-tech"] .new-page-header__title {
+    filter: none;
+  }
+}

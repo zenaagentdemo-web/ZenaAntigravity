@@ -1,0 +1,466 @@
+/**
+ * High-Tech AI Aesthetic - Accessibility Styles
+ * 
+ * Ensures WCAG 2.1 AA compliance for the high-tech dark theme:
+ * - Text contrast compliance on dark backgrounds
+ * - Text-shadow glow effects for headings
+ * - Reduced motion support
+ * - Focus indicators for high-tech theme
+ * 
+ * Requirements: 2.4, 8.1
+ */
+
+/* ============================================
+ * TEXT CONTRAST COMPLIANCE
+ * Ensures all text meets WCAG AA contrast requirements
+ * on dark backgrounds (4.5:1 for normal text, 3:1 for large text)
+ * ============================================ */
+
+[data-theme="high-tech"] {
+  /* Primary text - White on dark (#0A0A0F) = 21:1 contrast ratio */
+  --ht-text-primary: #FFFFFF;
+  
+  /* Secondary text - Light gray on dark = ~12:1 contrast ratio */
+  --ht-text-secondary: rgba(255, 255, 255, 0.85);
+  
+  /* Tertiary text - Medium gray on dark = ~7:1 contrast ratio */
+  --ht-text-tertiary: rgba(255, 255, 255, 0.7);
+  
+  /* Muted text - Lighter gray on dark = ~4.5:1 contrast ratio (minimum AA) */
+  --ht-text-muted: rgba(255, 255, 255, 0.6);
+  
+  /* Disabled text - Meets 3:1 for UI components */
+  --ht-text-disabled: rgba(255, 255, 255, 0.45);
+  
+  /* Link colors - High contrast neon cyan */
+  --ht-link-color: #00D4FF;
+  --ht-link-hover: #66E5FF;
+  --ht-link-visited: #B794F6;
+}
+
+/* Base text styles for high-tech theme */
+[data-theme="high-tech"] body {
+  color: var(--ht-text-primary);
+}
+
+[data-theme="high-tech"] p,
+[data-theme="high-tech"] span,
+[data-theme="high-tech"] div,
+[data-theme="high-tech"] li,
+[data-theme="high-tech"] td,
+[data-theme="high-tech"] th {
+  color: var(--ht-text-primary);
+}
+
+/* Secondary text elements */
+[data-theme="high-tech"] .text-secondary,
+[data-theme="high-tech"] .text-muted,
+[data-theme="high-tech"] label,
+[data-theme="high-tech"] .label,
+[data-theme="high-tech"] .caption,
+[data-theme="high-tech"] .subtitle {
+  color: var(--ht-text-secondary);
+}
+
+/* Tertiary/helper text */
+[data-theme="high-tech"] .text-tertiary,
+[data-theme="high-tech"] .helper-text,
+[data-theme="high-tech"] .hint,
+[data-theme="high-tech"] small,
+[data-theme="high-tech"] .small {
+  color: var(--ht-text-tertiary);
+}
+
+/* Disabled text */
+[data-theme="high-tech"] [disabled],
+[data-theme="high-tech"] .disabled,
+[data-theme="high-tech"] [aria-disabled="true"] {
+  color: var(--ht-text-disabled);
+}
+
+/* ============================================
+ * HEADING GLOW EFFECTS
+ * Text-shadow glow for headings to enhance visibility
+ * while maintaining contrast compliance
+ * ============================================ */
+
+[data-theme="high-tech"] h1,
+[data-theme="high-tech"] h2,
+[data-theme="high-tech"] h3,
+[data-theme="high-tech"] h4,
+[data-theme="high-tech"] h5,
+[data-theme="high-tech"] h6,
+[data-theme="high-tech"] .heading {
+  color: var(--ht-text-primary);
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.3),
+               0 0 40px rgba(0, 212, 255, 0.1);
+}
+
+/* Primary headings - stronger glow */
+[data-theme="high-tech"] h1,
+[data-theme="high-tech"] .heading-xl {
+  text-shadow: 0 0 30px rgba(0, 212, 255, 0.4),
+               0 0 60px rgba(0, 212, 255, 0.2);
+}
+
+/* Secondary headings - medium glow */
+[data-theme="high-tech"] h2,
+[data-theme="high-tech"] .heading-lg {
+  text-shadow: 0 0 25px rgba(0, 212, 255, 0.35),
+               0 0 50px rgba(0, 212, 255, 0.15);
+}
+
+/* Tertiary headings - subtle glow */
+[data-theme="high-tech"] h3,
+[data-theme="high-tech"] h4,
+[data-theme="high-tech"] .heading-md {
+  text-shadow: 0 0 15px rgba(0, 212, 255, 0.25),
+               0 0 30px rgba(0, 212, 255, 0.1);
+}
+
+/* Small headings - minimal glow */
+[data-theme="high-tech"] h5,
+[data-theme="high-tech"] h6,
+[data-theme="high-tech"] .heading-sm {
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+}
+
+/* Accent-colored headings */
+[data-theme="high-tech"] .heading--cyan {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.5),
+               0 0 40px rgba(0, 212, 255, 0.25);
+}
+
+[data-theme="high-tech"] .heading--magenta {
+  color: var(--neon-magenta);
+  text-shadow: 0 0 20px rgba(255, 0, 255, 0.5),
+               0 0 40px rgba(255, 0, 255, 0.25);
+}
+
+[data-theme="high-tech"] .heading--purple {
+  color: var(--neon-purple);
+  text-shadow: 0 0 20px rgba(139, 92, 246, 0.5),
+               0 0 40px rgba(139, 92, 246, 0.25);
+}
+
+/* ============================================
+ * LINK CONTRAST COMPLIANCE
+ * Ensures links are distinguishable and meet contrast
+ * ============================================ */
+
+[data-theme="high-tech"] a,
+[data-theme="high-tech"] .link {
+  color: var(--ht-link-color);
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 212, 255, 0.5);
+  text-underline-offset: 2px;
+  transition: color var(--duration-fast) var(--ease-smooth),
+              text-shadow var(--duration-fast) var(--ease-smooth);
+}
+
+[data-theme="high-tech"] a:hover,
+[data-theme="high-tech"] .link:hover {
+  color: var(--ht-link-hover);
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  text-decoration-color: var(--ht-link-hover);
+}
+
+[data-theme="high-tech"] a:visited,
+[data-theme="high-tech"] .link:visited {
+  color: var(--ht-link-visited);
+}
+
+[data-theme="high-tech"] a:focus-visible,
+[data-theme="high-tech"] .link:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ============================================
+ * FOCUS INDICATORS FOR HIGH-TECH THEME
+ * Neon glow focus indicators that meet visibility requirements
+ * ============================================ */
+
+[data-theme="high-tech"] *:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.25);
+}
+
+[data-theme="high-tech"] button:focus-visible,
+[data-theme="high-tech"] [role="button"]:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4),
+              0 0 30px rgba(0, 212, 255, 0.2);
+}
+
+[data-theme="high-tech"] input:focus-visible,
+[data-theme="high-tech"] textarea:focus-visible,
+[data-theme="high-tech"] select:focus-visible {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.25),
+              0 0 15px rgba(0, 212, 255, 0.2);
+}
+
+/* ============================================
+ * REDUCED MOTION SUPPORT
+ * Respects user preference for reduced motion
+ * Provides static alternatives for all animations
+ * Requirements: 8.1
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Disable all animations and transitions */
+  [data-theme="high-tech"] *,
+  [data-theme="high-tech"] *::before,
+  [data-theme="high-tech"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* Remove glow animations but keep static glow for visibility */
+  [data-theme="high-tech"] .zena-avatar,
+  [data-theme="high-tech"] .zena-avatar-fullscreen {
+    animation: none !important;
+    /* Keep static glow for visibility */
+    box-shadow: 0 0 30px var(--neon-cyan), 0 0 60px var(--neon-cyan-dim);
+  }
+  
+  /* Remove pulse ring animations */
+  [data-theme="high-tech"] .zena-avatar::before,
+  [data-theme="high-tech"] .zena-avatar::after,
+  [data-theme="high-tech"] .zena-avatar-fullscreen__ring {
+    animation: none !important;
+    opacity: 0.3;
+    transform: scale(1.2);
+  }
+  
+  /* Remove breathing/pulse animations from status indicators */
+  [data-theme="high-tech"] .status-dot-ht,
+  [data-theme="high-tech"] .status-indicator-ht {
+    animation: none !important;
+  }
+  
+  /* Remove shimmer animations from loading states */
+  [data-theme="high-tech"] .skeleton-shimmer,
+  [data-theme="high-tech"] .shimmer-skeleton {
+    animation: none !important;
+    /* Use static gradient instead */
+    background: linear-gradient(
+      90deg,
+      var(--bg-tertiary) 0%,
+      rgba(0, 212, 255, 0.15) 50%,
+      var(--bg-tertiary) 100%
+    );
+    background-size: 100% 100%;
+  }
+  
+  /* Remove loading orb spin animation */
+  [data-theme="high-tech"] .loading-orb {
+    animation: none !important;
+    /* Show static ring */
+    border-color: var(--neon-cyan);
+    opacity: 0.8;
+  }
+  
+  /* Remove floating/hover animations */
+  [data-theme="high-tech"] .floating-metric-orb,
+  [data-theme="high-tech"] .widget-card-ht,
+  [data-theme="high-tech"] .glass-card {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Remove page transition animations */
+  [data-theme="high-tech"] .page-transition,
+  [data-theme="high-tech"] .page-transition-enter,
+  [data-theme="high-tech"] .page-transition-exit {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  /* Remove ambient background animations */
+  [data-theme="high-tech"] .ambient-background,
+  [data-theme="high-tech"] .ambient-background__particle {
+    animation: none !important;
+  }
+  
+  /* Remove notification badge pop animation */
+  [data-theme="high-tech"] .notification-badge {
+    animation: none !important;
+    transform: scale(1);
+  }
+  
+  /* Remove button hover/press animations */
+  [data-theme="high-tech"] .btn-neon-primary,
+  [data-theme="high-tech"] .btn-neon-secondary {
+    transition: none !important;
+  }
+  
+  /* Remove navigation glow transitions */
+  [data-theme="high-tech"] .bottom-navigation__item,
+  [data-theme="high-tech"] .nav-item {
+    transition: none !important;
+  }
+  
+  /* Remove collapsible panel animations */
+  [data-theme="high-tech"] .collapsible-alerts-panel__content {
+    transition: none !important;
+  }
+  
+  /* Remove carousel scroll animations */
+  [data-theme="high-tech"] .quick-actions-carousel {
+    scroll-behavior: auto !important;
+  }
+  
+  /* Keep focus indicators visible but without animation */
+  [data-theme="high-tech"] *:focus-visible {
+    transition: none !important;
+    /* Static focus ring */
+    outline: 2px solid var(--neon-cyan);
+    box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.25);
+  }
+}
+
+/* ============================================
+ * HIGH CONTRAST MODE SUPPORT
+ * Enhanced visibility for users who need higher contrast
+ * ============================================ */
+
+@media (prefers-contrast: high) {
+  [data-theme="high-tech"] {
+    /* Increase text contrast */
+    --ht-text-primary: #FFFFFF;
+    --ht-text-secondary: #FFFFFF;
+    --ht-text-tertiary: #E0E0E0;
+    --ht-text-muted: #C0C0C0;
+    
+    /* Increase border visibility */
+    --glass-border: 2px solid rgba(255, 255, 255, 0.5);
+    --border-glow: 2px solid var(--neon-cyan);
+  }
+  
+  /* Stronger focus indicators */
+  [data-theme="high-tech"] *:focus-visible {
+    outline: 3px solid var(--neon-cyan);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px rgba(0, 212, 255, 0.4);
+  }
+  
+  /* Ensure buttons have visible borders */
+  [data-theme="high-tech"] button,
+  [data-theme="high-tech"] [role="button"] {
+    border: 2px solid currentColor;
+  }
+  
+  /* Ensure links are clearly distinguishable */
+  [data-theme="high-tech"] a {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+  
+  /* Remove subtle glassmorphism effects that reduce contrast */
+  [data-theme="high-tech"] .glass-card,
+  [data-theme="high-tech"] .glass-panel,
+  [data-theme="high-tech"] .widget-card-ht {
+    background: var(--bg-secondary);
+    backdrop-filter: none;
+  }
+}
+
+/* ============================================
+ * SCREEN READER ONLY CONTENT
+ * Visually hidden but accessible to screen readers
+ * ============================================ */
+
+[data-theme="high-tech"] .sr-only,
+[data-theme="high-tech"] .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Allow sr-only content to be focusable */
+[data-theme="high-tech"] .sr-only-focusable:focus,
+[data-theme="high-tech"] .sr-only-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* ============================================
+ * SKIP LINK FOR KEYBOARD NAVIGATION
+ * ============================================ */
+
+[data-theme="high-tech"] .skip-link {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--neon-cyan);
+  color: var(--bg-primary);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  z-index: 10000;
+  transition: top 0.2s ease;
+}
+
+[data-theme="high-tech"] .skip-link:focus {
+  top: 16px;
+  box-shadow: 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan-dim);
+}
+
+/* ============================================
+ * ARIA LIVE REGION STYLING
+ * For dynamic content announcements
+ * ============================================ */
+
+[data-theme="high-tech"] [aria-live="polite"],
+[data-theme="high-tech"] [aria-live="assertive"] {
+  /* Visually hidden but announced by screen readers */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Visible live regions (for toast notifications, etc.) */
+[data-theme="high-tech"] .live-region--visible {
+  position: relative;
+  width: auto;
+  height: auto;
+  padding: 16px;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  border-radius: 12px;
+}

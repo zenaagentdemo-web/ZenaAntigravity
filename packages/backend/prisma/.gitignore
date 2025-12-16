@@ -1,0 +1,9 @@
+# Ignore generated files
+*.db
+*.db-journal
+
+# Keep migrations directory but ignore specific migration folders initially
+# migrations/
+
+# Keep seed file
+!seed.ts

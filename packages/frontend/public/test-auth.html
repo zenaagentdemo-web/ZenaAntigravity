@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth Debug Tool</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 4px;
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #555;
+      font-size: 18px;
+    }
+    pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    button.danger {
+      background: #dc3545;
+    }
+    button.danger:hover {
+      background: #c82333;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Zena Auth Debug Tool</h1>
+    
+    <div class="section">
+      <h2>Current localStorage Contents</h2>
+      <pre id="localStorage-content">Loading...</pre>
+      <button onclick="refreshLocalStorage()">Refresh</button>
+      <button class="danger" onclick="clearAllTokens()">Clear All Tokens</button>
+    </div>
+
+    <div class="section">
+      <h2>Test Backend Connection</h2>
+      <button onclick="testAuthMe()">Test /api/auth/me</button>
+      <button onclick="testLogin()">Test Login (demo@zena.ai)</button>
+      <div id="api-result"></div>
+    </div>
+
+    <div class="section">
+      <h2>Quick Actions</h2>
+      <button onclick="goToLogin()">Go to Login Page</button>
+      <button onclick="goToHome()">Go to Home Page</button>
+      <button onclick="forceReload()">Force Reload App</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3000';
+
+    function refreshLocalStorage() {
+      const content = {
+        authToken: localStorage.getItem('authToken'),
+        refreshToken: localStorage.getItem('refreshToken'),
+        allKeys: Object.keys(localStorage),
+        allItems: {}
+      };
+      
+      // Get all localStorage items
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        content.allItems[key] = localStorage.getItem(key);
+      }
+      
+      document.getElementById('localStorage-content').textContent = 
+        JSON.stringify(content, null, 2);
+    }
+
+    function clearAllTokens() {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.clear(); // Clear everything to be safe
+      refreshLocalStorage();
+      showStatus('api-result', 'All tokens cleared! Reload the app to see login page.', 'success');
+    }
+
+    async function testAuthMe() {
+      const token = localStorage.getItem('authToken');
+      const resultDiv = document.getElementById('api-result');
+      
+      if (!token) {
+        showStatus('api-result', 'No authToken found in localStorage', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/api/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          showStatus('api-result', 
+            `✅ Authenticated as: ${data.user.email}\n\n${JSON.stringify(data, null, 2)}`, 
+            'success');
+        } else {
+          showStatus('api-result', 
+            `❌ Auth failed: ${data.error?.message || 'Unknown error'}\n\n${JSON.stringify(data, null, 2)}`, 
+            'error');
+        }
+      } catch (error) {
+        showStatus('api-result', `❌ Network error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testLogin() {
+      const resultDiv = document.getElementById('api-result');
+      
+      try {
+        const response = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: 'demo@zena.ai',
+            password: 'demo123'
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem('authToken', data.accessToken);
+          localStorage.setItem('refreshToken', data.refreshToken);
+          refreshLocalStorage();
+          showStatus('api-result', 
+            `✅ Login successful!\n\nTokens saved to localStorage.\nNow reload the app to see authenticated pages.\n\n${JSON.stringify(data.user, null, 2)}`, 
+            'success');
+        } else {
+          showStatus('api-result', 
+            `❌ Login failed: ${data.error?.message || 'Unknown error'}\n\n${JSON.stringify(data, null, 2)}`, 
+            'error');
+        }
+      } catch (error) {
+        showStatus('api-result', `❌ Network error: ${error.message}`, 'error');
+      }
+    }
+
+    function showStatus(elementId, message, type) {
+      const div = document.getElementById(elementId);
+      div.innerHTML = `<div class="status ${type}"><pre style="background: transparent; color: inherit; padding: 0;">${message}</pre></div>`;
+    }
+
+    function goToLogin() {
+      window.location.href = 'http://localhost:5173/login';
+    }
+
+    function goToHome() {
+      window.location.href = 'http://localhost:5173/';
+    }
+
+    function forceReload() {
+      window.location.href = 'http://localhost:5173/';
+      window.location.reload(true);
+    }
+
+    // Load on page load
+    refreshLocalStorage();
+  </script>
+</body>
+</html>

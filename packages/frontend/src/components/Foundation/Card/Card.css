@@ -1,0 +1,142 @@
+/* Professional Card Component */
+.card {
+  /* Base styles */
+  display: block;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Padding variants */
+.card--padding-none {
+  padding: 0;
+}
+
+.card--padding-sm {
+  padding: var(--spacing-3);
+}
+
+.card--padding-md {
+  padding: var(--spacing-4);
+}
+
+.card--padding-lg {
+  padding: var(--spacing-6);
+}
+
+/* Visual variants */
+.card--default {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.card--elevated {
+  background-color: var(--color-surface);
+  border-color: transparent;
+  box-shadow: var(--shadow-lg);
+}
+
+.card--outlined {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+
+.card--filled {
+  background-color: var(--color-neutral-50);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Interactive states */
+.card--interactive {
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  width: 100%;
+  transition: transform var(--duration-fast, 100ms) var(--ease-out),
+              box-shadow var(--duration-fast, 100ms) var(--ease-out),
+              border-color var(--duration-fast, 100ms) var(--ease-out);
+}
+
+.card--interactive:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary-200);
+}
+
+.card--interactive:active {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+  transition-duration: var(--duration-instant, 50ms);
+}
+
+/* Card entry animation */
+.card--animate-in {
+  animation: cardEnter var(--duration-slow, 300ms) var(--ease-out) forwards;
+  opacity: 0;
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card--interactive:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Dark mode adjustments */
+[data-theme="night"] .card--default {
+  background-color: var(--color-neutral-800);
+  border-color: var(--color-neutral-700);
+}
+
+[data-theme="night"] .card--elevated {
+  background-color: var(--color-neutral-800);
+}
+
+[data-theme="night"] .card--outlined {
+  background-color: var(--color-neutral-800);
+  border-color: var(--color-neutral-600);
+}
+
+[data-theme="night"] .card--filled {
+  background-color: var(--color-neutral-900);
+}
+
+[data-theme="night"] .card--interactive:hover {
+  border-color: var(--color-primary-400);
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+  
+  .card--interactive:hover,
+  .card--interactive:active {
+    transform: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .card {
+    border-width: 2px;
+  }
+}

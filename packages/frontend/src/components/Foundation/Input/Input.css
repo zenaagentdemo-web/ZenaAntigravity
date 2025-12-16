@@ -1,0 +1,168 @@
+/* Professional Input Component */
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.input-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-1);
+}
+
+.input-required {
+  color: var(--color-error-500);
+  margin-left: var(--spacing-1);
+}
+
+.input {
+  /* Base styles */
+  width: 100%;
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-normal);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color var(--duration-fast, 100ms) var(--ease-out),
+              box-shadow var(--duration-fast, 100ms) var(--ease-out),
+              background-color var(--duration-fast, 100ms) var(--ease-out);
+  
+  /* Remove default styles */
+  outline: none;
+  appearance: none;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Size variants */
+.input--sm {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+  min-height: var(--spacing-8);
+}
+
+.input--md {
+  padding: var(--spacing-3) var(--spacing-4);
+  font-size: var(--font-size-base);
+  min-height: var(--spacing-10);
+}
+
+.input--lg {
+  padding: var(--spacing-4) var(--spacing-5);
+  font-size: var(--font-size-lg);
+  min-height: var(--spacing-12);
+}
+
+/* Visual variants */
+.input--default {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.input--filled {
+  background-color: var(--color-neutral-50);
+  border-color: transparent;
+}
+
+.input--outlined {
+  background-color: transparent;
+  border-color: var(--color-border);
+  border-width: 2px;
+}
+
+/* Interactive states */
+.input:hover:not(:disabled) {
+  border-color: var(--color-primary-300);
+}
+
+.input:focus {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+  /* Smooth focus ring animation */
+  animation: inputFocusRing var(--duration-fast, 100ms) var(--ease-out);
+}
+
+@keyframes inputFocusRing {
+  from {
+    box-shadow: 0 0 0 0 var(--color-primary-100);
+  }
+  to {
+    box-shadow: 0 0 0 3px var(--color-primary-100);
+  }
+}
+
+.input:focus-visible {
+  outline: var(--focus-ring-width) var(--focus-ring-style) var(--color-primary-500);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Error state */
+.input--error {
+  border-color: var(--color-error-500);
+}
+
+.input--error:focus {
+  border-color: var(--color-error-500);
+  box-shadow: 0 0 0 3px var(--color-error-100);
+}
+
+/* Disabled state */
+.input:disabled {
+  background-color: var(--color-neutral-100);
+  border-color: var(--color-neutral-200);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+/* Helper text */
+.input-helper-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin-top: var(--spacing-1);
+}
+
+.input-helper-text--error {
+  color: var(--color-error-600);
+}
+
+/* Dark mode adjustments */
+[data-theme="night"] .input-label {
+  color: var(--color-text-secondary);
+}
+
+[data-theme="night"] .input--default {
+  background-color: var(--color-neutral-800);
+  border-color: var(--color-neutral-600);
+}
+
+[data-theme="night"] .input--filled {
+  background-color: var(--color-neutral-900);
+}
+
+[data-theme="night"] .input:disabled {
+  background-color: var(--color-neutral-900);
+  border-color: var(--color-neutral-700);
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .input {
+    border-width: 2px;
+  }
+  
+  .input:focus {
+    box-shadow: 0 0 0 4px var(--color-primary-500);
+  }
+}
+
+/* Touch device optimizations */
+@media (pointer: coarse) {
+  .input {
+    min-height: var(--touch-target-min);
+  }
+}

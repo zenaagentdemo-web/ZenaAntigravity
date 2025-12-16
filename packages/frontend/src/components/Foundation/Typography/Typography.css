@@ -1,0 +1,179 @@
+/* Professional Typography Component */
+.typography {
+  margin: 0;
+  font-family: var(--font-family-sans);
+  line-height: var(--line-height-normal);
+}
+
+/* Variant styles */
+.typography--h1 {
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.025em;
+}
+
+.typography--h2 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.025em;
+}
+
+.typography--h3 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.typography--h4 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.typography--h5 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+}
+
+.typography--h6 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+}
+
+.typography--body1 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+}
+
+.typography--body2 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+.typography--caption {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+.typography--overline {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Color variants */
+.typography--color-primary {
+  color: var(--color-text-primary);
+}
+
+.typography--color-secondary {
+  color: var(--color-text-secondary);
+}
+
+.typography--color-tertiary {
+  color: var(--color-text-tertiary);
+}
+
+.typography--color-muted {
+  color: var(--color-text-muted);
+}
+
+.typography--color-success {
+  color: var(--color-success-600);
+}
+
+.typography--color-warning {
+  color: var(--color-warning-600);
+}
+
+.typography--color-error {
+  color: var(--color-error-600);
+}
+
+/* Alignment */
+.typography--align-left {
+  text-align: left;
+}
+
+.typography--align-center {
+  text-align: center;
+}
+
+.typography--align-right {
+  text-align: right;
+}
+
+.typography--align-justify {
+  text-align: justify;
+}
+
+/* Weight overrides */
+.typography--weight-light {
+  font-weight: var(--font-weight-light) !important;
+}
+
+.typography--weight-normal {
+  font-weight: var(--font-weight-normal) !important;
+}
+
+.typography--weight-medium {
+  font-weight: var(--font-weight-medium) !important;
+}
+
+.typography--weight-semibold {
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+.typography--weight-bold {
+  font-weight: var(--font-weight-bold) !important;
+}
+
+/* Dark mode adjustments */
+[data-theme="night"] .typography--color-success {
+  color: var(--color-success-400);
+}
+
+[data-theme="night"] .typography--color-warning {
+  color: var(--color-warning-400);
+}
+
+[data-theme="night"] .typography--color-error {
+  color: var(--color-error-400);
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+  .typography--h1 {
+    font-size: var(--font-size-4xl);
+  }
+  
+  .typography--h2 {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .typography--h3 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .typography--h4 {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .typography--color-secondary,
+  .typography--color-tertiary,
+  .typography--color-muted {
+    color: var(--color-text-primary);
+  }
+}

@@ -1,0 +1,221 @@
+/**
+ * SwipeableThreadCard Styles
+ * 
+ * Styles for swipe gesture indicators on ThreadCard.
+ * Left swipe: Snooze action with amber (#FFAA00) gradient
+ * Right swipe: View action with cyan (#00D4FF) gradient
+ * 
+ * Requirements: 5.1, 5.2, 5.5
+ */
+
+/* ============================================
+ * SWIPEABLE CONTAINER
+ * ============================================ */
+
+.swipeable-thread-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  margin-bottom: 12px;
+}
+
+.swipeable-thread-card__content {
+  position: relative;
+  z-index: 2;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+/* Remove margin from nested ThreadCard since container handles it */
+.swipeable-thread-card .thread-card {
+  margin-bottom: 0;
+}
+
+/* ============================================
+ * SWIPE INDICATORS
+ * Background indicators revealed during swipe
+ * ============================================ */
+
+.swipe-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  pointer-events: none;
+}
+
+.swipe-indicator--visible {
+  pointer-events: auto;
+}
+
+/* Left indicator (Snooze - Amber) */
+.swipe-indicator--left {
+  right: 0;
+  justify-content: flex-end;
+  padding-right: 24px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 170, 0, 0.1) 30%,
+    rgba(255, 170, 0, 0.3) 100%
+  );
+  border-radius: 16px;
+}
+
+.swipe-indicator--left .swipe-indicator__content {
+  color: #FFAA00;
+}
+
+.swipe-indicator--left.swipe-indicator--active {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 170, 0, 0.2) 30%,
+    rgba(255, 170, 0, 0.5) 100%
+  );
+}
+
+.swipe-indicator--left.swipe-indicator--active .swipe-indicator__icon {
+  filter: drop-shadow(0 0 8px rgba(255, 170, 0, 0.8));
+}
+
+/* Right indicator (View - Cyan) */
+.swipe-indicator--right {
+  left: 0;
+  justify-content: flex-start;
+  padding-left: 24px;
+  background: linear-gradient(
+    270deg,
+    transparent 0%,
+    rgba(0, 212, 255, 0.1) 30%,
+    rgba(0, 212, 255, 0.3) 100%
+  );
+  border-radius: 16px;
+}
+
+.swipe-indicator--right .swipe-indicator__content {
+  color: #00D4FF;
+}
+
+.swipe-indicator--right.swipe-indicator--active {
+  background: linear-gradient(
+    270deg,
+    transparent 0%,
+    rgba(0, 212, 255, 0.2) 30%,
+    rgba(0, 212, 255, 0.5) 100%
+  );
+}
+
+.swipe-indicator--right.swipe-indicator--active .swipe-indicator__icon {
+  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.8));
+}
+
+/* ============================================
+ * INDICATOR CONTENT
+ * Icon and label styling
+ * ============================================ */
+
+.swipe-indicator__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: transform 200ms ease;
+}
+
+.swipe-indicator--active .swipe-indicator__content {
+  transform: scale(1.1);
+}
+
+.swipe-indicator__icon {
+  width: 32px;
+  height: 32px;
+  transition: filter 200ms ease;
+}
+
+.swipe-indicator__label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+ * ACCESSIBILITY
+ * ============================================ */
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .swipeable-thread-card__content {
+    transition: none;
+  }
+  
+  .swipe-indicator,
+  .swipe-indicator__content,
+  .swipe-indicator__icon {
+    transition: none;
+  }
+}
+
+/* ============================================
+ * RESPONSIVE ADJUSTMENTS
+ * ============================================ */
+
+@media (max-width: 480px) {
+  .swipe-indicator--left {
+    padding-right: 16px;
+  }
+  
+  .swipe-indicator--right {
+    padding-left: 16px;
+  }
+  
+  .swipe-indicator__icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .swipe-indicator__label {
+    font-size: 11px;
+  }
+}
+
+/* ============================================
+ * TOUCH FEEDBACK
+ * Visual feedback during active swipe
+ * ============================================ */
+
+.swipeable-thread-card--swiping .swipeable-thread-card__content {
+  /* Slight scale down during swipe for tactile feel */
+  transform-origin: center center;
+}
+
+/* Glow effect when threshold is exceeded */
+.swipe-indicator--left.swipe-indicator--active::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #FFAA00;
+  box-shadow: 0 0 20px rgba(255, 170, 0, 0.8);
+  border-radius: 0 16px 16px 0;
+}
+
+.swipe-indicator--right.swipe-indicator--active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #00D4FF;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+  border-radius: 16px 0 0 16px;
+}

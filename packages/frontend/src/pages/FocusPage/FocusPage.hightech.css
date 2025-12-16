@@ -1,0 +1,450 @@
+/**
+ * FocusPage High-Tech Styles
+ * 
+ * Glassmorphism floating cards with swipe gesture support
+ * for the Focus page thread list.
+ * 
+ * Requirements: 5.1 - Widget cards with glassmorphism and neon accents
+ */
+
+/* ============================================
+   HIGH-TECH FOCUS PAGE CONTAINER
+   ============================================ */
+
+[data-theme="high-tech"] .focus-page {
+  background: transparent;
+  min-height: 100vh;
+}
+
+[data-theme="high-tech"] .focus-page .container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* ============================================
+   HIGH-TECH PAGE HEADER
+   ============================================ */
+
+[data-theme="high-tech"] .focus-page__header {
+  margin-bottom: var(--spacing-xl);
+}
+
+[data-theme="high-tech"] .focus-page__title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary-ht);
+  text-shadow: var(--text-glow);
+  margin-bottom: var(--spacing-xs);
+}
+
+[data-theme="high-tech"] .focus-page__description {
+  color: var(--text-secondary-ht);
+  font-size: var(--font-size-sm);
+}
+
+[data-theme="high-tech"] .focus-page__refresh-btn {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  color: var(--neon-cyan);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+[data-theme="high-tech"] .focus-page__refresh-btn:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--neon-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* ============================================
+   HIGH-TECH LOADING & ERROR STATES
+   ============================================ */
+
+[data-theme="high-tech"] .focus-page__loading,
+[data-theme="high-tech"] .focus-page__error {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 20px;
+  color: var(--text-secondary-ht);
+}
+
+[data-theme="high-tech"] .focus-page__retry-btn {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  color: var(--bg-primary);
+  border: none;
+  box-shadow: var(--glow-cyan);
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+[data-theme="high-tech"] .focus-page__retry-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px var(--neon-cyan), 0 0 80px var(--neon-cyan-dim);
+}
+
+/* ============================================
+   HIGH-TECH EMPTY STATE
+   ============================================ */
+
+[data-theme="high-tech"] .focus-page__empty {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 20px;
+  color: var(--text-secondary-ht);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="high-tech"] .focus-page__empty::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+  opacity: 0.5;
+}
+
+/* ============================================
+   HIGH-TECH FLOATING GLASS THREAD CARDS
+   ============================================ */
+
+[data-theme="high-tech"] .focus-page__threads {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+[data-theme="high-tech"] .thread-card {
+  /* Glassmorphism base */
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 20px;
+  padding: var(--spacing-lg);
+  position: relative;
+  overflow: hidden;
+  
+  /* Floating effect */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  
+  /* Smooth transitions */
+  transition: 
+    transform var(--duration-normal) var(--ease-smooth),
+    box-shadow var(--duration-normal) var(--ease-smooth),
+    border-color var(--duration-normal) var(--ease-smooth);
+  
+  /* Swipe gesture support */
+  touch-action: pan-y;
+  user-select: none;
+}
+
+/* Top gradient accent line */
+[data-theme="high-tech"] .thread-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0.5;
+}
+
+/* Hover state - intensified glow */
+[data-theme="high-tech"] .thread-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(0, 212, 255, 0.1),
+    0 0 0 1px rgba(0, 212, 255, 0.2);
+}
+
+/* Active/pressed state */
+[data-theme="high-tech"] .thread-card:active {
+  transform: translateY(-2px) scale(0.99);
+}
+
+/* ============================================
+   SWIPE GESTURE STATES
+   ============================================ */
+
+[data-theme="high-tech"] .thread-card.swiping {
+  transition: none;
+}
+
+[data-theme="high-tech"] .thread-card.swipe-left {
+  transform: translateX(-80px);
+}
+
+[data-theme="high-tech"] .thread-card.swipe-right {
+  transform: translateX(80px);
+}
+
+/* Swipe action indicators */
+[data-theme="high-tech"] .thread-card__swipe-action {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-smooth);
+}
+
+[data-theme="high-tech"] .thread-card__swipe-action--left {
+  right: -80px;
+  background: linear-gradient(90deg, transparent, var(--status-urgent));
+}
+
+[data-theme="high-tech"] .thread-card__swipe-action--right {
+  left: -80px;
+  background: linear-gradient(-90deg, transparent, var(--neon-green));
+}
+
+[data-theme="high-tech"] .thread-card.swiping .thread-card__swipe-action {
+  opacity: 1;
+}
+
+/* ============================================
+   THREAD CARD HEADER
+   ============================================ */
+
+[data-theme="high-tech"] .thread-card__header {
+  margin-bottom: var(--spacing-sm);
+}
+
+[data-theme="high-tech"] .thread-card__indicators {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+[data-theme="high-tech"] .thread-card__risk-badge {
+  padding: 4px var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: pulse-glow 2s var(--ease-glow) infinite;
+}
+
+/* Risk level colors with glow */
+[data-theme="high-tech"] .thread-card__risk-badge[style*="--color-risk-high"] {
+  background: var(--status-urgent);
+  box-shadow: 0 0 10px var(--status-urgent-dim);
+}
+
+[data-theme="high-tech"] .thread-card__risk-badge[style*="--color-risk-medium"] {
+  background: var(--status-warning);
+  box-shadow: 0 0 10px var(--status-warning-dim);
+}
+
+[data-theme="high-tech"] .thread-card__risk-badge[style*="--color-risk-low"] {
+  background: var(--neon-green);
+  box-shadow: 0 0 10px var(--neon-green-dim);
+  color: var(--bg-primary);
+}
+
+[data-theme="high-tech"] .thread-card__classification {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary-ht);
+  padding: 4px var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+}
+
+[data-theme="high-tech"] .thread-card__date {
+  color: var(--text-tertiary-ht);
+  font-size: var(--font-size-xs);
+}
+
+/* ============================================
+   THREAD CARD CONTENT
+   ============================================ */
+
+[data-theme="high-tech"] .thread-card__subject {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary-ht);
+  margin-bottom: var(--spacing-sm);
+  line-height: var(--line-height-tight);
+}
+
+[data-theme="high-tech"] .thread-card__participants {
+  margin-bottom: var(--spacing-md);
+}
+
+[data-theme="high-tech"] .thread-card__participant {
+  color: var(--text-secondary-ht);
+  font-size: var(--font-size-sm);
+}
+
+[data-theme="high-tech"] .thread-card__participant::after {
+  color: var(--text-muted-ht);
+}
+
+[data-theme="high-tech"] .thread-card__participant-more {
+  color: var(--text-muted-ht);
+}
+
+[data-theme="high-tech"] .thread-card__risk-reason {
+  background: rgba(255, 170, 0, 0.15);
+  border-left: 3px solid var(--status-warning);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm);
+  color: var(--status-warning);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+[data-theme="high-tech"] .thread-card__summary {
+  color: var(--text-secondary-ht);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--spacing-md);
+}
+
+/* ============================================
+   THREAD CARD DRAFT SECTION
+   ============================================ */
+
+[data-theme="high-tech"] .thread-card__draft {
+  margin-bottom: var(--spacing-md);
+}
+
+[data-theme="high-tech"] .thread-card__draft-toggle {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: var(--neon-cyan);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  width: 100%;
+  text-align: left;
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+[data-theme="high-tech"] .thread-card__draft-toggle:hover {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+}
+
+[data-theme="high-tech"] .thread-card__draft-content {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  color: var(--text-secondary-ht);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-sm);
+}
+
+/* ============================================
+   THREAD CARD ACTIONS
+   ============================================ */
+
+[data-theme="high-tech"] .thread-card__actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+[data-theme="high-tech"] .thread-card__action {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur-subtle);
+  -webkit-backdrop-filter: var(--glass-blur-subtle);
+  border: var(--glass-border);
+  color: var(--text-secondary-ht);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+[data-theme="high-tech"] .thread-card__action:hover {
+  background: var(--glass-bg-hover);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary-ht);
+}
+
+[data-theme="high-tech"] .thread-card__action--primary {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  border: none;
+  color: var(--bg-primary);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--glow-cyan);
+}
+
+[data-theme="high-tech"] .thread-card__action--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px var(--neon-cyan), 0 0 60px var(--neon-cyan-dim);
+}
+
+/* ============================================
+   GLASSMORPHISM FALLBACK
+   ============================================ */
+
+@supports not (backdrop-filter: blur(20px)) {
+  [data-theme="high-tech"] .thread-card,
+  [data-theme="high-tech"] .focus-page__loading,
+  [data-theme="high-tech"] .focus-page__error,
+  [data-theme="high-tech"] .focus-page__empty {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="high-tech"] .thread-card {
+    transition: none;
+  }
+  
+  [data-theme="high-tech"] .thread-card:hover {
+    transform: none;
+  }
+  
+  [data-theme="high-tech"] .thread-card__risk-badge {
+    animation: none;
+  }
+}
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  [data-theme="high-tech"] .thread-card {
+    padding: var(--spacing-md);
+    border-radius: 16px;
+  }
+  
+  [data-theme="high-tech"] .thread-card__actions {
+    flex-direction: column;
+  }
+  
+  [data-theme="high-tech"] .thread-card__action {
+    width: 100%;
+    justify-content: center;
+  }
+}

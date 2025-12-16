@@ -1,0 +1,210 @@
+/**
+ * NewPageError Component Styles
+ * 
+ * High-tech error state with glassmorphism styling and glow effects.
+ * 
+ * Requirements: 9.3
+ */
+
+/* ============================================
+   BASE CONTAINER
+   ============================================ */
+
+.new-page-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 20px;
+}
+
+/* ============================================
+   ERROR CARD
+   ============================================ */
+
+.new-page-error__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px;
+  max-width: 400px;
+  
+  /* Glassmorphism styling */
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+  border: 1px solid rgba(255, 68, 68, 0.2);
+  border-radius: 20px;
+  
+  /* Subtle red glow */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(255, 68, 68, 0.1);
+  
+  /* Top gradient accent line */
+  position: relative;
+  overflow: hidden;
+}
+
+.new-page-error__card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #FF4444, transparent);
+  opacity: 0.5;
+}
+
+/* ============================================
+   ERROR ICON
+   ============================================ */
+
+.new-page-error__icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: rgba(255, 68, 68, 0.1);
+  animation: error-pulse 2s ease-in-out infinite;
+}
+
+.new-page-error__icon {
+  width: 32px;
+  height: 32px;
+  color: #FF4444;
+  filter: drop-shadow(0 0 8px rgba(255, 68, 68, 0.5));
+}
+
+@keyframes error-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+  }
+}
+
+/* ============================================
+   ERROR TEXT
+   ============================================ */
+
+.new-page-error__title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary-ht, #FFFFFF);
+  text-shadow: 0 0 10px rgba(255, 68, 68, 0.2);
+}
+
+.new-page-error__message {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.6));
+  line-height: 1.5;
+}
+
+/* ============================================
+   RETRY BUTTON
+   ============================================ */
+
+.new-page-error__retry-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 12px;
+  color: var(--neon-cyan, #00D4FF);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms ease;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.new-page-error__retry-button:hover {
+  background: rgba(0, 212, 255, 0.25);
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.new-page-error__retry-button:active {
+  transform: translateY(0);
+}
+
+.new-page-error__retry-button:focus-visible {
+  outline: 2px solid var(--neon-cyan, #00D4FF);
+  outline-offset: 2px;
+}
+
+.new-page-error__retry-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ============================================
+   GLASSMORPHISM FALLBACK
+   ============================================ */
+
+@supports not (backdrop-filter: blur(20px)) {
+  .new-page-error__card {
+    background: var(--glass-fallback-bg, rgba(26, 26, 46, 0.95));
+  }
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .new-page-error__icon-container {
+    animation: none;
+  }
+  
+  .new-page-error__retry-button:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
+
+@media (max-width: 480px) {
+  .new-page-error {
+    min-height: 300px;
+    padding: 16px;
+  }
+  
+  .new-page-error__card {
+    padding: 24px;
+    border-radius: 16px;
+  }
+  
+  .new-page-error__icon-container {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .new-page-error__icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .new-page-error__title {
+    font-size: 18px;
+  }
+  
+  .new-page-error__message {
+    font-size: 13px;
+  }
+}

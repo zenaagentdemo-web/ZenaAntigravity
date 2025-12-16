@@ -1,0 +1,373 @@
+/**
+ * AmbientBackground Component Styles
+ * 
+ * Subtle particle and gradient animations for high-tech aesthetic.
+ * Performance optimized: uses only transform and opacity for 60fps.
+ * 
+ * Requirements: 3.1, 8.4
+ */
+
+/* ============================================
+   CSS Custom Properties
+   ============================================ */
+
+.ambient-background {
+  --ambient-animation-speed: 1;
+  --ambient-primary: var(--neon-cyan, #00D4FF);
+  --ambient-secondary: var(--neon-magenta, #FF00FF);
+  --ambient-tertiary: var(--neon-purple, #8B5CF6);
+  --ambient-primary-dim: var(--neon-cyan-subtle, rgba(0, 212, 255, 0.2));
+  --ambient-secondary-dim: var(--neon-magenta-subtle, rgba(255, 0, 255, 0.2));
+  --ambient-tertiary-dim: var(--neon-purple-subtle, rgba(139, 92, 246, 0.2));
+}
+
+/* ============================================
+   Base Container
+   ============================================ */
+
+.ambient-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  /* GPU acceleration */
+  transform: translateZ(0);
+  will-change: auto;
+}
+
+/* ============================================
+   Gradient Orbs Layer
+   ============================================ */
+
+.ambient-background__orbs {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  /* GPU acceleration for smooth animations */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Primary Orb - Cyan */
+.ambient-orb--primary {
+  width: 60vmax;
+  height: 60vmax;
+  top: -20%;
+  left: -10%;
+  background: radial-gradient(
+    circle,
+    var(--ambient-primary-dim) 0%,
+    transparent 70%
+  );
+}
+
+/* Secondary Orb - Magenta */
+.ambient-orb--secondary {
+  width: 50vmax;
+  height: 50vmax;
+  bottom: -20%;
+  right: -10%;
+  background: radial-gradient(
+    circle,
+    var(--ambient-secondary-dim) 0%,
+    transparent 70%
+  );
+}
+
+/* Tertiary Orb - Purple */
+.ambient-orb--tertiary {
+  width: 40vmax;
+  height: 40vmax;
+  top: 40%;
+  left: 30%;
+  background: radial-gradient(
+    circle,
+    var(--ambient-tertiary-dim) 0%,
+    transparent 70%
+  );
+}
+
+/* Animated Orbs */
+.ambient-orb--animated.ambient-orb--primary {
+  animation: orb-drift-1 calc(25s / var(--ambient-animation-speed)) ease-in-out infinite;
+}
+
+.ambient-orb--animated.ambient-orb--secondary {
+  animation: orb-drift-2 calc(30s / var(--ambient-animation-speed)) ease-in-out infinite;
+}
+
+.ambient-orb--animated.ambient-orb--tertiary {
+  animation: orb-drift-3 calc(20s / var(--ambient-animation-speed)) ease-in-out infinite;
+}
+
+@keyframes orb-drift-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translate(10%, 5%) scale(1.05);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(5%, 10%) scale(0.95);
+    opacity: 0.35;
+  }
+  75% {
+    transform: translate(-5%, 5%) scale(1.02);
+    opacity: 0.45;
+  }
+}
+
+@keyframes orb-drift-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  33% {
+    transform: translate(-8%, -5%) scale(1.08);
+    opacity: 0.5;
+  }
+  66% {
+    transform: translate(5%, -10%) scale(0.92);
+    opacity: 0.35;
+  }
+}
+
+@keyframes orb-drift-3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(-10%, 10%) scale(1.1);
+    opacity: 0.45;
+  }
+}
+
+/* ============================================
+   Grid Lines Layer
+   ============================================ */
+
+.ambient-background__grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.5;
+}
+
+/* ============================================
+   Particles Layer
+   ============================================ */
+
+.ambient-background__particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ambient-particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.9;
+  /* GPU acceleration */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Particle color variants - enhanced glow for maximum visibility */
+.ambient-particle--1 {
+  background: var(--ambient-primary);
+  box-shadow: 
+    0 0 8px var(--ambient-primary), 
+    0 0 16px var(--ambient-primary),
+    0 0 24px var(--ambient-primary),
+    0 0 32px rgba(0, 212, 255, 0.5);
+}
+
+.ambient-particle--2 {
+  background: var(--ambient-secondary);
+  box-shadow: 
+    0 0 8px var(--ambient-secondary), 
+    0 0 16px var(--ambient-secondary),
+    0 0 24px var(--ambient-secondary),
+    0 0 32px rgba(255, 0, 255, 0.5);
+}
+
+.ambient-particle--3 {
+  background: var(--ambient-tertiary);
+  box-shadow: 
+    0 0 8px var(--ambient-tertiary), 
+    0 0 16px var(--ambient-tertiary),
+    0 0 24px var(--ambient-tertiary),
+    0 0 32px rgba(139, 92, 246, 0.5);
+}
+
+/* Animated particles - floating upward */
+.ambient-particle--animated {
+  animation: particle-rise linear infinite;
+}
+
+@keyframes particle-rise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.85;
+  }
+  90% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(20px);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   Noise Texture Overlay
+   ============================================ */
+
+.ambient-background__noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* ============================================
+   Vignette Effect
+   ============================================ */
+
+.ambient-background__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 50%,
+    rgba(10, 10, 15, 0.4) 100%
+  );
+  pointer-events: none;
+}
+
+/* ============================================
+   Variant Styles
+   ============================================ */
+
+/* Subtle variant - reduced opacity */
+.ambient-background--subtle .ambient-orb {
+  opacity: 0.2;
+}
+
+.ambient-background--subtle .ambient-particle {
+  opacity: 0.3;
+}
+
+.ambient-background--subtle .ambient-background__vignette {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 60%,
+    rgba(10, 10, 15, 0.2) 100%
+  );
+}
+
+/* Intense variant - increased effects */
+.ambient-background--intense .ambient-orb {
+  opacity: 0.6;
+  filter: blur(60px);
+}
+
+.ambient-background--intense .ambient-particle {
+  opacity: 0.8;
+}
+
+.ambient-background--intense .ambient-background__vignette {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 40%,
+    rgba(10, 10, 15, 0.6) 100%
+  );
+}
+
+/* Minimal variant - orbs only, no particles */
+.ambient-background--minimal .ambient-background__particles {
+  display: none;
+}
+
+.ambient-background--minimal .ambient-orb {
+  opacity: 0.25;
+  filter: blur(100px);
+}
+
+.ambient-background--minimal .ambient-background__noise {
+  opacity: 0.01;
+}
+
+/* ============================================
+   Reduced Motion Support
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-orb,
+  .ambient-particle {
+    animation: none !important;
+  }
+  
+  .ambient-orb--animated,
+  .ambient-particle--animated {
+    animation: none !important;
+  }
+}
+
+/* ============================================
+   Performance Optimization
+   ============================================ */
+
+/* Disable animations when not visible */
+.ambient-background[data-animated="false"] .ambient-orb,
+.ambient-background[data-animated="false"] .ambient-particle {
+  animation: none !important;
+}
+
+/* Reduce complexity on low-power devices - still show 50 particles */
+@media (max-width: 480px) {
+  .ambient-orb {
+    filter: blur(60px);
+  }
+  
+  .ambient-particle:nth-child(n+50) {
+    display: none;
+  }
+}
+
+/* ============================================
+   Dark Theme Integration
+   ============================================ */
+
+[data-theme="high-tech"] .ambient-background {
+  --ambient-primary: var(--neon-cyan);
+  --ambient-secondary: var(--neon-magenta);
+  --ambient-tertiary: var(--neon-purple);
+  --ambient-primary-dim: var(--neon-cyan-subtle);
+  --ambient-secondary-dim: var(--neon-magenta-subtle);
+  --ambient-tertiary-dim: var(--neon-purple-subtle);
+}

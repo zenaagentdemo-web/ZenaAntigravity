@@ -1,0 +1,336 @@
+/**
+ * High-Tech Shimmer Skeleton Styles
+ * 
+ * Futuristic loading state styles with gradient shimmer animation
+ * using neon accent colors from the high-tech design system.
+ * 
+ * Requirements: 3.5
+ * Validates: Property 14 - Loading State Shimmer
+ */
+
+/* ============================================
+   Base Shimmer Skeleton Styles
+   ============================================ */
+
+.shimmer-skeleton {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-tertiary, #1A1A2E);
+}
+
+/* ============================================
+   Shimmer Animation - Neon Gradient
+   Uses transform and opacity for 60fps performance
+   ============================================ */
+
+.shimmer-skeleton--animated {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary, #1A1A2E) 0%,
+    rgba(0, 212, 255, 0.15) 25%,
+    rgba(139, 92, 246, 0.15) 50%,
+    rgba(0, 212, 255, 0.15) 75%,
+    var(--bg-tertiary, #1A1A2E) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-neon var(--duration-shimmer, 1.5s) var(--ease-smooth, ease-in-out) infinite;
+}
+
+/* Shimmer animation keyframes */
+@keyframes shimmer-neon {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ============================================
+   Accent Color Variants
+   ============================================ */
+
+/* Cyan Accent (Default) */
+.shimmer-skeleton--cyan.shimmer-skeleton--animated {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary, #1A1A2E) 0%,
+    rgba(0, 212, 255, 0.2) 25%,
+    rgba(0, 212, 255, 0.3) 50%,
+    rgba(0, 212, 255, 0.2) 75%,
+    var(--bg-tertiary, #1A1A2E) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Magenta Accent */
+.shimmer-skeleton--magenta.shimmer-skeleton--animated {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary, #1A1A2E) 0%,
+    rgba(255, 0, 255, 0.2) 25%,
+    rgba(255, 0, 255, 0.3) 50%,
+    rgba(255, 0, 255, 0.2) 75%,
+    var(--bg-tertiary, #1A1A2E) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Purple Accent */
+.shimmer-skeleton--purple.shimmer-skeleton--animated {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary, #1A1A2E) 0%,
+    rgba(139, 92, 246, 0.2) 25%,
+    rgba(139, 92, 246, 0.3) 50%,
+    rgba(139, 92, 246, 0.2) 75%,
+    var(--bg-tertiary, #1A1A2E) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Green Accent */
+.shimmer-skeleton--green.shimmer-skeleton--animated {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary, #1A1A2E) 0%,
+    rgba(0, 255, 136, 0.2) 25%,
+    rgba(0, 255, 136, 0.3) 50%,
+    rgba(0, 255, 136, 0.2) 75%,
+    var(--bg-tertiary, #1A1A2E) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Orange Accent */
+.shimmer-skeleton--orange.shimmer-skeleton--animated {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary, #1A1A2E) 0%,
+    rgba(255, 107, 53, 0.2) 25%,
+    rgba(255, 107, 53, 0.3) 50%,
+    rgba(255, 107, 53, 0.2) 75%,
+    var(--bg-tertiary, #1A1A2E) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* ============================================
+   Shape Variants
+   ============================================ */
+
+/* Text Line */
+.shimmer-skeleton--text {
+  height: 1em;
+  border-radius: 4px;
+  width: 100%;
+}
+
+/* Text Group (Multiple Lines) */
+.shimmer-skeleton--text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: transparent;
+}
+
+.shimmer-skeleton__line {
+  height: 1em;
+  border-radius: 4px;
+  background: var(--bg-tertiary, #1A1A2E);
+}
+
+/* Circular */
+.shimmer-skeleton--circular {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+/* Rectangular */
+.shimmer-skeleton--rectangular {
+  border-radius: 0;
+  width: 100%;
+  height: 200px;
+}
+
+/* Rounded */
+.shimmer-skeleton--rounded {
+  border-radius: 16px;
+  width: 100%;
+  height: 200px;
+}
+
+/* ============================================
+   Card Variant
+   Glassmorphism card skeleton
+   ============================================ */
+
+.shimmer-skeleton--card {
+  border-radius: 20px;
+  padding: 20px;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+  border: var(--glass-border, 1px solid rgba(255, 255, 255, 0.1));
+  min-height: 150px;
+}
+
+.shimmer-skeleton__card-header {
+  height: 24px;
+  width: 60%;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  background: var(--bg-tertiary, #1A1A2E);
+}
+
+.shimmer-skeleton__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ============================================
+   Avatar Variant
+   Circular with glow effect
+   ============================================ */
+
+.shimmer-skeleton--avatar {
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+.shimmer-skeleton--avatar.shimmer-skeleton--cyan {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+.shimmer-skeleton--avatar.shimmer-skeleton--magenta {
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+}
+
+.shimmer-skeleton--avatar.shimmer-skeleton--purple {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+/* ============================================
+   Metric Variant
+   Dashboard metric skeleton
+   ============================================ */
+
+.shimmer-skeleton--metric {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: transparent;
+}
+
+.shimmer-skeleton__metric-value {
+  height: 48px;
+  width: 80%;
+  border-radius: 8px;
+  background: var(--bg-tertiary, #1A1A2E);
+}
+
+.shimmer-skeleton__metric-label {
+  height: 14px;
+  width: 50%;
+  border-radius: 4px;
+  background: var(--bg-tertiary, #1A1A2E);
+}
+
+/* ============================================
+   High-Tech Theme Integration
+   ============================================ */
+
+[data-theme="high-tech"] .shimmer-skeleton {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="high-tech"] .shimmer-skeleton--animated {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 0%,
+    var(--neon-cyan-subtle, rgba(0, 212, 255, 0.2)) 25%,
+    var(--neon-purple-subtle, rgba(139, 92, 246, 0.2)) 50%,
+    var(--neon-cyan-subtle, rgba(0, 212, 255, 0.2)) 75%,
+    var(--bg-tertiary) 100%
+  );
+  background-size: 200% 100%;
+}
+
+[data-theme="high-tech"] .shimmer-skeleton__line,
+[data-theme="high-tech"] .shimmer-skeleton__card-header,
+[data-theme="high-tech"] .shimmer-skeleton__metric-value,
+[data-theme="high-tech"] .shimmer-skeleton__metric-label {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="high-tech"] .shimmer-skeleton--card {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+}
+
+/* ============================================
+   Fallback for browsers without backdrop-filter
+   ============================================ */
+
+@supports not (backdrop-filter: blur(20px)) {
+  .shimmer-skeleton--card {
+    background: var(--glass-fallback-bg, rgba(26, 26, 46, 0.95));
+  }
+}
+
+/* ============================================
+   Reduced Motion Support
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-skeleton--animated,
+  .shimmer-skeleton__line,
+  .shimmer-skeleton__card-header,
+  .shimmer-skeleton__metric-value,
+  .shimmer-skeleton__metric-label {
+    animation: none !important;
+    background: var(--bg-tertiary, #1A1A2E) !important;
+  }
+}
+
+/* ============================================
+   Screen Reader Only
+   ============================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================
+   Mobile Responsive
+   ============================================ */
+
+@media (max-width: 768px) {
+  .shimmer-skeleton--card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  
+  .shimmer-skeleton__metric-value {
+    height: 36px;
+  }
+  
+  .shimmer-skeleton--avatar {
+    width: 48px;
+    height: 48px;
+  }
+}
