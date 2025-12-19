@@ -153,7 +153,7 @@ export const HighTechDashboardPage: React.FC = () => {
 
   // Handle Zena orb click
   const handleZenaClick = useCallback(() => {
-    navigate('/ask-zena-immersive');
+    navigate('/ask-zena');
   }, [navigate]);
 
   // Handle metric orb click

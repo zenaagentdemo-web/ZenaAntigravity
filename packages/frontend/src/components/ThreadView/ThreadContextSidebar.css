@@ -1,0 +1,654 @@
+/**
+ * ThreadContextSidebar Component Styles
+ * 
+ * Mobile-first collapsible sidebar with glassmorphism styling.
+ * Includes drawer behavior for mobile devices.
+ */
+
+/* ============================================
+ * MOBILE TOGGLE BUTTON
+ * ============================================ */
+
+.thread-context-sidebar__toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: fixed;
+    bottom: 80px;
+    right: 16px;
+    z-index: 90;
+
+    padding: 12px 16px;
+    background: rgba(139, 92, 246, 0.9);
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    border-radius: 24px;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 16px rgba(139, 92, 246, 0.4),
+        0 0 20px rgba(139, 92, 246, 0.2);
+
+    transition: all 200ms ease;
+}
+
+.thread-context-sidebar__toggle svg {
+    width: 18px;
+    height: 18px;
+}
+
+.thread-context-sidebar__toggle:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 20px rgba(139, 92, 246, 0.5),
+        0 0 30px rgba(139, 92, 246, 0.3);
+}
+
+/* Hide toggle on desktop */
+@media (min-width: 1024px) {
+    .thread-context-sidebar__toggle {
+        display: none;
+    }
+}
+
+/* ============================================
+ * OVERLAY (MOBILE)
+ * ============================================ */
+
+.thread-context-sidebar__overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    animation: overlay-fade-in 200ms ease;
+}
+
+@keyframes overlay-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (min-width: 1024px) {
+    .thread-context-sidebar__overlay {
+        display: none;
+    }
+}
+
+/* ============================================
+ * SIDEBAR PANEL
+ * ============================================ */
+
+.thread-context-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    width: 100%;
+    max-width: 360px;
+
+    /* Glassmorphism background */
+    background: rgba(10, 10, 15, 0.98);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+
+    /* Border */
+    border-left: 1px solid rgba(0, 212, 255, 0.2);
+
+    /* Shadow */
+    box-shadow:
+        -4px 0 20px rgba(0, 0, 0, 0.4),
+        0 0 30px rgba(0, 212, 255, 0.1);
+
+    /* Transitions */
+    transform: translateX(100%);
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Scrolling */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.thread-context-sidebar--open {
+    transform: translateX(0);
+}
+
+/* Desktop: Static sidebar */
+@media (min-width: 1024px) {
+    .thread-context-sidebar {
+        position: static;
+        transform: none;
+        width: 100%;
+        max-width: none;
+        height: 100%;
+        border-left: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* ============================================
+ * CLOSE BUTTON (MOBILE)
+ * ============================================ */
+
+.thread-context-sidebar__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1;
+
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+
+    transition: all 200ms ease;
+}
+
+.thread-context-sidebar__close svg {
+    width: 20px;
+    height: 20px;
+}
+
+.thread-context-sidebar__close:hover {
+    background: rgba(255, 68, 68, 0.1);
+    border-color: rgba(255, 68, 68, 0.3);
+    color: #FF4444;
+}
+
+@media (min-width: 1024px) {
+    .thread-context-sidebar__close {
+        display: none;
+    }
+}
+
+/* ============================================
+ * CONTENT
+ * ============================================ */
+
+.thread-context-sidebar__content {
+    padding: 60px 16px 24px;
+}
+
+@media (min-width: 1024px) {
+    .thread-context-sidebar__content {
+        padding: 16px;
+    }
+}
+
+/* ============================================
+ * SECTIONS
+ * ============================================ */
+
+.thread-context-sidebar__section {
+    margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.thread-context-sidebar__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    transition: all 200ms ease;
+    text-align: left;
+}
+
+.thread-context-sidebar__section-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.thread-context-sidebar__section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.thread-context-sidebar__section-title svg {
+    width: 18px;
+    height: 18px;
+    color: var(--neon-cyan, #00D4FF);
+}
+
+.thread-context-sidebar__section-arrow {
+    width: 18px;
+    height: 18px;
+    color: rgba(255, 255, 255, 0.5);
+    transition: transform 200ms ease;
+}
+
+.thread-context-sidebar__section-arrow--expanded {
+    transform: rotate(180deg);
+}
+
+.thread-context-sidebar__section-content {
+    padding: 0 16px 16px;
+    animation: section-expand 200ms ease;
+}
+
+@keyframes section-expand {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+ * AI INSIGHTS
+ * ============================================ */
+
+.thread-context-sidebar__insight-card {
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.thread-context-sidebar__insight-card:last-child {
+    margin-bottom: 0;
+}
+
+.thread-context-sidebar__insight-card h4 {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 8px 0;
+}
+
+.thread-context-sidebar__insight-card p {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.thread-context-sidebar__key-points {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.thread-context-sidebar__key-points li {
+    position: relative;
+    padding-left: 16px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    margin-bottom: 6px;
+}
+
+.thread-context-sidebar__key-points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--neon-cyan, #00D4FF);
+}
+
+.thread-context-sidebar__actions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.thread-context-sidebar__actions-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.thread-context-sidebar__actions-list li svg {
+    width: 16px;
+    height: 16px;
+    color: #00FF88;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.thread-context-sidebar__sentiment {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.thread-context-sidebar__sentiment-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.thread-context-sidebar__sentiment-value {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.thread-context-sidebar__sentiment-value--positive {
+    background: rgba(0, 255, 136, 0.15);
+    color: #00FF88;
+}
+
+.thread-context-sidebar__sentiment-value--neutral {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.thread-context-sidebar__sentiment-value--negative {
+    background: rgba(255, 68, 68, 0.15);
+    color: #FF4444;
+}
+
+.thread-context-sidebar__sentiment-value--mixed {
+    background: rgba(255, 170, 0, 0.15);
+    color: #FFAA00;
+}
+
+/* ============================================
+ * PROPERTY CARD
+ * ============================================ */
+
+.thread-context-sidebar__property-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    text-align: left;
+}
+
+.thread-context-sidebar__property-card:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: rgba(0, 212, 255, 0.4);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+}
+
+.thread-context-sidebar__property-image {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.thread-context-sidebar__property-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.thread-context-sidebar__property-address {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+}
+
+.thread-context-sidebar__property-price {
+    font-size: 13px;
+    color: var(--neon-cyan, #00D4FF);
+    font-weight: 600;
+}
+
+.thread-context-sidebar__property-card>svg {
+    width: 18px;
+    height: 18px;
+    color: rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+/* ============================================
+ * DEAL CARD
+ * ============================================ */
+
+.thread-context-sidebar__deal-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+    background: rgba(139, 92, 246, 0.05);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    text-align: left;
+    position: relative;
+}
+
+.thread-context-sidebar__deal-card:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+.thread-context-sidebar__deal-card>svg {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.thread-context-sidebar__deal-stage {
+    padding-right: 24px;
+}
+
+.thread-context-sidebar__deal-stage-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--neon-purple, #8B5CF6);
+    margin-bottom: 8px;
+}
+
+.thread-context-sidebar__deal-progress {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.thread-context-sidebar__deal-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-cyan, #00D4FF), var(--neon-purple, #8B5CF6));
+    border-radius: 3px;
+    transition: width 500ms ease;
+}
+
+.thread-context-sidebar__deal-action {
+    display: flex;
+    gap: 6px;
+    font-size: 12px;
+    padding-right: 24px;
+}
+
+.thread-context-sidebar__deal-action-label {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.thread-context-sidebar__deal-action-text {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ============================================
+ * PARTICIPANTS LIST
+ * ============================================ */
+
+.thread-context-sidebar__participants-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.thread-context-sidebar__participant {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    transition: all 200ms ease;
+}
+
+.thread-context-sidebar__participant[role="button"] {
+    cursor: pointer;
+}
+
+.thread-context-sidebar__participant[role="button"]:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.thread-context-sidebar__participant-avatar {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(139, 92, 246, 0.2));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    overflow: hidden;
+}
+
+.thread-context-sidebar__participant-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.thread-context-sidebar__participant-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.thread-context-sidebar__participant-name {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #FFFFFF;
+    margin-bottom: 2px;
+}
+
+.thread-context-sidebar__participant-email {
+    display: block;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.thread-context-sidebar__participant-role {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 3px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.thread-context-sidebar__participant-role--buyer {
+    background: rgba(0, 212, 255, 0.15);
+    color: #00D4FF;
+}
+
+.thread-context-sidebar__participant-role--vendor {
+    background: rgba(139, 92, 246, 0.15);
+    color: #8B5CF6;
+}
+
+.thread-context-sidebar__participant-role--agent {
+    background: rgba(0, 255, 136, 0.15);
+    color: #00FF88;
+}
+
+.thread-context-sidebar__participant-role--lawyer {
+    background: rgba(255, 170, 0, 0.15);
+    color: #FFAA00;
+}
+
+.thread-context-sidebar__participant-role--broker {
+    background: rgba(255, 170, 0, 0.15);
+    color: #FFAA00;
+}
+
+.thread-context-sidebar__participant-role--other {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ============================================
+ * REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .thread-context-sidebar,
+    .thread-context-sidebar__section-arrow,
+    .thread-context-sidebar__section-content,
+    .thread-context-sidebar__overlay {
+        animation: none;
+        transition-duration: 0ms;
+    }
+}

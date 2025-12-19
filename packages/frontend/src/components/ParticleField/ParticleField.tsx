@@ -23,22 +23,22 @@ interface ParticleFieldProps {
 // Particle behavior configuration per state
 const STATE_CONFIG = {
     idle: {
-        attractionStrength: 0.001,
-        noiseAmplitude: 0.5,
+        attractionStrength: 0.002,
+        noiseAmplitude: 0.6,
         colorPrimary: new THREE.Color(0x00e5ff),
         colorSecondary: new THREE.Color(0xff00ff),
-        rotationSpeed: 0.0005,
-        particleSize: 2.5,
-        opacity: 0.6,
+        rotationSpeed: 0.0008,
+        particleSize: 2.8,
+        opacity: 0.7,
     },
     listening: {
-        attractionStrength: 0.003,
-        noiseAmplitude: 0.3,
+        attractionStrength: 0.006,
+        noiseAmplitude: 0.4,
         colorPrimary: new THREE.Color(0x00ffcc),
         colorSecondary: new THREE.Color(0x00e5ff),
-        rotationSpeed: 0.001,
-        particleSize: 3,
-        opacity: 0.8,
+        rotationSpeed: 0.0015,
+        particleSize: 3.2,
+        opacity: 0.85,
     },
     speaking: {
         attractionStrength: -0.002, // Repulsion - particles emit outward
@@ -50,13 +50,13 @@ const STATE_CONFIG = {
         opacity: 0.9,
     },
     thinking: {
-        attractionStrength: 0.002,
-        noiseAmplitude: 0.4,
+        attractionStrength: 0.005,
+        noiseAmplitude: 0.5,
         colorPrimary: new THREE.Color(0x8000ff),
         colorSecondary: new THREE.Color(0x4b0082),
-        rotationSpeed: 0.003, // Faster orbital rotation
-        particleSize: 2.5,
-        opacity: 0.7,
+        rotationSpeed: 0.004, // Faster orbital rotation
+        particleSize: 2.8,
+        opacity: 0.75,
     },
 };
 
@@ -64,6 +64,46 @@ const STATE_CONFIG = {
 const noise3D = (x: number, y: number, z: number, time: number): number => {
     return Math.sin(x * 2 + time) * Math.cos(y * 2 + time * 0.7) * Math.sin(z * 2 + time * 1.3);
 };
+
+// Vertex shader for circle particles
+const circleVertexShader = `
+    attribute vec3 color;
+    varying vec3 vColor;
+    uniform float uSize;
+    uniform float uOpacity;
+    varying float vOpacity;
+    
+    void main() {
+        vColor = color;
+        vOpacity = uOpacity;
+        
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = uSize * (300.0 / -mvPosition.z);
+        gl_Position = projectionMatrix * mvPosition;
+    }
+`;
+
+// Fragment shader for smooth anti-aliased circles
+const circleFragmentShader = `
+    varying vec3 vColor;
+    varying float vOpacity;
+    
+    void main() {
+        vec2 center = gl_PointCoord - vec2(0.5);
+        float dist = length(center);
+        
+        // Smooth anti-aliased circle edge
+        float alpha = 1.0 - smoothstep(0.35, 0.5, dist);
+        
+        // Add soft glow
+        float glow = 1.0 - smoothstep(0.0, 0.5, dist);
+        vec3 glowColor = vColor + vec3(0.1, 0.15, 0.2) * glow;
+        
+        gl_FragColor = vec4(glowColor, alpha * vOpacity);
+        
+        if (alpha < 0.01) discard;
+    }
+`;
 
 export const ParticleField: React.FC<ParticleFieldProps> = ({
     animationState,
@@ -84,13 +124,13 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
     // Memoize particle positions
     const initialPositions = useMemo(() => {
         const positions = new Float32Array(particleCount * 3);
-        const radius = 200;
+        const radius = width * 0.4; // Initial spread relative to field size
 
         for (let i = 0; i < particleCount; i++) {
             // Spherical distribution
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(2 * Math.random() - 1);
-            const r = radius * (0.5 + Math.random() * 0.5);
+            const r = radius * (0.3 + Math.random() * 0.7);
 
             positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
             positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
@@ -98,7 +138,7 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
         }
 
         return positions;
-    }, [particleCount]);
+    }, [particleCount, width]);
 
     // Initialize Three.js scene
     const initScene = useCallback(() => {
@@ -142,14 +182,18 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
         }
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-        // Material
-        const material = new THREE.PointsMaterial({
-            size: config.particleSize,
-            vertexColors: true,
+        // ShaderMaterial for circular particles (not squares)
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                uSize: { value: config.particleSize },
+                uOpacity: { value: config.opacity },
+            },
+            vertexShader: circleVertexShader,
+            fragmentShader: circleFragmentShader,
             transparent: true,
-            opacity: config.opacity,
             blending: THREE.AdditiveBlending,
-            sizeAttenuation: true,
+            depthTest: false,
+            depthWrite: false,
         });
 
         // Particles
@@ -189,7 +233,7 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
             const dist = Math.sqrt(x * x + y * y + z * z);
 
             // Add orbital motion to prevent convergence (particles orbit around center)
-            const orbitSpeed = 0.002 + (i % 10) * 0.0003;
+            const orbitSpeed = 0.005 + (i % 10) * 0.0012;
             const orbitX = -y * orbitSpeed;
             const orbitY = x * orbitSpeed;
 
@@ -214,10 +258,13 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
             positions[iz] += dz + noiseZ;
 
             // Hard bounds - respawn particles that go too far or too close
-            if (dist > 280 || dist < 60) {
+            // Radius of field is width/2
+            const fieldRadius = width / 2;
+            if (dist > fieldRadius || dist < 60) {
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.acos(2 * Math.random() - 1);
-                const r = 100 + Math.random() * 100;
+                // Respawn at a random point in the active band
+                const r = 80 + Math.random() * (fieldRadius * 0.8 - 80);
                 positions[ix] = r * Math.sin(phi) * Math.cos(theta);
                 positions[iy] = r * Math.sin(phi) * Math.sin(theta);
                 positions[iz] = r * Math.cos(phi);
@@ -238,9 +285,10 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
         particles.rotation.y += config.rotationSpeed;
         particles.rotation.x = Math.sin(time * 0.2) * 0.1;
 
-        // Update material properties
-        (particles.material as THREE.PointsMaterial).size = config.particleSize;
-        (particles.material as THREE.PointsMaterial).opacity = config.opacity;
+        // Update material uniforms (for ShaderMaterial)
+        const mat = particles.material as THREE.ShaderMaterial;
+        mat.uniforms.uSize.value = config.particleSize;
+        mat.uniforms.uOpacity.value = config.opacity;
 
         rendererRef.current.render(sceneRef.current, cameraRef.current);
         animationFrameRef.current = requestAnimationFrame(animate);

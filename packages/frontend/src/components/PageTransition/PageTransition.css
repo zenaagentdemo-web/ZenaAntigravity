@@ -13,9 +13,10 @@
    ============================================ */
 
 .page-transition {
-  --transition-duration-fast: 200ms;
-  --transition-duration-normal: 300ms;
-  --transition-duration-slow: 500ms;
+  --transition-duration-instant: 80ms;
+  --transition-duration-fast: 100ms;
+  --transition-duration-normal: 150ms;
+  --transition-duration-slow: 250ms;
   --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --transition-ease-out: cubic-bezier(0, 0, 0.2, 1);
   --transition-ease-in: cubic-bezier(0.4, 0, 1, 1);
@@ -43,6 +44,10 @@
 /* ============================================
    Duration Variants
    ============================================ */
+
+.page-transition--instant .page-transition__content {
+  transition-duration: var(--transition-duration-instant);
+}
 
 .page-transition--fast .page-transition__content {
   transition-duration: var(--transition-duration-fast);
@@ -76,6 +81,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -86,7 +92,7 @@
    ============================================ */
 
 .page-transition--slide-up .page-transition__content {
-  transition: 
+  transition:
     transform var(--transition-duration-normal) var(--transition-ease),
     opacity var(--transition-duration-normal) var(--transition-ease);
 }
@@ -105,6 +111,7 @@
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -116,7 +123,7 @@
    ============================================ */
 
 .page-transition--slide-left .page-transition__content {
-  transition: 
+  transition:
     transform var(--transition-duration-normal) var(--transition-ease),
     opacity var(--transition-duration-normal) var(--transition-ease);
 }
@@ -135,6 +142,7 @@
     transform: translateX(30px);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -146,7 +154,7 @@
    ============================================ */
 
 .page-transition--slide-right .page-transition__content {
-  transition: 
+  transition:
     transform var(--transition-duration-normal) var(--transition-ease),
     opacity var(--transition-duration-normal) var(--transition-ease);
 }
@@ -165,6 +173,7 @@
     transform: translateX(-30px);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -176,7 +185,7 @@
    ============================================ */
 
 .page-transition--scale .page-transition__content {
-  transition: 
+  transition:
     transform var(--transition-duration-normal) var(--transition-ease),
     opacity var(--transition-duration-normal) var(--transition-ease);
 }
@@ -195,6 +204,7 @@
     transform: scale(1.05);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -206,7 +216,7 @@
    ============================================ */
 
 .page-transition--glow-fade .page-transition__content {
-  transition: 
+  transition:
     transform var(--transition-duration-normal) var(--transition-ease),
     opacity var(--transition-duration-normal) var(--transition-ease),
     filter var(--transition-duration-normal) var(--transition-ease);
@@ -228,6 +238,7 @@
     opacity: 0;
     filter: brightness(1.2);
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -248,11 +259,9 @@
   pointer-events: none;
   z-index: 9999;
   opacity: 0;
-  background: radial-gradient(
-    ellipse at center,
-    var(--glow-color-dim) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(ellipse at center,
+      var(--glow-color-dim) 0%,
+      transparent 70%);
   animation: glow-pulse-overlay var(--transition-duration-normal) var(--transition-ease) forwards;
 }
 
@@ -261,10 +270,12 @@
     opacity: 0;
     transform: scale(0.8);
   }
+
   50% {
     opacity: 0.3;
     transform: scale(1);
   }
+
   100% {
     opacity: 0;
     transform: scale(1.2);
@@ -297,11 +308,11 @@
     transition: none !important;
     animation: none !important;
   }
-  
+
   .page-transition__glow-overlay {
     display: none !important;
   }
-  
+
   .page-transition--exit .page-transition__content,
   .page-transition--enter .page-transition__content {
     transform: none !important;
@@ -320,12 +331,10 @@
 }
 
 [data-theme="high-tech"] .page-transition__glow-overlay {
-  background: radial-gradient(
-    ellipse at center,
-    var(--neon-cyan-subtle) 0%,
-    var(--neon-magenta-subtle) 30%,
-    transparent 70%
-  );
+  background: radial-gradient(ellipse at center,
+      var(--neon-cyan-subtle) 0%,
+      var(--neon-magenta-subtle) 30%,
+      transparent 70%);
 }
 
 /* ============================================
@@ -333,27 +342,30 @@
    ============================================ */
 
 @media (max-width: 768px) {
+
   .page-transition--slide-left.page-transition--exit .page-transition__content,
   .page-transition--slide-right.page-transition--exit .page-transition__content {
     transform: translateX(-15px);
   }
-  
+
   @keyframes slide-left-enter {
     from {
       transform: translateX(15px);
       opacity: 0;
     }
+
     to {
       transform: translateX(0);
       opacity: 1;
     }
   }
-  
+
   @keyframes slide-right-enter {
     from {
       transform: translateX(-15px);
       opacity: 0;
     }
+
     to {
       transform: translateX(0);
       opacity: 1;

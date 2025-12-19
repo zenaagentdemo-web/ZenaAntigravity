@@ -7,6 +7,8 @@ export interface AskZenaQuery {
   userId: string;
   query: string;
   conversationHistory?: ConversationMessage[];
+  conversationId?: string;
+  attachments?: any[];
 }
 
 export interface ConversationMessage {
@@ -50,10 +52,15 @@ export class AskZenaService {
   constructor() {
     this.apiKey = process.env.OPENAI_API_KEY || '';
     this.apiEndpoint = process.env.OPENAI_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions';
-    this.model = process.env.OPENAI_MODEL || 'gpt-4';
+    this.model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 
-    if (!this.apiKey) {
-      console.warn('Warning: OPENAI_API_KEY not set. Ask Zena will use fallback responses.');
+    console.log('[AskZenaService] Initializing...');
+    console.log('[AskZenaService] OPENAI_API_KEY set:', !!this.apiKey);
+    console.log('[AskZenaService] GEMINI_API_KEY set:', !!process.env.GEMINI_API_KEY);
+    console.log('[AskZenaService] GEMINI_MODEL:', process.env.GEMINI_MODEL || 'gemini-3-flash');
+
+    if (!this.apiKey && !process.env.GEMINI_API_KEY) {
+      console.warn('Warning: Neither OPENAI_API_KEY nor GEMINI_API_KEY set. Ask Zena will use fallback responses.');
     }
   }
 
@@ -62,18 +69,71 @@ export class AskZenaService {
    */
   async processQuery(query: AskZenaQuery): Promise<AskZenaResponse> {
     try {
+      // If conversationId is provided, save the user message first
+      if (query.conversationId) {
+        await prisma.chatMessage.create({
+          data: {
+            conversationId: query.conversationId,
+            role: 'user',
+            content: query.query,
+            attachments: query.attachments || []
+          }
+        });
+      }
+
       // Extract search terms and intent from query
       const searchTerms = this.extractSearchTerms(query.query);
-      
-      // Retrieve relevant context from all data sources
-      const context = await this.retrieveContext(query.userId, searchTerms);
-      
-      // Generate response using LLM
-      if (this.apiKey) {
-        return await this.generateLLMResponse(query, context);
-      } else {
-        return this.generateFallbackResponse(query, context);
+
+      // Try to retrieve relevant context from all data sources
+      let context: SearchContext = {
+        threads: [],
+        contacts: [],
+        properties: [],
+        deals: [],
+        tasks: [],
+        timelineEvents: [],
+        voiceNotes: [],
+      };
+
+      try {
+        context = await this.retrieveContext(query.userId, searchTerms);
+      } catch (dbError) {
+        console.warn('Database unavailable, using empty context for GPT:', dbError);
       }
+
+      // Generate response using LLM
+      let response: AskZenaResponse;
+      if (this.apiKey || process.env.GEMINI_API_KEY) {
+        response = await this.generateLLMResponse(query, context);
+      } else {
+        response = this.generateFallbackResponse(query, context);
+      }
+
+      // If conversationId is provided, save the assistant response
+      if (query.conversationId) {
+        await prisma.chatMessage.create({
+          data: {
+            conversationId: query.conversationId,
+            role: 'assistant',
+            content: response.answer
+          }
+        });
+
+        // Update title if it's the first message
+        const messageCount = await prisma.chatMessage.count({
+          where: { conversationId: query.conversationId }
+        });
+
+        if (messageCount <= 2) {
+          const title = query.query.length > 50 ? query.query.substring(0, 47) + '...' : query.query;
+          await prisma.chatConversation.update({
+            where: { id: query.conversationId },
+            data: { title }
+          });
+        }
+      }
+
+      return response;
     } catch (error) {
       console.error('Error processing Ask Zena query:', error);
       throw error;
@@ -88,29 +148,29 @@ export class AskZenaService {
     try {
       // Extract search terms and intent from query
       const searchTerms = this.extractSearchTerms(query.query);
-      
+
       // Retrieve relevant context from all data sources
       const context = await this.retrieveContext(query.userId, searchTerms);
-      
+
       // Generate response
-      const response = this.apiKey 
+      const response = (this.apiKey || process.env.GEMINI_API_KEY)
         ? await this.generateLLMResponse(query, context)
         : this.generateFallbackResponse(query, context);
-      
+
       // Simulate streaming by sending the response in chunks
       // In a real implementation, this would use the LLM's streaming API
       const chunks = this.chunkResponse(response.answer);
-      
+
       for (const chunk of chunks) {
         websocketService.broadcastToUser(query.userId, 'ask.response', {
           chunk,
           isComplete: false,
         });
-        
+
         // Small delay to simulate streaming
         await new Promise(resolve => setTimeout(resolve, 50));
       }
-      
+
       // Send completion message with sources
       websocketService.broadcastToUser(query.userId, 'ask.response', {
         chunk: '',
@@ -118,17 +178,17 @@ export class AskZenaService {
         sources: response.sources,
         suggestedActions: response.suggestedActions,
       });
-      
+
     } catch (error) {
       console.error('Error processing streaming Ask Zena query:', error);
-      
+
       // Send error via WebSocket
       websocketService.broadcastToUser(query.userId, 'ask.response', {
         chunk: '',
         isComplete: true,
         error: error instanceof Error ? error.message : 'Unknown error',
       });
-      
+
       throw error;
     }
   }
@@ -139,12 +199,12 @@ export class AskZenaService {
   private chunkResponse(text: string, chunkSize: number = 20): string[] {
     const words = text.split(' ');
     const chunks: string[] = [];
-    
+
     for (let i = 0; i < words.length; i += chunkSize) {
       const chunk = words.slice(i, i + chunkSize).join(' ');
       chunks.push(chunk + (i + chunkSize < words.length ? ' ' : ''));
     }
-    
+
     return chunks;
   }
 
@@ -174,7 +234,7 @@ export class AskZenaService {
   private async retrieveContext(userId: string, searchTerms: string[]): Promise<SearchContext> {
     try {
       // For general queries, also fetch some recent data even if search terms don't match
-      const isGeneralQuery = searchTerms.some(term => 
+      const isGeneralQuery = searchTerms.some(term =>
         ['buyer', 'buyers', 'contact', 'contacts', 'property', 'properties', 'deal', 'deals', 'task', 'tasks'].includes(term)
       );
 
@@ -350,12 +410,22 @@ export class AskZenaService {
   ): Promise<AskZenaResponse> {
     try {
       const prompt = this.buildQueryPrompt(query, context);
-      const response = await this.callLLM(prompt, query.conversationHistory);
+      const response = await this.callLLM(prompt, query.conversationHistory, query.attachments);
       const parsed = this.parseResponse(response, context);
 
       return parsed;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating LLM response:', error);
+
+      // If it's a quota error, provide a specific helpful response
+      if (error.message?.includes('429') || error.message?.toLowerCase().includes('quota exceeded')) {
+        return {
+          answer: "I'm currently hitting a temporary usage limit from Google (429 Quota Exceeded). \n\n**To fix this**: Please ensure your Google Cloud account is 'Activated' or upgraded beyond the Free Tier. Since you have $500+ in credits, this will unlock my brain without charging your card!",
+          sources: [],
+          suggestedActions: ["Check Google Cloud Billing"]
+        };
+      }
+
       return this.generateFallbackResponse(query, context);
     }
   }
@@ -367,21 +437,20 @@ export class AskZenaService {
     // Build context summary
     const contextSummary = this.buildContextSummary(context);
 
-    return `You are Zena, an AI assistant for a residential real estate agent. The agent has asked you a question about their deals, contacts, properties, and communications.
+    return `You are Zena, an AI assistant for a residential real estate agent. You have access to the agent's specific data (deals, contacts, properties), but you are ALSO a highly capable general intelligence like Gemini.
 
 Agent's Question: ${query.query}
 
-Relevant Context:
+Specific Data Context (if relevant):
 ${contextSummary}
 
 Instructions:
-1. Answer the agent's question based on the provided context
-2. Be specific and reference actual data from the context
-3. Format your response with bullet points or numbered lists when appropriate
-4. If suggesting actions, make them clear and actionable
-5. If the context doesn't contain enough information, say so clearly
-6. Keep responses concise but informative
-7. Use a professional yet friendly tone
+1. Answer the agent's question accurately.
+2. If the question is about their real estate data (deals, contacts, etc.), use the provided context above.
+3. If the question is a general query (like "tell me a joke", "what is the weather", "coding advice"), use your broad general knowledge to provide a helpful, conversational response.
+4. DO NOT say "I couldn't find any information" if it's a general query you can answer yourself.
+5. Format your response with bullet points or numbered lists when appropriate.
+6. Use a professional yet friendly and helpful tone.
 
 Respond in the following JSON format:
 {
@@ -486,9 +555,16 @@ Respond in the following JSON format:
   }
 
   /**
-   * Call LLM API
+   * Call LLM API - supports both OpenAI and Google Gemini
    */
-  private async callLLM(prompt: string, conversationHistory?: ConversationMessage[]): Promise<string> {
+  private async callLLM(prompt: string, conversationHistory?: ConversationMessage[], attachments?: any[]): Promise<string> {
+    // Check if using Gemini
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    if (geminiApiKey) {
+      return this.callGemini(prompt, conversationHistory, geminiApiKey, attachments);
+    }
+
+    // Default to OpenAI
     const messages: any[] = [
       {
         role: 'system',
@@ -531,8 +607,87 @@ Respond in the following JSON format:
       throw new Error(`LLM API error: ${response.status} ${error}`);
     }
 
-    const data = await response.json();
-    return data.choices[0]?.message?.content || '';
+    const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
+    return data.choices?.[0]?.message?.content || '';
+  }
+
+  /**
+   * Call Google Gemini API
+   */
+  private async callGemini(prompt: string, conversationHistory?: ConversationMessage[], apiKey?: string, attachments?: any[]): Promise<string> {
+    const model = process.env.GEMINI_MODEL || 'gemini-3-flash';
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    // Build conversation contents for Gemini format
+    const contents: Array<{ role: string; parts: Array<any> }> = [];
+
+    // Add system instruction as first user message
+    contents.push({
+      role: 'user',
+      parts: [{ text: 'You are Zena, a highly capable AI assistant. You can help with ANYTHING - general knowledge questions, coding, math, creative writing, analysis, advice, and more. For real estate agents, you can also help with property information, client management, and deal tracking. Always be helpful, accurate, and provide detailed responses.' }]
+    });
+    contents.push({
+      role: 'model',
+      parts: [{ text: 'Hello! I\'m Zena, your AI assistant. I can help you with absolutely anything - from general knowledge and coding to creative projects and analysis. If you\'re in real estate, I can also assist with properties, clients, and deals. What would you like to know?' }]
+    });
+
+    // Add conversation history if provided
+    if (conversationHistory && conversationHistory.length > 0) {
+      conversationHistory.forEach(msg => {
+        contents.push({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }]
+        });
+      });
+    }
+
+    // Add current query and attachments
+    const currentParts: any[] = [{ text: prompt }];
+
+    if (attachments && attachments.length > 0) {
+      for (const attachment of attachments) {
+        if (attachment.type === 'image' && attachment.base64) {
+          currentParts.push({
+            inline_data: {
+              mime_type: attachment.mimeType || 'image/jpeg',
+              data: attachment.base64
+            }
+          });
+        }
+      }
+    }
+
+    contents.push({
+      role: 'user',
+      parts: currentParts
+    });
+
+    const body = JSON.stringify({
+      contents,
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 1000,
+      },
+    });
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body,
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('[Gemini] API Error:', response.status, error);
+      throw new Error(`Gemini API error: ${response.status} ${error}`);
+    }
+
+    const data = await response.json() as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
+    };
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   }
 
   /**
@@ -701,7 +856,7 @@ Respond in the following JSON format:
           }
           answer += '\n';
         });
-        
+
         const openTasks = context.tasks.filter(t => t.status === 'open');
         if (openTasks.length > 0) {
           suggestedActions.push('Review and complete open tasks');
@@ -722,7 +877,7 @@ Respond in the following JSON format:
       }
     } else {
       // General query - provide overview
-      const totalItems = 
+      const totalItems =
         context.threads.length +
         context.contacts.length +
         context.properties.length +
@@ -764,7 +919,7 @@ Respond in the following JSON format:
    */
   async generateDraft(userId: string, request: string): Promise<string> {
     try {
-      if (!this.apiKey) {
+      if (!this.apiKey && !process.env.GEMINI_API_KEY) {
         return this.generateFallbackDraft(request);
       }
 

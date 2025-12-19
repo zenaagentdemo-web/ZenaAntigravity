@@ -1,0 +1,258 @@
+/* =============================================================================
+   ZENA TALK BUTTON - High-Tech Tap-to-Talk Voice Input
+   ============================================================================= */
+
+.zena-talk-button {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+/* -----------------------------------------------------------------------------
+   Glow Effect
+   ----------------------------------------------------------------------------- */
+.zena-talk-button__glow {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+            rgba(0, 229, 255, 0.2),
+            transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.zena-talk-button--listening .zena-talk-button__glow {
+    opacity: 1;
+    animation: talk-glow-pulse 1s ease-in-out infinite;
+    background: radial-gradient(circle,
+            rgba(255, 60, 60, 0.4),
+            transparent 70%);
+}
+
+@keyframes talk-glow-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Main Button
+   ----------------------------------------------------------------------------- */
+.zena-talk-button__button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 229, 255, 0.4);
+    background: linear-gradient(135deg,
+            rgba(20, 30, 50, 0.95),
+            rgba(10, 15, 30, 0.98));
+    color: rgba(0, 229, 255, 0.9);
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1;
+}
+
+.zena-talk-button__button:hover:not(:disabled) {
+    transform: scale(1.05);
+    border-color: rgba(0, 229, 255, 0.7);
+    box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+}
+
+.zena-talk-button__button:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.zena-talk-button--listening .zena-talk-button__button {
+    border-color: rgba(255, 60, 60, 0.8);
+    background: linear-gradient(135deg,
+            rgba(60, 20, 20, 0.95),
+            rgba(40, 15, 15, 0.98));
+    color: rgba(255, 100, 100, 1);
+    box-shadow:
+        0 0 30px rgba(255, 60, 60, 0.4),
+        inset 0 0 15px rgba(255, 60, 60, 0.1);
+    animation: talk-button-pulse 1s ease-in-out infinite;
+}
+
+.zena-talk-button--processing .zena-talk-button__button {
+    border-color: rgba(128, 0, 255, 0.6);
+    cursor: not-allowed;
+}
+
+.zena-talk-button--disabled .zena-talk-button__button {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@keyframes talk-button-pulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 30px rgba(255, 60, 60, 0.4),
+            inset 0 0 15px rgba(255, 60, 60, 0.1);
+    }
+
+    50% {
+        box-shadow:
+            0 0 45px rgba(255, 60, 60, 0.6),
+            inset 0 0 20px rgba(255, 60, 60, 0.15);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Icon Wrapper
+   ----------------------------------------------------------------------------- */
+.zena-talk-button__icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+}
+
+.zena-talk-button__mic-icon {
+    width: 100%;
+    height: 100%;
+}
+
+/* -----------------------------------------------------------------------------
+   Recording Dot Indicator
+   ----------------------------------------------------------------------------- */
+.zena-talk-button__recording-dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ff3c3c;
+    animation: recording-dot-blink 1s infinite;
+    box-shadow: 0 0 8px rgba(255, 60, 60, 0.8);
+}
+
+@keyframes recording-dot-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Loading Spinner
+   ----------------------------------------------------------------------------- */
+.zena-talk-button__spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(128, 0, 255, 0.3);
+    border-top-color: rgba(128, 0, 255, 0.9);
+    border-radius: 50%;
+    animation: talk-spinner 0.8s linear infinite;
+}
+
+@keyframes talk-spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Waveform Visualization
+   ----------------------------------------------------------------------------- */
+.zena-talk-button__waveform {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 30px;
+    padding: 0 10px;
+}
+
+.zena-talk-button__bar {
+    width: 4px;
+    min-height: 4px;
+    background: linear-gradient(to top,
+            rgba(255, 60, 60, 0.9),
+            rgba(255, 150, 100, 0.9));
+    border-radius: 2px;
+    transition: height 0.05s ease;
+}
+
+/* -----------------------------------------------------------------------------
+   Label
+   ----------------------------------------------------------------------------- */
+.zena-talk-button__label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.02em;
+    transition: color 0.3s ease;
+}
+
+.zena-talk-button--listening .zena-talk-button__label {
+    color: rgba(255, 100, 100, 0.9);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.zena-talk-button--processing .zena-talk-button__label {
+    color: rgba(180, 130, 255, 0.9);
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive
+   ----------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+    .zena-talk-button__button {
+        width: 56px;
+        height: 56px;
+    }
+
+    .zena-talk-button__icon-wrapper {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Accessibility: Reduced Motion
+   ----------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+
+    .zena-talk-button__glow,
+    .zena-talk-button--listening .zena-talk-button__button,
+    .zena-talk-button__recording-dot,
+    .zena-talk-button__spinner {
+        animation: none !important;
+    }
+
+    .zena-talk-button__button {
+        transition: none;
+    }
+
+    .zena-talk-button__bar {
+        transition: none;
+    }
+}

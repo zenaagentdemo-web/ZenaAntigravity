@@ -1,5 +1,6 @@
 import React, { memo, useState, useEffect, useRef } from 'react';
 import { ParticleField } from '../ParticleField/ParticleField';
+import { ParticleAvatar, ParticleState } from '../ParticleAvatar';
 import { useDeviceCapabilities } from '../../hooks/useDeviceCapabilities';
 import './HolographicAvatar.css';
 
@@ -17,12 +18,16 @@ interface HolographicAvatarProps {
     className?: string;
     /** Click handler (for mini avatar navigation) */
     onClick?: () => void;
+    /** Audio amplitude for particle reactivity (applied when speaking) */
+    amplitude?: number;
     /** Legacy prop for backwards compatibility */
     isSpeaking?: boolean;
     /** Enable particle field (default: true for non-mini sizes) */
     enableParticles?: boolean;
     /** Disable gradient/glow background effects (for transparent look like mini avatar) */
     noBackground?: boolean;
+    /** Image source for the particle avatar */
+    imageSrc?: string;
 }
 
 const SIZE_MAP: Record<AvatarSize, number | undefined> = {
@@ -31,20 +36,36 @@ const SIZE_MAP: Record<AvatarSize, number | undefined> = {
     fullscreen: undefined, // Uses CSS responsive sizing
 };
 
+/**
+ * Map animation state to particle state
+ */
+const mapToParticleState = (state: AvatarAnimationState): ParticleState => {
+    switch (state) {
+        case 'listening':
+            return 'explode';
+        case 'speaking':
+        case 'thinking':
+            return 'swirl';
+        case 'idle':
+        default:
+            return 'idle';
+    }
+};
+
 export const HolographicAvatar: React.FC<HolographicAvatarProps> = memo(({
     animationState,
     sizePreset = 'default',
     size,
+    amplitude = 0,
     className = '',
     onClick,
     isSpeaking,
     enableParticles,
     noBackground = false,
+    imageSrc,
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-    const [imageLoaded, setImageLoaded] = useState(false);
-    const [imageError, setImageError] = useState(false);
+    const [previousState, setPreviousState] = useState<AvatarAnimationState>('idle');
 
     // Device capabilities for adaptive performance
     const { prefersReducedMotion, recommendedParticleCount, isLowPower } = useDeviceCapabilities();
@@ -53,47 +74,27 @@ export const HolographicAvatar: React.FC<HolographicAvatarProps> = memo(({
     const effectiveState: AvatarAnimationState = animationState ?? (isSpeaking ? 'speaking' : 'idle');
 
     // Determine size
-    const effectiveSize = size ?? SIZE_MAP[sizePreset];
+    const effectiveSize = size ?? SIZE_MAP[sizePreset] ?? 300;
 
-    // Determine if particles should be enabled (respect device capabilities)
+    // Determine if background particles should be enabled (respect device capabilities)
     const showParticles = enableParticles !== undefined
         ? (enableParticles && !prefersReducedMotion)
         : (sizePreset !== 'mini' && !prefersReducedMotion);
 
-    // Calculate particle count based on device and size
+    // Calculate particle count based on device and size - reduced by 25%
     const particleCount = sizePreset === 'fullscreen'
-        ? Math.min(800, recommendedParticleCount * 1.5)
-        : Math.min(400, recommendedParticleCount);
+        ? Math.min(1125, recommendedParticleCount * 1.875)  // 1500 * 0.75 = 1125
+        : Math.min(600, recommendedParticleCount * 1.125);  // 800 * 0.75 = 600
 
-    // Track container dimensions for particle field
+    // Track state transitions to trigger reform
     useEffect(() => {
-        if (!containerRef.current || !showParticles) return;
+        if (effectiveState === 'idle' && previousState !== 'idle') {
+            // Transition to reform before settling to idle
+            // This is handled by ParticleAvatar internally
+        }
+        setPreviousState(effectiveState);
+    }, [effectiveState, previousState]);
 
-        const updateDimensions = () => {
-            if (containerRef.current) {
-                const rect = containerRef.current.getBoundingClientRect();
-                setDimensions({ width: rect.width, height: rect.height });
-            }
-        };
-
-        updateDimensions();
-
-        const resizeObserver = new ResizeObserver(updateDimensions);
-        resizeObserver.observe(containerRef.current);
-
-        return () => resizeObserver.disconnect();
-    }, [showParticles]);
-
-    // Handle image load
-    const handleImageLoad = () => {
-        setImageLoaded(true);
-        setImageError(false);
-    };
-
-    const handleImageError = () => {
-        setImageError(true);
-        setImageLoaded(false);
-    };
 
     // Build container class names
     const containerClasses = [
@@ -106,13 +107,6 @@ export const HolographicAvatar: React.FC<HolographicAvatarProps> = memo(({
         className,
     ].filter(Boolean).join(' ');
 
-    // Build avatar class names
-    const avatarClasses = [
-        'holographic-avatar',
-        `holographic-avatar--${effectiveState}`,
-        !imageLoaded && 'holographic-avatar--loading',
-    ].filter(Boolean).join(' ');
-
     // Aria label based on state
     const ariaLabelMap: Record<AvatarAnimationState, string> = {
         idle: 'Zena AI Avatar - Idle',
@@ -121,85 +115,52 @@ export const HolographicAvatar: React.FC<HolographicAvatarProps> = memo(({
         thinking: 'Zena AI Avatar - Thinking',
     };
 
+    // Map to particle state
+    const particleState = mapToParticleState(effectiveState);
+
     return (
         <div
             ref={containerRef}
             className={containerClasses}
-            style={effectiveSize ? { width: effectiveSize, height: effectiveSize } : undefined}
+            style={{ width: effectiveSize, height: effectiveSize }}
             role="img"
             aria-label={ariaLabelMap[effectiveState]}
             onClick={onClick}
             tabIndex={onClick ? 0 : undefined}
             onKeyDown={onClick ? (e) => e.key === 'Enter' && onClick() : undefined}
         >
-            {/* SVG Filter for subtle shimmer/waviness effect */}
-            <svg className="holographic-avatar__svg-filters" aria-hidden="true">
-                <defs>
-                    <filter id="hair-shimmer-filter" x="-10%" y="-10%" width="120%" height="120%">
-                        <feTurbulence
-                            type="fractalNoise"
-                            baseFrequency="0.015"
-                            numOctaves="2"
-                            seed="5"
-                            result="noise"
-                        >
-                            <animate
-                                attributeName="baseFrequency"
-                                values="0.015;0.02;0.015"
-                                dur="8s"
-                                repeatCount="indefinite"
-                            />
-                        </feTurbulence>
-                        <feDisplacementMap
-                            in="SourceGraphic"
-                            in2="noise"
-                            scale="3"
-                            xChannelSelector="R"
-                            yChannelSelector="G"
-                        />
-                    </filter>
-                </defs>
-            </svg>
-
-            {/* Loading skeleton */}
-            {!imageLoaded && !imageError && (
-                <div className="holographic-avatar__loading-skeleton" aria-hidden="true">
-                    <div className="holographic-avatar__loading-pulse" />
+            {/* Background particle field - Expanded size for 'whipping' effect */}
+            {showParticles && (
+                <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: effectiveSize * 2.5,
+                    height: effectiveSize * 2.5,
+                    pointerEvents: 'none',
+                    zIndex: 0,
+                    // Radial gradient mask to completely fade edges - no visible boundary
+                    maskImage: 'radial-gradient(circle, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0) 70%)',
+                    WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0) 70%)',
+                }}>
+                    <ParticleField
+                        animationState={effectiveState}
+                        width={effectiveSize * 2.5}
+                        height={effectiveSize * 2.5}
+                        particleCount={particleCount}
+                        reducedMotion={prefersReducedMotion}
+                    />
                 </div>
             )}
 
-            {/* Error fallback */}
-            {imageError && (
-                <div className="holographic-avatar__error" aria-hidden="true">
-                    <span className="holographic-avatar__error-icon">🤖</span>
-                </div>
-            )}
-
-            {/* Particle field behind avatar */}
-            {showParticles && dimensions.width > 0 && imageLoaded && (
-                <ParticleField
-                    animationState={effectiveState}
-                    width={dimensions.width}
-                    height={dimensions.height}
-                    particleCount={particleCount}
-                    reducedMotion={prefersReducedMotion}
-                />
-            )}
-
-            {/* Avatar image */}
-            <img
-                src="/assets/zena-avatar-v2.png"
-                alt="Zena AI Avatar"
-                className={avatarClasses}
-                draggable={false}
-                onLoad={handleImageLoad}
-                onError={handleImageError}
-                style={{
-                    position: 'relative',
-                    zIndex: 2,
-                    opacity: imageLoaded ? 1 : 0,
-                    transition: 'opacity 0.3s ease',
-                }}
+            {/* Particle Avatar (static image + particle explosion) */}
+            <ParticleAvatar
+                state={particleState}
+                amplitude={amplitude}
+                size={effectiveSize}
+                particleCount={prefersReducedMotion ? 200 : 500}
+                imageSrc={imageSrc}
             />
         </div>
     );

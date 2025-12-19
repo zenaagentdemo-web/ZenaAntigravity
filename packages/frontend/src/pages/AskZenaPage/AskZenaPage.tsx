@@ -1,100 +1,105 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../../utils/apiClient';
 import { VoiceRecorder } from '../../components/VoiceRecorder/VoiceRecorder';
-import { useVoiceInteraction } from '../../hooks/useVoiceInteraction';
-import { ZenaAvatarFullScreen } from '../../components/ZenaAvatar';
-import { ZenaAvatarState } from '../../components/ZenaAvatar/ZenaAvatar';
+import { ZenaHighTechAvatar } from '../../components/ZenaHighTechAvatar/ZenaHighTechAvatar';
+import { DissolvePhase } from '../../components/DissolveParticleSystem/DissolveParticleSystem';
+import {
+  ChatSidebar,
+  MessageBubble,
+  AttachmentManager,
+  Message,
+  Conversation,
+  Attachment
+} from '../../components/AskZena';
+import { voiceInteractionService } from '../../services/voice-interaction.service';
+import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
 import './AskZenaPage.css';
-import './AskZenaPage.hightech.css';
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
-
-interface SuggestedQuestion {
-  text: string;
-  category: string;
-}
-
-const SUGGESTED_QUESTIONS: SuggestedQuestion[] = [
-  { text: "What deals need my attention today?", category: "deals" },
-  { text: "Show me all properties with viewings this week", category: "properties" },
-  { text: "Who are my active buyers?", category: "contacts" },
-  { text: "What's the status of 123 Main Street?", category: "properties" },
-  { text: "Which deals are at risk?", category: "deals" },
-];
+import './TapToTalkButton.css';
 
 export const AskZenaPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConversationId, setActiveConversationId] = useState<string | undefined>();
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [streamingContent, setStreamingContent] = useState('');
   const [audioLevel, setAudioLevel] = useState(0);
-  
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isConversationMode, setIsConversationMode] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [avatarMode, setAvatarMode] = useState<'hero' | 'assistant'>('hero');
+  const [dissolvePhase, setDissolvePhase] = useState<DissolvePhase>('idle');
+  const hasAutoSubmitted = useRef(false);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const wsRef = useRef<WebSocket | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
-  // Determine Zena avatar state based on current activity
-  const getZenaState = (): ZenaAvatarState => {
-    if (showVoiceRecorder) return 'listening';
-    if (isLoading && !streamingContent) return 'processing';
-    if (streamingContent) return 'speaking';
-    return 'idle';
+  // Find the last assistant message ID to place the avatar above it
+  const lastAssistantMessageId = [...messages]
+    .reverse()
+    .find(m => m.role === 'assistant')?.id;
+
+  // Get voice state for high-tech avatar
+  const getVoiceState = () => {
+    if (showVoiceRecorder) return 'listening' as const;
+    if (isLoading) return 'processing' as const;
+    return 'idle' as const;
   };
 
-  // Get greeting based on time of day
-  const getGreeting = (): string => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
-
-  // Get status message based on state
-  const getStatusMessage = (): string => {
-    const state = getZenaState();
-    switch (state) {
-      case 'listening':
-        return 'Listening...';
-      case 'processing':
-        return 'Thinking...';
-      case 'speaking':
-        return 'Responding...';
-      default:
-        return 'How can I help you today?';
+  // Handle dissolve phase transitions
+  const handleDissolvePhaseComplete = useCallback((completedPhase: DissolvePhase) => {
+    if (completedPhase === 'dissolving') {
+      setDissolvePhase('vortex');
+    } else if (completedPhase === 'reforming') {
+      setDissolvePhase('idle');
     }
-  };
-  
-  // Voice interaction hook
-  const voiceInteraction = useVoiceInteraction({
-    onTranscriptionComplete: (transcript) => {
-      // Auto-fill the input with transcription
-      setInputValue(transcript);
-      setShowVoiceRecorder(false);
-      setAudioLevel(0);
-    },
-    onError: (err) => {
-      setError(err.message);
-      setShowVoiceRecorder(false);
-      setAudioLevel(0);
-    },
-    onAudioLevelChange: (level) => {
-      setAudioLevel(level);
-    },
-  });
+  }, []);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Helper to safely trigger the reforming phase
+  const triggerReform = useCallback(() => {
+    console.log('[AskZena] Triggering Reform phase...');
+    setDissolvePhase(prev => {
+      if (prev === 'speaking' || prev === 'vortex' || prev === 'dissolving') {
+        return 'reforming';
+      }
+      return prev;
+    });
+  }, []);
+
+  // Simulate streaming response word by word
+  const simulateStreamingResponse = useCallback(async (text: string) => {
+    setStreamingContent('');
+    const words = text.split(' ');
+    let currentText = '';
+
+    // Set dissolve phase to speaking when streaming starts
+    console.log('[AskZena] Starting text streaming...');
+    setDissolvePhase('speaking');
+
+    for (let i = 0; i < words.length; i++) {
+      currentText += (i === 0 ? '' : ' ') + words[i];
+      setStreamingContent(currentText);
+      // Faster typing speed for better UX
+      await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 30));
+    }
+
+    console.log('[AskZena] Text streaming finished.');
+    // Delay slightly to hold the speaking state a moment longer
+    setTimeout(() => {
+      triggerReform();
+    }, 1500);
+  }, [triggerReform]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, streamingContent]);
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -102,296 +107,468 @@ export const AskZenaPage: React.FC = () => {
     }
   }, [inputValue]);
 
-  // Load conversation history on mount
+  // Load conversations and check for auto-prompt on mount
   useEffect(() => {
-    loadHistory();
-    
-    // Cleanup WebSocket on unmount
+    loadConversations();
+
+    const prompt = searchParams.get('prompt');
+    const mode = searchParams.get('mode');
+
+    if (mode === 'handsfree') {
+      setIsConversationMode(true);
+      setShowVoiceRecorder(true);
+    }
+
+    if (prompt && !hasAutoSubmitted.current) {
+      hasAutoSubmitted.current = true;
+      // Small delay to ensure everything is mounted
+      setTimeout(() => {
+        submitQuery(prompt);
+        // Clear the params so they don't re-trigger on refresh
+        setSearchParams({}, { replace: true });
+      }, 500);
+    }
+
     return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
+      stopSpeaking();
     };
   }, []);
 
-  const loadHistory = async () => {
-    try {
-      const response = await api.get<{ history: Message[] }>('/api/ask/history');
-      const history = response.data?.history;
-      // Ensure we always set an array, even if the response is malformed
-      setMessages(Array.isArray(history) ? history : []);
-    } catch (err) {
-      console.error('Failed to load conversation history:', err);
-      // Don't show error for history load failure - initialize with empty array
+  // Load messages when active conversation changes
+  useEffect(() => {
+    if (activeConversationId) {
+      loadMessages(activeConversationId);
+    } else {
       setMessages([]);
     }
-  };
+  }, [activeConversationId]);
 
-  const connectWebSocket = () => {
-    // Connect to WebSocket for streaming responses
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
-    
-    const ws = new WebSocket(wsUrl);
-    
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      
-      if (data.type === 'ask.response') {
-        setStreamingContent(prev => prev + data.content);
-      } else if (data.type === 'ask.complete') {
-        // Finalize the streaming message
-        const assistantMessage: Message = {
-          id: data.messageId || Date.now().toString(),
-          role: 'assistant',
-          content: streamingContent,
-          timestamp: new Date(),
-        };
-        setMessages(prev => [...prev, assistantMessage]);
-        setStreamingContent('');
-        setIsLoading(false);
-      }
-    };
-    
-    ws.onerror = () => {
-      console.error('WebSocket error');
-      // Fall back to regular HTTP if WebSocket fails
-      wsRef.current = null;
-    };
-    
-    wsRef.current = ws;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!inputValue.trim() || isLoading) return;
-    
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: inputValue.trim(),
-      timestamp: new Date(),
-    };
-    
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
-    setIsLoading(true);
-    setError(null);
-    
+  const loadConversations = async () => {
     try {
-      // Try WebSocket streaming first
-      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-        connectWebSocket();
-      }
-      
-      // Send query via HTTP
-      const response = await api.post<{ response: string; messageId: string }>('/api/ask', {
-        query: userMessage.content,
-      });
-      
-      // If WebSocket isn't working, use HTTP response
-      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-        const assistantMessage: Message = {
-          id: response.data.messageId || Date.now().toString(),
-          role: 'assistant',
-          content: response.data.response,
-          timestamp: new Date(),
-        };
-        setMessages(prev => [...prev, assistantMessage]);
-        setIsLoading(false);
+      const response = await api.get<{ conversations: Conversation[] }>('/api/history');
+      setConversations(response.data.conversations || []);
+    } catch (err) {
+      console.error('Failed to load conversations:', err);
+    }
+  };
+
+  const loadMessages = async (id: string) => {
+    setIsLoading(true);
+    try {
+      const response = await api.get<{ conversation: { messages: Message[] } }>(`/api/history/${id}`);
+      setMessages(response.data.conversation.messages || []);
+      setIsLoading(false);
+    } catch (err) {
+      console.error('Failed to load messages:', err);
+      setIsLoading(false);
+    }
+  };
+
+  const handleNewChat = () => {
+    setActiveConversationId(undefined);
+    setMessages([]);
+    setInputValue('');
+    setAttachments([]);
+    setError(null);
+    stopSpeaking();
+    setAvatarMode('hero');
+    setDissolvePhase('idle');
+    setStreamingContent('');
+  };
+
+  const handleConversationSelect = (id: string) => {
+    setActiveConversationId(id);
+    setAvatarMode('assistant');
+    setError(null);
+    stopSpeaking();
+  };
+
+  const handleDeleteConversation = async (id: string) => {
+    try {
+      await api.delete(`/api/history/${id}`);
+      setConversations(prev => prev.filter(c => c.id !== id));
+      if (activeConversationId === id) {
+        handleNewChat();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to get response');
-      setIsLoading(false);
-      console.error('Failed to send query:', err);
+      console.error('Failed to delete conversation:', err);
     }
   };
 
-  const handleSuggestedQuestion = (question: string) => {
-    setInputValue(question);
-    textareaRef.current?.focus();
+  const handleAddAttachments = (files: FileList) => {
+    const newAttachments: Attachment[] = [];
+    Array.from(files).forEach(file => {
+      const type = file.type.startsWith('image/') ? 'image' as const : 'file' as const;
+      const att: Attachment = { file, type };
+      if (type === 'image') {
+        att.previewUrl = URL.createObjectURL(file);
+      }
+      newAttachments.push(att);
+    });
+    setAttachments(prev => [...prev, ...newAttachments]);
   };
 
-  const handleVoiceInput = () => {
-    setShowVoiceRecorder(!showVoiceRecorder);
-  };
-  
-  const handleVoiceRecordingComplete = async (audioBlob: Blob) => {
-    // Send voice query to Ask Zena
-    const response = await voiceInteraction.sendVoiceQuery(audioBlob);
-    
-    if (response) {
-      // Add assistant response to messages
-      const assistantMessage: Message = {
-        id: response.messageId || Date.now().toString(),
-        role: 'assistant',
-        content: response.response,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, assistantMessage]);
-      setShowVoiceRecorder(false);
-    }
-  };
-
-  const formatMessageContent = (content: string) => {
-    // Safety check for undefined or null content
-    if (!content || typeof content !== 'string') {
-      return <p>No content available</p>;
-    }
-    
-    // Split content into paragraphs and bullet points
-    const lines = content.split('\n');
-    
-    return lines.map((line, idx) => {
-      const trimmedLine = line.trim();
-      
-      if (!trimmedLine) {
-        return <br key={idx} />;
+  const handleRemoveAttachment = (index: number) => {
+    setAttachments(prev => {
+      const updated = [...prev];
+      if (updated[index].previewUrl) {
+        URL.revokeObjectURL(updated[index].previewUrl!);
       }
-      
-      // Check if it's a bullet point
-      if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*')) {
-        return (
-          <li key={idx} className="ask-zena-page__message-bullet">
-            {trimmedLine.substring(1).trim()}
-          </li>
-        );
-      }
-      
-      // Check if it's a numbered list
-      if (/^\d+\./.test(trimmedLine)) {
-        return (
-          <li key={idx} className="ask-zena-page__message-bullet">
-            {trimmedLine.replace(/^\d+\.\s*/, '')}
-          </li>
-        );
-      }
-      
-      // Regular paragraph
-      return (
-        <p key={idx} className="ask-zena-page__message-paragraph">
-          {trimmedLine}
-        </p>
-      );
+      updated.splice(index, 1);
+      return updated;
     });
   };
 
+  const stopSpeaking = () => {
+    if (audioSourceRef.current) {
+      audioSourceRef.current.stop();
+      audioSourceRef.current = null;
+    }
+    setIsSpeaking(false);
+    setAudioLevel(0);
+  };
+
+  const playTTS = async (text: string) => {
+    try {
+      stopSpeaking();
+      setIsSpeaking(true);
+
+      const audioData = await voiceInteractionService.speak(text);
+
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioContext();
+      }
+
+      const audioBuffer = await audioContextRef.current.decodeAudioData(audioData);
+      const source = audioContextRef.current.createBufferSource();
+      source.buffer = audioBuffer;
+
+      const analyser = audioContextRef.current.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+      analyser.connect(audioContextRef.current.destination);
+
+      source.onended = () => {
+        setIsSpeaking(false);
+        setAudioLevel(0);
+
+        // Safe trigger for reforming phase when speaking ends
+        triggerReform();
+
+        // Auto-trigger listening if in conversation mode
+        if (isConversationMode) {
+          setShowVoiceRecorder(true);
+        }
+      };
+
+      audioSourceRef.current = source;
+      source.start(0);
+
+      // Visualize audio levels
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      const updateLevel = () => {
+        if (!isSpeaking) return;
+        analyser.getByteFrequencyData(dataArray);
+        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+        setAudioLevel(average / 255);
+        requestAnimationFrame(updateLevel);
+      };
+      updateLevel();
+
+    } catch (err) {
+      console.error('Failed to play TTS:', err);
+      setIsSpeaking(false);
+    }
+  };
+
+  const handleVoiceRecordingComplete = async (audioBlob: Blob) => {
+    setIsLoading(true);
+    setShowVoiceRecorder(false);
+    try {
+      const transcript = await voiceInteractionService.transcribe(audioBlob);
+      setInputValue(transcript);
+
+      // Submit the query
+      if (transcript.length > 2) {
+        await submitQuery(transcript);
+      } else {
+        setIsLoading(false);
+        // If it was too short and we're in conversation mode, maybe listen again or just wait
+        if (isConversationMode) {
+          setTimeout(() => setShowVoiceRecorder(true), 1000);
+        }
+      }
+    } catch (err) {
+      console.error('Transcription failed:', err);
+      setIsLoading(false);
+      setError('Failed to transcribe audio.');
+      if (isConversationMode) setIsConversationMode(false);
+    }
+  };
+
+  const submitQuery = async (queryText: string) => {
+    if (!queryText.trim()) return;
+
+    let convId = activeConversationId;
+
+    if (!convId) {
+      try {
+        const title = queryText.trim().substring(0, 30);
+        const res = await api.post<{ conversation: Conversation }>('/api/history', { title });
+        convId = res.data.conversation.id;
+        setActiveConversationId(convId);
+        setConversations(prev => [res.data.conversation, ...prev]);
+      } catch (err) {
+        console.error('Failed to create conversation:', err);
+        return;
+      }
+    }
+
+    const userAttachments = attachments.map(a => ({
+      type: a.type,
+      name: a.file.name,
+      url: a.previewUrl
+    }));
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: queryText.trim(),
+      attachments: userAttachments,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue('');
+    setAttachments([]);
+    setIsLoading(true);
+    setError(null);
+
+    // Start dissolve effect - will enter 'vortex' thinking state
+    setDissolvePhase('dissolving');
+
+    console.log('[AskZena] State updated, starting API call...');
+    try {
+      const attachmentData = await Promise.all(attachments.map(async a => {
+        if (a.type === 'image') {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const base64 = (reader.result as string).split(',')[1];
+              resolve({ type: 'image', base64, mimeType: a.file.type });
+            };
+            reader.readAsDataURL(a.file);
+          });
+        }
+        return { type: 'file', name: a.file.name };
+      }));
+
+      const response = await api.post<{ response: string; messageId: string }>('/api/ask', {
+        query: queryText,
+        conversationId: convId,
+        attachments: attachmentData,
+        conversationHistory: messages.slice(-10).map(m => ({ role: m.role, content: m.content }))
+      });
+
+      const assistantMessage: Message = {
+        id: response.data.messageId || (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: response.data.response,
+        timestamp: new Date(),
+      };
+
+      setIsLoading(false);
+
+      // Transition to Assistant mode ONLY when the response arrives
+      // This ensures we stayed in Hero mode (large avatar) during thinking.
+      console.log('[AskZena] Transitioning to Assistant mode layout...');
+      setAvatarMode('assistant');
+
+      // Ensure we are in speaking phase for the dissolve system
+      console.log('[AskZena] Setting dissolvePhase to speaking...');
+      setDissolvePhase('speaking');
+
+      // Play TTS for assistant response
+      playTTS(response.data.response);
+
+      // Simulate real-time word-by-word streaming in the chat bubble
+      await simulateStreamingResponse(response.data.response);
+
+      // After streaming is done, add the final message to the list
+      setMessages(prev => [...prev, assistantMessage]);
+      setStreamingContent('');
+
+      console.log('[AskZena] Response flow complete.');
+      loadConversations();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to get response');
+      setIsLoading(false);
+      // Reset dissolve phase on error
+      setDissolvePhase('idle');
+    }
+  };
+
+  const handleSubmit = (e?: React.FormEvent | React.KeyboardEvent) => {
+    if (e) e.preventDefault();
+    if (!inputValue.trim() || isLoading) return;
+
+    console.log('[AskZena] Submitting query:', inputValue);
+    submitQuery(inputValue);
+  };
+
   return (
-    <div className="ask-zena-page">
-      <div className="ask-zena-page__container">
-        <div className="ask-zena-page__header">
-          <h1 className="ask-zena-page__title">Ask Zena</h1>
-          <p className="ask-zena-page__description">
-            Ask questions about your deals, contacts, and properties
-          </p>
-        </div>
+    <div className="ask-zena-page" data-theme="high-tech">
+      <AmbientBackground
+        variant="default"
+        showParticles={true}
+        showGradientOrbs={true}
+        showGrid={false}
+      />
+      <ChatSidebar
+        conversations={conversations}
+        activeConversationId={activeConversationId}
+        onConversationSelect={handleConversationSelect}
+        onNewChat={handleNewChat}
+        onDeleteConversation={handleDeleteConversation}
+      />
 
-        {/* Conversation History */}
-        <div className="ask-zena-page__conversation">
-          {Array.isArray(messages) && messages.length === 0 && !streamingContent && (
-            <div className="ask-zena-page__welcome">
-              {/* Full-screen Zena Avatar with waveform visualization */}
-              <ZenaAvatarFullScreen
-                state={getZenaState()}
+      <main className={`ask-zena-main ${avatarMode === 'hero' ? 'hero-mode' : ''}`}>
+        {avatarMode === 'hero' && (
+          <div className="hero-avatar-section">
+            <div className="hero-avatar-container" onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}>
+              <ZenaHighTechAvatar
+                imageSrc="/assets/zena-avatar.jpg"
+                size={280}
+                voiceState={getVoiceState()}
+                dissolvePhase={dissolvePhase}
                 audioLevel={audioLevel}
-                showWaveform={showVoiceRecorder}
-                greeting={getGreeting()}
-                statusMessage={getStatusMessage()}
-                onClick={handleVoiceInput}
-                testId="ask-zena-avatar"
+                particleCount={450}
+                fluidParticleCount={900}
+                onDissolvePhaseComplete={handleDissolvePhaseComplete}
               />
-              
-              <div className="ask-zena-page__suggestions">
-                <p className="ask-zena-page__suggestions-label">Try asking:</p>
-                {SUGGESTED_QUESTIONS.map((suggestion, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSuggestedQuestion(suggestion.text)}
-                    className="ask-zena-page__suggestion-btn"
-                  >
-                    {suggestion.text}
-                  </button>
-                ))}
-              </div>
             </div>
-          )}
+            <div className="hero-greeting">
+              <h2>How can I help you, Agent?</h2>
+              {showVoiceRecorder && <p className="hero-status">Listening...</p>}
+              {isSpeaking && <p className="hero-status">Speaking...</p>}
+            </div>
+          </div>
+        )}
 
-          {Array.isArray(messages) && messages.length > 0 && messages.filter(message => message && message.id && message.role).map((message) => (
-            <div
-              key={message.id}
-              className={`ask-zena-page__message ask-zena-page__message--${message.role}`}
+        {/* Hero mode: Centered input and hands-free button */}
+        {avatarMode === 'hero' && (
+          <div className="hero-controls">
+            <form className="hero-input-form" onSubmit={handleSubmit}>
+              <div className="hero-input-card">
+                <textarea
+                  ref={textareaRef}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSubmit(e);
+                    }
+                  }}
+                  placeholder="Ask Zena anything..."
+                  rows={1}
+                />
+                <button
+                  type="submit"
+                  className="hero-send-btn"
+                  disabled={!inputValue.trim() || isLoading}
+                >
+                  ➤
+                </button>
+              </div>
+            </form>
+
+            <button
+              className={`conversation-mode-toggle ${isConversationMode ? 'active' : ''}`}
+              onClick={() => {
+                setIsConversationMode(!isConversationMode);
+                if (!isConversationMode) setShowVoiceRecorder(true);
+              }}
             >
-              <div className="ask-zena-page__message-avatar">
-                {message.role === 'user' ? '👤' : '🤖'}
-              </div>
-              <div className="ask-zena-page__message-content">
-                <div className="ask-zena-page__message-header">
-                  <span className="ask-zena-page__message-role">
-                    {message.role === 'user' ? 'You' : 'Zena'}
-                  </span>
-                  <span className="ask-zena-page__message-time">
-                    {message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], { 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
-                    }) : 'Now'}
-                  </span>
-                </div>
-                <div className="ask-zena-page__message-text">
-                  {formatMessageContent(message.content || '')}
-                </div>
-              </div>
-            </div>
-          ))}
+              {isConversationMode ? 'Stop Hands-Free' : 'Start Hands-Free Session'}
+            </button>
+          </div>
+        )}
 
-          {/* Streaming response */}
-          {streamingContent && (
-            <div className="ask-zena-page__message ask-zena-page__message--assistant">
-              <div className="ask-zena-page__message-avatar">🤖</div>
-              <div className="ask-zena-page__message-content">
-                <div className="ask-zena-page__message-header">
-                  <span className="ask-zena-page__message-role">Zena</span>
-                </div>
-                <div className="ask-zena-page__message-text">
-                  {formatMessageContent(streamingContent || '')}
-                  <span className="ask-zena-page__typing-indicator">▋</span>
-                </div>
-              </div>
+        <div className="chat-container">
+          {isConversationMode && (
+            <div className="conversation-mode-indicator">
+              <span className="live-dot pulse"></span>
+              Hands-Free Conversation Active
             </div>
           )}
-
-          {/* Loading indicator */}
-          {isLoading && !streamingContent && (
-            <div className="ask-zena-page__message ask-zena-page__message--assistant">
-              <div className="ask-zena-page__message-avatar">🤖</div>
-              <div className="ask-zena-page__message-content">
-                <div className="ask-zena-page__message-header">
-                  <span className="ask-zena-page__message-role">Zena</span>
-                </div>
-                <div className="ask-zena-page__typing">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+          <div className="messages-list">
+            {messages.map((message) => (
+              <React.Fragment key={message.id}>
+                {message.id === lastAssistantMessageId && !isLoading && !streamingContent && (
+                  <div className="avatar-inline-container">
+                    <ZenaHighTechAvatar
+                      imageSrc="/assets/zena-avatar.jpg"
+                      size={100}
+                      voiceState={getVoiceState()}
+                      dissolvePhase={dissolvePhase}
+                      audioLevel={audioLevel}
+                      particleCount={150}
+                      fluidParticleCount={300}
+                      onDissolvePhaseComplete={handleDissolvePhaseComplete}
+                    />
+                  </div>
+                )}
+                <MessageBubble message={message} />
+              </React.Fragment>
+            ))}
+            {isLoading && !streamingContent && (
+              <div className="avatar-inline-container loading">
+                <ZenaHighTechAvatar
+                  imageSrc="/assets/zena-avatar.jpg"
+                  size={100}
+                  voiceState="processing"
+                  dissolvePhase={dissolvePhase === 'idle' ? 'vortex' : dissolvePhase}
+                  audioLevel={0}
+                  particleCount={150}
+                  fluidParticleCount={300}
+                  onDissolvePhaseComplete={handleDissolvePhaseComplete}
+                />
+                <div className="loading-indicator">Zena is thinking...</div>
+              </div>
+            )}
+            {streamingContent && (
+              <div className="avatar-inline-container speaking">
+                <ZenaHighTechAvatar
+                  imageSrc="/assets/zena-avatar.jpg"
+                  size={100}
+                  voiceState="idle"
+                  dissolvePhase="speaking"
+                  audioLevel={audioLevel}
+                  particleCount={150}
+                  fluidParticleCount={300}
+                  onDissolvePhaseComplete={handleDissolvePhaseComplete}
+                />
+                <div className="message-bubble-wrapper assistant">
+                  <div className="message-bubble">
+                    <div className="message-content">
+                      {streamingContent}
+                      <span className="typing-cursor">▋</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+            <div ref={messagesEndRef} />
+          </div>
 
-          {/* Error message */}
-          {error && (
-            <div className="ask-zena-page__error">
-              <span className="ask-zena-page__error-icon">⚠️</span>
-              <span className="ask-zena-page__error-text">{error}</span>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input Area */}
-        <div className="ask-zena-page__input-container">
-          <form onSubmit={handleSubmit} className="ask-zena-page__form">
-            <div className="ask-zena-page__input-wrapper">
+          <form className="input-area" onSubmit={handleSubmit}>
+            <div className="input-card">
+              <AttachmentManager
+                attachments={attachments}
+                onAddAttachments={handleAddAttachments}
+                onRemoveAttachment={handleRemoveAttachment}
+              />
               <textarea
                 ref={textareaRef}
                 value={inputValue}
@@ -402,53 +579,55 @@ export const AskZenaPage: React.FC = () => {
                     handleSubmit(e);
                   }
                 }}
-                placeholder="Ask me anything about your deals, contacts, or properties..."
-                className="ask-zena-page__textarea"
+                placeholder="Ask Zena anything..."
                 rows={1}
-                disabled={isLoading}
               />
-              
-              <div className="ask-zena-page__input-actions">
+              <div className="input-actions">
                 <button
+                  className={`conversation-mode-trigger ${isConversationMode ? 'active' : ''}`}
                   type="button"
-                  onClick={handleVoiceInput}
-                  className={`ask-zena-page__voice-btn ${showVoiceRecorder ? 'ask-zena-page__voice-btn--active' : ''}`}
-                  title="Voice input"
-                  disabled={isLoading}
+                  onClick={() => setIsConversationMode(!isConversationMode)}
+                  title={isConversationMode ? "Stop Hands-Free" : "Start Hands-Free Session"}
                 >
-                  {showVoiceRecorder ? '✕' : '🎤'}
+                  {isConversationMode ? '🔴' : '🔄'}
                 </button>
-                
                 <button
-                  type="submit"
+                  className={`voice-trigger ${showVoiceRecorder ? 'active' : ''}`}
+                  type="button"
+                  onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}
+                >
+                  {showVoiceRecorder ? '✕' : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" />
+                      <path d="M5 10V11C5 14.866 8.13401 18 12 18V18C15.866 18 19 14.866 19 11V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M12 18V22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  )}
+                </button>
+                <button
+                  className="send-trigger"
+                  onClick={handleSubmit}
                   disabled={!inputValue.trim() || isLoading}
-                  className="ask-zena-page__send-btn"
-                  title="Send message"
                 >
                   ➤
                 </button>
               </div>
             </div>
+            {error && <div className="error-toast">{error}</div>}
           </form>
-          
-          <p className="ask-zena-page__hint">
-            Press Enter to send, Shift+Enter for new line
-          </p>
         </div>
-        
-        {/* Voice Recorder */}
+
         {showVoiceRecorder && (
-          <div className="ask-zena-page__voice-recorder-container">
+          <div className="voice-recorder-overlay">
             <VoiceRecorder
               onRecordingComplete={handleVoiceRecordingComplete}
               showTranscription={false}
               showEntities={false}
-              showWaveform={true}
-              disabled={isLoading}
+              className="floating-recorder"
             />
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };

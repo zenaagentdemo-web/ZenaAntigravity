@@ -549,3 +549,84 @@
 .new-page-header__badge.clickable:active {
   transform: translateY(0);
 }
+
+/* ============================================
+ * FOLDER FILTER BADGE
+ * ============================================ */
+
+.new-page-header__folder-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 20px;
+  color: var(--neon-purple, #8B5CF6);
+  font-size: 13px;
+  font-weight: 500;
+  margin-left: 12px;
+  animation: folder-badge-appear 0.3s ease-out;
+}
+
+@keyframes folder-badge-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.new-page-header__folder-badge svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.new-page-header__folder-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.new-page-header__folder-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: currentColor;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.new-page-header__folder-clear:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+.new-page-header__folder-clear svg {
+  width: 10px;
+  height: 10px;
+}
+
+@media (max-width: 480px) {
+  .new-page-header__folder-badge {
+    margin-left: 8px;
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .new-page-header__folder-name {
+    max-width: 80px;
+  }
+}

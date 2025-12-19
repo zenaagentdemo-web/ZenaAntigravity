@@ -28,6 +28,9 @@ router.post('/:id/reply', (req, res) => threadsController.replyToThread(req, res
 // Snooze thread
 router.post('/:id/snooze', (req, res) => threadsController.snoozeThread(req, res));
 
+// Regenerate draft with different tone (AI-powered)
+router.post('/:id/regenerate-draft', (req, res) => threadsController.regenerateDraft(req, res));
+
 // Classify specific thread
 router.post('/:id/classify', (req, res) => threadsController.classifyThread(req, res));
 

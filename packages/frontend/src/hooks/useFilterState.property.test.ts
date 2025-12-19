@@ -174,7 +174,7 @@ describe('useFilterState Property Tests', () => {
             });
 
             // Count should match threads meeting both criteria
-            const expectedCount = threads.filter(t => 
+            const expectedCount = threads.filter(t =>
               t.classification === classificationFilter && t.riskLevel === 'high'
             ).length;
             expect(result.current.filteredThreads.length).toBe(expectedCount);
@@ -248,7 +248,7 @@ describe('useFilterState Property Tests', () => {
             // Skip if search term is empty or only whitespace (implementation trims whitespace)
             const searchTerm = rawSearchTerm.trim();
             if (!searchTerm || searchTerm.length === 0) return true;
-            
+
             act(() => {
               result.current.setSearchQuery(searchTerm);
             });
@@ -261,7 +261,7 @@ describe('useFilterState Property Tests', () => {
             // All filtered threads should contain the search term in subject, participant name, or summary
             result.current.filteredThreads.forEach(thread => {
               const matchesSubject = thread.subject.toLowerCase().includes(searchTerm);
-              const matchesParticipant = thread.participants.some(p => 
+              const matchesParticipant = thread.participants.some(p =>
                 p.name.toLowerCase().includes(searchTerm)
               );
               const matchesSummary = thread.summary.toLowerCase().includes(searchTerm);
@@ -291,12 +291,12 @@ describe('useFilterState Property Tests', () => {
             // Trim and ensure we have a meaningful search term (not just whitespace)
             const participantName = threads[0].participants[0].name.trim();
             if (participantName.length < 2) return true; // Skip if name is too short
-            
+
             const rawSearchTerm = participantName.substring(0, 2).toLowerCase();
             // Skip if search term is empty or only whitespace (implementation trims whitespace)
             const searchTerm = rawSearchTerm.trim();
             if (!searchTerm || searchTerm.length === 0) return true; // Skip empty search terms
-            
+
             act(() => {
               result.current.setSearchQuery(searchTerm);
             });
@@ -309,7 +309,7 @@ describe('useFilterState Property Tests', () => {
             // All filtered threads should contain the search term somewhere
             result.current.filteredThreads.forEach(thread => {
               const matchesSubject = thread.subject.toLowerCase().includes(searchTerm);
-              const matchesParticipant = thread.participants.some(p => 
+              const matchesParticipant = thread.participants.some(p =>
                 p.name.toLowerCase().includes(searchTerm)
               );
               const matchesSummary = thread.summary.toLowerCase().includes(searchTerm);
@@ -436,4 +436,217 @@ describe('useFilterState Property Tests', () => {
       );
     });
   });
+
+  describe('Property 18: Folder Filtering Correctness', () => {
+    /**
+     * Feature: enhanced-new-page, Property 18: Folder Filtering Correctness
+     * 
+     * When a folder is selected, the displayed threads SHALL only include
+     * threads whose folderId matches the selected folder.
+     */
+
+    // Extended thread arbitrary with folderId
+    const threadWithFolderArb: fc.Arbitrary<Thread> = threadArbitrary.chain(thread =>
+      fc.oneof(fc.constant(undefined), fc.uuid()).map(folderId => ({
+        ...thread,
+        folderId
+      }))
+    );
+
+    it('should filter threads by folderId when folder is selected', () => {
+      fc.assert(
+        fc.property(
+          fc.array(threadWithFolderArb, { minLength: 1, maxLength: 20 }),
+          fc.uuid(),
+          (threads, selectedFolderId) => {
+            const { result } = renderHook(() => useFilterState(threads));
+
+            act(() => {
+              result.current.setFolderId(selectedFolderId);
+            });
+
+            // All filtered threads should have matching folderId
+            result.current.filteredThreads.forEach(thread => {
+              expect(thread.folderId).toBe(selectedFolderId);
+            });
+
+            // Count should match threads with that folderId
+            const expectedCount = threads.filter(t => t.folderId === selectedFolderId).length;
+            expect(result.current.filteredThreads.length).toBe(expectedCount);
+          }
+        ),
+        { numRuns: 100 }
+      );
+    });
+
+    it('should show all threads when folderId is null', () => {
+      fc.assert(
+        fc.property(
+          fc.array(threadWithFolderArb, { minLength: 0, maxLength: 20 }),
+          (threads) => {
+            const { result } = renderHook(() => useFilterState(threads));
+
+            // Set a folder first
+            act(() => {
+              result.current.setFolderId('some-folder-id');
+            });
+
+            // Then clear it
+            act(() => {
+              result.current.setFolderId(null);
+            });
+
+            // Should show all threads
+            expect(result.current.filteredThreads.length).toBe(threads.length);
+            expect(result.current.activeFolderId).toBeNull();
+          }
+        ),
+        { numRuns: 100 }
+      );
+    });
+
+    it('should treat "inbox" as null (show all threads)', () => {
+      fc.assert(
+        fc.property(
+          fc.array(threadWithFolderArb, { minLength: 0, maxLength: 20 }),
+          (threads) => {
+            const { result } = renderHook(() => useFilterState(threads));
+
+            // Set inbox folder
+            act(() => {
+              result.current.setFolderId('inbox');
+            });
+
+            // Should show all threads (inbox = show all)
+            expect(result.current.filteredThreads.length).toBe(threads.length);
+            expect(result.current.activeFolderId).toBeNull();
+          }
+        ),
+        { numRuns: 100 }
+      );
+    });
+
+    it('should combine folder filter with classification filters using AND logic', () => {
+      fc.assert(
+        fc.property(
+          fc.array(threadWithFolderArb, { minLength: 1, maxLength: 30 }),
+          fc.uuid(),
+          fc.constantFrom<FilterType>('buyer', 'vendor'),
+          (threads, folderId, classificationFilter) => {
+            const { result } = renderHook(() => useFilterState(threads));
+
+            // Apply both folder and classification filter
+            act(() => {
+              result.current.setFolderId(folderId);
+              result.current.setFilters([classificationFilter]);
+            });
+
+            // All filtered threads must match BOTH criteria
+            result.current.filteredThreads.forEach(thread => {
+              expect(thread.folderId).toBe(folderId);
+              expect(thread.classification).toBe(classificationFilter);
+            });
+
+            // Count should match threads meeting both criteria
+            const expectedCount = threads.filter(t =>
+              t.folderId === folderId && t.classification === classificationFilter
+            ).length;
+            expect(result.current.filteredThreads.length).toBe(expectedCount);
+          }
+        ),
+        { numRuns: 100 }
+      );
+    });
+
+    it('should combine folder filter with search filter', () => {
+      const threadsWithFolder: Thread[] = [
+        {
+          id: '1',
+          subject: 'Important Email',
+          participants: [{ id: 'p1', name: 'John', email: 'john@test.com' }],
+          classification: 'buyer',
+          riskLevel: 'low',
+          lastMessageAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          summary: 'Test summary',
+          messageCount: 1,
+          unreadCount: 0,
+          folderId: 'folder-1'
+        },
+        {
+          id: '2',
+          subject: 'Another Important',
+          participants: [{ id: 'p2', name: 'Jane', email: 'jane@test.com' }],
+          classification: 'vendor',
+          riskLevel: 'medium',
+          lastMessageAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          summary: 'Another summary',
+          messageCount: 2,
+          unreadCount: 1,
+          folderId: 'folder-2'
+        },
+        {
+          id: '3',
+          subject: 'Important Deal',
+          participants: [{ id: 'p3', name: 'Bob', email: 'bob@test.com' }],
+          classification: 'buyer',
+          riskLevel: 'high',
+          lastMessageAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          summary: 'Deal summary',
+          messageCount: 3,
+          unreadCount: 0,
+          folderId: 'folder-1'
+        }
+      ];
+
+      const { result } = renderHook(() => useFilterState(threadsWithFolder));
+
+      // Set folder filter
+      act(() => {
+        result.current.setFolderId('folder-1');
+      });
+
+      // Set search query
+      act(() => {
+        result.current.setSearchQuery('Important');
+      });
+
+      // Advance timers for debounce
+      act(() => {
+        vi.advanceTimersByTime(350);
+      });
+
+      // Should only match threads in folder-1 with "Important" in subject
+      expect(result.current.filteredThreads.length).toBe(2);
+      result.current.filteredThreads.forEach(thread => {
+        expect(thread.folderId).toBe('folder-1');
+        expect(thread.subject.toLowerCase()).toContain('important');
+      });
+    });
+
+    it('should return empty when folder has no threads', () => {
+      fc.assert(
+        fc.property(
+          fc.array(threadWithFolderArb, { minLength: 1, maxLength: 20 }),
+          (threads) => {
+            const { result } = renderHook(() => useFilterState(threads));
+
+            // Use a folder ID that doesn't exist in any thread
+            const nonExistentFolderId = 'non-existent-folder-id-12345';
+
+            act(() => {
+              result.current.setFolderId(nonExistentFolderId);
+            });
+
+            // Should return empty
+            expect(result.current.filteredThreads.length).toBe(0);
+          }
+        ),
+        { numRuns: 100 }
+      );
+    });
+  });
 });
+

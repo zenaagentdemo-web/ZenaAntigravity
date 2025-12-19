@@ -7,7 +7,7 @@
  * Requirements: 1.2, 1.3, 3.1
  */
 
-import React, { useMemo, useEffect, useRef } from 'react';
+import React, { useMemo, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Thread,
@@ -38,7 +38,7 @@ export interface ThreadCardProps {
   /** Callback when card is selected in batch mode */
   onSelect?: (threadId: string) => void;
   /** Callback for thread actions */
-  onAction?: (threadId: string, action: 'view' | 'snooze' | 'send_draft') => void;
+  onAction?: (threadId: string, action: 'view' | 'snooze' | 'send_draft' | 'delete' | 'forward' | 'move_to' | 'archive' | 'mark_read') => void;
   /** Optional className for styling */
   className?: string;
 }
@@ -128,6 +128,9 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
   // Calculate if thread is overdue (>48 hours)
   const isOverdue = useMemo(() => isThreadOverdue(thread.lastMessageAt), [thread.lastMessageAt]);
 
+  // State for delete confirmation modal
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   // Format participants
   const { displayed: displayedParticipants, remaining: remainingParticipants } = useMemo(
     () => formatParticipants(thread?.participants || []),
@@ -145,13 +148,18 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
     }
   }, [isDropdownExpanded]);
 
-  // Handle card click
+  // Handle card click - only for batch mode selection
   const handleCardClick = () => {
     if (isBatchMode && onSelect) {
       onSelect(thread.id);
-    } else if (onAction) {
-      onAction(thread.id, 'view');
     }
+    // Navigation removed - use View Thread button instead
+  };
+
+  // Handle View Thread button click
+  const handleViewThread = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/threads/${thread.id}`);
   };
 
   // Handle dropdown toggle click
@@ -244,15 +252,7 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
             </span>
           )}
 
-          {/* Draft Ready indicator */}
-          {thread.draftResponse && (
-            <span
-              className="thread-card__draft"
-              data-testid="draft-indicator"
-            >
-              Draft Ready
-            </span>
-          )}
+
         </div>
 
         <time
@@ -270,6 +270,7 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
       </h3>
 
       <div className="thread-card__participants" data-testid="participants">
+        <span className="thread-card__participant-label">From: </span>
         {displayedParticipants.filter(Boolean).map((name, index, arr) => (
           <span key={index} className="thread-card__participant">
             {name}
@@ -283,10 +284,20 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
         )}
       </div>
 
-      {/* AI Summary preview */}
-      <p className="thread-card__summary" data-testid="summary">
-        {thread.aiSummary || thread.summary}
-      </p>
+      {/* AI Summary with label */}
+      <div className="thread-card__ai-summary-section">
+        <h4 className="thread-card__ai-summary-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          AI Summary
+        </h4>
+        <p className="thread-card__summary" data-testid="summary">
+          {thread.aiSummary || thread.summary}
+        </p>
+      </div>
 
       {/* Linked entity badges */}
       <div className="thread-card__entities">
@@ -333,7 +344,7 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
         )}
       </div>
 
-      {/* Action row with Quick Reply button and dropdown arrow */}
+      {/* Action row with Quick Reply button, View Thread button, and dropdown arrow */}
       <div className="thread-card__action-row" data-testid="action-row">
         {/* Quick Reply Button - positioned on the left */}
         {showQuickReply && (
@@ -351,8 +362,22 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
           </button>
         )}
 
-        {/* Spacer to push dropdown to the right when no quick reply */}
+        {/* Spacer to push buttons to the right when no quick reply */}
         {!showQuickReply && <div className="thread-card__action-spacer" />}
+
+        {/* View Thread Button */}
+        <button
+          className="thread-card__view-thread"
+          onClick={handleViewThread}
+          aria-label="View full thread"
+          data-testid="view-thread-button"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          View Thread
+        </button>
 
         {/* Dropdown toggle button - positioned on the right */}
         <button
@@ -376,38 +401,67 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
           role="region"
           aria-label="Thread details"
         >
-          {/* AI Summary Section */}
-          <section className="thread-card__dropdown-section">
-            <h4 className="thread-card__dropdown-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                <line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
-              AI Summary
-            </h4>
-            <p className="thread-card__dropdown-summary">
-              {thread.aiSummary || thread.summary}
-            </p>
-          </section>
 
-          {/* Recommended Actions */}
+
+          {/* Quick Actions */}
           <section className="thread-card__dropdown-section">
             <h4 className="thread-card__dropdown-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="9 17 4 12 9 7" />
                 <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
               </svg>
-              Recommended Actions
+              Quick Actions
             </h4>
             <div className="thread-card__dropdown-actions">
+              {/* Forward */}
               <button
-                className="thread-card__action-button thread-card__action-button--primary"
-                onClick={handleQuickReplyClick}
-                data-testid="action-quick-reply"
+                className="thread-card__action-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAction?.(thread.id, 'forward');
+                }}
+                data-testid="action-forward"
               >
-                Quick Reply
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="thread-card__action-icon">
+                  <polyline points="15 17 20 12 15 7" />
+                  <path d="M4 18v-2a4 4 0 0 1 4-4h12" />
+                </svg>
+                Forward
               </button>
+
+              {/* Move to */}
+              <button
+                className="thread-card__action-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAction?.(thread.id, 'move_to');
+                }}
+                data-testid="action-move-to"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="thread-card__action-icon">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                </svg>
+                Move to
+              </button>
+
+              {/* Archive */}
+              <button
+                className="thread-card__action-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAction?.(thread.id, 'archive');
+                }}
+                data-testid="action-archive"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="thread-card__action-icon">
+                  <polyline points="21 8 21 21 3 21 3 8" />
+                  <rect x="1" y="3" width="22" height="5" />
+                  <line x1="10" y1="12" x2="14" y2="12" />
+                </svg>
+                Archive
+              </button>
+
+              {/* Schedule Follow-up */}
               <button
                 className="thread-card__action-button"
                 onClick={(e) => {
@@ -416,17 +470,27 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
                 }}
                 data-testid="action-schedule-followup"
               >
-                Schedule Follow-up
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="thread-card__action-icon">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                Follow-up
               </button>
+
+              {/* Delete */}
               <button
-                className="thread-card__action-button"
+                className="thread-card__action-button thread-card__action-button--danger"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Mark priority action - could be implemented later
+                  setShowDeleteConfirm(true);
                 }}
-                data-testid="action-mark-priority"
+                data-testid="action-delete"
               >
-                Mark Priority
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="thread-card__action-icon">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                Delete
               </button>
             </div>
           </section>
@@ -496,6 +560,45 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
               </div>
             </section>
           )}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div
+          className="thread-card__delete-modal-overlay"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowDeleteConfirm(false);
+          }}
+        >
+          <div
+            className="thread-card__delete-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="thread-card__delete-modal-message">Are you sure?</p>
+            <div className="thread-card__delete-modal-actions">
+              <button
+                className="thread-card__delete-modal-btn thread-card__delete-modal-btn--yes"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDeleteConfirm(false);
+                  onAction?.(thread.id, 'delete');
+                }}
+              >
+                Yes
+              </button>
+              <button
+                className="thread-card__delete-modal-btn thread-card__delete-modal-btn--no"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDeleteConfirm(false);
+                }}
+              >
+                No
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </article>

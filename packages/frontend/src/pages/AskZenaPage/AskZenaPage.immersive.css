@@ -1,304 +1,170 @@
 /* =============================================================================
-   ASK ZENA PAGE - High-Tech Immersive Experience (Enhanced)
+   ASK ZENA REBUILT - Minimalist "Blank Slate" Aesthetics
    ============================================================================= */
 
-.ask-zena-page--immersive {
+.ask-zena-immersive-rebuilt {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: radial-gradient(ellipse at center top, #0a0a1a 0%, #020208 100%);
-    color: #fff;
+    background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
+    color: #f0f6fc;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     overflow: hidden;
+    position: relative;
 }
 
-/* Animated star field background */
-.ask-zena-page--immersive::before {
+/* Subtle background grain/noise for premium feel */
+.ask-zena-immersive-rebuilt::after {
     content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-        radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), transparent),
-        radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.2), transparent),
-        radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.3), transparent),
-        radial-gradient(2px 2px at 130px 80px, rgba(0, 229, 255, 0.2), transparent),
-        radial-gradient(1px 1px at 160px 120px, rgba(255, 0, 255, 0.2), transparent);
-    background-size: 200px 200px;
-    animation: star-twinkle 8s linear infinite;
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.05;
     pointer-events: none;
-    z-index: 0;
-}
-
-@keyframes star-twinkle {
-
-    0%,
-    100% {
-        opacity: 0.5;
-    }
-
-    50% {
-        opacity: 1;
-    }
+    z-index: 1;
 }
 
 /* Header */
-.ask-zena-page__immersive-header {
+.ask-zena-rebuilt-header {
+    padding: 1.5rem;
     position: relative;
     z-index: 10;
-    padding: 1rem 1.5rem;
+}
+
+.ask-zena-rebuilt-back-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #8b949e;
+    font-size: 1.25rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.ask-zena-page__back-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+.ask-zena-rebuilt-back-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
     color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.9rem;
+    transform: translateX(-2px);
 }
 
-.ask-zena-page__back-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: #00e5ff;
-}
-
-/* Avatar Stage */
-.ask-zena-page__avatar-stage {
+/* Main Stage */
+.ask-zena-rebuilt-stage {
     flex: 1;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
     z-index: 5;
+}
+
+/* Footer & Input Area */
+.ask-zena-rebuilt-footer {
     padding: 2rem;
-    min-height: 400px;
-}
-
-/* Status text */
-.ask-zena-page__status {
-    text-align: center;
-    margin-top: 2rem;
-}
-
-.ask-zena-page__greeting {
-    font-size: 2rem;
-    font-weight: 300;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(90deg, #00e5ff, #ff00ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.ask-zena-page__status-text {
-    font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.7);
-    animation: pulse-text 2s ease-in-out infinite;
-}
-
-@keyframes pulse-text {
-
-    0%,
-    100% {
-        opacity: 0.7;
-    }
-
-    50% {
-        opacity: 1;
-    }
-}
-
-/* Audio visualizer bars */
-.ask-zena-page__audio-visualizer {
     display: flex;
-    gap: 3px;
     justify-content: center;
-    align-items: flex-end;
-    height: 40px;
-    margin-top: 1rem;
-}
-
-.ask-zena-page__audio-bar {
-    width: 4px;
-    background: linear-gradient(to top, #00e5ff, #ff00ff);
-    border-radius: 2px;
-    transition: height 0.05s ease;
-}
-
-/* Voice controls */
-.ask-zena-page__voice-controls {
     position: relative;
     z-index: 10;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
 }
 
-.ask-zena-page__listen-btn {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 3px solid #00e5ff;
-    background: rgba(0, 229, 255, 0.1);
-    color: #00e5ff;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.ask-zena-page__listen-btn:hover {
-    background: rgba(0, 229, 255, 0.2);
-    transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
-}
-
-.ask-zena-page__listen-btn--active {
-    background: #00e5ff;
-    color: #000;
-    animation: pulse-button 1s ease-in-out infinite;
-}
-
-@keyframes pulse-button {
-
-    0%,
-    100% {
-        box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
-    }
-
-    50% {
-        box-shadow: 0 0 40px rgba(0, 229, 255, 0.8), 0 0 60px rgba(255, 0, 255, 0.4);
-    }
-}
-
-/* Pulse rings around button */
-.ask-zena-page__listen-btn--active::before,
-.ask-zena-page__listen-btn--active::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
+.ask-zena-rebuilt-input-container {
     width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 2px solid rgba(0, 229, 255, 0.5);
-    transform: translate(-50%, -50%);
-    animation: ripple 1.5s ease-out infinite;
-}
-
-.ask-zena-page__listen-btn--active::after {
-    animation-delay: 0.5s;
-}
-
-@keyframes ripple {
-    0% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-    }
-
-    100% {
-        transform: translate(-50%, -50%) scale(2);
-        opacity: 0;
-    }
-}
-
-.ask-zena-page__listen-hint {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.5);
-}
-
-/* Text input fallback */
-.ask-zena-page__text-input-container {
-    width: 100%;
-    max-width: 500px;
-    margin-top: 1rem;
-}
-
-.ask-zena-page__text-input-wrapper {
-    display: flex;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 2rem;
+    max-width: 680px;
+    background: rgba(22, 27, 34, 0.6);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(48, 54, 61, 0.5);
+    border-radius: 1.5rem;
     padding: 0.5rem;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     transition: all 0.3s ease;
 }
 
-.ask-zena-page__text-input-wrapper:focus-within {
-    border-color: #00e5ff;
-    box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+.ask-zena-rebuilt-input-container:focus-within {
+    border-color: #58a6ff;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(88, 166, 255, 0.15);
 }
 
-.ask-zena-page__text-input {
+.ask-zena-rebuilt-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ask-zena-rebuilt-input {
     flex: 1;
     background: transparent;
     border: none;
-    color: #fff;
+    color: #c9d1d9;
+    font-size: 1.1rem;
     padding: 0.75rem 1rem;
-    font-size: 1rem;
     outline: none;
 }
 
-.ask-zena-page__text-input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+.ask-zena-rebuilt-input::placeholder {
+    color: #484f58;
+    transition: color 0.2s ease;
 }
 
-.ask-zena-page__send-btn-immersive {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: none;
-    background: linear-gradient(135deg, #00e5ff, #ff00ff);
+.ask-zena-rebuilt-input:focus::placeholder {
+    color: #8b949e;
+}
+
+.ask-zena-rebuilt-send-btn {
+    background: #238636;
+    background: linear-gradient(135deg, #2ea043 0%, #238636 100%);
     color: #fff;
-    font-size: 1rem;
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
     transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
-.ask-zena-page__send-btn-immersive:hover {
-    transform: scale(1.1);
+.ask-zena-rebuilt-send-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+    box-shadow: 0 0 15px rgba(46, 160, 67, 0.4);
 }
 
-.ask-zena-page__send-btn-immersive:disabled {
-    opacity: 0.5;
+.ask-zena-rebuilt-send-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.ask-zena-rebuilt-send-btn:disabled {
+    background: rgba(48, 54, 61, 0.8);
+    color: #484f58;
     cursor: not-allowed;
 }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
 
-    .ask-zena-page--immersive::before,
-    .ask-zena-page__status-text,
-    .ask-zena-page__listen-btn--active {
-        animation: none;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-/* Mobile responsive */
-@media (max-width: 768px) {
-    .ask-zena-page__avatar-stage {
-        min-height: 300px;
-        padding: 1rem;
-    }
-
-    .ask-zena-page__greeting {
-        font-size: 1.5rem;
-    }
-
-    .ask-zena-page__listen-btn {
-        width: 70px;
-        height: 70px;
-    }
+.ask-zena-rebuilt-input-container {
+    animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }

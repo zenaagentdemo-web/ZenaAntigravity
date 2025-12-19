@@ -1,114 +1,515 @@
 .ask-zena-page {
-  height: calc(100vh - var(--header-height) - var(--bottom-nav-height));
   display: flex;
-  flex-direction: column;
-  background-color: var(--color-background);
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: linear-gradient(180deg,
+      var(--bg-primary, #0A0A0F) 0%,
+      var(--bg-secondary, #12121A) 50%,
+      var(--bg-tertiary, #1A1A2E) 100%);
+  color: white;
+  position: relative;
 }
 
-.ask-zena-page__container {
+.ask-zena-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  max-width: var(--max-width-container);
+  position: relative;
+  overflow: visible;
+  /* Allow glow effects to extend - use page-level scroll if needed */
+}
+
+.ask-zena-main.hero-mode {
+  align-items: center;
+  justify-content: center;
+}
+
+.ask-zena-main.hero-mode .chat-container {
+  display: none;
+}
+
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 1000px;
+  /* Slightly wider for better tech feel */
+  width: 100%;
   margin: 0 auto;
+  padding: 1rem 2.5rem;
+  /* Better breathing room */
+  overflow: hidden;
+  position: relative;
+}
+
+.messages-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 1rem;
+  padding-top: 4rem;
+  /* Space for the floating avatar */
+  display: flex;
+  flex-direction: column;
+}
+
+.messages-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.loading-indicator {
+  padding: 1rem;
+  color: #00f3ff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+
+  100% {
+    opacity: 0.4;
+  }
+}
+
+.input-area {
+  padding: 1rem 0;
+  padding-bottom: 5rem;
+  /* Proper clearance for bottom navigation bar */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 100;
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  /* Slightly narrower for better proportions */
+  align-self: center;
+}
+
+.input-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4),
+    inset 0 0 30px rgba(255, 255, 255, 0.01);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.input-card:focus-within {
+  border-color: rgba(0, 243, 255, 0.25);
+  box-shadow: 0 0 30px rgba(0, 243, 255, 0.1), 0 20px 50px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.input-card textarea {
+  flex: 1;
+  background: none;
+  border: none;
+  color: white;
+  resize: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  min-height: 24px;
+  max-height: 200px;
+  outline: none;
+}
+
+.input-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.voice-trigger,
+.send-trigger {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.1rem;
+}
+
+.voice-trigger:hover {
+  color: #00f3ff;
+  background: rgba(0, 243, 255, 0.1);
+}
+
+.voice-trigger.active {
+  color: white;
+  background: #ff4d4d;
+  animation: pulse-red 1.5s infinite;
+}
+
+@keyframes pulse-red {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 77, 77, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 77, 0);
+  }
+}
+
+.send-trigger:hover:not(:disabled) {
+  color: #0066ff;
+  background: rgba(0, 102, 255, 0.1);
+}
+
+.send-trigger:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.error-toast {
+  background: rgba(255, 77, 77, 0.1);
+  border: 1px solid rgba(255, 77, 77, 0.2);
+  color: #ff4d4d;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  align-self: center;
+}
+
+.conversation-mode-trigger {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.conversation-mode-trigger:hover {
+  color: #00f3ff;
+  background: rgba(0, 243, 255, 0.1);
+}
+
+.conversation-mode-trigger.active {
+  color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.1);
+  box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
+}
+
+.conversation-mode-indicator {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 77, 77, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 77, 77, 0.3);
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ff4d4d;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  z-index: 500;
+  box-shadow: 0 4px 15px rgba(255, 77, 77, 0.2);
+  pointer-events: none;
+  animation: slideDown 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #ff4d4d;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ff4d4d;
+}
+
+.live-dot.pulse {
+  animation: dotPulse 1.5s infinite;
+}
+
+@keyframes dotPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+/* Inline Avatar Container - High-Tech Avatar with Effects */
+.avatar-inline-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  padding-left: 0.25rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  overflow: visible;
+}
+
+.avatar-inline-container.loading,
+.avatar-inline-container.speaking {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.avatar-inline-container .loading-indicator {
+  padding: 0;
+  margin-top: 0.5rem;
+}
+
+/* Ensure the assistant bubble next to the mini avatar looks good */
+.avatar-inline-container.speaking .message-bubble-wrapper {
+  margin-top: 0.5rem;
   width: 100%;
 }
 
-.ask-zena-page__header {
-  padding: var(--spacing-lg) var(--spacing-md);
-  border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-background);
+@media (max-width: 768px) {
+  .chat-sidebar {
+    position: absolute;
+    transform: translateX(-100%);
+  }
+
+  .ask-zena-page.sidebar-open .chat-sidebar {
+    transform: translateX(0);
+  }
+
+  .chat-container {
+    padding: 1rem;
+  }
 }
 
-.ask-zena-page__title {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--spacing-xs);
-  color: var(--color-text);
+.voice-recorder-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px);
+  z-index: 2000;
 }
 
-.ask-zena-page__description {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+.floating-recorder {
+  background: rgba(20, 20, 25, 0.8) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(0, 243, 255, 0.3) !important;
+  box-shadow: 0 0 50px rgba(0, 243, 255, 0.2) !important;
+  border-radius: 24px !important;
+  padding: 2rem !important;
+  width: 320px !important;
 }
 
-/* Conversation Area */
-.ask-zena-page__conversation {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--spacing-lg) var(--spacing-md);
+/* ============================================
+   Hero Controls - Centered Input & Hands-Free
+   ============================================ */
+
+.hero-controls {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+  padding: 0 2rem;
+  margin-top: 2rem;
+  z-index: 100;
 }
 
-/* Welcome Screen */
-.ask-zena-page__welcome {
+.hero-input-form {
+  width: 100%;
+}
+
+.hero-input-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50px;
+  padding: 0.75rem 1rem 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.hero-input-card:focus-within {
+  border-color: rgba(0, 243, 255, 0.4);
+  box-shadow: 0 0 25px rgba(0, 243, 255, 0.15);
+}
+
+.hero-input-card textarea {
+  flex: 1;
+  background: none;
+  border: none;
+  color: white;
+  resize: none;
+  padding: 0.5rem 0;
+  font-family: inherit;
+  font-size: 1rem;
+  max-height: 100px;
+  outline: none;
+}
+
+.hero-input-card textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.hero-send-btn {
+  background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(139, 92, 246, 0.2));
+  border: 1px solid rgba(0, 243, 255, 0.3);
+  color: #00f3ff;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.hero-send-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(0, 243, 255, 0.35), rgba(139, 92, 246, 0.35));
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.hero-send-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.hero-controls .conversation-mode-toggle {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0.75rem 2rem;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hero-controls .conversation-mode-toggle:hover {
+  border-color: rgba(0, 243, 255, 0.4);
+  color: #00f3ff;
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+}
+
+.hero-controls .conversation-mode-toggle.active {
+  background: rgba(255, 77, 77, 0.15);
+  border-color: rgba(255, 77, 77, 0.4);
+  color: #ff4d4d;
+}
+
+/* =============================================================================
+   HERO AVATAR SECTION - High-Tech Avatar with Special Effects
+   ============================================================================= */
+
+.hero-avatar-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: var(--spacing-2xl) var(--spacing-md);
-  max-width: 600px;
-  margin: 0 auto;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.ask-zena-page__welcome-icon {
-  font-size: 64px;
-  margin-bottom: var(--spacing-lg);
-}
-
-.ask-zena-page__welcome-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--spacing-sm);
-  color: var(--color-text);
-}
-
-.ask-zena-page__welcome-text {
-  font-size: var(--font-size-base);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-xl);
-}
-
-.ask-zena-page__suggestions {
-  width: 100%;
+.hero-avatar-container {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.ask-zena-page__suggestions-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-xs);
-  text-align: left;
-}
-
-.ask-zena-page__suggestion-btn {
-  padding: var(--spacing-md);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  color: var(--color-text);
-  text-align: left;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  /* Fixed height to prevent layout shift during dissolve effects */
+  height: 320px;
+  min-height: 320px;
 }
 
-.ask-zena-page__suggestion-btn:hover {
-  background-color: var(--color-primary-light);
-  border-color: var(--color-primary);
+.hero-greeting {
+  text-align: center;
+  animation: fadeIn 0.6s ease-out;
 }
 
-/* Messages */
-.ask-zena-page__message {
-  display: flex;
-  gap: var(--spacing-md);
-  animation: fadeIn 0.3s ease-in;
+.hero-greeting h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.hero-status {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(0, 243, 255, 0.8);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  animation: pulse 1.5s infinite;
 }
 
 @keyframes fadeIn {
@@ -116,306 +517,9 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.ask-zena-page__message--user {
-  flex-direction: row-reverse;
-}
-
-.ask-zena-page__message-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-surface);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.ask-zena-page__message-content {
-  flex: 1;
-  max-width: 70%;
-}
-
-.ask-zena-page__message--user .ask-zena-page__message-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.ask-zena-page__message-header {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xs);
-}
-
-.ask-zena-page__message--user .ask-zena-page__message-header {
-  flex-direction: row-reverse;
-}
-
-.ask-zena-page__message-role {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text);
-}
-
-.ask-zena-page__message-time {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-}
-
-.ask-zena-page__message-text {
-  padding: var(--spacing-md);
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-relaxed);
-}
-
-.ask-zena-page__message--user .ask-zena-page__message-text {
-  background-color: var(--color-primary);
-  color: white;
-  border-bottom-right-radius: var(--radius-sm);
-}
-
-.ask-zena-page__message--assistant .ask-zena-page__message-text {
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  border-bottom-left-radius: var(--radius-sm);
-}
-
-.ask-zena-page__message-paragraph {
-  margin: 0 0 var(--spacing-sm) 0;
-}
-
-.ask-zena-page__message-paragraph:last-child {
-  margin-bottom: 0;
-}
-
-.ask-zena-page__message-bullet {
-  margin-left: var(--spacing-md);
-  margin-bottom: var(--spacing-xs);
-}
-
-.ask-zena-page__typing-indicator {
-  animation: blink 1s infinite;
-  margin-left: 2px;
-}
-
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
-/* Typing Animation */
-.ask-zena-page__typing {
-  display: flex;
-  gap: 4px;
-  padding: var(--spacing-md);
-}
-
-.ask-zena-page__typing span {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-text-muted);
-  animation: typing 1.4s infinite;
-}
-
-.ask-zena-page__typing span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.ask-zena-page__typing span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typing {
-  0%, 60%, 100% {
-    transform: translateY(0);
-    opacity: 0.5;
-  }
-  30% {
-    transform: translateY(-10px);
-    opacity: 1;
-  }
-}
-
-/* Error Message */
-.ask-zena-page__error {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
-  background-color: var(--color-error-50);
-  border: 1px solid var(--color-error-500);
-  border-radius: var(--radius-md);
-  color: var(--color-error);
-  font-size: var(--font-size-sm);
-}
-
-.ask-zena-page__error-icon {
-  font-size: 20px;
-}
-
-/* Input Area */
-.ask-zena-page__input-container {
-  border-top: 1px solid var(--color-border);
-  background-color: var(--color-background);
-  padding: var(--spacing-md);
-}
-
-.ask-zena-page__form {
-  max-width: var(--max-width-container);
-  margin: 0 auto;
-}
-
-.ask-zena-page__input-wrapper {
-  display: flex;
-  gap: var(--spacing-sm);
-  align-items: flex-end;
-  background-color: var(--color-surface);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-sm);
-  transition: border-color var(--transition-fast);
-}
-
-.ask-zena-page__input-wrapper:focus-within {
-  border-color: var(--color-primary);
-}
-
-.ask-zena-page__textarea {
-  flex: 1;
-  border: none;
-  background: transparent;
-  font-family: var(--font-family-base);
-  font-size: var(--font-size-base);
-  color: var(--color-text);
-  resize: none;
-  max-height: 150px;
-  padding: var(--spacing-sm);
-  line-height: var(--line-height-normal);
-}
-
-.ask-zena-page__textarea:focus {
-  outline: none;
-}
-
-.ask-zena-page__textarea::placeholder {
-  color: var(--color-text-muted);
-}
-
-.ask-zena-page__input-actions {
-  display: flex;
-  gap: var(--spacing-xs);
-  align-items: center;
-}
-
-.ask-zena-page__voice-btn,
-.ask-zena-page__send-btn {
-  width: var(--touch-target-min);
-  height: var(--touch-target-min);
-  border: none;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-}
-
-.ask-zena-page__voice-btn {
-  background-color: var(--color-surface);
-  color: var(--color-text);
-}
-
-.ask-zena-page__voice-btn:hover:not(:disabled) {
-  background-color: var(--color-border);
-}
-
-.ask-zena-page__voice-btn--recording {
-  background-color: var(--color-error);
-  color: white;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.9;
-  }
-}
-
-.ask-zena-page__send-btn {
-  background-color: var(--color-primary);
-  color: white;
-}
-
-.ask-zena-page__send-btn:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
-}
-
-.ask-zena-page__send-btn:disabled,
-.ask-zena-page__voice-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.ask-zena-page__hint {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  text-align: center;
-  margin-top: var(--spacing-sm);
-}
-
-/* Mobile Responsive */
-@media (max-width: 768px) {
-  .ask-zena-page__message-content {
-    max-width: 85%;
-  }
-  
-  .ask-zena-page__welcome {
-    padding: var(--spacing-xl) var(--spacing-md);
-  }
-  
-  .ask-zena-page__conversation {
-    padding: var(--spacing-md);
-  }
-}
-
-/* Voice Recorder Container */
-.ask-zena-page__voice-recorder-container {
-  border-top: 1px solid var(--color-border);
-  background-color: var(--color-surface);
-  padding: var(--spacing-lg);
-  animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.ask-zena-page__voice-btn--active {
-  background-color: var(--color-primary);
-  color: white;
 }

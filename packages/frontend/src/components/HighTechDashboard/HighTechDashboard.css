@@ -286,67 +286,115 @@
 }
 
 /* ============================================
-   AI Greeting/Status Message
+   Quick Intelligence Actions
    ============================================ */
 
-.high-tech-dashboard__greeting {
-  text-align: center;
-  max-width: 300px;
+.high-tech-dashboard__quick-intel {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: var(--spacing-4, 16px);
+  width: 100%;
+  margin-top: var(--spacing-2, 8px);
+  flex-wrap: wrap;
+  z-index: 100;
 }
 
-.greeting-text {
-  font-size: var(--font-size-xl, 20px);
-  font-weight: 400;
-  color: var(--text-secondary-ht);
-  margin: 0 0 var(--spacing-2, 8px) 0;
-}
-
-.greeting-name {
-  color: var(--neon-cyan);
-  font-weight: 600;
-  text-shadow: 0 0 10px var(--neon-cyan-dim);
-}
-
-.status-text {
-  font-size: var(--font-size-sm, 14px);
-  color: var(--text-tertiary-ht);
-  margin: 0;
-  line-height: 1.5;
-}
-
-/* ============================================
-   Weather Widget Section - Ultra-Compact HUD
-   ============================================ */
-
-.high-tech-dashboard__weather {
-  padding: 0;
-  position: relative;
-  overflow: visible;
-  z-index: 50;
-}
-
-/* Single-line HUD bar */
-.high-tech-dashboard__weather .weather-time-widget {
+.intel-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2, 8px);
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border: var(--border-glow);
-  border-radius: 6px;
-  padding: 4px 10px !important;
-  box-shadow: 0 0 12px rgba(0, 212, 255, 0.05);
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 0 !important;
-  min-height: auto !important;
-  max-height: 36px;
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  border-radius: 16px;
+  padding: var(--spacing-4, 16px);
+  min-width: 150px;
+  color: var(--text-primary-ht);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: visible !important;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.high-tech-dashboard__weather .weather-time-widget:hover {
-  transform: none;
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.08);
+.intel-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.5), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.intel-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(0, 243, 255, 0.5);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 243, 255, 0.15);
+}
+
+.intel-btn:hover::before {
+  transform: translateX(100%);
+}
+
+.intel-btn__icon {
+  font-size: 1.8rem;
+  transition: transform 0.3s ease;
+}
+
+.intel-btn:hover .intel-btn__icon {
+  transform: scale(1.15);
+}
+
+.intel-btn__label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary-ht);
+  transition: color 0.3s ease;
+}
+
+.intel-btn:hover .intel-btn__label {
+  color: var(--neon-cyan);
+}
+
+/* Neon accents for each button */
+.intel-btn--emails:hover {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+.intel-btn--brief:hover {
+  border-color: var(--neon-magenta);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+}
+
+.intel-btn--tasks:hover {
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 20px rgba(128, 0, 255, 0.2);
+}
+
+@media (max-width: 600px) {
+  .high-tech-dashboard__quick-intel {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-3, 12px);
+  }
+
+  .intel-btn {
+    width: 100%;
+    max-width: 320px;
+    flex-direction: row;
+    justify-content: center;
+    min-width: unset;
+  }
 }
 
 .high-tech-dashboard__weather .weather-time-widget__time-section {

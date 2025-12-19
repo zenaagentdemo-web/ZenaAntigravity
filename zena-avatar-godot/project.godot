@@ -1,0 +1,35 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Zena Avatar"
+config/description="2D Puppet Avatar System for Zena AI Assistant"
+run/main_scene="res://scenes/sprite_avatar_scene.tscn"
+config/features=PackedStringArray("4.5", "GL Compatibility")
+
+[audio]
+
+driver/output_latency.web=100
+
+[autoload]
+
+AvatarBridge="*res://scripts/js_bridge.gd"
+
+[display]
+
+window/size/viewport_width=800
+window/size/viewport_height=600
+window/stretch/mode="canvas_items"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

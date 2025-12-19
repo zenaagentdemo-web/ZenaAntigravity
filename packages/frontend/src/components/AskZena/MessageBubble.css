@@ -1,0 +1,107 @@
+.message-bubble-wrapper {
+    display: flex;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.message-bubble-wrapper.user {
+    justify-content: flex-end;
+}
+
+.message-bubble-wrapper.assistant {
+    justify-content: flex-start;
+}
+
+.message-bubble {
+    max-width: 85%;
+    padding: 1.1rem 1.4rem;
+    border-radius: 24px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.user .message-bubble {
+    background: linear-gradient(135deg, #00f3ff 0%, #0066ff 100%);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.assistant .message-bubble {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f5f5f5;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 0 15px rgba(255, 255, 255, 0.02);
+}
+
+/* Assistant glow effect in high-tech mode */
+[data-theme='high-tech'] .assistant .message-bubble {
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.05);
+    border-color: rgba(0, 243, 255, 0.2);
+}
+
+.message-content p {
+    margin: 0 0 0.8rem 0;
+}
+
+.message-content p:last-child {
+    margin-bottom: 0;
+}
+
+.message-content ul,
+.message-content ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.message-content code {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+}
+
+.message-content pre {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.message-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.attachment-preview img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.file-icon {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+}
+
+[data-theme='day'] .assistant .message-bubble {
+    background: #f0f2f5;
+    color: #333;
+    border: none;
+}
+
+[data-theme='day'] .message-content code {
+    background: #e1e4e8;
+    color: #c7254e;
+}

@@ -1,0 +1,310 @@
+/**
+ * SnoozePicker Component Styles
+ * 
+ * Glassmorphism modal for snooze time selection.
+ * Mobile-first with responsive adjustments.
+ */
+
+/* ============================================
+ * BACKDROP
+ * ============================================ */
+
+.snooze-picker__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: fadeIn 200ms ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+ * MODAL
+ * ============================================ */
+
+.snooze-picker__modal {
+    width: 100%;
+    max-width: 380px;
+    max-height: 80vh;
+    overflow-y: auto;
+
+    /* Glassmorphism */
+    background: rgba(20, 20, 30, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    /* Border */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+
+    /* Shadow */
+    box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+
+    animation: slideUp 300ms ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+ * HEADER
+ * ============================================ */
+
+.snooze-picker__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.snooze-picker__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.snooze-picker__title svg {
+    width: 22px;
+    height: 22px;
+    color: var(--neon-cyan, #00D4FF);
+}
+
+.snooze-picker__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.snooze-picker__close:hover {
+    background: rgba(255, 68, 68, 0.1);
+    border-color: rgba(255, 68, 68, 0.3);
+    color: #FF4444;
+}
+
+/* ============================================
+ * OPTIONS LIST
+ * ============================================ */
+
+.snooze-picker__options {
+    padding: 8px;
+}
+
+.snooze-picker__option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: #FFFFFF;
+    text-align: left;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.snooze-picker__option:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.snooze-picker__option-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.snooze-picker__option-label {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.snooze-picker__option-time {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================
+ * CUSTOM BUTTON
+ * ============================================ */
+
+.snooze-picker__custom-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100% - 16px);
+    margin: 8px;
+    padding: 14px;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 10px;
+    color: var(--neon-cyan, #00D4FF);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.snooze-picker__custom-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.snooze-picker__custom-btn:hover {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: rgba(0, 212, 255, 0.5);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+/* ============================================
+ * CUSTOM DATE/TIME PICKER
+ * ============================================ */
+
+.snooze-picker__custom {
+    padding: 16px;
+}
+
+.snooze-picker__back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 200ms ease;
+}
+
+.snooze-picker__back:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.snooze-picker__custom-inputs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.snooze-picker__input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.snooze-picker__input-group label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.snooze-picker__input-group input {
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-size: 14px;
+    transition: all 200ms ease;
+}
+
+.snooze-picker__input-group input:focus {
+    outline: none;
+    border-color: rgba(0, 212, 255, 0.5);
+    box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.15);
+}
+
+/* Fix for date/time picker icons in dark mode */
+.snooze-picker__input-group input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+.snooze-picker__confirm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--neon-cyan, #00D4FF) 0%, var(--neon-purple, #8B5CF6) 100%);
+    border: none;
+    border-radius: 10px;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.snooze-picker__confirm svg {
+    width: 18px;
+    height: 18px;
+}
+
+.snooze-picker__confirm:hover:not(:disabled) {
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.snooze-picker__confirm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ============================================
+ * REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .snooze-picker__backdrop,
+    .snooze-picker__modal {
+        animation: none;
+    }
+}

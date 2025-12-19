@@ -1,0 +1,463 @@
+/* =============================================================================
+   PARTICLE AVATAR - High-Tech Cinematic WebGL System
+   Premium effects with GPU-accelerated particles
+   ============================================================================= */
+
+.particle-avatar {
+    position: relative;
+    border-radius: 50%;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+}
+
+/* -----------------------------------------------------------------------------
+   Static Image Layer (Idle)
+   ----------------------------------------------------------------------------- */
+.particle-avatar__image-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 5;
+}
+
+.particle-avatar__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    mask-image: radial-gradient(circle, black 65%, transparent 100%);
+}
+
+/* Idle: Image visible with premium glow and living sway */
+.particle-avatar--idle .particle-avatar__image-wrapper {
+    opacity: 1;
+    transform: scale(1);
+    animation: particle-living-avatar 8s ease-in-out infinite;
+}
+
+/* Non-idle: Image fades out smoothly */
+.particle-avatar:not(.particle-avatar--idle) .particle-avatar__image-wrapper {
+    opacity: 0;
+    transform: scale(0.92);
+}
+
+/* Living avatar animation - subtle breathing effect */
+@keyframes particle-living-avatar {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        filter: brightness(1) drop-shadow(0 0 20px rgba(0, 229, 255, 0.4));
+    }
+
+    12% {
+        transform: translate(2px, -3px) rotate(0.3deg) scale(1.005);
+    }
+
+    25% {
+        transform: translate(4px, -5px) rotate(0.5deg) scale(1.01);
+        filter: brightness(1.05) drop-shadow(0 0 25px rgba(0, 229, 255, 0.5));
+    }
+
+    37% {
+        transform: translate(2px, -2px) rotate(0.3deg) scale(1.008);
+    }
+
+    50% {
+        transform: translate(-3px, 4px) rotate(-0.5deg) scale(0.995);
+        filter: brightness(1.1) drop-shadow(0 0 30px rgba(0, 229, 255, 0.6));
+    }
+
+    62% {
+        transform: translate(-4px, 2px) rotate(-0.3deg) scale(0.99);
+    }
+
+    75% {
+        transform: translate(5px, 2px) rotate(0.2deg) scale(1.005);
+        filter: brightness(1.02) drop-shadow(0 0 22px rgba(255, 0, 255, 0.4));
+    }
+
+    87% {
+        transform: translate(2px, 1px) rotate(0.1deg) scale(1.002);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Cinematic Visual Effects
+   ----------------------------------------------------------------------------- */
+
+/* Matter Flash - Energy burst on explosion */
+.particle-avatar__flash-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(0, 229, 255, 0.8) 25%,
+            rgba(255, 0, 255, 0.5) 50%,
+            transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 20;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+}
+
+.particle-avatar--flashing .particle-avatar__flash-overlay {
+    animation: particle-matter-flash 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes particle-matter-flash {
+    0% {
+        opacity: 0;
+        transform: scale(0.6);
+        filter: blur(0px);
+    }
+
+    20% {
+        opacity: 1;
+        transform: scale(1.1);
+        filter: blur(0px);
+    }
+
+    60% {
+        opacity: 0.8;
+        transform: scale(1.4);
+        filter: blur(2px);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.8);
+        filter: blur(8px);
+    }
+}
+
+/* Energy Ripple - Pulsing rings during active states */
+.particle-avatar__energy-ripple {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+}
+
+.particle-avatar--explode .particle-avatar__energy-ripple,
+.particle-avatar--swirl .particle-avatar__energy-ripple {
+    opacity: 1;
+    background: transparent;
+    box-shadow:
+        0 0 0 2px rgba(0, 229, 255, 0.3),
+        0 0 0 8px rgba(0, 229, 255, 0.15),
+        0 0 0 16px rgba(255, 0, 255, 0.08);
+    animation: energy-ripple-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes energy-ripple-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+}
+
+/* Shimmer & Scanlines - DISABLED (was causing visual issues) */
+.particle-avatar__shimmer {
+    display: none;
+    /* Disabled - was causing unwanted visual lines */
+}
+
+.particle-avatar--idle .particle-avatar__shimmer {
+    animation: particle-scanline 5s linear infinite;
+}
+
+.particle-avatar--swirl .particle-avatar__shimmer {
+    animation: particle-scanline 2s linear infinite;
+    opacity: 0.6;
+}
+
+@keyframes particle-scanline {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 120px;
+    }
+}
+
+/* Ambient Glow - Outer halo effect */
+.particle-avatar__ambient-glow {
+    position: absolute;
+    width: 140%;
+    height: 140%;
+    background: radial-gradient(circle,
+            rgba(0, 229, 255, 0.12) 0%,
+            rgba(139, 92, 246, 0.06) 40%,
+            transparent 70%);
+    animation: particle-pulse-glow 5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.particle-avatar--swirl .particle-avatar__ambient-glow {
+    animation: particle-active-glow 2s ease-in-out infinite;
+}
+
+@keyframes particle-pulse-glow {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.4;
+    }
+
+    50% {
+        transform: scale(1.08);
+        opacity: 0.7;
+    }
+}
+
+@keyframes particle-active-glow {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.6;
+        filter: hue-rotate(0deg);
+    }
+
+    33% {
+        transform: scale(1.1);
+        opacity: 0.9;
+        filter: hue-rotate(20deg);
+    }
+
+    66% {
+        transform: scale(1.05);
+        opacity: 0.75;
+        filter: hue-rotate(-20deg);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   WebGL Canvas Styling
+   ----------------------------------------------------------------------------- */
+/* HIDE WebGL canvas in idle state to prevent visual artifacts (vertical bars) */
+.particle-avatar--idle canvas {
+    display: none !important;
+}
+
+/* Style WebGL canvas when active */
+.particle-avatar--webgl-active canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Hide image when particles are exploding/swirling */
+.particle-avatar--explode .particle-avatar__image-wrapper,
+.particle-avatar--swirl .particle-avatar__image-wrapper,
+.particle-avatar--reform .particle-avatar__image-wrapper {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+/* Image completely hidden when dissolved (particles ARE the image now) */
+.particle-avatar--dissolved .particle-avatar__image-wrapper {
+    opacity: 0 !important;
+    transform: scale(0.85) !important;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* Show image peeking through during reform */
+.particle-avatar--reform:not(.particle-avatar--dissolved) .particle-avatar__image-wrapper {
+    opacity: 0.3;
+    transform: scale(0.95);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+/* -----------------------------------------------------------------------------
+   Hologram Grid Overlay - DISABLED (was causing visual issues)
+   ----------------------------------------------------------------------------- */
+.particle-avatar__hologram-grid {
+    display: none;
+    /* Removed - was causing ugly vertical lines */
+}
+
+/* Keep these rules but they won't apply since element is hidden */
+.particle-avatar--swirl .particle-avatar__hologram-grid,
+.particle-avatar--explode .particle-avatar__hologram-grid {
+    display: none;
+}
+
+@keyframes hologram-grid-flicker {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Enhanced hologram glow during active states */
+.particle-avatar--hologram-active.particle-avatar--swirl .particle-avatar__ambient-glow {
+    background: radial-gradient(circle,
+            rgba(0, 229, 255, 0.25) 0%,
+            rgba(255, 0, 255, 0.15) 50%,
+            transparent 70%);
+    animation: hologram-glow-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes hologram-glow-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+        filter: hue-rotate(0deg);
+    }
+
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+        filter: hue-rotate(30deg);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   HOLOGRAPHIC GLITCH EFFECTS
+   ----------------------------------------------------------------------------- */
+
+/* Glitch state - RGB split + flicker */
+.particle-avatar--glitching .particle-avatar__image-wrapper {
+    animation: particle-glitch-rgb 0.2s steps(2) infinite !important;
+}
+
+.particle-avatar--glitching .particle-avatar__image {
+    filter:
+        brightness(1.2) drop-shadow(3px 0 0 rgba(255, 0, 0, 0.5)) drop-shadow(-3px 0 0 rgba(0, 255, 255, 0.5)) !important;
+}
+
+@keyframes particle-glitch-rgb {
+    0% {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+
+    20% {
+        transform: translate(-2px, 1px);
+        opacity: 0.9;
+    }
+
+    40% {
+        transform: translate(2px, -1px);
+        opacity: 0.7;
+    }
+
+    60% {
+        transform: translate(-1px, 2px);
+        opacity: 0.85;
+    }
+
+    80% {
+        transform: translate(1px, -2px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+}
+
+/* Glitch slice - horizontal displacement bar */
+.particle-avatar__glitch-slice {
+    position: absolute;
+    width: 100%;
+    height: 12px;
+    top: 45%;
+    left: 0;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(0, 255, 255, 0.4) 20%,
+            rgba(255, 0, 255, 0.4) 80%,
+            transparent 100%);
+    transform: translateX(6px) skewX(-3deg);
+    animation: particle-glitch-slice 0.15s steps(1) infinite;
+    z-index: 20;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    display: none;
+}
+
+.particle-avatar--glitching .particle-avatar__glitch-slice {
+    display: block;
+}
+
+@keyframes particle-glitch-slice {
+    0% {
+        transform: translateX(6px) skewX(-3deg);
+        top: 45%;
+    }
+
+    25% {
+        transform: translateX(-4px) skewX(2deg);
+        top: 30%;
+    }
+
+    50% {
+        transform: translateX(3px) skewX(-1deg);
+        top: 60%;
+    }
+
+    75% {
+        transform: translateX(-5px) skewX(3deg);
+        top: 40%;
+    }
+
+    100% {
+        transform: translateX(6px) skewX(-3deg);
+        top: 45%;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Accessibility: Reduced Motion
+   ----------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+
+    .particle-avatar--idle .particle-avatar__image-wrapper,
+    .particle-avatar__ambient-glow,
+    .particle-avatar__shimmer,
+    .particle-avatar__energy-ripple,
+    .particle-avatar__hologram-grid,
+    .particle-avatar--flashing .particle-avatar__flash-overlay {
+        animation: none !important;
+    }
+
+    .particle-avatar--idle .particle-avatar__image-wrapper {
+        filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.4));
+    }
+}

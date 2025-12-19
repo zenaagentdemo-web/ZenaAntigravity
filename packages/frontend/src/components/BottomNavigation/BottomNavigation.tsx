@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { preloadRoute } from '../../hooks/useRoutePreloader';
 import './BottomNavigation.css';
 
 interface RippleState {
@@ -47,11 +48,11 @@ export const BottomNavigation: React.FC = () => {
     }, 600);
   }, []);
 
-  // Navigation items with central Zena orb
+  // Navigation items with central Deal Flow button
   const navItems = [
     { path: '/', label: 'Home', icon: 'home', isCenter: false },
     { path: '/new', label: 'New', icon: 'mail', isCenter: false },
-    { path: '/avatar-demo', label: 'Zena', icon: 'zena', isCenter: true },
+    { path: '/deal-flow', label: 'Deal Flow', icon: 'dealflow', isCenter: true },
     { path: '/waiting', label: 'Awaiting', icon: 'waiting', isCenter: false },
     { path: '/contacts', label: 'Contacts', icon: 'contacts', isCenter: false },
   ];
@@ -81,8 +82,8 @@ export const BottomNavigation: React.FC = () => {
             <polyline points="12 6 12 12 16 14" />
           </svg>
         );
-      case 'zena':
-        return null; // Zena orb has special rendering
+      case 'dealflow':
+        return null; // Deal Flow has special rendering
       case 'contacts':
         return (
           <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -120,21 +121,45 @@ export const BottomNavigation: React.FC = () => {
           const active = isActive(item.path);
 
           if (item.isCenter) {
-            // Central Zena Orb Button
+            // Central Deal Flow Button - High-tech handshake
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`bottom-nav-ht__zena-orb ${active ? 'bottom-nav-ht__zena-orb--active' : ''}`}
+                className={`bottom-nav-ht__dealflow-orb ${active ? 'bottom-nav-ht__dealflow-orb--active' : ''}`}
                 aria-current={active ? 'page' : undefined}
-                aria-label="Go to Zena Immersive"
+                aria-label="Go to Deal Flow"
+                onMouseEnter={() => preloadRoute(item.path)}
+                onFocus={() => preloadRoute(item.path)}
                 onMouseDown={(e) => handleRipple(e, item.path)}
                 onTouchStart={(e) => handleRipple(e, item.path)}
               >
-                <div className="bottom-nav-ht__zena-orb-inner">
-                  <div className="bottom-nav-ht__zena-orb-gradient" />
-                  <span className="bottom-nav-ht__zena-orb-text">Z</span>
+                {/* Outer pulse rings */}
+                <div className="bottom-nav-ht__dealflow-ring bottom-nav-ht__dealflow-ring--1" />
+                <div className="bottom-nav-ht__dealflow-ring bottom-nav-ht__dealflow-ring--2" />
+                <div className="bottom-nav-ht__dealflow-ring bottom-nav-ht__dealflow-ring--3" />
+
+                <div className="bottom-nav-ht__dealflow-orb-inner">
+                  <div className="bottom-nav-ht__dealflow-orb-gradient" />
+                  <div className="bottom-nav-ht__dealflow-scanner" />
+                  {/* Handshake Icon - Lucide (stroke-based, matches other icons) */}
+                  <svg
+                    className="bottom-nav-ht__dealflow-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m11 17 2 2a1 1 0 1 0 3-3" />
+                    <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4" />
+                    <path d="m21 3 1 11h-2" />
+                    <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3" />
+                    <path d="M3 4h8" />
+                  </svg>
                 </div>
+                <span className="bottom-nav-ht__dealflow-label">Deal Flow</span>
                 {/* Ripples */}
                 {(ripples[item.path] || []).map(ripple => (
                   <span
@@ -153,6 +178,8 @@ export const BottomNavigation: React.FC = () => {
               to={item.path}
               className={`bottom-nav-ht__item ${active ? 'bottom-nav-ht__item--active' : ''}`}
               aria-current={active ? 'page' : undefined}
+              onMouseEnter={() => preloadRoute(item.path)}
+              onFocus={() => preloadRoute(item.path)}
               onMouseDown={(e) => handleRipple(e, item.path)}
               onTouchStart={(e) => handleRipple(e, item.path)}
             >

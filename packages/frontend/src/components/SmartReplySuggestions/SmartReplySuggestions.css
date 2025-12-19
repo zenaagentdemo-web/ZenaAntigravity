@@ -1,0 +1,89 @@
+/**
+ * SmartReplySuggestions Component Styles
+ * 
+ * Horizontal scrollable chip row for quick reply suggestions.
+ */
+
+.smart-reply-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.smart-reply-suggestions__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(139, 92, 246, 0.9);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.smart-reply-suggestions__header svg {
+    width: 14px;
+    height: 14px;
+}
+
+.smart-reply-suggestions__list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+
+    /* Hide scrollbar but allow scrolling */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.smart-reply-suggestions__list::-webkit-scrollbar {
+    display: none;
+}
+
+.smart-reply-suggestions__chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: 20px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 200ms ease;
+
+    /* Prevent shrinking on small screens */
+    flex-shrink: 0;
+}
+
+.smart-reply-suggestions__chip:hover {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
+    transform: translateY(-1px);
+}
+
+.smart-reply-suggestions__chip:active {
+    transform: translateY(0);
+}
+
+.smart-reply-suggestions__chip-icon {
+    font-size: 14px;
+}
+
+.smart-reply-suggestions__chip-label {
+    color: inherit;
+}
+
+/* Desktop: wrap instead of scroll */
+@media (min-width: 768px) {
+    .smart-reply-suggestions__list {
+        flex-wrap: wrap;
+        overflow-x: visible;
+    }
+}

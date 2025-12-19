@@ -1,0 +1,652 @@
+/* =============================================================================
+   DISSOLVE PARTICLE SYSTEM - Hologram transformation effect
+   ============================================================================= */
+
+.dissolve-particle-system {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.dissolve-particle-system__canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* -----------------------------------------------------------------------------
+   Implosion Flash - Bright flash at dissolve start
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__implosion-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(0, 229, 255, 0.9) 30%,
+            rgba(0, 229, 255, 0.5) 60%,
+            transparent 100%);
+    animation: implosion-flash 0.3s ease-out forwards;
+    z-index: 100;
+    pointer-events: none;
+}
+
+@keyframes implosion-flash {
+    0% {
+        opacity: 0;
+        transform: scale(1.5);
+    }
+
+    30% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Energy Core - Glowing center during vortex phase
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__core {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(0, 255, 255, 0.85) 25%,
+            rgba(0, 229, 255, 0.5) 50%,
+            rgba(128, 0, 255, 0.2) 75%,
+            transparent 100%);
+    box-shadow:
+        0 0 40px 15px rgba(0, 255, 255, 0.7),
+        0 0 80px 30px rgba(0, 255, 255, 0.4),
+        0 0 120px 50px rgba(128, 0, 255, 0.25),
+        inset 0 0 20px 5px rgba(255, 255, 255, 0.5);
+    animation: core-pulse 1s ease-in-out infinite;
+}
+
+@keyframes core-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.85;
+        filter: brightness(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+        filter: brightness(1.2);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Voice Rings - Expanding audio-reactive rings
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 3px solid rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+    animation: ring-expand 1s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes ring-expand {
+    0% {
+        transform: translate(-50%, -50%) scale(0.3);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Lightning Arcs - Hidden (caused vertical line artifacts)
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__lightning {
+    display: none;
+}
+
+
+.lightning-arc {
+    fill: none;
+    stroke: url(#lightning-gradient);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 3px #ffffff) drop-shadow(0 0 6px #00ffff) drop-shadow(0 0 12px #00e5ff) drop-shadow(0 0 24px rgba(0, 255, 255, 0.6)) drop-shadow(0 0 48px rgba(128, 0, 255, 0.3));
+    animation: lightning-flash 0.25s ease-out forwards;
+}
+
+
+/* Secondary thinner arcs for branching effect */
+.lightning-arc-secondary {
+    stroke-width: 1.5;
+    opacity: 0.7;
+}
+
+.lightning-arc-tertiary {
+    stroke-width: 0.8;
+    opacity: 0.4;
+}
+
+@keyframes lightning-flash {
+    0% {
+        stroke-opacity: 1;
+        stroke-width: 3;
+        filter:
+            drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 12px #00ffff) drop-shadow(0 0 24px #00e5ff) drop-shadow(0 0 48px rgba(0, 255, 255, 0.8));
+    }
+
+    15% {
+        stroke-opacity: 1;
+        stroke-width: 2.5;
+    }
+
+    40% {
+        stroke-opacity: 0.8;
+        stroke-width: 2;
+    }
+
+    100% {
+        stroke-opacity: 0;
+        stroke-width: 1;
+        filter:
+            drop-shadow(0 0 2px #00ffff) drop-shadow(0 0 4px rgba(0, 255, 255, 0.3));
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   GLITCH FLASH - Screen distortion at dissolve start
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__glitch-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(0, 255, 255, 0.3) 20%,
+            rgba(255, 0, 255, 0.3) 40%,
+            transparent 50%,
+            rgba(255, 255, 255, 0.5) 60%,
+            transparent 100%);
+    animation: glitch-flash 0.15s ease-out forwards;
+    pointer-events: none;
+    z-index: 100;
+}
+
+@keyframes glitch-flash {
+    0% {
+        opacity: 1;
+        transform: translateX(-20px) skewX(10deg);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: translateX(10px) skewX(-5deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(0) skewX(0);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   SHOCKWAVE - Expanding ripple at dissolve start
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__shockwave {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 3px solid rgba(0, 255, 255, 0.8);
+    transform: translate(-50%, -50%);
+    animation: shockwave-expand 0.6s ease-out forwards;
+    pointer-events: none;
+    z-index: 50;
+}
+
+@keyframes shockwave-expand {
+    0% {
+        width: 20px;
+        height: 20px;
+        opacity: 1;
+        border-width: 3px;
+    }
+
+    100% {
+        width: 400px;
+        height: 400px;
+        opacity: 0;
+        border-width: 1px;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   HEX GRID - Holographic honeycomb pattern
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__hex-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 15V37L30 52L0 37V15L30 0Z' stroke='rgba(0,229,255,0.15)' fill='none' stroke-width='0.5'/%3E%3C/svg%3E");
+    background-size: 60px 52px;
+    opacity: 0.6;
+    animation: hex-rotate 20s linear infinite;
+    pointer-events: none;
+    z-index: 5;
+    border-radius: 50%;
+}
+
+@keyframes hex-rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   DATA STREAMS - Hidden (caused visual clutter)
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__data-streams {
+    display: none;
+    /* Remove vertical line artifacts */
+}
+
+.data-stream {
+    position: absolute;
+    top: -100%;
+    width: 2px;
+    height: 40%;
+    background: linear-gradient(to bottom,
+            transparent 0%,
+            rgba(0, 255, 255, 0.8) 50%,
+            transparent 100%);
+    animation: data-stream-fall 1.5s linear infinite;
+}
+
+@keyframes data-stream-fall {
+    0% {
+        top: -40%;
+    }
+
+    100% {
+        top: 100%;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   SCANNER RINGS - Expanding concentric rings
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__scanner-rings {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 7;
+}
+
+.scanner-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    animation: scanner-pulse 4s ease-out infinite;
+}
+
+.scanner-ring--pulse {
+    width: 60px;
+    height: 60px;
+}
+
+.scanner-ring--delayed {
+    animation-delay: 2s;
+}
+
+@keyframes scanner-pulse {
+    0% {
+        width: 60px;
+        height: 60px;
+        opacity: 0.8;
+    }
+
+    100% {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   ENERGY CORE FLARE - Bright flash from center
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__core--flare {
+    animation: core-flare 0.3s ease-out !important;
+}
+
+@keyframes core-flare {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+
+    50% {
+        transform: scale(2);
+        filter: brightness(3);
+    }
+
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   CONVERGENCE LINES - Light beams pulling inward during reform
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__convergence {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 25;
+}
+
+.convergence-line {
+    position: absolute;
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(to left,
+            transparent 0%,
+            rgba(0, 255, 255, 0.8) 50%,
+            rgba(255, 255, 255, 1) 100%);
+    transform-origin: left center;
+    animation: convergence-pull 0.8s ease-in forwards;
+}
+
+@keyframes convergence-pull {
+    0% {
+        width: 200px;
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        width: 0px;
+        opacity: 0;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   FINAL FLASH - Bright white flash at completion
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__final-flash {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    transform: translate(-50%, -50%);
+    animation: final-flash 0.2s ease-out forwards;
+    pointer-events: none;
+    z-index: 100;
+}
+
+@keyframes final-flash {
+    0% {
+        width: 20px;
+        height: 20px;
+        opacity: 0;
+        box-shadow: 0 0 20px 10px white;
+    }
+
+    50% {
+        width: 300px;
+        height: 300px;
+        opacity: 1;
+        box-shadow: 0 0 100px 50px white;
+    }
+
+    100% {
+        width: 400px;
+        height: 400px;
+        opacity: 0;
+        box-shadow: 0 0 0 0 transparent;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   HOLOGRAM FLICKER - Instability during reform
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system--flickering {
+    animation: holo-flicker 0.4s steps(3) infinite;
+}
+
+@keyframes holo-flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    25% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 0.9;
+    }
+
+    75% {
+        opacity: 0.5;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   SPEAKING PHASE - Voice wave rings (ultra-thin, barely visible)
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__voice-waves {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 8;
+}
+
+.voice-wave-ring {
+    position: absolute;
+    border-radius: 50%;
+    /* Ultra-thin border - barely visible */
+    border: 0.5px solid rgba(0, 229, 255, 0.12);
+    width: 200px;
+    height: 200px;
+    transform: translate(-50%, -50%);
+    animation: voice-wave-expand 2s ease-out infinite;
+    pointer-events: none;
+}
+
+@keyframes voice-wave-expand {
+    0% {
+        width: 100px;
+        height: 100px;
+        opacity: 0.15;
+    }
+
+    100% {
+        width: 280px;
+        height: 280px;
+        opacity: 0;
+    }
+}
+
+/* Sound ripples - also ultra-thin */
+.dissolve-particle-system__ripples {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 6;
+}
+
+.sound-ripple {
+    position: absolute;
+    border-radius: 50%;
+    /* Ultra-thin ripple border */
+    border: 0.5px solid rgba(0, 229, 255, 0.08);
+    width: 60px;
+    height: 60px;
+    transform: translate(-50%, -50%);
+    animation: ripple-expand 1.6s ease-out infinite;
+    pointer-events: none;
+}
+
+@keyframes ripple-expand {
+    0% {
+        width: 60px;
+        height: 60px;
+        opacity: 0.1;
+    }
+
+    100% {
+        width: 320px;
+        height: 320px;
+        opacity: 0;
+    }
+}
+
+/* Equalizer bars - Hidden (caused vertical line artifacts) */
+.dissolve-particle-system__equalizer {
+    display: none;
+    /* Remove vertical line artifacts */
+}
+
+.equalizer-bar {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(to top,
+            rgba(0, 229, 255, 0.6) 0%,
+            rgba(0, 180, 255, 0.3) 100%);
+    border-radius: 2px;
+    transform-origin: center bottom;
+    /* Slower, smoother transition for elegant movement */
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Pulsating animation */
+    animation: equalizer-pulse 2s ease-in-out infinite;
+}
+
+/* Stagger the pulse animation for each bar */
+.equalizer-bar:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.equalizer-bar:nth-child(2) {
+    animation-delay: 0.25s;
+}
+
+.equalizer-bar:nth-child(3) {
+    animation-delay: 0.5s;
+}
+
+.equalizer-bar:nth-child(4) {
+    animation-delay: 0.75s;
+}
+
+.equalizer-bar:nth-child(5) {
+    animation-delay: 1s;
+}
+
+.equalizer-bar:nth-child(6) {
+    animation-delay: 1.25s;
+}
+
+.equalizer-bar:nth-child(7) {
+    animation-delay: 1.5s;
+}
+
+.equalizer-bar:nth-child(8) {
+    animation-delay: 1.75s;
+}
+
+@keyframes equalizer-pulse {
+
+    0%,
+    100% {
+        transform: scaleY(1) scaleX(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: scaleY(1.3) scaleX(1.2);
+        opacity: 1;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   SPEAKING PHASE - Blue Plasma Glow Sync
+   ----------------------------------------------------------------------------- */
+.dissolve-particle-system__glow-sync {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle,
+            rgba(0, 229, 255, 0.25) 0%,
+            rgba(0, 150, 255, 0.12) 40%,
+            transparent 70%);
+    pointer-events: none;
+    z-index: 5;
+    transition: opacity 0.1s ease, transform 0.1s ease;
+    mix-blend-mode: screen;
+}
+
+/* -----------------------------------------------------------------------------
+   Accessibility: Reduced Motion
+   ----------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+
+    .dissolve-particle-system__core,
+    .dissolve-particle-system__ring,
+    .dissolve-particle-system__glitch-flash,
+    .dissolve-particle-system__shockwave,
+    .dissolve-particle-system__hex-grid,
+    .data-stream,
+    .scanner-ring,
+    .convergence-line,
+    .dissolve-particle-system__final-flash,
+    .dissolve-particle-system--flickering {
+        animation: none !important;
+    }
+}

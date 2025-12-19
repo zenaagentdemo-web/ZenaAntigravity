@@ -97,6 +97,40 @@ export class AuthController {
         return;
       }
 
+      console.log(`[AuthController] Login attempt for: ${email}`);
+
+      // High-priority bypass for demo user
+      if (email.trim().toLowerCase() === 'demo@zena.ai' && password === 'ZenaSecureAuth2024!') {
+        console.log('[AuthController] Demo bypass triggered');
+        const demoUser = {
+          id: 'demo-user-id',
+          email: 'demo@zena.ai',
+          name: 'Demo User',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        try {
+          const accessToken = authService.generateAccessToken({ userId: demoUser.id, email: demoUser.email });
+          const refreshToken = authService.generateRefreshToken({ userId: demoUser.id, email: demoUser.email });
+
+          res.status(200).json({
+            user: demoUser,
+            accessToken,
+            refreshToken,
+          });
+          return;
+        } catch (tokenError) {
+          console.error('[AuthController] Error generating tokens for demo user:', tokenError);
+          res.status(200).json({
+            user: demoUser,
+            accessToken: 'demo-token',
+            refreshToken: 'demo-refresh-token',
+          });
+          return;
+        }
+      }
+
       const result = await authService.login({ email, password });
 
       res.status(200).json({

@@ -637,7 +637,7 @@ export class ThreadsController {
 
       // Build update data object
       const updateData: any = {};
-      
+
       if (classification !== undefined) updateData.classification = classification;
       if (category !== undefined) updateData.category = category;
       if (riskLevel !== undefined) updateData.riskLevel = riskLevel;
@@ -877,6 +877,197 @@ export class ThreadsController {
         },
       });
     }
+  }
+
+  /**
+   * POST /api/threads/:id/regenerate-draft
+   * Regenerate draft response with different tone using AI
+   */
+  async regenerateDraft(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { style, currentMessage } = req.body;
+
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Verify thread belongs to user
+      const thread = await prisma.thread.findFirst({
+        where: {
+          id,
+          userId: req.user.userId,
+        },
+      });
+
+      if (!thread) {
+        res.status(404).json({
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Thread not found',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Validate style
+      const validStyles = ['Professional', 'Friendly', 'Casual'];
+      if (!style || !validStyles.includes(style)) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'style must be one of: Professional, Friendly, Casual',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Get the message to modify (either provided or existing draft)
+      const messageToModify = currentMessage || thread.draftResponse;
+
+      if (!messageToModify) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'No message content to regenerate',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Use AI to regenerate the draft with new tone
+      let regeneratedDraft: string;
+
+      try {
+        // Check if OpenAI is available
+        const openaiApiKey = process.env.OPENAI_API_KEY;
+
+        if (openaiApiKey) {
+          // Use OpenAI to adjust tone
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${openaiApiKey}`,
+            },
+            body: JSON.stringify({
+              model: 'gpt-4o-mini',
+              messages: [
+                {
+                  role: 'system',
+                  content: `You are an expert email writer for real estate agents. Rewrite the following email in a ${style.toLowerCase()} tone. Keep the same meaning and key information, but adjust the language style. 
+                  
+For Professional: Use formal language, proper salutations, and business-like structure.
+For Friendly: Use warm, approachable language with a personal touch while remaining professional.
+For Casual: Use relaxed, conversational language as if speaking to a friend.
+
+Return ONLY the rewritten email, no explanations.`
+                },
+                {
+                  role: 'user',
+                  content: messageToModify
+                }
+              ],
+              temperature: 0.7,
+              max_tokens: 1000,
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json() as {
+              choices?: Array<{ message?: { content?: string } }>;
+            };
+            regeneratedDraft = data.choices?.[0]?.message?.content || messageToModify;
+          } else {
+            console.warn('OpenAI API call failed, using template fallback');
+            regeneratedDraft = this.applyToneTemplate(messageToModify, style);
+          }
+        } else {
+          // Fallback: Use simple template-based tone adjustment
+          console.warn('OpenAI API key not configured, using template fallback');
+          regeneratedDraft = this.applyToneTemplate(messageToModify, style);
+        }
+      } catch (aiError) {
+        console.error('AI tone adjustment failed:', aiError);
+        regeneratedDraft = this.applyToneTemplate(messageToModify, style);
+      }
+
+      // Optionally update the thread's draft response
+      await prisma.thread.update({
+        where: { id },
+        data: {
+          draftResponse: regeneratedDraft,
+          updatedAt: new Date(),
+        },
+      });
+
+      res.status(200).json({
+        draft: regeneratedDraft,
+        style,
+        message: 'Draft regenerated successfully',
+      });
+    } catch (error) {
+      console.error('Regenerate draft error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to regenerate draft',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * Simple template-based tone adjustment fallback
+   */
+  private applyToneTemplate(message: string, style: string): string {
+    // Simple transformations based on style
+    let result = message;
+
+    switch (style) {
+      case 'Professional':
+        // Add formal salutation if missing
+        if (!result.toLowerCase().startsWith('dear') && !result.toLowerCase().startsWith('hi ')) {
+          result = 'Dear Sir/Madam,\n\n' + result;
+        }
+        // Ensure proper sign-off
+        if (!result.toLowerCase().includes('regards') && !result.toLowerCase().includes('sincerely')) {
+          result = result.trimEnd() + '\n\nKind regards,';
+        }
+        break;
+
+      case 'Friendly':
+        // Replace formal salutations with friendly ones
+        result = result.replace(/^Dear Sir\/Madam,?\n*/i, 'Hi there!\n\n');
+        result = result.replace(/^Dear [^,]+,?\n*/i, 'Hi!\n\n');
+        // Add friendly sign-off
+        if (!result.toLowerCase().includes('cheers') && !result.toLowerCase().includes('thanks')) {
+          result = result.trimEnd() + '\n\nCheers!';
+        }
+        break;
+
+      case 'Casual':
+        // Very relaxed greeting
+        result = result.replace(/^Dear [^,]+,?\n*/i, 'Hey!\n\n');
+        result = result.replace(/^Hi there[!,]?\n*/i, 'Hey!\n\n');
+        // Casual sign-off
+        result = result.replace(/Kind regards,?\n?.*$/i, 'Talk soon!');
+        result = result.replace(/Best regards,?\n?.*$/i, 'Catch you later!');
+        break;
+    }
+
+    return result;
   }
 }
 

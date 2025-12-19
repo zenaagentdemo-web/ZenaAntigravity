@@ -1,0 +1,96 @@
+[gd_scene load_steps=10 format=3 uid="uid://ds44jk4ohp6oc"]
+
+[ext_resource type="Script" uid="uid://d3u3opvhnhksr" path="res://scripts/avatar_controller.gd" id="1"]
+[ext_resource type="Script" uid="uid://fg84bdnalsu7" path="res://scripts/state_machine.gd" id="2"]
+[ext_resource type="Script" uid="uid://bu0sh04prgsb" path="res://scripts/viseme_controller.gd" id="3"]
+[ext_resource type="Script" uid="uid://dmsdnm0owjayc" path="res://scripts/expression_blender.gd" id="4"]
+[ext_resource type="Script" uid="uid://beb7os4oam12e" path="res://scripts/idle_behaviors.gd" id="5"]
+[ext_resource type="Script" uid="uid://dphrdqx6naywf" path="res://scripts/amplitude_analyzer.gd" id="6"]
+[ext_resource type="Script" uid="uid://bntsi0cdh1263" path="res://scripts/expression_sprite_manager.gd" id="7"]
+[ext_resource type="Script" uid="uid://cxfhl22v8kq60" path="res://scripts/mouth_sprite_controller.gd" id="8"]
+[ext_resource type="Script" uid="uid://bl63wse6inx8l" path="res://scripts/sprite_test_harness.gd" id="9"]
+
+[node name="SpriteAvatarScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.12, 0.18, 1)
+
+[node name="Avatar" type="Node2D" parent="."]
+position = Vector2(400, 300)
+
+[node name="StateMachine" type="Node" parent="Avatar"]
+script = ExtResource("2")
+
+[node name="VisemeController" type="Node" parent="Avatar"]
+script = ExtResource("3")
+
+[node name="ExpressionBlender" type="Node" parent="Avatar"]
+script = ExtResource("4")
+
+[node name="IdleBehaviors" type="Node" parent="Avatar"]
+script = ExtResource("5")
+
+[node name="AmplitudeAnalyzer" type="Node" parent="Avatar"]
+script = ExtResource("6")
+
+[node name="ExpressionSpriteManager" type="Node" parent="Avatar"]
+script = ExtResource("7")
+assets_base_path = "res://assets/expressions/"
+
+[node name="AudioPlayer" type="AudioStreamPlayer" parent="Avatar"]
+
+[node name="ZenaSprite" type="Sprite2D" parent="Avatar"]
+scale = Vector2(0.5, 0.5)
+
+[node name="MouthSpriteController" type="Node" parent="Avatar"]
+script = ExtResource("8")
+
+[node name="MouthSprite" type="Sprite2D" parent="Avatar"]
+z_index = 1
+position = Vector2(-2, 115)
+scale = Vector2(0.25, 0.25)
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StatusLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 600.0
+offset_bottom = 50.0
+text = "Loading Zena..."
+
+[node name="ExpressionLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 50.0
+offset_right = 400.0
+offset_bottom = 80.0
+text = "Expression: confident-neutral"
+
+[node name="ControlsLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 520.0
+offset_right = 780.0
+offset_bottom = 580.0
+text = "Controls: 1-4=States E=Cycle C=Cat R=Rand B=Blink M=Talk V=Viseme"

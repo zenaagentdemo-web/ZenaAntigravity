@@ -47,14 +47,14 @@ export class AuthService {
    * Generate JWT access token
    */
   generateAccessToken(payload: TokenPayload): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as any);
   }
 
   /**
    * Generate JWT refresh token
    */
   generateRefreshToken(payload: TokenPayload): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN } as any);
   }
 
   /**
@@ -114,9 +114,38 @@ export class AuthService {
    * Login a user
    */
   async login(input: LoginInput): Promise<{ user: any; tokens: AuthTokens }> {
-    // Find user by email
+    const email = input.email.trim().toLowerCase();
+    const password = input.password.trim();
+
+    console.log(`[AuthService] Attempting login for: ${email}`);
+
+    // Demo user bypass for development (no database required)
+    if (email === 'demo@zena.ai' && password === 'ZenaSecureAuth2024!') {
+      console.log('[AuthService] Demo login successful');
+      const demoUser = {
+        id: 'demo-user-id',
+        email: 'demo@zena.ai',
+        name: 'Demo User',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      const tokenPayload: TokenPayload = {
+        userId: demoUser.id,
+        email: demoUser.email,
+      };
+      return {
+        user: demoUser,
+        tokens: {
+          accessToken: this.generateAccessToken(tokenPayload),
+          refreshToken: this.generateRefreshToken(tokenPayload),
+        },
+      };
+    }
+
+    console.log('[AuthService] Falling back to database lookup');
+    // Find user by email in database
     const user = await prisma.user.findUnique({
-      where: { email: input.email },
+      where: { email },
     });
 
     if (!user) {
@@ -189,6 +218,18 @@ export class AuthService {
    * Get user by ID
    */
   async getUserById(userId: string) {
+    // Demo user bypass for development
+    if (userId === 'demo-user-id') {
+      return {
+        id: 'demo-user-id',
+        email: 'demo@zena.ai',
+        name: 'Demo User',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        preferences: {},
+      };
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {

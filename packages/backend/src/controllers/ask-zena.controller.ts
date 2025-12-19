@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { askZenaService, type ConversationMessage } from '../services/ask-zena.service.js';
+import { voiceService } from '../services/voice.service.js';
 
 /**
  * Ask Zena Controller
@@ -18,7 +19,7 @@ export async function submitQuery(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const { query, conversationHistory } = req.body;
+    const { query, conversationHistory, conversationId, attachments } = req.body;
 
     if (!query || typeof query !== 'string') {
       res.status(400).json({ error: 'Query is required and must be a string' });
@@ -30,6 +31,8 @@ export async function submitQuery(req: Request, res: Response): Promise<void> {
       userId,
       query,
       conversationHistory: conversationHistory || [],
+      conversationId,
+      attachments
     });
 
     // Store the query and response in conversation history (optional - could be stored in DB)
@@ -43,7 +46,7 @@ export async function submitQuery(req: Request, res: Response): Promise<void> {
     });
   } catch (error) {
     console.error('Error in submitQuery:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to process query',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -91,7 +94,7 @@ export async function submitVoiceQuery(req: Request, res: Response): Promise<voi
     });
   } catch (error) {
     console.error('Error in submitVoiceQuery:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to process voice query',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -119,7 +122,7 @@ export async function getConversationHistory(req: Request, res: Response): Promi
     res.status(200).json({ history });
   } catch (error) {
     console.error('Error in getConversationHistory:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to retrieve conversation history',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -151,9 +154,57 @@ export async function generateDraft(req: Request, res: Response): Promise<void> 
     res.status(200).json({ draft });
   } catch (error) {
     console.error('Error in generateDraft:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to generate draft',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
+  }
+}
+/**
+ * POST /api/ask/stt
+ * Transcribe audio
+ */
+export async function transcribe(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    // Expecting base64 audio and mimeType in body
+    const { audio, mimeType } = req.body;
+
+    if (!audio) {
+      res.status(400).json({ error: 'Audio data is required' });
+      return;
+    }
+
+    const transcript = await voiceService.transcribe(audio, mimeType || 'audio/webm');
+    res.status(200).json({ transcript });
+  } catch (error) {
+    console.error('STT error:', error);
+    res.status(500).json({ error: 'Failed to transcribe audio' });
+  }
+}
+
+/**
+ * POST /api/ask/tts
+ * Text to speech
+ */
+export async function synthesizeSpeech(req: Request, res: Response): Promise<void> {
+  try {
+    const { text } = req.body;
+    if (!text) {
+      res.status(400).json({ error: 'Text is required' });
+      return;
+    }
+
+    const audioBuffer = await voiceService.textToSpeech(text);
+    res.set('Content-Type', 'audio/mpeg');
+    res.send(audioBuffer);
+  } catch (error) {
+    console.error('TTS error:', error);
+    res.status(500).json({ error: 'Failed to synthesize speech' });
   }
 }

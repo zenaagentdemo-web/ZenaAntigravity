@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Prevent double submission
     if (loading) {
       return;
@@ -45,7 +45,7 @@ export const LoginPage: React.FC = () => {
       // Store the JWT token
       if (data.accessToken) {
         localStorage.setItem('authToken', data.accessToken);
-        
+
         if (data.refreshToken) {
           localStorage.setItem('refreshToken', data.refreshToken);
         }

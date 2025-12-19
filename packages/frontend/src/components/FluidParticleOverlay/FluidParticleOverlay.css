@@ -1,0 +1,12 @@
+/* =============================================================================
+   FLUID PARTICLE OVERLAY - Multi-layer particle canvas
+   ============================================================================= */
+
+.fluid-particle-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+/* Layer positioning handled by z-index in parent container */

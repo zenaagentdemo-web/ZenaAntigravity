@@ -17,9 +17,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
-  padding: var(--spacing-xl, 32px);
-  overflow: hidden;
+  min-height: 200px;
+  padding: 1.5rem;
+  overflow: visible;
+  /* Allow glow effects to extend beyond container */
 }
 
 /* ============================================
@@ -47,17 +48,22 @@
 }
 
 @keyframes particle-float {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0;
     transform: translateY(0) scale(0.5);
   }
+
   10% {
     opacity: 0.6;
   }
+
   50% {
     opacity: 0.3;
     transform: translateY(-50px) scale(1);
   }
+
   90% {
     opacity: 0.6;
   }
@@ -106,10 +112,13 @@
 }
 
 @keyframes outer-ring-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.6;
     transform: scale(1.05);
@@ -123,10 +132,13 @@
 }
 
 @keyframes outer-ring-active {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.5;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.8;
     transform: scale(1.08);
@@ -142,9 +154,11 @@
     transform: rotate(0deg);
     opacity: 0.4;
   }
+
   50% {
     opacity: 0.7;
   }
+
   100% {
     transform: rotate(360deg);
     opacity: 0.4;
@@ -189,12 +203,10 @@
   width: 4px;
   height: var(--bar-height, 10%);
   min-height: 4px;
-  background: linear-gradient(
-    180deg,
-    var(--neon-cyan) 0%,
-    var(--neon-magenta) 50%,
-    var(--neon-purple) 100%
-  );
+  background: linear-gradient(180deg,
+      var(--neon-cyan) 0%,
+      var(--neon-magenta) 50%,
+      var(--neon-purple) 100%);
   border-radius: 2px;
   box-shadow: 0 0 8px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
   transition: height 0.05s ease-out;
@@ -203,9 +215,12 @@
 }
 
 @keyframes bar-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 8px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
   }
+
   50% {
     box-shadow: 0 0 12px var(--neon-cyan, #00D4FF);
   }
@@ -213,12 +228,10 @@
 
 /* Waveform state variations */
 .zena-avatar-fullscreen[data-state="speaking"] .zena-avatar-fullscreen__waveform-bar {
-  background: linear-gradient(
-    180deg,
-    var(--neon-magenta) 0%,
-    var(--neon-purple) 50%,
-    var(--neon-cyan) 100%
-  );
+  background: linear-gradient(180deg,
+      var(--neon-magenta) 0%,
+      var(--neon-purple) 50%,
+      var(--neon-cyan) 100%);
   box-shadow: 0 0 8px var(--neon-magenta-dim, rgba(255, 0, 255, 0.5));
 }
 
@@ -228,7 +241,7 @@
 
 .zena-avatar-fullscreen__messages {
   text-align: center;
-  margin-top: var(--spacing-lg, 24px);
+  margin-top: 1rem;
   z-index: 1;
 }
 
@@ -266,9 +279,12 @@
 }
 
 @keyframes status-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
@@ -360,6 +376,7 @@
    ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
+
   .zena-avatar-fullscreen__particle,
   .zena-avatar-fullscreen__outer-ring,
   .zena-avatar-fullscreen__waveform-bar,
@@ -374,4 +391,61 @@
   .zena-avatar-fullscreen__outer-ring {
     opacity: 0.4;
   }
+}
+
+/* ============================================
+   Assistant Mode (Compact)
+   ============================================ */
+
+.zena-avatar-fullscreen--assistant {
+  position: relative;
+  min-height: auto;
+  padding: 0;
+  width: 60px;
+  height: 60px;
+  z-index: 10;
+  pointer-events: auto;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Inline container alignment */
+.avatar-inline-container .zena-avatar-fullscreen--assistant {
+  margin-left: 0;
+}
+
+.zena-avatar-fullscreen--assistant .zena-avatar-fullscreen__avatar-container {
+  width: 50px;
+  height: 50px;
+}
+
+.zena-avatar-fullscreen--assistant .zena-avatar-fullscreen__outer-ring {
+  animation-duration: 2s;
+}
+
+.zena-avatar-fullscreen--assistant .zena-avatar-fullscreen__outer-ring--1 {
+  width: 50px;
+  height: 50px;
+}
+
+.zena-avatar-fullscreen--assistant .zena-avatar-fullscreen__outer-ring--2 {
+  width: 60px;
+  height: 60px;
+}
+
+.zena-avatar-fullscreen--assistant .zena-avatar-fullscreen__outer-ring--3 {
+  width: 70px;
+  height: 70px;
+}
+
+.zena-avatar-fullscreen--assistant .zena-avatar-fullscreen__ambient,
+.zena-avatar-fullscreen--assistant .zena-avatar-fullscreen__messages,
+.zena-avatar-fullscreen--assistant .zena-avatar-fullscreen__waveform {
+  display: none !important;
+}
+
+.zena-avatar-fullscreen--hero {
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }

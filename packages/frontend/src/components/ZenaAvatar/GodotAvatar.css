@@ -1,0 +1,115 @@
+/**
+ * GodotAvatar Styles
+ * Styles for the Godot-rendered 2D puppet avatar container
+ */
+
+.godot-avatar-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    box-shadow:
+        0 4px 20px rgba(0, 212, 255, 0.15),
+        0 0 40px rgba(139, 92, 246, 0.1);
+}
+
+.godot-avatar-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* Loading state */
+.godot-avatar-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10;
+}
+
+.godot-avatar-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 212, 255, 0.2);
+    border-top-color: #00d4ff;
+    border-radius: 50%;
+    animation: godot-avatar-spin 1s linear infinite;
+}
+
+@keyframes godot-avatar-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Glow effect on hover */
+.godot-avatar-container:hover {
+    box-shadow:
+        0 4px 25px rgba(0, 212, 255, 0.25),
+        0 0 50px rgba(139, 92, 246, 0.15);
+}
+
+/* State-specific styling (applied via className prop) */
+.godot-avatar-speaking {
+    box-shadow:
+        0 4px 30px rgba(0, 212, 255, 0.3),
+        0 0 60px rgba(139, 92, 246, 0.2);
+    animation: godot-avatar-pulse 2s ease-in-out infinite;
+}
+
+.godot-avatar-listening {
+    box-shadow:
+        0 4px 25px rgba(76, 175, 80, 0.25),
+        0 0 40px rgba(76, 175, 80, 0.15);
+}
+
+.godot-avatar-thinking {
+    box-shadow:
+        0 4px 25px rgba(255, 193, 7, 0.25),
+        0 0 40px rgba(255, 193, 7, 0.15);
+}
+
+@keyframes godot-avatar-pulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 4px 30px rgba(0, 212, 255, 0.3),
+            0 0 60px rgba(139, 92, 246, 0.2);
+    }
+
+    50% {
+        box-shadow:
+            0 4px 40px rgba(0, 212, 255, 0.4),
+            0 0 80px rgba(139, 92, 246, 0.3);
+    }
+}
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+    .godot-avatar-container {
+        border-radius: 8px;
+    }
+
+    .godot-avatar-loading {
+        font-size: 12px;
+        gap: 12px;
+    }
+
+    .godot-avatar-loading-spinner {
+        width: 32px;
+        height: 32px;
+    }
+}

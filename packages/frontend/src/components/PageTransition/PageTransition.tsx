@@ -12,7 +12,7 @@ import { useLocation } from 'react-router-dom';
 import './PageTransition.css';
 
 export type TransitionType = 'fade' | 'slide-up' | 'slide-left' | 'slide-right' | 'scale' | 'glow-fade';
-export type TransitionDuration = 'fast' | 'normal' | 'slow';
+export type TransitionDuration = 'instant' | 'fast' | 'normal' | 'slow';
 
 export interface PageTransitionProps {
   /** Child content to animate */
@@ -50,12 +50,13 @@ export const PageTransition: React.FC<PageTransitionProps> = memo(({
   const previousPathRef = useRef(location.pathname);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Get duration in ms based on duration prop
+  // Get duration in ms based on duration prop (optimized for speed)
   const getDurationMs = (): number => {
     switch (duration) {
-      case 'fast': return 200;
-      case 'slow': return 500;
-      default: return 300;
+      case 'instant': return 80;
+      case 'fast': return 100;
+      case 'slow': return 250;
+      default: return 150; // normal
     }
   };
 
@@ -121,7 +122,7 @@ export const PageTransition: React.FC<PageTransitionProps> = memo(({
       <div className="page-transition__content">
         {displayChildren}
       </div>
-      
+
       {/* Glow overlay during transitions */}
       {enableGlow && isTransitioning && (
         <div className="page-transition__glow-overlay" aria-hidden="true" />

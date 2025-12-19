@@ -1,18 +1,40 @@
 import React, { useState, useRef } from 'react';
 import { HolographicAvatar, AvatarAnimationState } from '../../components/HolographicAvatar/HolographicAvatar';
-import { ZenaAnimated2D, Expression } from '../../components/ZenaAnimated2D';
+import { ZenaAnimated2D } from '../../components/ZenaAnimated2D';
+import { EXPRESSION_CATEGORIES, HeadPose } from '../../components/ZenaAnimated2D/constants';
 import './AvatarDemoPage.css';
 
 const STATES: AvatarAnimationState[] = ['idle', 'listening', 'speaking', 'thinking'];
-const EXPRESSIONS: Expression[] = ['neutral', 'happy', 'thinking', 'listening', 'laughing'];
 
 // Sample audio URL for testing lip sync
 const TEST_AUDIO_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
 
+// Head pose options
+const HEAD_POSES: { value: HeadPose; label: string; emoji: string }[] = [
+    { value: 'straight', label: 'Straight', emoji: '⬆️' },
+    { value: 'tilt-left', label: 'Tilt Left', emoji: '↖️' },
+    { value: 'tilt-right', label: 'Tilt Right', emoji: '↗️' },
+    { value: 'look-up', label: 'Look Up', emoji: '👆' },
+];
+
+// Expression category emojis
+const CATEGORY_EMOJIS: Record<string, string> = {
+    playful: '😏',
+    confident: '😎',
+    analytical: '🤔',
+    empathy: '🥺',
+    stress: '😰',
+    reaction: '😮',
+    positive: '😊',
+    vulnerable: '💔',
+};
+
 export const AvatarDemoPage: React.FC = () => {
     const [animationState, setAnimationState] = useState<AvatarAnimationState>('idle');
     const [showNew, setShowNew] = useState(true);
-    const [currentExpression, setCurrentExpression] = useState<Expression>('neutral');
+    const [currentExpression, setCurrentExpression] = useState<string>('neutral');
+    const [currentPose, setCurrentPose] = useState<HeadPose>('straight');
+    const [selectedCategory, setSelectedCategory] = useState<string>('playful');
     const audioRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
 
@@ -33,10 +55,19 @@ export const AvatarDemoPage: React.FC = () => {
         }
     };
 
+    // Cycle through expressions automatically
+    const cycleExpressions = () => {
+        const allExpressions = Object.values(EXPRESSION_CATEGORIES).flat();
+        const currentIndex = allExpressions.indexOf(currentExpression);
+        const nextIndex = (currentIndex + 1) % allExpressions.length;
+        setCurrentExpression(allExpressions[nextIndex]);
+    };
+
     return (
         <div className="avatar-demo-page">
             <div className="avatar-demo-content">
-                <h1>Avatar Animation Prototype</h1>
+                <h1>🎭 Zena Expression Gallery</h1>
+                <p className="subtitle">62 expressions • 4 head poses • Cortana-inspired personality</p>
 
                 {/* Toggle between old and new avatar */}
                 <div className="avatar-toggle">
@@ -56,7 +87,10 @@ export const AvatarDemoPage: React.FC = () => {
 
                 <p className="state-label">
                     {showNew ? (
-                        <>Expression: <strong>{currentExpression.toUpperCase()}</strong></>
+                        <>
+                            Expression: <strong>{currentExpression}</strong>
+                            {currentPose !== 'straight' && <> • Pose: <strong>{currentPose}</strong></>}
+                        </>
                     ) : (
                         <>Current State: <strong>{animationState.toUpperCase()}</strong></>
                     )}
@@ -67,6 +101,7 @@ export const AvatarDemoPage: React.FC = () => {
                         <ZenaAnimated2D
                             audioSource={audioRef.current}
                             expression={currentExpression}
+                            headPose={currentPose}
                             enableLipSync={true}
                             enableBlinking={true}
                             sizePreset="default"
@@ -83,27 +118,73 @@ export const AvatarDemoPage: React.FC = () => {
 
                 <div className="controls">
                     {showNew ? (
-                        /* New avatar controls - expressions and audio test */
                         <div className="new-avatar-controls">
-                            {/* Expression buttons */}
-                            <div className="expression-buttons">
-                                <p>Expressions:</p>
+                            {/* Head Pose Selector */}
+                            <div className="pose-selector">
+                                <p>Head Pose:</p>
                                 <div className="button-row">
-                                    {EXPRESSIONS.map((expr) => (
+                                    {HEAD_POSES.map((pose) => (
+                                        <button
+                                            key={pose.value}
+                                            className={`pose-button ${currentPose === pose.value ? 'active' : ''}`}
+                                            onClick={() => setCurrentPose(pose.value)}
+                                        >
+                                            {pose.emoji} {pose.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Category Tabs */}
+                            <div className="category-tabs">
+                                <p>Expression Category:</p>
+                                <div className="button-row category-row">
+                                    {Object.keys(EXPRESSION_CATEGORIES).map((category) => (
+                                        <button
+                                            key={category}
+                                            className={`category-button ${selectedCategory === category ? 'active' : ''}`}
+                                            onClick={() => setSelectedCategory(category)}
+                                        >
+                                            {CATEGORY_EMOJIS[category]} {category}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Expressions in selected category */}
+                            <div className="expression-buttons">
+                                <p>{CATEGORY_EMOJIS[selectedCategory]} {selectedCategory} expressions:</p>
+                                <div className="button-row expression-row">
+                                    {EXPRESSION_CATEGORIES[selectedCategory as keyof typeof EXPRESSION_CATEGORIES]?.map((expr) => (
                                         <button
                                             key={expr}
                                             className={`expression-button ${currentExpression === expr ? 'active' : ''}`}
                                             onClick={() => setCurrentExpression(expr)}
                                         >
-                                            {expr === 'happy' && '😊 '}
-                                            {expr === 'laughing' && '😄 '}
-                                            {expr === 'thinking' && '🤔 '}
-                                            {expr === 'listening' && '👂 '}
-                                            {expr === 'neutral' && '😐 '}
-                                            {expr.charAt(0).toUpperCase() + expr.slice(1)}
+                                            {expr.replace(/-/g, ' ')}
                                         </button>
                                     ))}
                                 </div>
+                            </div>
+
+                            {/* Quick Actions */}
+                            <div className="quick-actions">
+                                <button className="cycle-button" onClick={cycleExpressions}>
+                                    ⏭️ Cycle All Expressions
+                                </button>
+                                <button
+                                    className="random-button"
+                                    onClick={() => {
+                                        const allExpressions = Object.values(EXPRESSION_CATEGORIES).flat();
+                                        const randomExpr = allExpressions[Math.floor(Math.random() * allExpressions.length)];
+                                        const poses: HeadPose[] = ['straight', 'tilt-left', 'tilt-right', 'look-up'];
+                                        const randomPose = poses[Math.floor(Math.random() * poses.length)];
+                                        setCurrentExpression(randomExpr);
+                                        setCurrentPose(randomPose);
+                                    }}
+                                >
+                                    🎲 Random Expression + Pose
+                                </button>
                             </div>
 
                             {/* Audio controls */}
@@ -115,14 +196,9 @@ export const AvatarDemoPage: React.FC = () => {
                                 >
                                     {isPlaying ? '⏹️ Stop Audio' : '▶️ Play Audio (Test Lip Sync)'}
                                 </button>
-                                <p className="audio-hint">
-                                    Play audio to see the mouth animate in sync!
-                                    Eyes blink automatically every 2-6 seconds.
-                                </p>
                             </div>
                         </div>
                     ) : (
-                        /* Old avatar controls */
                         <>
                             <div className="state-buttons">
                                 {STATES.map((state) => (
@@ -135,7 +211,6 @@ export const AvatarDemoPage: React.FC = () => {
                                     </button>
                                 ))}
                             </div>
-
                             <button className="cycle-button" onClick={cycleState}>
                                 Cycle States →
                             </button>
@@ -148,6 +223,7 @@ export const AvatarDemoPage: React.FC = () => {
                             {showNew ? (
                                 <ZenaAnimated2D
                                     expression={currentExpression}
+                                    headPose={currentPose}
                                     sizePreset="mini"
                                     enableBlinking={true}
                                 />

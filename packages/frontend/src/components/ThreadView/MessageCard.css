@@ -1,0 +1,447 @@
+/**
+ * MessageCard Component Styles
+ * 
+ * Mobile-first styling for individual message cards.
+ * Glassmorphism design with expand/collapse animations.
+ */
+
+/* ============================================
+ * BASE MESSAGE CARD
+ * ============================================ */
+
+.message-card {
+    position: relative;
+
+    /* Glassmorphism background */
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    /* Border */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+
+    /* Layout */
+    margin-bottom: 12px;
+    overflow: hidden;
+
+    /* Transitions */
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.message-card:last-child {
+    margin-bottom: 0;
+}
+
+.message-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Expanded state */
+.message-card--expanded {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(0, 212, 255, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* User's own messages */
+.message-card--from-user {
+    border-left: 3px solid var(--neon-cyan, #00D4FF);
+}
+
+/* Latest message */
+.message-card--latest {
+    border-color: rgba(0, 212, 255, 0.3);
+}
+
+/* ============================================
+ * MESSAGE HEADER
+ * ============================================ */
+
+.message-card__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    cursor: pointer;
+
+    /* Touch target */
+    min-height: 44px;
+}
+
+.message-card__header:focus {
+    outline: none;
+}
+
+.message-card__header:focus-visible {
+    outline: 2px solid var(--neon-cyan, #00D4FF);
+    outline-offset: -2px;
+}
+
+/* Avatar */
+.message-card__avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(139, 92, 246, 0.2));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.message-card--from-user .message-card__avatar {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(0, 212, 255, 0.1));
+}
+
+/* Sender info */
+.message-card__sender-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.message-card__sender-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.message-card__sender-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.message-card__you-badge {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(0, 212, 255, 0.2);
+    color: var(--neon-cyan, #00D4FF);
+}
+
+.message-card__latest-badge {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(0, 255, 136, 0.2);
+    color: #00FF88;
+}
+
+.message-card__meta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+}
+
+.message-card__sender-email {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.message-card__separator {
+    color: rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
+}
+
+.message-card__recipients {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Header right */
+.message-card__header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.message-card__timestamp {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    white-space: nowrap;
+}
+
+.message-card__expand-toggle {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    padding: 0;
+}
+
+.message-card__expand-toggle svg {
+    width: 16px;
+    height: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    transition: transform 200ms ease;
+}
+
+.message-card__expand-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.message-card__expand-toggle:hover svg {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ============================================
+ * COLLAPSED PREVIEW
+ * ============================================ */
+
+.message-card__preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px 16px 68px;
+    /* Align with sender info */
+}
+
+.message-card__preview-text {
+    flex: 1;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.message-card__attachment-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    flex-shrink: 0;
+}
+
+.message-card__attachment-indicator svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ============================================
+ * EXPANDED CONTENT
+ * ============================================ */
+
+.message-card__content {
+    padding: 0 16px 16px;
+    animation: content-expand 300ms ease;
+}
+
+@keyframes content-expand {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Recipients detail */
+.message-card__recipients-detail {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 12px;
+    padding-left: 52px;
+}
+
+.message-card__label {
+    color: rgba(255, 255, 255, 0.4);
+    margin-right: 6px;
+}
+
+.message-card__recipient {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Message body */
+.message-card__body {
+    padding-left: 52px;
+    margin-bottom: 16px;
+}
+
+.message-card__html-content {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.message-card__html-content a {
+    color: var(--neon-cyan, #00D4FF);
+    text-decoration: none;
+}
+
+.message-card__html-content a:hover {
+    text-decoration: underline;
+}
+
+.message-card__html-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+.message-card__text-content {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: inherit;
+    margin: 0;
+    background: none;
+    border: none;
+}
+
+/* ============================================
+ * ATTACHMENTS
+ * ============================================ */
+
+.message-card__attachments {
+    padding-left: 52px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.message-card__attachments-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.message-card__attachments-title svg {
+    width: 14px;
+    height: 14px;
+}
+
+.message-card__attachment-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.message-card__attachment-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 200ms ease;
+}
+
+.message-card__attachment-item:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: rgba(0, 212, 255, 0.3);
+}
+
+.message-card__attachment-thumb {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.message-card__attachment-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.message-card__attachment-icon svg {
+    width: 18px;
+    height: 18px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.message-card__attachment-name {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ============================================
+ * RESPONSIVE ADJUSTMENTS
+ * ============================================ */
+
+@media (min-width: 768px) {
+    .message-card__avatar {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        font-size: 16px;
+    }
+
+    .message-card__preview {
+        padding-left: 76px;
+    }
+
+    .message-card__recipients-detail,
+    .message-card__body,
+    .message-card__attachments {
+        padding-left: 60px;
+    }
+}
+
+/* ============================================
+ * REDUCED MOTION
+ * ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    .message-card__content {
+        animation: none;
+    }
+
+    .message-card__expand-toggle svg {
+        transition: none;
+    }
+}

@@ -18,7 +18,7 @@ import { QuickActionsCarousel, CarouselAction } from '../QuickActionsCarousel/Qu
 import { AmbientBackground } from '../AmbientBackground/AmbientBackground';
 import { CalendarWidget, CalendarAppointment } from '../CalendarWidget/CalendarWidget';
 import { RecentActivityStream, ActivityItem } from '../RecentActivityStream/RecentActivityStream';
-import { WeatherTimeWidget } from '../WeatherTimeWidget/WeatherTimeWidget';
+
 import './HighTechDashboard.css';
 
 export interface HighTechDashboardProps {
@@ -57,21 +57,10 @@ export interface HighTechDashboardProps {
   testId?: string;
 }
 
-/**
- * Generate AI greeting based on time of day
- */
-const getTimeBasedGreeting = (): string => {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return 'Good morning';
-  if (hour >= 12 && hour < 17) return 'Good afternoon';
-  if (hour >= 17 && hour < 22) return 'Good evening';
-  return 'Hello';
-};
 
 
 
 export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
-  userName = 'there',
   focusThreadsCount = 0,
   waitingThreadsCount = 0,
   atRiskDealsCount = 0,
@@ -96,8 +85,6 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
     setCurrentAiState(aiState);
   }, [aiState]);
 
-  // Generate greeting
-  const greeting = getTimeBasedGreeting();
 
   // Build metric orbs data - no icons, just numbers and labels
   const metricOrbs: MetricOrb[] = [
@@ -174,7 +161,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
     if (onZenaClick) {
       onZenaClick();
     } else {
-      navigate('/ask-zena-immersive');
+      navigate('/ask-zena');
     }
   }, [aiState, onZenaClick, navigate]);
 
@@ -277,21 +264,35 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
             </div>
           </div>
 
-          {/* AI Greeting */}
-          <div className="high-tech-dashboard__greeting">
-            <p className="greeting-text">
-              {greeting}, <span className="greeting-name">{userName}</span>
-            </p>
+
+          {/* Quick Intelligence Actions */}
+          <div className="high-tech-dashboard__quick-intel">
+            <button
+              className="intel-btn intel-btn--emails"
+              onClick={() => navigate(`/ask-zena?prompt=${encodeURIComponent("Triage my emails. Categorize by urgency, summarize important ones, and tell me which need immediate response.")}&mode=handsfree`)}
+            >
+              <span className="intel-btn__icon">📧</span>
+              <span className="intel-btn__label">Triage Emails</span>
+            </button>
+
+            <button
+              className="intel-btn intel-btn--brief"
+              onClick={() => navigate(`/ask-zena?prompt=${encodeURIComponent("Give me my morning brief. Include today's schedule, any urgent messages, and key tasks I need to focus on.")}&mode=handsfree`)}
+            >
+              <span className="intel-btn__icon">☀️</span>
+              <span className="intel-btn__label">Morning Brief</span>
+            </button>
+
+            <button
+              className="intel-btn intel-btn--tasks"
+              onClick={() => navigate(`/ask-zena?prompt=${encodeURIComponent("Review my tasks for today. Generate a prioritized list from my calendar, emails, and any pending follow-ups.")}&mode=handsfree`)}
+            >
+              <span className="intel-btn__icon">✅</span>
+              <span className="intel-btn__label">Today's Tasks</span>
+            </button>
           </div>
         </section>
 
-        {/* Weather Widget with Property Viewing Tips */}
-        <section
-          className="high-tech-dashboard__weather"
-          aria-label="Weather and Property Viewing Tips"
-        >
-          <WeatherTimeWidget />
-        </section>
 
         {/* Floating Metric Orbs */}
         <section

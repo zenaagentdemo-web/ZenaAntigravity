@@ -1,0 +1,749 @@
+/* =============================================================================
+   ZENA HIGH-TECH AVATAR - Living, Breathing Holographic Avatar
+   ============================================================================= */
+
+.zena-hightech-avatar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: visible;
+}
+
+/* -----------------------------------------------------------------------------
+   Ambient Glow - Outer halo effect with HEARTBEAT
+   ----------------------------------------------------------------------------- */
+.zena-hightech-avatar__glow {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+            rgba(0, 229, 255, 0.15) 0%,
+            rgba(255, 0, 255, 0.08) 40%,
+            transparent 70%);
+    animation:
+        avatar-glow-pulse 4s ease-in-out infinite,
+        avatar-heartbeat 1.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Heartbeat - subtle quick pulse like a living heart */
+@keyframes avatar-heartbeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    15% {
+        transform: scale(1.03);
+    }
+
+    30% {
+        transform: scale(1);
+    }
+
+    45% {
+        transform: scale(1.02);
+    }
+
+    60% {
+        transform: scale(1);
+    }
+}
+
+.zena-hightech-avatar--listening .zena-hightech-avatar__glow {
+    animation: avatar-glow-active 2s ease-in-out infinite;
+    background: radial-gradient(circle,
+            rgba(0, 255, 204, 0.25) 0%,
+            rgba(0, 229, 255, 0.15) 40%,
+            transparent 70%);
+}
+
+.zena-hightech-avatar--processing .zena-hightech-avatar__glow {
+    animation: avatar-glow-pulse 1.5s ease-in-out infinite;
+    background: radial-gradient(circle,
+            rgba(128, 0, 255, 0.2) 0%,
+            rgba(75, 0, 130, 0.1) 40%,
+            transparent 70%);
+}
+
+@keyframes avatar-glow-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.08);
+        opacity: 0.8;
+    }
+}
+
+@keyframes avatar-glow-active {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+        filter: hue-rotate(0deg);
+    }
+
+    50% {
+        transform: scale(1.12);
+        opacity: 1;
+        filter: hue-rotate(15deg);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Pulsing Ring Effect - HIDDEN (using rotating ring instead like dashboard)
+   ----------------------------------------------------------------------------- */
+.zena-hightech-avatar__ring {
+    display: none;
+    /* Hidden - using emanating-rings (rotating ring) instead */
+}
+
+.zena-hightech-avatar--listening .zena-hightech-avatar__ring {
+    border-color: rgba(0, 255, 204, 0.5);
+    box-shadow:
+        0 0 25px rgba(0, 255, 204, 0.4),
+        inset 0 0 20px rgba(0, 255, 204, 0.2);
+    animation: avatar-ring-active 1.5s ease-in-out infinite;
+}
+
+.zena-hightech-avatar--processing .zena-hightech-avatar__ring {
+    border-color: rgba(128, 0, 255, 0.4);
+    animation: avatar-ring-spin 2s linear infinite;
+}
+
+@keyframes avatar-ring-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+}
+
+@keyframes avatar-ring-active {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+}
+
+@keyframes avatar-ring-spin {
+    0% {
+        transform: rotate(0deg);
+        border-style: dashed;
+    }
+
+    100% {
+        transform: rotate(360deg);
+        border-style: dashed;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Pulsating Energy Ripple - Copied from dashboard ParticleAvatar
+   ----------------------------------------------------------------------------- */
+.zena-hightech-avatar__emanating-rings {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 1;
+    background: transparent;
+    box-shadow:
+        0 0 0 2px rgba(0, 229, 255, 0.3),
+        0 0 0 8px rgba(0, 229, 255, 0.15),
+        0 0 0 16px rgba(255, 0, 255, 0.08);
+    animation: energy-ripple-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes energy-ripple-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+}
+
+/* Listening state - more intense pulse */
+.zena-hightech-avatar--listening .zena-hightech-avatar__emanating-rings {
+    box-shadow:
+        0 0 0 2px rgba(0, 255, 204, 0.5),
+        0 0 0 10px rgba(0, 255, 204, 0.3),
+        0 0 0 20px rgba(0, 229, 255, 0.15);
+    animation-duration: 1s;
+}
+
+/* Processing state - purple tint */
+.zena-hightech-avatar--processing .zena-hightech-avatar__emanating-rings {
+    box-shadow:
+        0 0 0 2px rgba(128, 0, 255, 0.4),
+        0 0 0 8px rgba(128, 0, 255, 0.2),
+        0 0 0 16px rgba(255, 0, 255, 0.1);
+}
+
+/* Hide the individual emanating-ring divs - we use the container as the ring now */
+.emanating-ring {
+    display: none;
+}
+
+@keyframes ring-rotate-zena {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Listening state - faster rotation */
+.zena-hightech-avatar--listening .zena-hightech-avatar__emanating-rings {
+    animation-duration: 3s;
+    opacity: 0.8;
+}
+
+/* Processing state - purple tint */
+.zena-hightech-avatar--processing .zena-hightech-avatar__emanating-rings {
+    background:
+        linear-gradient(rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%) padding-box,
+        linear-gradient(135deg, rgba(128, 0, 255, 0.5), rgba(255, 0, 255, 0.4), rgba(128, 0, 255, 0.5)) border-box;
+}
+
+/* -----------------------------------------------------------------------------
+   Fluid Particle Layers
+   ----------------------------------------------------------------------------- */
+.zena-hightech-avatar__fluid-bg,
+.zena-hightech-avatar__fluid-fg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.zena-hightech-avatar__fluid-bg {
+    z-index: 2;
+}
+
+.zena-hightech-avatar__fluid-fg {
+    z-index: 10;
+}
+
+/* -----------------------------------------------------------------------------
+   Orbit Particle Canvas
+   ----------------------------------------------------------------------------- */
+.zena-hightech-avatar__particles {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* -----------------------------------------------------------------------------
+   Circular Avatar Image with ORGANIC MOTION
+   ----------------------------------------------------------------------------- */
+.zena-hightech-avatar__image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    z-index: 5;
+}
+
+.zena-hightech-avatar__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    filter: brightness(1.05) contrast(1.05);
+}
+
+/* ORGANIC MOTION: Combined animation matching dashboard style */
+.zena-hightech-avatar--idle .zena-hightech-avatar__image-wrapper {
+    animation: avatar-living-sway 8s ease-in-out infinite;
+}
+
+/* Living sway animation - combined translate/rotate/scale like dashboard */
+@keyframes avatar-living-sway {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        filter: brightness(1) drop-shadow(0 0 20px rgba(0, 229, 255, 0.4));
+    }
+
+    12% {
+        transform: translate(2px, -3px) rotate(0.3deg) scale(1.005);
+    }
+
+    25% {
+        transform: translate(4px, -5px) rotate(0.5deg) scale(1.01);
+        filter: brightness(1.05) drop-shadow(0 0 25px rgba(0, 229, 255, 0.5));
+    }
+
+    37% {
+        transform: translate(2px, -2px) rotate(0.3deg) scale(1.008);
+    }
+
+    50% {
+        transform: translate(-3px, 4px) rotate(-0.5deg) scale(0.995);
+        filter: brightness(1.1) drop-shadow(0 0 30px rgba(0, 229, 255, 0.6));
+    }
+
+    62% {
+        transform: translate(-4px, 2px) rotate(-0.3deg) scale(0.99);
+    }
+
+    75% {
+        transform: translate(5px, 2px) rotate(0.2deg) scale(1.005);
+        filter: brightness(1.02) drop-shadow(0 0 22px rgba(255, 0, 255, 0.4));
+    }
+
+    87% {
+        transform: translate(2px, 1px) rotate(0.1deg) scale(1.002);
+    }
+}
+
+.zena-hightech-avatar--listening .zena-hightech-avatar__image-wrapper {
+    animation:
+        avatar-head-sway-active 6s ease-in-out infinite,
+        avatar-breathing-active 3s ease-in-out infinite,
+        avatar-rotation-active 8s ease-in-out infinite,
+        avatar-float-active 4s ease-in-out infinite;
+    filter: brightness(1.1) drop-shadow(0 0 25px rgba(0, 255, 204, 0.5));
+}
+
+.zena-hightech-avatar--processing .zena-hightech-avatar__image-wrapper {
+    animation:
+        avatar-head-sway-processing 3s ease-in-out infinite,
+        avatar-rotation-processing 2s ease-in-out infinite,
+        avatar-float-processing 1.5s ease-in-out infinite;
+}
+
+/* Head Sway - horizontal movement */
+@keyframes avatar-head-sway {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-8px);
+    }
+
+    75% {
+        transform: translateX(8px);
+    }
+}
+
+@keyframes avatar-head-sway-active {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-4px);
+    }
+
+    75% {
+        transform: translateX(4px);
+    }
+}
+
+@keyframes avatar-head-sway-processing {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-2px);
+    }
+
+    75% {
+        transform: translateX(2px);
+    }
+}
+
+/* Breathing - subtle zoom */
+@keyframes avatar-breathing {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes avatar-breathing-active {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+/* Rotation - subtle tilt */
+@keyframes avatar-rotation {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-3deg);
+    }
+
+    75% {
+        transform: rotate(3deg);
+    }
+}
+
+@keyframes avatar-rotation-active {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-1deg);
+    }
+
+    75% {
+        transform: rotate(1deg);
+    }
+}
+
+@keyframes avatar-rotation-processing {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-0.6deg);
+    }
+
+    75% {
+        transform: rotate(0.6deg);
+    }
+}
+
+/* Float - vertical movement */
+@keyframes avatar-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+@keyframes avatar-float-active {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+@keyframes avatar-float-processing {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   SPARKLE OVERLAY - Random animated dots
+   ----------------------------------------------------------------------------- */
+.zena-hightech-avatar__sparkles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 12;
+}
+
+.sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.8),
+        0 0 12px 4px rgba(0, 229, 255, 0.5);
+    opacity: 0;
+    animation: sparkle-pop 3s ease-in-out infinite;
+}
+
+.sparkle--1 {
+    top: 15%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.sparkle--2 {
+    top: 25%;
+    right: 15%;
+    animation-delay: 0.5s;
+}
+
+.sparkle--3 {
+    top: 60%;
+    left: 10%;
+    animation-delay: 1s;
+}
+
+.sparkle--4 {
+    top: 70%;
+    right: 20%;
+    animation-delay: 1.5s;
+}
+
+.sparkle--5 {
+    top: 40%;
+    left: 5%;
+    animation-delay: 2s;
+}
+
+.sparkle--6 {
+    top: 80%;
+    left: 40%;
+    animation-delay: 2.5s;
+}
+
+@keyframes sparkle-pop {
+
+    0%,
+    100% {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    10% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+
+    20% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    40% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Scanline Shimmer Overlay
+   ----------------------------------------------------------------------------- */
+.zena-hightech-avatar__shimmer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 229, 255, 0.02) 3px,
+            transparent 4px);
+    animation: avatar-scanline 4s linear infinite;
+    pointer-events: none;
+    z-index: 11;
+    opacity: 0.5;
+}
+
+.zena-hightech-avatar--listening .zena-hightech-avatar__shimmer {
+    animation: avatar-scanline 1.5s linear infinite;
+    opacity: 0.7;
+}
+
+@keyframes avatar-scanline {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 100px;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   HOLOGRAPHIC GLITCH EFFECTS
+   ----------------------------------------------------------------------------- */
+
+/* Glitch state - RGB split + flicker */
+.zena-hightech-avatar--glitching .zena-hightech-avatar__image-wrapper {
+    animation: avatar-glitch-rgb 0.2s steps(2) infinite !important;
+}
+
+.zena-hightech-avatar--glitching .zena-hightech-avatar__image {
+    filter:
+        brightness(1.2) drop-shadow(3px 0 0 rgba(255, 0, 0, 0.5)) drop-shadow(-3px 0 0 rgba(0, 255, 255, 0.5)) !important;
+}
+
+@keyframes avatar-glitch-rgb {
+    0% {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+
+    20% {
+        transform: translate(-2px, 1px);
+        opacity: 0.9;
+    }
+
+    40% {
+        transform: translate(2px, -1px);
+        opacity: 0.7;
+    }
+
+    60% {
+        transform: translate(-1px, 2px);
+        opacity: 0.85;
+    }
+
+    80% {
+        transform: translate(1px, -2px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+}
+
+/* Glitch slice - horizontal displacement bar */
+.zena-hightech-avatar__glitch-slice {
+    position: absolute;
+    width: 100%;
+    height: 12px;
+    top: 45%;
+    left: 0;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(0, 255, 255, 0.4) 20%,
+            rgba(255, 0, 255, 0.4) 80%,
+            transparent 100%);
+    transform: translateX(6px) skewX(-3deg);
+    animation: glitch-slice 0.15s steps(1) infinite;
+    z-index: 20;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+}
+
+@keyframes glitch-slice {
+    0% {
+        transform: translateX(6px) skewX(-3deg);
+        top: 45%;
+    }
+
+    25% {
+        transform: translateX(-4px) skewX(2deg);
+        top: 30%;
+    }
+
+    50% {
+        transform: translateX(3px) skewX(-1deg);
+        top: 60%;
+    }
+
+    75% {
+        transform: translateX(-5px) skewX(3deg);
+        top: 40%;
+    }
+
+    100% {
+        transform: translateX(6px) skewX(-3deg);
+        top: 45%;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Accessibility: Reduced Motion
+   ----------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+
+    .zena-hightech-avatar__glow,
+    .zena-hightech-avatar__ring,
+    .zena-hightech-avatar__image-wrapper,
+    .zena-hightech-avatar__shimmer,
+    .zena-hightech-avatar--glitching .zena-hightech-avatar__image-wrapper,
+    .zena-hightech-avatar__glitch-slice {
+        animation: none !important;
+    }
+
+    .zena-hightech-avatar__image {
+        filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.4));
+    }
+
+    .zena-hightech-avatar__fluid-bg,
+    .zena-hightech-avatar__fluid-fg {
+        display: none;
+    }
+}

@@ -11,6 +11,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MiniZenaAvatar } from '../MiniZenaAvatar/MiniZenaAvatar';
+import { HamburgerMenu } from '../HamburgerMenu/HamburgerMenu';
 import { SyncStatus } from '../../models/newPage.types';
 import { FilterType } from '../../models/newPage.types';
 import './NewPageHeader.css';
@@ -35,6 +36,14 @@ export interface NewPageHeaderProps {
   isBatchMode?: boolean;
   /** Callback to change filters (for Urgent/Normal pills) */
   onFilterChange: (filters: FilterType[]) => void;
+  /** Callback when View Folders is clicked */
+  onViewFolders?: () => void;
+  /** Callback when Create Folder is clicked */
+  onCreateFolder?: () => void;
+  /** Active folder name for display (when filtering by folder) */
+  activeFolderName?: string;
+  /** Callback to clear folder filter */
+  onClearFolder?: () => void;
   /** Optional className for styling */
   className?: string;
 }
@@ -60,6 +69,10 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
   onSearch,
   onToggleBatchMode,
   isBatchMode = false,
+  onViewFolders,
+  onCreateFolder,
+  activeFolderName,
+  onClearFolder,
   className = ''
 }) => {
   const navigate = useNavigate();
@@ -195,6 +208,29 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
             label="Ask Zena"
             showPulseRing={true}
           />
+
+          {/* Active Folder Badge */}
+          {activeFolderName && (
+            <div className="new-page-header__folder-badge" data-testid="folder-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+              </svg>
+              <span className="new-page-header__folder-name">{activeFolderName}</span>
+              {onClearFolder && (
+                <button
+                  className="new-page-header__folder-clear"
+                  onClick={onClearFolder}
+                  aria-label="Clear folder filter"
+                  data-testid="clear-folder-button"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Actions Section */}
@@ -315,6 +351,15 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
             </svg>
           </button>
+
+          {/* Hamburger Menu - Email Options */}
+          {onViewFolders && onCreateFolder && (
+            <HamburgerMenu
+              onViewFolders={onViewFolders}
+              onCreateFolder={onCreateFolder}
+              onRefresh={onRefresh}
+            />
+          )}
         </div>
       </div>
     </header>

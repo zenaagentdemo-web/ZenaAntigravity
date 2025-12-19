@@ -8,7 +8,7 @@
  * Requirements: 1.1, 8.1, 8.2, 8.5, 9.4
  */
 
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
 import { ThreadCard } from '../../components/ThreadCard/ThreadCard';
@@ -22,6 +22,11 @@ import { NewThreadsBanner } from '../../components/NewThreadsBanner/NewThreadsBa
 import { SnoozeOverlay } from '../../components/SnoozeOverlay/SnoozeOverlay';
 import { ToastContainer } from '../../components/Toast/Toast';
 import { VirtualList } from '../../components/VirtualList/VirtualList';
+import { FolderSidebar } from '../../components/FolderSidebar/FolderSidebar';
+import { ForwardEmailModal } from '../../components/ForwardEmailModal/ForwardEmailModal';
+import { FolderPickerModal } from '../../components/FolderPickerModal/FolderPickerModal';
+import { CreateFolderModal } from '../../components/CreateFolderModal/CreateFolderModal';
+import { EmailFolder, CUSTOM_FOLDERS, ALL_FOLDERS } from '../../data/mockFolders';
 import { useThreadsState } from '../../hooks/useThreadsState';
 import { useFilterState } from '../../hooks/useFilterState';
 import { useBatchState } from '../../hooks/useBatchState';
@@ -72,8 +77,10 @@ export const NewPage: React.FC = () => {
   // Filter state management
   const {
     activeFilters,
+    activeFolderId,
     setFilters,
     setSearchQuery,
+    setFolderId,
     filteredThreads,
     filterCounts
   } = useFilterState(threads);
@@ -110,6 +117,27 @@ export const NewPage: React.FC = () => {
 
   // Compose modal state
   const [isComposeOpen, setIsComposeOpen] = useState(false);
+
+  // Folder sidebar state
+  const [isFolderSidebarOpen, setIsFolderSidebarOpen] = useState(false);
+  const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
+
+  // Forward modal state
+  const [forwardModalState, setForwardModalState] = useState<{
+    isOpen: boolean;
+    threadId: string | null;
+    subject: string;
+    content: string;
+  }>({ isOpen: false, threadId: null, subject: '', content: '' });
+
+  // Move to modal state
+  const [moveToModalState, setMoveToModalState] = useState<{
+    isOpen: boolean;
+    threadId: string | null;
+  }>({ isOpen: false, threadId: null });
+
+  // Custom folders state (starts with existing custom folders from mock)
+  const [customFolders, setCustomFolders] = useState<EmailFolder[]>(CUSTOM_FOLDERS);
 
   // Scroll-aware compact mode state
   const [isHeaderCompact, setIsHeaderCompact] = useState(false);
@@ -152,7 +180,7 @@ export const NewPage: React.FC = () => {
   }, [toggleSelection]);
 
   // Handle thread actions
-  const handleAction = useCallback((threadId: string, action: 'view' | 'snooze' | 'send_draft') => {
+  const handleAction = useCallback((threadId: string, action: 'view' | 'snooze' | 'send_draft' | 'delete' | 'forward' | 'move_to' | 'archive' | 'mark_read') => {
     const thread = threads.find(t => t.id === threadId);
 
     switch (action) {
@@ -165,8 +193,30 @@ export const NewPage: React.FC = () => {
       case 'send_draft':
         sendDraft(threadId);
         break;
+      case 'delete':
+        console.log('Deleting thread:', threadId);
+        removeThread(threadId);
+        break;
+      case 'forward':
+        setForwardModalState({
+          isOpen: true,
+          threadId,
+          subject: thread?.subject || '',
+          content: thread?.aiSummary || thread?.summary || ''
+        });
+        break;
+      case 'move_to':
+        setMoveToModalState({ isOpen: true, threadId });
+        break;
+      case 'archive':
+        console.log('Archiving thread:', threadId);
+        removeThread(threadId); // Move to archive (simulated)
+        break;
+      case 'mark_read':
+        console.log('Toggling read status:', threadId);
+        break;
     }
-  }, [navigate, threads, openSnoozeOverlay, sendDraft]);
+  }, [navigate, threads, openSnoozeOverlay, sendDraft, removeThread]);
 
   // Handle snooze confirmation
   const handleSnoozeConfirm = useCallback((threadId: string, options: SnoozeOptions) => {
@@ -200,6 +250,54 @@ export const NewPage: React.FC = () => {
   const handleMergeNewThreads = useCallback(() => {
     mergeNewThreads();
   }, [mergeNewThreads]);
+
+  // Folder sidebar handlers
+  const handleViewFolders = useCallback(() => {
+    setIsFolderSidebarOpen(true);
+  }, []);
+
+  const handleCreateFolder = useCallback(() => {
+    setIsCreateFolderModalOpen(true);
+  }, []);
+
+  const handleFolderCreate = useCallback((folder: { name: string; color: string }) => {
+    const newFolder: EmailFolder = {
+      id: `custom-${Date.now()}`,
+      name: folder.name,
+      type: 'custom',
+      color: folder.color,
+      unreadCount: 0,
+      totalCount: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setCustomFolders(prev => [...prev, newFolder]);
+    console.log('Created folder:', newFolder);
+  }, []);
+
+  const handleFolderSelect = useCallback((folderId: string) => {
+    setFolderId(folderId);
+    setIsFolderSidebarOpen(false);
+    console.log('Selected folder:', folderId);
+  }, [setFolderId]);
+
+  const handleDeleteFolder = useCallback((folderId: string) => {
+    // Only delete custom folders
+    const folder = customFolders.find(f => f.id === folderId);
+    if (!folder) {
+      console.log('Cannot delete: folder not found or is a system folder');
+      return;
+    }
+
+    // Clear folder filter if viewing deleted folder
+    if (activeFolderId === folderId) {
+      setFolderId(null);
+    }
+
+    // Remove folder
+    setCustomFolders(prev => prev.filter(f => f.id !== folderId));
+    console.log('Deleted folder:', folderId);
+  }, [customFolders, activeFolderId, setFolderId]);
 
   // Render thread item for virtual list
   const renderThreadItem = useCallback((thread: any, index: number) => {
@@ -375,6 +473,10 @@ export const NewPage: React.FC = () => {
           onToggleBatchMode={toggleBatchMode}
           isBatchMode={isBatchMode}
           onFilterChange={setFilters}
+          onViewFolders={handleViewFolders}
+          onCreateFolder={handleCreateFolder}
+          activeFolderName={activeFolderId ? [...ALL_FOLDERS, ...customFolders].find(f => f.id === activeFolderId)?.name : undefined}
+          onClearFolder={() => setFolderId(null)}
         />
 
         {/* Filter chips */}
@@ -515,6 +617,58 @@ export const NewPage: React.FC = () => {
         onClose={() => setIsComposeOpen(false)}
         onSend={handleComposeSend}
       />
+
+      {/* Folder Sidebar - Portal to escape stacking context */}
+      <Portal>
+        <FolderSidebar
+          isOpen={isFolderSidebarOpen}
+          onClose={() => setIsFolderSidebarOpen(false)}
+          activeFolderId={activeFolderId ?? undefined}
+          onFolderSelect={handleFolderSelect}
+          onCreateFolder={handleCreateFolder}
+          onDeleteFolder={handleDeleteFolder}
+          customFolders={customFolders}
+        />
+      </Portal>
+
+      {/* Create Folder Modal - Portal */}
+      <Portal>
+        <CreateFolderModal
+          isOpen={isCreateFolderModalOpen}
+          onClose={() => setIsCreateFolderModalOpen(false)}
+          onCreateFolder={handleFolderCreate}
+          existingFolderNames={[...ALL_FOLDERS.map(f => f.name), ...customFolders.map(f => f.name)]}
+        />
+      </Portal>
+
+      {/* Forward Email Modal - Portal */}
+      <Portal>
+        <ForwardEmailModal
+          isOpen={forwardModalState.isOpen}
+          originalSubject={forwardModalState.subject}
+          originalContent={forwardModalState.content}
+          onClose={() => setForwardModalState({ isOpen: false, threadId: null, subject: '', content: '' })}
+          onSend={async (data) => {
+            console.log('Forwarding email:', data);
+            // In a real app, this would call the API
+          }}
+        />
+      </Portal>
+
+      {/* Move to Folder Modal - Portal */}
+      <Portal>
+        <FolderPickerModal
+          isOpen={moveToModalState.isOpen}
+          onClose={() => setMoveToModalState({ isOpen: false, threadId: null })}
+          onFolderSelect={(folderId) => {
+            console.log('Moving thread', moveToModalState.threadId, 'to folder', folderId);
+            // In a real app, this would call the API and update the thread
+            if (moveToModalState.threadId) {
+              removeThread(moveToModalState.threadId);
+            }
+          }}
+        />
+      </Portal>
 
     </div>
   );

@@ -26,7 +26,7 @@ export const authenticate = async (
   try {
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
-    
+
     console.log('[Auth] Checking authorization for:', req.path);
     console.log('[Auth] Auth header present:', !!authHeader);
 
@@ -45,6 +45,18 @@ export const authenticate = async (
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
     console.log('[Auth] Token length:', token.length);
 
+    // Development mode: allow demo-token for testing
+    if (token === 'demo-token' && process.env.NODE_ENV !== 'production') {
+      console.log('[Auth] Using demo token bypass for development');
+      req.user = {
+        id: 'demo-user-id',
+        userId: 'demo-user-id',
+        email: 'demo@example.com',
+      };
+      next();
+      return;
+    }
+
     // Verify token
     const payload = authService.verifyToken(token);
     console.log('[Auth] Token verified for user:', payload.userId);
@@ -59,7 +71,7 @@ export const authenticate = async (
     next();
   } catch (error) {
     console.log('[Auth] Token verification failed:', error instanceof Error ? error.message : error);
-    
+
     if (error instanceof Error && error.name === 'TokenExpiredError') {
       res.status(401).json({
         error: {

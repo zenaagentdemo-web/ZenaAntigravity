@@ -1,0 +1,266 @@
+/* =============================================================================
+   ZENA ASK PAGE - High-Tech AI Assistant Interface
+   ============================================================================= */
+
+.zena-ask-page {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-bg-void, #030712);
+    color: var(--color-text-primary, #ffffff);
+}
+
+/* -----------------------------------------------------------------------------
+   Header
+   ----------------------------------------------------------------------------- */
+.zena-ask-page__header {
+    padding: 1rem 1.5rem;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.zena-ask-page__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.title-glow {
+    color: var(--color-accent-primary, #00f2ff);
+    text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+}
+
+/* -----------------------------------------------------------------------------
+   Main Content - Fixed Layout Grid
+   ----------------------------------------------------------------------------- */
+.zena-ask-page__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 5;
+    padding: 0 1.5rem;
+    /* Fixed layout - no justify-content to prevent shifting */
+}
+
+/* -----------------------------------------------------------------------------
+   Avatar Container - FIXED POSITION, NEVER MOVES
+   ----------------------------------------------------------------------------- */
+.zena-ask-page__avatar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Fixed height to prevent layout shift */
+    height: 320px;
+    min-height: 320px;
+    flex-shrink: 0;
+}
+
+/* -----------------------------------------------------------------------------
+   Response Area - BELOW avatar, fixed position overlay style
+   ----------------------------------------------------------------------------- */
+.zena-ask-page__response {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    animation: responseSlideUp 0.4s ease-out;
+    /* Minimum height to prevent layout shift */
+    min-height: 80px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+@keyframes responseSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Input Section - pinned at bottom of flex
+   ----------------------------------------------------------------------------- */
+.zena-ask-page__input-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 500px;
+    margin-top: auto;
+    padding: 1rem 0 2rem;
+    flex-shrink: 0;
+}
+
+/* -----------------------------------------------------------------------------
+   Divider
+   ----------------------------------------------------------------------------- */
+.zena-ask-page__divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(0, 229, 255, 0.3),
+            rgba(0, 229, 255, 0.3),
+            transparent);
+}
+
+.divider-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive
+   ----------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+    .zena-ask-page__header {
+        padding: 0.75rem 1rem;
+    }
+
+    .zena-ask-page__title {
+        font-size: 1.25rem;
+    }
+
+    .zena-ask-page__content {
+        padding: 0 1rem;
+    }
+
+    .zena-ask-page__avatar-container {
+        height: 260px;
+        min-height: 260px;
+    }
+
+    /* Scale down avatar on mobile */
+    .zena-ask-page__avatar-container .zena-hightech-avatar {
+        transform: scale(0.8);
+    }
+
+    .zena-ask-page__response {
+        max-height: 150px;
+    }
+
+    .zena-ask-page__input-section {
+        padding: 0.75rem 0 1.5rem;
+        gap: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .zena-ask-page__avatar-container {
+        height: 360px;
+        min-height: 360px;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Animations
+   ----------------------------------------------------------------------------- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.zena-ask-page__avatar-container,
+.zena-ask-page__input-section {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.zena-ask-page__input-section {
+    animation-delay: 0.2s;
+    animation-fill-mode: both;
+}
+
+/* -----------------------------------------------------------------------------
+   Response Bubble Styling
+   ----------------------------------------------------------------------------- */
+.response-bubble {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    backdrop-filter: blur(10px);
+    box-shadow:
+        0 0 20px rgba(0, 229, 255, 0.1),
+        inset 0 0 30px rgba(0, 229, 255, 0.05);
+}
+
+.response-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.95);
+    font-family: inherit;
+}
+
+.response-word {
+    display: inline;
+    opacity: 0;
+    animation: wordAppear 0.2s ease-out forwards;
+}
+
+@keyframes wordAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(5px);
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
+    }
+
+    50% {
+        text-shadow: 0 0 20px rgba(0, 229, 255, 1), 0 0 40px rgba(0, 229, 255, 0.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        text-shadow: none;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+   Accessibility: Reduced Motion
+   ----------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+
+    .zena-ask-page__avatar-container,
+    .zena-ask-page__input-section,
+    .zena-ask-page__response,
+    .response-word {
+        animation: none !important;
+    }
+
+    .response-word {
+        opacity: 1;
+    }
+}

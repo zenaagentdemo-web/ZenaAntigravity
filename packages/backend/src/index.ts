@@ -20,6 +20,7 @@ import exportRoutes from './routes/export.routes.js';
 import crmIntegrationRoutes from './routes/crm-integration.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import dataDeletionRoutes from './routes/data-deletion.routes.js';
+import historyRoutes from './routes/history.routes.js';
 import { syncEngineService } from './services/sync-engine.service.js';
 import { calendarSyncEngineService } from './services/calendar-sync-engine.service.js';
 import { websocketService } from './services/websocket.service.js';
@@ -127,6 +128,9 @@ app.use('/api/notifications', notificationRoutes);
 // Data deletion routes
 app.use('/api/data', dataDeletionRoutes);
 
+// History routes
+app.use('/api/history', historyRoutes);
+
 // 404 handler - must be after all routes
 app.use(notFoundMiddleware);
 
@@ -146,22 +150,22 @@ calendarSyncEngineService.start();
 // Graceful shutdown
 const shutdown = async (signal: string) => {
   logger.info(`Received ${signal}, shutting down gracefully...`);
-  
+
   try {
     // Stop accepting new connections
     server.close(() => {
       logger.info('HTTP server closed');
     });
-    
+
     // Stop background services
     syncEngineService.stop();
     calendarSyncEngineService.stop();
     websocketService.shutdown();
-    
+
     // Disconnect from database
     await prisma.$disconnect();
     logger.info('Database disconnected');
-    
+
     logger.info('Graceful shutdown completed');
     process.exit(0);
   } catch (error) {
@@ -193,7 +197,7 @@ server.listen(PORT, () => {
     nodeVersion: process.version,
     databaseConfigured: !!process.env.DATABASE_URL,
   });
-  
+
   logger.info('WebSocket server initialized', {
     endpoint: `ws://localhost:${PORT}/ws`,
   });

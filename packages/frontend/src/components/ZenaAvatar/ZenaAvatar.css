@@ -17,20 +17,18 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  
+
   /* Gradient background with cyan, magenta, purple */
-  background: linear-gradient(
-    135deg,
-    var(--neon-cyan) 0%,
-    var(--neon-magenta) 50%,
-    var(--neon-purple) 100%
-  );
-  
+  background: linear-gradient(135deg,
+      var(--neon-cyan) 0%,
+      var(--neon-magenta) 50%,
+      var(--neon-purple) 100%);
+
   /* Glow effect */
   box-shadow: var(--glow-cyan);
-  
+
   /* Smooth transitions for state changes */
-  transition: 
+  transition:
     box-shadow var(--duration-normal) var(--ease-smooth),
     transform var(--duration-normal) var(--ease-smooth);
 }
@@ -78,7 +76,7 @@
 /* Idle State - Subtle breathing animation with color-shifting glow */
 .zena-avatar--idle {
   animation: zena-breathe var(--duration-breathe) var(--ease-glow) infinite;
-  box-shadow: 
+  box-shadow:
     0 0 30px var(--neon-cyan),
     0 0 60px var(--neon-cyan-dim),
     0 0 90px var(--neon-magenta-dim),
@@ -88,7 +86,7 @@
 /* Active State - Intensified glow and pulse */
 .zena-avatar--active {
   animation: zena-pulse-glow 0.5s var(--ease-bounce) infinite;
-  box-shadow: 
+  box-shadow:
     0 0 40px var(--neon-cyan),
     0 0 80px var(--neon-cyan-dim),
     0 0 120px var(--neon-magenta-dim);
@@ -102,7 +100,7 @@
 /* Listening State - Pulsing with cyan emphasis */
 .zena-avatar--listening {
   animation: zena-listening 1s var(--ease-smooth) infinite;
-  box-shadow: 
+  box-shadow:
     0 0 30px var(--neon-cyan),
     0 0 60px var(--neon-cyan-dim);
 }
@@ -130,24 +128,28 @@
 
 /* Breathing animation - color-shifting glow for idle state - enhanced glow like bottom nav */
 @keyframes zena-breathe {
-  0%, 100% {
-    box-shadow: 
+
+  0%,
+  100% {
+    box-shadow:
       0 0 30px var(--neon-cyan),
       0 0 60px var(--neon-cyan-dim),
       0 0 90px var(--neon-magenta-dim),
       0 0 120px var(--neon-purple-dim);
     transform: scale(1);
   }
+
   33% {
-    box-shadow: 
+    box-shadow:
       0 0 40px var(--neon-magenta),
       0 0 80px var(--neon-magenta-dim),
       0 0 100px var(--neon-cyan-dim),
       0 0 130px var(--neon-purple-dim);
     transform: scale(1.02);
   }
+
   66% {
-    box-shadow: 
+    box-shadow:
       0 0 35px var(--neon-purple),
       0 0 70px var(--neon-purple-dim),
       0 0 95px var(--neon-cyan-dim),
@@ -158,10 +160,13 @@
 
 /* Pulse glow animation for active state */
 @keyframes zena-pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.85;
     transform: scale(1.05);
@@ -172,18 +177,20 @@
 @keyframes zena-processing {
   0% {
     transform: rotate(0deg);
-    box-shadow: 
+    box-shadow:
       0 0 30px var(--neon-cyan),
       0 0 60px var(--neon-cyan-dim);
   }
+
   50% {
-    box-shadow: 
+    box-shadow:
       0 0 30px var(--neon-magenta),
       0 0 60px var(--neon-magenta-dim);
   }
+
   100% {
     transform: rotate(360deg);
-    box-shadow: 
+    box-shadow:
       0 0 30px var(--neon-cyan),
       0 0 60px var(--neon-cyan-dim);
   }
@@ -191,15 +198,18 @@
 
 /* Listening animation */
 @keyframes zena-listening {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
-    box-shadow: 
+    box-shadow:
       0 0 30px var(--neon-cyan),
       0 0 60px var(--neon-cyan-dim);
   }
+
   50% {
     transform: scale(1.03);
-    box-shadow: 
+    box-shadow:
       0 0 40px var(--neon-cyan),
       0 0 80px var(--neon-cyan-dim);
   }
@@ -207,15 +217,20 @@
 
 /* Speaking animation */
 @keyframes zena-speaking {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   25% {
     transform: scale(1.02);
   }
+
   50% {
     transform: scale(0.98);
   }
+
   75% {
     transform: scale(1.01);
   }
@@ -226,9 +241,11 @@
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
+
   100% {
     transform: scale(1);
   }
@@ -236,13 +253,16 @@
 
 /* Error animation */
 @keyframes zena-error {
-  0%, 100% {
-    box-shadow: 
+
+  0%,
+  100% {
+    box-shadow:
       0 0 20px var(--status-urgent),
       0 0 40px var(--status-urgent-dim);
   }
+
   50% {
-    box-shadow: 
+    box-shadow:
       0 0 30px var(--status-urgent),
       0 0 60px var(--status-urgent-dim);
   }
@@ -331,6 +351,7 @@
     transform: translate(-50%, -50%) scale(0.8);
     opacity: 1;
   }
+
   100% {
     transform: translate(-50%, -50%) scale(1.8);
     opacity: 0;
@@ -341,6 +362,7 @@
    Inner Content
    ============================================ */
 
+/* Inner Content and Zena Animated face */
 .zena-avatar__inner {
   position: relative;
   z-index: 1;
@@ -350,13 +372,18 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  
-  /* Inner glow effect */
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(255, 255, 255, 0.3) 0%,
-    transparent 50%
-  );
+  /* Removed overflow: hidden to allow particles to whip outside the orb */
+}
+
+.zena-avatar__icon-wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  transition: opacity var(--duration-normal) var(--ease-smooth);
 }
 
 /* Icon inside avatar */
@@ -396,7 +423,7 @@
 
 .zena-avatar:hover:not(.zena-avatar--processing) {
   transform: scale(1.05);
-  box-shadow: 
+  box-shadow:
     0 0 50px var(--neon-cyan),
     0 0 100px var(--neon-cyan-dim),
     0 0 130px var(--neon-magenta-dim),
@@ -408,6 +435,7 @@
    ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
+
   .zena-avatar,
   .zena-avatar--idle,
   .zena-avatar--active,
@@ -418,12 +446,12 @@
   .zena-avatar--error {
     animation: none !important;
   }
-  
+
   .zena-avatar__ring {
     animation: none !important;
     opacity: 0 !important;
   }
-  
+
   .zena-avatar:hover {
     transform: none !important;
   }

@@ -260,7 +260,7 @@ describe('Ask Zena Service - Property-Based Tests', () => {
 
           // Response should be formatted (contains structure indicators)
           // Check for bullet points, numbered lists, or clear paragraphs
-          const hasStructure = 
+          const hasStructure =
             response.answer.includes('•') ||
             response.answer.includes('\n') ||
             response.answer.includes('1.') ||
@@ -323,7 +323,7 @@ describe('Ask Zena Service - Property-Based Tests', () => {
 
           // Results should be consistent (same structure, similar content)
           expect(response1.sources.length).toBe(response2.sources.length);
-          
+
           // Source types should match
           const types1 = response1.sources.map(s => s.type).sort();
           const types2 = response2.sources.map(s => s.type).sort();
@@ -368,5 +368,57 @@ describe('Ask Zena Service - Property-Based Tests', () => {
       ),
       { numRuns: 100 }
     );
+    /**
+   * Property 27: Message ordering and history persistence
+   * Validates: Requirements Phase 3
+   */
+    it('Property 27: should maintain correct message ordering in history', async () => {
+      const conversation = await prisma.chatConversation.create({
+        data: {
+          userId: testUserId,
+          title: 'Ordering Test',
+        },
+      });
+
+      await fc.assert(
+        fc.asyncProperty(
+          fc.array(fc.string({ minLength: 10, maxLength: 100 }), { minLength: 2, maxLength: 5 }),
+          async (queries) => {
+            for (const queryText of queries) {
+              await askZenaService.processQuery({
+                userId: testUserId,
+                query: queryText,
+                conversationId: conversation.id,
+                conversationHistory: [],
+              });
+            }
+
+            // Retrieve messages
+            const savedMessages = await prisma.chatMessage.findMany({
+              where: { conversationId: conversation.id },
+              orderBy: { createdAt: 'asc' },
+            });
+
+            // Verify count: 2 messages per query (user + assistant)
+            expect(savedMessages.length).toBe(queries.length * 2);
+
+            // Verify roles alternate: user, assistant, user, assistant...
+            savedMessages.forEach((msg, idx) => {
+              if (idx % 2 === 0) {
+                expect(msg.role).toBe('user');
+              } else {
+                expect(msg.role).toBe('assistant');
+              }
+            });
+
+            // Clean up for next run
+            await prisma.chatMessage.deleteMany({ where: { conversationId: conversation.id } });
+          }
+        ),
+        { numRuns: 10 }
+      );
+
+      await prisma.chatConversation.delete({ where: { id: conversation.id } });
+    });
   });
 });

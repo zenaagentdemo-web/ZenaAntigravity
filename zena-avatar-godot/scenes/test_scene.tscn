@@ -1,0 +1,221 @@
+[gd_scene load_steps=8 format=3 uid="uid://test_scene"]
+
+[ext_resource type="Script" path="res://scripts/avatar_controller.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/state_machine.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/viseme_controller.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/expression_blender.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/idle_behaviors.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/amplitude_analyzer.gd" id="6"]
+
+[sub_resource type="GDScript" id="test_harness"]
+script/source = "# Test Harness for Avatar System
+extends Control
+
+@onready var avatar: AvatarController = $Avatar
+@onready var status_label: Label = $UI/StatusLabel
+@onready var viseme_label: Label = $UI/VisemeLabel
+
+var expressions := [\"neutral\", \"confident\", \"serious\", \"happy\", \"concerned\", 
+                    \"thinking\", \"surprised\", \"focused\", \"amused\", \"empathetic\"]
+var current_expression_idx := 0
+
+func _ready() -> void:
+	avatar.avatar_ready.connect(_on_avatar_ready)
+	avatar.speaking_started.connect(_on_speaking_started)
+	avatar.speaking_finished.connect(_on_speaking_finished)
+	_update_status()
+
+func _on_avatar_ready() -> void:
+	status_label.text = \"Avatar Ready - Use keyboard controls\"
+
+func _on_speaking_started() -> void:
+	_update_status()
+
+func _on_speaking_finished() -> void:
+	_update_status()
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed:
+		match event.keycode:
+			KEY_1:
+				avatar.set_state(\"idle\")
+				_update_status()
+			KEY_2:
+				avatar.set_state(\"listening\")
+				_update_status()
+			KEY_3:
+				avatar.set_state(\"thinking\")
+				_update_status()
+			KEY_4:
+				avatar.set_state(\"speaking\")
+				avatar.viseme_controller.enable_amplitude_mode()
+				_update_status()
+			KEY_E:
+				_cycle_expression()
+			KEY_B:
+				avatar.trigger_blink()
+			KEY_SPACE:
+				_test_viseme_sequence()
+			KEY_A:
+				_test_amplitude_mode()
+			KEY_P:
+				_test_animation_plan()
+
+func _cycle_expression() -> void:
+	current_expression_idx = (current_expression_idx + 1) % expressions.size()
+	var expr := expressions[current_expression_idx]
+	avatar.set_expression(expr, 1.0)
+	status_label.text = \"Expression: \" + expr
+
+func _test_viseme_sequence() -> void:
+	# Test viseme timeline (simulating \\\"Hello world\\\")
+	var visemes := [
+		{\"start\": 0.0, \"end\": 0.1, \"value\": \"X\"},
+		{\"start\": 0.1, \"end\": 0.25, \"value\": \"C\"},  # He
+		{\"start\": 0.25, \"end\": 0.4, \"value\": \"B\"},  # ll
+		{\"start\": 0.4, \"end\": 0.55, \"value\": \"E\"},  # o
+		{\"start\": 0.55, \"end\": 0.7, \"value\": \"X\"},  # (pause)
+		{\"start\": 0.7, \"end\": 0.85, \"value\": \"F\"},  # wor
+		{\"start\": 0.85, \"end\": 1.0, \"value\": \"B\"},  # ld
+		{\"start\": 1.0, \"end\": 1.2, \"value\": \"X\"},
+	]
+	avatar.set_state(\"speaking\")
+	avatar.play_visemes(visemes)
+	status_label.text = \"Playing viseme sequence...\"
+
+func _test_amplitude_mode() -> void:
+	avatar.set_state(\"speaking\")
+	avatar.viseme_controller.enable_amplitude_mode()
+	# Simulate varying amplitude
+	var tween := create_tween()
+	tween.set_loops(3)
+	tween.tween_method(_set_test_amplitude, 0.0, 1.0, 0.5)
+	tween.tween_method(_set_test_amplitude, 1.0, 0.0, 0.5)
+	tween.tween_callback(func(): avatar.set_state(\"idle\"))
+	status_label.text = \"Testing amplitude mode...\"
+
+func _set_test_amplitude(value: float) -> void:
+	avatar.viseme_controller.set_amplitude(value)
+
+func _test_animation_plan() -> void:
+	# Test full animation plan
+	var plan := {
+		\"emotion\": \"confident\",
+		\"intensity\": 0.8,
+		\"beats\": [
+			{\"t\": 0.3, \"action\": \"browRaise\", \"amount\": 0.4},
+			{\"t\": 0.8, \"action\": \"smile\", \"amount\": 0.5},
+			{\"t\": 1.5, \"action\": \"headTilt\", \"amount\": 0.2},
+		],
+		\"visemes\": [
+			{\"start\": 0.0, \"end\": 0.2, \"value\": \"X\"},
+			{\"start\": 0.2, \"end\": 0.4, \"value\": \"D\"},
+			{\"start\": 0.4, \"end\": 0.6, \"value\": \"C\"},
+			{\"start\": 0.6, \"end\": 0.8, \"value\": \"B\"},
+			{\"start\": 0.8, \"end\": 1.0, \"value\": \"F\"},
+			{\"start\": 1.0, \"end\": 1.5, \"value\": \"X\"},
+		]
+	}
+	avatar.set_state(\"speaking\")
+	avatar.play_animation_plan(plan)
+	status_label.text = \"Playing animation plan...\"
+
+func _update_status() -> void:
+	var state := avatar.state_machine.get_state_name() if avatar.state_machine else \"unknown\"
+	status_label.text = \"State: \" + state
+
+func _process(_delta: float) -> void:
+	if avatar and avatar.viseme_controller:
+		viseme_label.text = \"Viseme: \" + avatar.viseme_controller.get_dominant_viseme()
+"
+
+[node name="TestScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = SubResource("test_harness")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="Avatar" type="Node2D" parent="."]
+position = Vector2(400, 300)
+script = ExtResource("1")
+debug_mode = true
+
+[node name="StateMachine" type="Node" parent="Avatar"]
+script = ExtResource("2")
+
+[node name="VisemeController" type="Node" parent="Avatar"]
+script = ExtResource("3")
+
+[node name="ExpressionBlender" type="Node" parent="Avatar"]
+script = ExtResource("4")
+
+[node name="IdleBehaviors" type="Node" parent="Avatar"]
+script = ExtResource("5")
+
+[node name="AmplitudeAnalyzer" type="Node" parent="Avatar"]
+script = ExtResource("6")
+
+[node name="AudioPlayer" type="AudioStreamPlayer" parent="Avatar"]
+
+[node name="FaceRig" type="Node2D" parent="Avatar"]
+
+[node name="FaceBase" type="Sprite2D" parent="Avatar/FaceRig"]
+
+[node name="MouthSprite" type="Sprite2D" parent="Avatar/FaceRig"]
+position = Vector2(0, 30)
+
+[node name="EyeLeft" type="Sprite2D" parent="Avatar/FaceRig"]
+position = Vector2(-25, -20)
+
+[node name="EyeRight" type="Sprite2D" parent="Avatar/FaceRig"]
+position = Vector2(25, -20)
+
+[node name="EyelidLeft" type="Sprite2D" parent="Avatar/FaceRig"]
+position = Vector2(-25, -20)
+
+[node name="EyelidRight" type="Sprite2D" parent="Avatar/FaceRig"]
+position = Vector2(25, -20)
+
+[node name="BrowLeft" type="Sprite2D" parent="Avatar/FaceRig"]
+position = Vector2(-25, -40)
+
+[node name="BrowRight" type="Sprite2D" parent="Avatar/FaceRig"]
+position = Vector2(25, -40)
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="StatusLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 400.0
+offset_bottom = 50.0
+text = "Loading avatar..."
+
+[node name="VisemeLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 50.0
+offset_right = 200.0
+offset_bottom = 80.0
+text = "Viseme: X"
+
+[node name="ControlsLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 520.0
+offset_right = 780.0
+offset_bottom = 580.0
+text = "Controls: 1=Idle  2=Listen  3=Think  4=Speak  E=Expression  B=Blink  Space=Visemes  A=Amplitude  P=Plan"

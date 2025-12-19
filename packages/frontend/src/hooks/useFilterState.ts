@@ -16,10 +16,14 @@ export interface UseFilterStateReturn {
   activeFilters: FilterType[];
   /** Current search query */
   searchQuery: string;
+  /** Active folder ID for folder filtering (null = show all) */
+  activeFolderId: string | null;
   /** Set active filters */
   setFilters: (filters: FilterType[]) => void;
   /** Set search query (will be debounced) */
   setSearchQuery: (query: string) => void;
+  /** Set active folder ID for folder filtering */
+  setFolderId: (folderId: string | null) => void;
   /** Threads after applying filters and search */
   filteredThreads: Thread[];
   /** Count of threads matching each filter type */
@@ -148,6 +152,7 @@ export function useFilterState(threads: Thread[]): UseFilterStateReturn {
   const [activeFilters, setActiveFilters] = useState<FilterType[]>(['all']);
   const [searchQuery, setSearchQueryState] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
   // Debounce timer ref
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -192,6 +197,19 @@ export function useFilterState(threads: Thread[]): UseFilterStateReturn {
     }, SEARCH_DEBOUNCE_MS);
   }, []);
 
+  /**
+   * Set active folder ID for folder filtering
+   * Using 'inbox' or null clears the filter to show all
+   */
+  const setFolderId = useCallback((folderId: string | null): void => {
+    // inbox means show all, same as null
+    if (folderId === 'inbox' || folderId === null) {
+      setActiveFolderId(null);
+    } else {
+      setActiveFolderId(folderId);
+    }
+  }, []);
+
   // Cleanup debounce timer on unmount
   useEffect(() => {
     return () => {
@@ -211,6 +229,11 @@ export function useFilterState(threads: Thread[]): UseFilterStateReturn {
     // First apply classification/risk filters
     let result = applyFilters(threads, activeFilters);
 
+    // Apply folder filter if active
+    if (activeFolderId) {
+      result = result.filter(thread => thread.folderId === activeFolderId);
+    }
+
     // Then apply search filter
     if (debouncedSearchQuery.trim()) {
       result = result.filter(thread =>
@@ -219,7 +242,7 @@ export function useFilterState(threads: Thread[]): UseFilterStateReturn {
     }
 
     return result;
-  }, [threads, activeFilters, debouncedSearchQuery]);
+  }, [threads, activeFilters, activeFolderId, debouncedSearchQuery]);
 
   /**
    * Calculate filter counts based on all threads (not filtered)
@@ -232,8 +255,10 @@ export function useFilterState(threads: Thread[]): UseFilterStateReturn {
   return {
     activeFilters,
     searchQuery,
+    activeFolderId,
     setFilters,
     setSearchQuery,
+    setFolderId,
     filteredThreads,
     filterCounts
   };

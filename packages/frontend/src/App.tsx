@@ -21,7 +21,6 @@ const HighTechDashboardPage = lazy(() => import('./pages/HighTechDashboardPage/H
 const FocusPage = lazy(() => import('./pages/FocusPage/FocusPage').then(m => ({ default: m.FocusPage })));
 const NewPage = lazy(() => import('./pages/NewPage/NewPage').then(m => ({ default: m.NewPage })));
 const WaitingPage = lazy(() => import('./pages/WaitingPage/WaitingPage').then(m => ({ default: m.WaitingPage })));
-const AskZenaPage = lazy(() => import('./pages/AskZenaPage/AskZenaPage').then(m => ({ default: m.AskZenaPage })));
 const ContactsPage = lazy(() => import('./pages/ContactsPage/ContactsPage').then(m => ({ default: m.ContactsPage })));
 const ContactDetailPage = lazy(() => import('./pages/ContactDetailPage/ContactDetailPage').then(m => ({ default: m.ContactDetailPage })));
 const PropertiesPage = lazy(() => import('./pages/PropertiesPage/PropertiesPage').then(m => ({ default: m.PropertiesPage })));
@@ -31,26 +30,26 @@ const ThreadDetailPage = lazy(() => import('./pages/ThreadDetailPage/ThreadDetai
 const SettingsPage = lazy(() => import('./pages/SettingsPage/SettingsPage').then(m => ({ default: m.SettingsPage })));
 const SearchPage = lazy(() => import('./pages/SearchPage/SearchPage').then(m => ({ default: m.SearchPage })));
 const AvatarDemoPage = lazy(() => import('./pages/AvatarDemoPage/AvatarDemoPage').then(m => ({ default: m.AvatarDemoPage })));
+const AskZenaPage = lazy(() => import('./pages/AskZenaPage/AskZenaPage').then(m => ({ default: m.AskZenaPage })));
 const AskZenaImmersive = lazy(() => import('./pages/AskZenaPage/AskZenaImmersive').then(m => ({ default: m.AskZenaImmersive })));
+const DealFlowPage = lazy(() => import('./pages/DealFlowPage/DealFlowPage').then(m => ({ default: m.DealFlowPage })));
+const PixelExplosionDemo = lazy(() => import('./pages/PixelExplosionDemo/PixelExplosionDemo'));
+const ZenaAskPageDemo = lazy(() => import('./pages/ZenaAskPage/ZenaAskPage').then(m => ({ default: m.ZenaAskPage })));
 
-// Loading skeleton component with accessibility
+// Minimal loading skeleton - appears instantly for fast perceived loading
 const LoadingSkeleton: React.FC = () => (
   <div
-    className="loading-skeleton"
+    className="loading-skeleton loading-skeleton--instant"
     role="progressbar"
     aria-label="Loading page content"
     aria-busy="true"
   >
-    <div className="loading-skeleton__content">
-      <div className="loading-skeleton__spinner" aria-hidden="true"></div>
-      <p className="sr-only">Loading page content, please wait...</p>
-      <p aria-hidden="true">Loading...</p>
-    </div>
+    <p className="sr-only">Loading page content, please wait...</p>
   </div>
 );
 
 function App() {
-  const { isAuthenticated, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   // Initialize services when app starts
   useEffect(() => {
@@ -91,6 +90,8 @@ function App() {
                 {/* Public routes */}
                 <Route path="/avatar-demo" element={<AvatarDemoPage />} />
                 <Route path="/ask-zena-immersive" element={<AskZenaImmersive />} />
+                <Route path="/pixel-demo" element={<PixelExplosionDemo />} />
+                <Route path="/zena-demo" element={<ZenaAskPageDemo />} />
                 <Route
                   path="/login"
                   element={
@@ -122,7 +123,7 @@ function App() {
                           <Suspense fallback={<LoadingSkeleton />}>
                             <PageTransition
                               transitionType="glow-fade"
-                              duration="normal"
+                              duration="fast"
                               enableGlow={true}
                             >
                               <Routes>
@@ -131,6 +132,7 @@ function App() {
                                 <Route path="/home-classic" element={<HomePage />} />
                                 <Route path="/focus" element={<FocusPage />} />
                                 <Route path="/new" element={<NewPage />} />
+                                <Route path="/deal-flow" element={<DealFlowPage />} />
                                 <Route path="/waiting" element={<WaitingPage />} />
                                 <Route path="/ask-zena" element={<AskZenaPage />} />
                                 <Route path="/contacts" element={<ContactsPage />} />

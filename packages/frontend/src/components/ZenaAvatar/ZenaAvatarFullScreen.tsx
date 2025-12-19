@@ -26,6 +26,10 @@ export interface ZenaAvatarFullScreenProps {
   statusMessage?: string;
   /** Click handler */
   onClick?: () => void;
+  /** Path to the avatar image */
+  imageSrc?: string;
+  /** Mode: 'hero' (large, centric) or 'assistant' (compact, top-right) */
+  mode?: 'hero' | 'assistant';
   /** Additional CSS class names */
   className?: string;
   /** Test ID for testing */
@@ -49,6 +53,8 @@ export const ZenaAvatarFullScreen: React.FC<ZenaAvatarFullScreenProps> = ({
   greeting,
   statusMessage,
   onClick,
+  imageSrc,
+  mode = 'hero',
   className = '',
   testId = 'zena-avatar-fullscreen',
 }) => {
@@ -69,9 +75,9 @@ export const ZenaAvatarFullScreen: React.FC<ZenaAvatarFullScreenProps> = ({
         setWaveformData(bars);
         animationRef.current = requestAnimationFrame(generateWaveform);
       };
-      
+
       generateWaveform();
-      
+
       return () => {
         if (animationRef.current) {
           cancelAnimationFrame(animationRef.current);
@@ -84,28 +90,18 @@ export const ZenaAvatarFullScreen: React.FC<ZenaAvatarFullScreenProps> = ({
   }, [showWaveform, state, audioLevel, waveformBars]);
 
   const baseClass = 'zena-avatar-fullscreen';
-  const combinedClassName = [baseClass, className].filter(Boolean).join(' ');
+  const combinedClassName = [
+    baseClass,
+    `${baseClass}--${mode}`,
+    className
+  ].filter(Boolean).join(' ');
 
   return (
-    <div 
-      className={combinedClassName} 
+    <div
+      className={combinedClassName}
       data-testid={testId}
       data-state={state}
     >
-      {/* Ambient background particles */}
-      <div className={`${baseClass}__ambient`} aria-hidden="true">
-        {Array.from({ length: 20 }, (_, i) => (
-          <span 
-            key={`particle-${i}`} 
-            className={`${baseClass}__particle`}
-            style={{
-              '--particle-delay': `${i * 0.5}s`,
-              '--particle-x': `${Math.random() * 100}%`,
-              '--particle-y': `${Math.random() * 100}%`,
-            } as React.CSSProperties}
-          />
-        ))}
-      </div>
 
       {/* Main avatar container */}
       <div className={`${baseClass}__avatar-container`}>
@@ -113,22 +109,24 @@ export const ZenaAvatarFullScreen: React.FC<ZenaAvatarFullScreenProps> = ({
         <div className={`${baseClass}__outer-ring ${baseClass}__outer-ring--1`} aria-hidden="true" />
         <div className={`${baseClass}__outer-ring ${baseClass}__outer-ring--2`} aria-hidden="true" />
         <div className={`${baseClass}__outer-ring ${baseClass}__outer-ring--3`} aria-hidden="true" />
-        
+
         {/* Main Zena Avatar */}
         <ZenaAvatar
           state={state}
-          size="xl"
+          size={mode === 'assistant' ? 'sm' : 'xl'}
+          amplitude={audioLevel}
           showRings={true}
-          ringCount={3}
+          ringCount={mode === 'assistant' ? 1 : 3}
           onClick={onClick}
           ariaLabel="Zena AI Assistant - Click to interact"
+          imageSrc={imageSrc}
           className={`${baseClass}__avatar`}
         />
       </div>
 
       {/* Voice waveform visualization */}
       {showWaveform && (
-        <div 
+        <div
           className={`${baseClass}__waveform ${state === 'listening' || state === 'speaking' ? `${baseClass}__waveform--active` : ''}`}
           aria-hidden="true"
         >

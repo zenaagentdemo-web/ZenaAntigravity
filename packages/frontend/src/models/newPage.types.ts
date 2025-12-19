@@ -104,6 +104,8 @@ export interface Thread {
   suggestedReplies?: string[];
   priorityScore?: number;
   snoozedUntil?: string;
+  /** Folder ID for folder filtering */
+  folderId?: string;
 }
 
 // ============================================================================
@@ -396,4 +398,118 @@ export const DEFAULT_NEW_PAGE_STATE: NewPageState = {
   newThreadsAvailable: 0,
   syncStatus: 'idle',
   expandedThreadId: null
+};
+
+// ============================================================================
+// Thread View Page Types
+// ============================================================================
+
+/**
+ * Attachment metadata for messages
+ */
+export interface AttachmentMeta {
+  id: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+  url: string;
+  thumbnailUrl?: string;
+  messageId: string;
+}
+
+/**
+ * Full message with attachments for thread view
+ */
+export interface MessageWithAttachments {
+  id: string;
+  externalId: string;
+  threadId: string;
+  from: {
+    name: string;
+    email: string;
+  };
+  to: Array<{
+    name: string;
+    email: string;
+  }>;
+  cc?: Array<{
+    name: string;
+    email: string;
+  }>;
+  bcc?: Array<{
+    name: string;
+    email: string;
+  }>;
+  subject: string;
+  body: string;
+  bodyHtml?: string;
+  sentAt: string;
+  receivedAt: string;
+  isFromUser: boolean;
+  isRead: boolean;
+  attachments: AttachmentMeta[];
+}
+
+/**
+ * AI-generated insights for a thread
+ */
+export interface AIThreadInsights {
+  summary: string;
+  keyPoints: string[];
+  suggestedNextActions: string[];
+  sentiment: 'positive' | 'neutral' | 'negative' | 'mixed';
+  riskAnalysis?: {
+    level: RiskLevel;
+    reasons: string[];
+  };
+  extractedDates?: Array<{
+    date: string;
+    context: string;
+  }>;
+  extractedAmounts?: Array<{
+    amount: string;
+    context: string;
+  }>;
+}
+
+/**
+ * Extended thread data for the detailed view page
+ */
+export interface ThreadDetailedView extends Thread {
+  messages: MessageWithAttachments[];
+  aiInsights?: AIThreadInsights;
+  attachments: AttachmentMeta[];
+  linkedProperty?: {
+    id: string;
+    address: string;
+    price?: string;
+    imageUrl?: string;
+  };
+  linkedDeal?: {
+    id: string;
+    stage: DealStage;
+    riskLevel: RiskLevel;
+    nextAction?: string;
+    nextActionOwner?: 'agent' | 'other';
+  };
+  /** Whether the user has replied to this thread */
+  hasReplied: boolean;
+  /** Last time the user viewed this thread */
+  lastViewedAt?: string;
+}
+
+/**
+ * State for message expand/collapse in thread view
+ */
+export interface MessageExpandState {
+  expandedIds: Set<string>;
+  allExpanded: boolean;
+}
+
+/**
+ * Default message expand state (all collapsed)
+ */
+export const DEFAULT_MESSAGE_EXPAND_STATE: MessageExpandState = {
+  expandedIds: new Set(),
+  allExpanded: false
 };

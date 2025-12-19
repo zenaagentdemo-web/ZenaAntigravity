@@ -38,17 +38,15 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--neon-cyan, #00D4FF) 20%,
-    var(--neon-magenta, #FF00FF) 50%,
-    var(--neon-cyan, #00D4FF) 80%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      var(--neon-cyan, #00D4FF) 20%,
+      var(--neon-magenta, #FF00FF) 50%,
+      var(--neon-cyan, #00D4FF) 80%,
+      transparent 100%);
   opacity: 0.5;
   box-shadow: 0 0 10px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5)),
-              0 0 20px var(--neon-cyan-subtle, rgba(0, 212, 255, 0.2));
+    0 0 20px var(--neon-cyan-subtle, rgba(0, 212, 255, 0.2));
 }
 
 /* Content Container - Centered for single Zena orb */
@@ -77,7 +75,7 @@
   border-radius: 12px;
   padding: 8px 4px;
   transition: color var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
-              transform var(--duration-fast, 150ms) var(--ease-smooth);
+    transform var(--duration-fast, 150ms) var(--ease-smooth);
 }
 
 /* Navigation Item - Hover State */
@@ -100,7 +98,7 @@
   width: 24px;
   height: 24px;
   transition: transform var(--duration-normal, 300ms) var(--ease-smooth),
-              filter var(--duration-normal, 300ms) var(--ease-smooth);
+    filter var(--duration-normal, 300ms) var(--ease-smooth);
 }
 
 /* Icon - Active State with Glow - Requirements: 4.2 */
@@ -115,14 +113,14 @@
   font-weight: 500;
   letter-spacing: 0.3px;
   transition: text-shadow var(--duration-normal, 300ms) var(--ease-smooth),
-              font-weight var(--duration-fast, 150ms) var(--ease-smooth);
+    font-weight var(--duration-fast, 150ms) var(--ease-smooth);
 }
 
 /* Label - Active State with Text Glow - Requirements: 4.5 */
 .bottom-nav-ht__label--active {
   font-weight: 600;
   text-shadow: 0 0 10px var(--neon-cyan, #00D4FF),
-               0 0 20px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
+    0 0 20px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
 }
 
 /* Active Glow Indicator */
@@ -133,30 +131,30 @@
   transform: translateX(-50%);
   width: 40px;
   height: 3px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--neon-cyan, #00D4FF),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      var(--neon-cyan, #00D4FF),
+      transparent);
   border-radius: 0 0 4px 4px;
   box-shadow: 0 0 10px var(--neon-cyan, #00D4FF),
-              0 0 20px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
+    0 0 20px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
   animation: glow-pulse var(--duration-pulse, 2s) var(--ease-glow, cubic-bezier(0.4, 0, 0.6, 1)) infinite;
 }
 
 
 /* ============================================
-   Central Zena Orb Button - Requirements: 4.3
+   Central Deal Flow Button - High-Tech Design
    ============================================ */
 
-.bottom-nav-ht__zena-orb {
+.bottom-nav-ht__dealflow-orb {
   position: relative;
-  width: 64px;
-  height: 64px;
-  margin-top: -24px; /* Elevated positioning */
+  width: 72px;
+  height: 72px;
+  margin-top: -32px;
+  /* Elevated positioning - more prominent */
   border-radius: 50%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-decoration: none;
@@ -164,85 +162,214 @@
   z-index: 10;
 }
 
-.bottom-nav-ht__zena-orb-inner {
+.bottom-nav-ht__dealflow-orb-inner {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  box-shadow: var(--glow-cyan, 0 0 20px #00D4FF, 0 0 40px rgba(0, 212, 255, 0.5));
-  animation: pulse-glow var(--duration-pulse, 2s) var(--ease-glow, cubic-bezier(0.4, 0, 0.6, 1)) infinite;
-  transition: box-shadow var(--duration-normal, 300ms) var(--ease-smooth),
-              transform var(--duration-normal, 300ms) var(--ease-bounce);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  box-shadow:
+    0 0 20px rgba(0, 212, 255, 0.6),
+    0 0 40px rgba(255, 0, 255, 0.3),
+    0 0 60px rgba(255, 215, 0, 0.2),
+    inset 0 0 20px rgba(0, 0, 0, 0.3);
+  animation: dealflow-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  transition: box-shadow 300ms ease,
+    transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.bottom-nav-ht__zena-orb:hover .bottom-nav-ht__zena-orb-inner {
-  transform: scale(1.05);
-  box-shadow: 0 0 30px var(--neon-cyan, #00D4FF),
-              0 0 60px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5)),
-              0 0 80px var(--neon-magenta-dim, rgba(255, 0, 255, 0.3));
+.bottom-nav-ht__dealflow-orb:hover .bottom-nav-ht__dealflow-orb-inner {
+  transform: scale(1.08);
+  box-shadow:
+    0 0 35px rgba(0, 212, 255, 0.8),
+    0 0 70px rgba(255, 0, 255, 0.4),
+    0 0 100px rgba(255, 215, 0, 0.3),
+    inset 0 0 25px rgba(0, 0, 0, 0.2);
 }
 
-.bottom-nav-ht__zena-orb:active .bottom-nav-ht__zena-orb-inner {
+.bottom-nav-ht__dealflow-orb:active .bottom-nav-ht__dealflow-orb-inner {
   transform: scale(0.95);
 }
 
-/* Gradient Background for Orb */
-.bottom-nav-ht__zena-orb-gradient {
+/* Premium Gradient Background */
+.bottom-nav-ht__dealflow-orb-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    var(--neon-cyan, #00D4FF) 0%,
-    var(--neon-magenta, #FF00FF) 50%,
-    var(--neon-purple, #8B5CF6) 100%
-  );
-  animation: breathe var(--duration-breathe, 4s) var(--ease-glow) infinite;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg,
+      #00D4FF 0%,
+      #8B5CF6 25%,
+      #FF00FF 50%,
+      #FFD700 75%,
+      #00D4FF 100%);
+  background-size: 100% 100%, 300% 300%;
+  animation: gradient-shift 6s ease infinite;
 }
 
-/* Zena Text */
-.bottom-nav-ht__zena-orb-text {
+/* Holographic Scanner Effect */
+.bottom-nav-ht__dealflow-scanner {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%);
+  background-size: 100% 200%;
+  animation: scanner-sweep 2s linear infinite;
+  pointer-events: none;
+}
+
+/* Handshake Icon Styling - Stroke-based (Lucide) */
+.bottom-nav-ht__dealflow-icon {
   position: relative;
-  font-size: 24px;
+  width: 28px;
+  height: 28px;
+  color: rgba(10, 10, 15, 0.95);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
+  z-index: 2;
+  animation: icon-float 3s ease-in-out infinite;
+}
+
+/* Deal Flow Label */
+.bottom-nav-ht__dealflow-label {
+  position: absolute;
+  bottom: -18px;
+  font-size: 9px;
   font-weight: 700;
-  color: var(--bg-primary, #0A0A0F);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  z-index: 1;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--neon-cyan, #00D4FF);
+  text-shadow:
+    0 0 8px rgba(0, 212, 255, 0.8),
+    0 0 16px rgba(0, 212, 255, 0.4);
+  white-space: nowrap;
 }
 
-/* Active State for Zena Orb */
-.bottom-nav-ht__zena-orb--active .bottom-nav-ht__zena-orb-inner {
-  box-shadow: 0 0 40px var(--neon-cyan, #00D4FF),
-              0 0 80px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5)),
-              0 0 100px var(--neon-magenta-dim, rgba(255, 0, 255, 0.3));
+/* Active State */
+.bottom-nav-ht__dealflow-orb--active .bottom-nav-ht__dealflow-orb-inner {
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow:
+    0 0 40px rgba(0, 212, 255, 0.9),
+    0 0 80px rgba(255, 0, 255, 0.5),
+    0 0 120px rgba(255, 215, 0, 0.4),
+    inset 0 0 30px rgba(0, 0, 0, 0.2);
 }
 
-/* Pulse Rings around Zena Orb */
-.bottom-nav-ht__zena-ring {
+.bottom-nav-ht__dealflow-orb--active .bottom-nav-ht__dealflow-label {
+  color: #FFD700;
+  text-shadow:
+    0 0 10px rgba(255, 215, 0, 0.9),
+    0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+/* Animated Pulse Rings */
+.bottom-nav-ht__dealflow-ring {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 2px solid var(--neon-cyan, #00D4FF);
+  border: 1px solid;
   opacity: 0;
   pointer-events: none;
 }
 
-.bottom-nav-ht__zena-ring--1 {
-  width: 64px;
-  height: 64px;
-  animation: ring-expand var(--duration-ring, 2s) var(--ease-smooth) infinite;
+.bottom-nav-ht__dealflow-ring--1 {
+  width: 58px;
+  height: 58px;
+  border-color: rgba(0, 212, 255, 0.6);
+  animation: ring-expand-dealflow 3s ease-out infinite;
 }
 
-.bottom-nav-ht__zena-ring--2 {
-  width: 64px;
-  height: 64px;
-  animation: ring-expand var(--duration-ring, 2s) var(--ease-smooth) infinite;
+.bottom-nav-ht__dealflow-ring--2 {
+  width: 58px;
+  height: 58px;
+  border-color: rgba(255, 0, 255, 0.5);
+  animation: ring-expand-dealflow 3s ease-out infinite;
   animation-delay: 1s;
+}
+
+.bottom-nav-ht__dealflow-ring--3 {
+  width: 58px;
+  height: 58px;
+  border-color: rgba(255, 215, 0, 0.4);
+  animation: ring-expand-dealflow 3s ease-out infinite;
+  animation-delay: 2s;
+}
+
+/* Deal Flow Animations */
+@keyframes dealflow-pulse {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(0, 212, 255, 0.6),
+      0 0 40px rgba(255, 0, 255, 0.3),
+      0 0 60px rgba(255, 215, 0, 0.2),
+      inset 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  50% {
+    box-shadow:
+      0 0 30px rgba(0, 212, 255, 0.8),
+      0 0 55px rgba(255, 0, 255, 0.4),
+      0 0 80px rgba(255, 215, 0, 0.3),
+      inset 0 0 25px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@keyframes gradient-shift {
+
+  0%,
+  100% {
+    background-position: 0% 50%, 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%, 100% 50%;
+  }
+}
+
+@keyframes scanner-sweep {
+  0% {
+    background-position: 0% 0%;
+  }
+
+  100% {
+    background-position: 0% 200%;
+  }
+}
+
+@keyframes icon-float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes ring-expand-dealflow {
+  0% {
+    width: 58px;
+    height: 58px;
+    opacity: 0.8;
+  }
+
+  100% {
+    width: 120px;
+    height: 120px;
+    opacity: 0;
+  }
 }
 
 /* ============================================
@@ -259,12 +386,10 @@
 }
 
 .bottom-nav-ht__ripple--neon {
-  background: radial-gradient(
-    circle,
-    var(--neon-cyan-dim, rgba(0, 212, 255, 0.5)) 0%,
-    var(--neon-magenta-subtle, rgba(255, 0, 255, 0.2)) 50%,
-    transparent 70%
-  );
+  background: radial-gradient(circle,
+      var(--neon-cyan-dim, rgba(0, 212, 255, 0.5)) 0%,
+      var(--neon-magenta-subtle, rgba(255, 0, 255, 0.2)) 50%,
+      transparent 70%);
 }
 
 @keyframes ripple-expand {
@@ -274,6 +399,7 @@
     opacity: 0.6;
     transform: translate(-50%, -50%) scale(0);
   }
+
   100% {
     width: 120px;
     height: 120px;
@@ -287,6 +413,7 @@
    ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
+
   .bottom-nav-ht__item,
   .bottom-nav-ht__icon,
   .bottom-nav-ht__label,
@@ -295,13 +422,13 @@
     transition: none !important;
     animation: none !important;
   }
-  
+
   .bottom-nav-ht__zena-ring,
   .bottom-nav-ht__ripple,
   .bottom-nav-ht__active-glow {
     display: none;
   }
-  
+
   .bottom-nav-ht__item:active,
   .bottom-nav-ht__zena-orb:active .bottom-nav-ht__zena-orb-inner {
     transform: none;
@@ -319,18 +446,18 @@
   .bottom-nav-ht__label {
     font-size: 10px;
   }
-  
+
   .bottom-nav-ht__zena-orb {
     width: 56px;
     height: 56px;
     margin-top: -20px;
   }
-  
+
   .bottom-nav-ht__zena-orb-inner {
     width: 48px;
     height: 48px;
   }
-  
+
   .bottom-nav-ht__zena-orb-text {
     font-size: 20px;
   }
@@ -341,9 +468,12 @@
    ============================================ */
 
 @keyframes glow-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     filter: brightness(1);
   }
+
   50% {
     filter: brightness(1.2);
   }

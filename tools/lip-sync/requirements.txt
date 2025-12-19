@@ -1,0 +1,6 @@
+# Core dependencies (minimal for viseme generation)
+# No external packages required for basic Rhubarb wrapper
+
+# Optional: For alternative forced alignment methods
+# forcealign>=0.1.0  # Wav2Vec2-based phoneme alignment
+# allosaurus>=0.2.0  # Universal phone recognizer
