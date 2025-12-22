@@ -64,7 +64,7 @@ export class GmailConnectorService {
 
       // List threads
       const threadList = await this.listThreads(accessToken, query);
-      
+
       if (!threadList || threadList.length === 0) {
         return [];
       }
@@ -104,7 +104,7 @@ export class GmailConnectorService {
       throw new Error(`Gmail API error: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as any;
     return data.threads?.map((t: { id: string }) => t.id) || [];
   }
 
@@ -128,7 +128,7 @@ export class GmailConnectorService {
       return null;
     }
 
-    return response.json();
+    return response.json() as Promise<GmailThread | null>;
   }
 
   /**
@@ -202,7 +202,7 @@ export class GmailConnectorService {
    */
   private parseEmailAddressList(addressString: string): Array<{ name: string; email: string }> {
     if (!addressString) return [];
-    
+
     const addresses = addressString.split(',');
     return addresses
       .map(addr => this.parseEmailAddress(addr.trim()))
@@ -350,6 +350,53 @@ export class GmailConnectorService {
     // Gmail uses base64url encoding (- and _ instead of + and /)
     const base64 = data.replace(/-/g, '+').replace(/_/g, '/');
     return Buffer.from(base64, 'base64').toString('utf-8');
+  }
+
+  /**
+   * Create a draft message in Gmail
+   */
+  async createDraft(
+    accessToken: string,
+    draft: { to: string; subject: string; body: string }
+  ): Promise<string> {
+    const url = `${this.GMAIL_API_BASE}/users/me/drafts`;
+
+    // Construct raw message
+    const rawMessage = [
+      `To: ${draft.to}`,
+      `Subject: ${draft.subject}`,
+      'Content-Type: text/plain; charset="UTF-8"',
+      '',
+      draft.body,
+    ].join('\r\n');
+
+    // Base64url encode
+    const encodedMessage = Buffer.from(rawMessage)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: {
+          raw: encodedMessage,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Gmail API error (Create Draft): ${response.status} ${errorText}`);
+    }
+
+    const data = await response.json() as any;
+    return data.id;
   }
 
   /**

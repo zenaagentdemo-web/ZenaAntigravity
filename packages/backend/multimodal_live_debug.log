@@ -1,0 +1,9 @@
+[2025-12-20T05:45:28.643Z] Initiating Bidi connection for dev-user-id to wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService/BidiGenerateContent?key=*** with model gemini-3-flash-preview
+[2025-12-20T05:45:29.128Z] WebSocket error for dev-user-id: Unexpected server response: 404
+[2025-12-20T05:45:29.129Z] Gemini connection closed for dev-user-id. Code: 1006, Reason: 
+[2025-12-20T05:48:13.792Z] Initiating Bidi connection for dev-user-id to wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService/BidiGenerateContent?key=*** with model gemini-3-flash-preview
+[2025-12-20T05:48:14.192Z] WebSocket error for dev-user-id: Unexpected server response: 404
+[2025-12-20T05:48:14.192Z] Gemini connection closed for dev-user-id. Code: 1006, Reason: 
+[2025-12-20T05:49:30.912Z] Initiating Bidi connection for dev-user-id to wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService/BidiGenerateContent?key=*** with model gemini-3-flash-preview
+[2025-12-20T05:49:31.344Z] WebSocket error for dev-user-id: Unexpected server response: 404
+[2025-12-20T05:49:31.345Z] Gemini connection closed for dev-user-id. Code: 1006, Reason: 

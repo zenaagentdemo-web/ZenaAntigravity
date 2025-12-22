@@ -6,14 +6,14 @@
 import { queueAction } from './offlineStorage';
 import { saveToStore, getFromStore, getAllFromStore, STORES } from './offlineStorage';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 /**
  * Refresh the access token
  */
 async function refreshAccessToken(): Promise<boolean> {
   const refreshToken = localStorage.getItem('refreshToken');
-  
+
   if (!refreshToken) {
     return false;
   }
@@ -38,7 +38,7 @@ async function refreshAccessToken(): Promise<boolean> {
 
     if (data.accessToken) {
       localStorage.setItem('authToken', data.accessToken);
-      
+
       if (data.refreshToken) {
         localStorage.setItem('refreshToken', data.refreshToken);
       }
@@ -116,7 +116,7 @@ export async function apiRequest<T = any>(
     if ((method === 'POST' || method === 'PUT' || method === 'DELETE') && offlineQueue) {
       console.log('[API] Queuing action for later:', method, endpoint);
       await queueAction(`${method} ${endpoint}`, endpoint, method, body);
-      
+
       // Return optimistic response
       return {
         data: body as T,
@@ -139,14 +139,14 @@ export async function apiRequest<T = any>(
     // If we get a 401 and have a refresh token, try to refresh
     if (response.status === 401 && localStorage.getItem('refreshToken')) {
       const refreshed = await refreshAccessToken();
-      
+
       if (refreshed) {
         // Retry the request with new token
         const newToken = localStorage.getItem('authToken');
         if (newToken) {
           headers['Authorization'] = `Bearer ${newToken}`;
         }
-        
+
         response = await fetch(url, {
           method,
           headers,

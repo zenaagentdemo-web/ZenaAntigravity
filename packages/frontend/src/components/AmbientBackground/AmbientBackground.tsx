@@ -31,6 +31,8 @@ export interface AmbientBackgroundProps {
   disableAnimations?: boolean;
   /** Test ID for testing */
   testId?: string;
+  /** Whether Zena is currently thinking (triggers breathing animation) */
+  isThinking?: boolean;
 }
 
 /**
@@ -39,7 +41,7 @@ export interface AmbientBackgroundProps {
  */
 const generateParticleStyles = (count: number): React.CSSProperties[] => {
   const particles: React.CSSProperties[] = [];
-  
+
   for (let i = 0; i < count; i++) {
     // Use deterministic pseudo-random positions based on index
     const x = ((i * 17) % 100);
@@ -47,7 +49,7 @@ const generateParticleStyles = (count: number): React.CSSProperties[] => {
     const size = 1 + (i % 3);
     const delay = (i * 0.5) % 10;
     const duration = 15 + (i % 20);
-    
+
     particles.push({
       left: `${x}%`,
       top: `${y}%`,
@@ -57,7 +59,7 @@ const generateParticleStyles = (count: number): React.CSSProperties[] => {
       animationDuration: `${duration}s`,
     });
   }
-  
+
   return particles;
 };
 
@@ -74,6 +76,7 @@ export const AmbientBackground: React.FC<AmbientBackgroundProps> = memo(({
   animationSpeed = 1,
   disableAnimations = false,
   testId = 'ambient-background',
+  isThinking = false,
 }) => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -101,7 +104,7 @@ export const AmbientBackground: React.FC<AmbientBackgroundProps> = memo(({
 
   return (
     <div
-      className={`ambient-background ambient-background--${variant}`}
+      className={`ambient-background ambient-background--${variant} ${isThinking ? 'ambient-background--thinking' : ''}`}
       data-testid={testId}
       data-animated={shouldAnimate}
       style={customStyles}
@@ -110,13 +113,13 @@ export const AmbientBackground: React.FC<AmbientBackgroundProps> = memo(({
       {/* Gradient Orbs Layer */}
       {showGradientOrbs && (
         <div className="ambient-background__orbs">
-          <div 
+          <div
             className={`ambient-orb ambient-orb--primary ${shouldAnimate ? 'ambient-orb--animated' : ''}`}
           />
-          <div 
+          <div
             className={`ambient-orb ambient-orb--secondary ${shouldAnimate ? 'ambient-orb--animated' : ''}`}
           />
-          <div 
+          <div
             className={`ambient-orb ambient-orb--tertiary ${shouldAnimate ? 'ambient-orb--animated' : ''}`}
           />
         </div>

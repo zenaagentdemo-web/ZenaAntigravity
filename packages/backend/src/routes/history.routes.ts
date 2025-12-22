@@ -18,6 +18,9 @@ router.post('/', historyController.createConversation);
 // GET /api/history/:id - Get a specific conversation with messages
 router.get('/:id', historyController.getConversation);
 
+// POST /api/history/:id/messages - Add a message to a conversation
+router.post('/:id/messages', historyController.addMessage);
+
 // DELETE /api/history/:id - Delete a conversation
 router.delete('/:id', historyController.deleteConversation);
 

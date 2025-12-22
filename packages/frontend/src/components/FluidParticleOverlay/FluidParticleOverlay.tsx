@@ -400,7 +400,7 @@ export const FluidParticleOverlay: React.FC<FluidParticleOverlayProps> = memo(({
 
             // Update opacity with edge fade and audio reactivity
             const fade = edgeFade(p.x, p.y, width, height);
-            p.opacity = p.baseOpacity * fade * (1 + audio * 0.3);
+            p.opacity = p.baseOpacity * fade * (1 + audio * 0.08); // Further reduced from 0.15
 
             // Update color animation
             p.colorT = (p.colorT + 0.001 + audio * 0.01) % 1;
@@ -414,7 +414,7 @@ export const FluidParticleOverlay: React.FC<FluidParticleOverlayProps> = memo(({
             positions[i * 3] = p.x;
             positions[i * 3 + 1] = p.y;
             opacities[i] = Math.max(0, Math.min(1, p.opacity));
-            sizes[i] = p.size * (1 + audio * 0.5);
+            sizes[i] = p.size * (1 + audio * 0.1); // Further reduced from 0.2
             colors[i * 3] = color.r;
             colors[i * 3 + 1] = color.g;
             colors[i * 3 + 2] = color.b;

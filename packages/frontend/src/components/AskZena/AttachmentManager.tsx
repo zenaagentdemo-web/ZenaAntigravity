@@ -11,12 +11,14 @@ interface AttachmentManagerProps {
     attachments: Attachment[];
     onAddAttachments: (files: FileList) => void;
     onRemoveAttachment: (index: number) => void;
+    onPreviewAttachment?: (attachment: Attachment) => void;
 }
 
 export const AttachmentManager: React.FC<AttachmentManagerProps> = ({
     attachments,
     onAddAttachments,
     onRemoveAttachment,
+    onPreviewAttachment,
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -37,12 +39,20 @@ export const AttachmentManager: React.FC<AttachmentManagerProps> = ({
             <div className="attachment-previews">
                 {attachments.map((att, idx) => (
                     <div key={idx} className="attachment-preview-item">
-                        {att.type === 'image' ? (
-                            <img src={att.previewUrl} alt="preview" />
-                        ) : (
-                            <div className="file-preview">📄 {att.file.name}</div>
-                        )}
-                        <button className="remove-att-btn" onClick={() => onRemoveAttachment(idx)}>
+                        <div
+                            className="attachment-item-media"
+                            onClick={() => onPreviewAttachment?.(att)}
+                            title="Click to preview"
+                        >
+                            {att.type === 'image' ? (
+                                <img src={att.previewUrl} alt="preview" />
+                            ) : att.file.type.startsWith('video/') ? (
+                                <div className="file-preview">🎬 {att.file.name}</div>
+                            ) : (
+                                <div className="file-preview">📄 {att.file.name}</div>
+                            )}
+                        </div>
+                        <button type="button" className="remove-att-btn" onClick={() => onRemoveAttachment(idx)}>
                             ×
                         </button>
                     </div>
@@ -55,11 +65,11 @@ export const AttachmentManager: React.FC<AttachmentManagerProps> = ({
                 onChange={handleFileChange}
                 style={{ display: 'none' }}
                 multiple
-                accept="image/*,application/pdf,.doc,.docx,.txt"
+                accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.numbers,.pages,.key"
             />
 
-            <button className="attach-btn" onClick={handleButtonClick} title="Attach files">
-                <span className="attach-icon">📎</span>
+            <button type="button" className="attach-btn" onClick={handleButtonClick} title="Attach files">
+                <span className="attach-icon">+</span>
             </button>
         </div>
     );

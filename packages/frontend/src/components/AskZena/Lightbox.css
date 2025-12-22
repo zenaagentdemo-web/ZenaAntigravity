@@ -1,0 +1,202 @@
+.zena-lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(4, 4, 15, 0.92);
+    backdrop-filter: blur(12px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: lightbox-fade-in 0.3s ease-out;
+    cursor: zoom-out;
+}
+
+@keyframes lightbox-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.zena-lightbox-container {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    cursor: default;
+    animation: lightbox-content-zoom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes lightbox-content-zoom {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.zena-lightbox-close {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 20;
+}
+
+.zena-lightbox-close:hover {
+    background: rgba(0, 229, 255, 0.2);
+    transform: rotate(90deg);
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+}
+
+.zena-lightbox-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zena-lightbox-image-wrapper {
+    position: relative;
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.zena-lightbox-image {
+    display: block;
+    max-width: 85vw;
+    max-height: 80vh;
+    object-fit: contain;
+}
+
+.zena-lightbox-file-wrapper {
+    background: rgba(20, 20, 40, 0.6);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 16px;
+    padding: 60px;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(0, 229, 255, 0.1);
+}
+
+.zena-lightbox-file-icon {
+    font-size: 80px;
+    margin-bottom: 24px;
+    filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.5));
+}
+
+.zena-lightbox-file-name {
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    word-break: break-all;
+}
+
+.zena-lightbox-file-info {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.zena-lightbox-download-btn {
+    background: linear-gradient(135deg, #00e5ff, #007bff);
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+}
+
+.zena-lightbox-download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+}
+
+.zena-lightbox-footer {
+    margin-top: 20px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.zena-lightbox-filename {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+/* Hologram Background Details */
+.zena-lightbox-hologram-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 800px;
+    border: 1px solid rgba(0, 229, 255, 0.05);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: ring-pulse 10s linear infinite;
+}
+
+@keyframes ring-pulse {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) rotate(180deg) scale(1.1);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg) scale(1);
+    }
+}
+
+.zena-lightbox-hologram-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    opacity: 0.5;
+}

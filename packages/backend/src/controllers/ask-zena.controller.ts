@@ -208,3 +208,29 @@ export async function synthesizeSpeech(req: Request, res: Response): Promise<voi
     res.status(500).json({ error: 'Failed to synthesize speech' });
   }
 }
+
+/**
+ * POST /api/ask/cleanup
+ * Cleanup transcript text
+ */
+export async function cleanupTranscript(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { text } = req.body;
+    if (!text) {
+      res.status(400).json({ error: 'Text is required' });
+      return;
+    }
+
+    const cleaned = await askZenaService.cleanupTranscript(text);
+    res.status(200).json({ text: cleaned });
+  } catch (error) {
+    console.error('Error in cleanupTranscript:', error);
+    res.status(500).json({ error: 'Failed to cleanup transcript' });
+  }
+}

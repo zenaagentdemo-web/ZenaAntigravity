@@ -7,7 +7,7 @@ export class VoiceInteractionService {
      */
     async speak(text: string): Promise<ArrayBuffer> {
         const token = localStorage.getItem('authToken');
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/ask/tts`, {
@@ -31,7 +31,7 @@ export class VoiceInteractionService {
      */
     async transcribe(audioBlob: Blob): Promise<string> {
         const token = localStorage.getItem('authToken');
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
         const reader = new FileReader();
         const base64Promise = new Promise<string>((resolve) => {
@@ -52,7 +52,10 @@ export class VoiceInteractionService {
                 },
                 body: JSON.stringify({ audio: base64, mimeType: audioBlob.type })
             });
-            if (!response.ok) throw new Error('STT request failed');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || 'STT request failed');
+            }
             const data = await response.json();
             return (data as { transcript: string }).transcript;
         } catch (err) {

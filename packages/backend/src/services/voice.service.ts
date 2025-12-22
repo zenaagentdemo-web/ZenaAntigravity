@@ -1,3 +1,4 @@
+import fs from 'fs';
 
 export class VoiceService {
     private apiKey: string;
@@ -10,17 +11,23 @@ export class VoiceService {
      * Transcribe audio using Gemini 1.5 Flash
      */
     async transcribe(audioBase64: string, mimeType: string): Promise<string> {
-        const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+        // Clean cleanup mimeType (Gemini doesn't like parameters like ;codecs=opus)
+        const cleanMimeType = mimeType.split(';')[0].trim();
+        const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
+
+        console.log(`[VoiceService] Transcribing with model: ${model}, mimeType: ${cleanMimeType}`);
+        console.log(`[VoiceService] API Key prefix: ${this.apiKey.substring(0, 4)}...`);
+
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`;
 
         const body = {
             contents: [{
                 role: 'user',
                 parts: [
-                    { text: "Transcribe this audio exactly as spoken. Only return the transcription, nothing else." },
+                    { text: "Transcribe this audio exactly as spoken in English. Only return the transcription, nothing else." },
                     {
                         inline_data: {
-                            mime_type: mimeType,
+                            mime_type: cleanMimeType,
                             data: audioBase64
                         }
                     }
@@ -28,6 +35,9 @@ export class VoiceService {
             }]
         };
 
+        const logPath = 'gemini_debug.log';
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Transcribing with model: ${model}, mimeType: ${cleanMimeType}\n`);
+
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -35,34 +45,64 @@ export class VoiceService {
         });
 
         if (!response.ok) {
-            const error = await response.text();
-            console.error('[VoiceService] Gemini STT error:', response.status, error);
-            console.error('Full response body:', error); // Added this line
-            throw new Error(`Gemini STT error: ${response.status} ${error}`);
+            const errorText = await response.text();
+            fs.appendFileSync(logPath, `[${new Date().toISOString()}] Gemini STT error: ${response.status} ${errorText}\n`);
+            console.error('[VoiceService] Gemini STT error:', response.status, errorText);
+            throw new Error(`Gemini STT error: ${response.status} ${errorText}`);
         }
 
         const data = await response.json() as any;
-        return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Gemini Response: ${JSON.stringify(data).substring(0, 500)}\n`);
+
+        const transcript = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+        if (!transcript) {
+            console.warn('[VoiceService] No transcript found in Gemini response');
+            fs.appendFileSync(logPath, `[${new Date().toISOString()}] No transcript found\n`);
+        }
+        return transcript;
+    } catch(err: any) {
+        fs.appendFileSync('gemini_debug.log', `[${new Date().toISOString()}] Catch error: ${err.message}\n`);
+        throw err;
+    }
+
+    private cleanTextForSpeech(text: string): string {
+        return text
+            .replace(/\*\*/g, '') // Remove bold
+            .replace(/\*/g, '')   // Remove italics
+            .replace(/#/g, '')    // Remove headers
+            .replace(/\[.*?\]/g, '') // Remove brackets [Action]
+            .replace(/\(.*?\)/g, '') // Remove parentheses (Playful)
+            .replace(/_{1,2}/g, '')  // Remove underscores
+            .replace(/`{1,3}.*?`{1,3}/gs, '') // Remove code
+            .replace(/\n+/g, ' ')   // Newlines to spaces
+            .trim();
     }
 
     /**
      * Generate speech using Google Cloud TTS
      */
     async textToSpeech(text: string): Promise<Buffer> {
+        const logPath = 'gemini_debug.log';
+        const cleanedText = this.cleanTextForSpeech(text);
         // Using the REST API for Google Cloud TTS
         const endpoint = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${this.apiKey}`;
 
+        // Cortana-like settings: Studio voice, slightly higher pitch, slightly faster rate
         const body = {
-            input: { text },
+            input: { text: cleanedText },
             voice: {
                 languageCode: 'en-US',
-                name: 'en-US-Neural2-F', // High quality female voice
+                name: 'en-US-Studio-O', // Most advanced female studio voice
                 ssmlGender: 'FEMALE'
             },
             audioConfig: {
-                audioEncoding: 'MP3'
+                audioEncoding: 'MP3',
+                pitch: 1.2, // Slightly higher pitch for AI aesthetic
+                speakingRate: 1.05 // Slightly faster for responsiveness
             }
         };
+
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Generating TTS for text: ${text.substring(0, 50)}...\n`);
 
         const response = await fetch(endpoint, {
             method: 'POST',
@@ -71,13 +111,14 @@ export class VoiceService {
         });
 
         if (!response.ok) {
-            const error = await response.text();
-            console.error('[VoiceService] Google TTS error:', response.status, error);
-            console.error('Full response body:', error); // Added this line
-            throw new Error(`Google TTS error: ${response.status} ${error}`);
+            const errorText = await response.text();
+            fs.appendFileSync(logPath, `[${new Date().toISOString()}] Google TTS error: ${response.status} ${errorText}\n`);
+            console.error('[VoiceService] Google TTS error:', response.status, errorText);
+            throw new Error(`Google TTS error: ${response.status} ${errorText}`);
         }
 
         const data = await response.json() as { audioContent: string };
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] TTS generated successfully\n`);
         return Buffer.from(data.audioContent, 'base64');
     }
 }

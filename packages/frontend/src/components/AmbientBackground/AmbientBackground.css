@@ -65,11 +65,9 @@
   height: 60vmax;
   top: -20%;
   left: -10%;
-  background: radial-gradient(
-    circle,
-    var(--ambient-primary-dim) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle,
+      var(--ambient-primary-dim) 0%,
+      transparent 70%);
 }
 
 /* Secondary Orb - Magenta */
@@ -78,11 +76,9 @@
   height: 50vmax;
   bottom: -20%;
   right: -10%;
-  background: radial-gradient(
-    circle,
-    var(--ambient-secondary-dim) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle,
+      var(--ambient-secondary-dim) 0%,
+      transparent 70%);
 }
 
 /* Tertiary Orb - Purple */
@@ -91,11 +87,9 @@
   height: 40vmax;
   top: 40%;
   left: 30%;
-  background: radial-gradient(
-    circle,
-    var(--ambient-tertiary-dim) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle,
+      var(--ambient-tertiary-dim) 0%,
+      transparent 70%);
 }
 
 /* Animated Orbs */
@@ -112,18 +106,23 @@
 }
 
 @keyframes orb-drift-1 {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
     opacity: 0.4;
   }
+
   25% {
     transform: translate(10%, 5%) scale(1.05);
     opacity: 0.5;
   }
+
   50% {
     transform: translate(5%, 10%) scale(0.95);
     opacity: 0.35;
   }
+
   75% {
     transform: translate(-5%, 5%) scale(1.02);
     opacity: 0.45;
@@ -131,14 +130,18 @@
 }
 
 @keyframes orb-drift-2 {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
     opacity: 0.4;
   }
+
   33% {
     transform: translate(-8%, -5%) scale(1.08);
     opacity: 0.5;
   }
+
   66% {
     transform: translate(5%, -10%) scale(0.92);
     opacity: 0.35;
@@ -146,10 +149,13 @@
 }
 
 @keyframes orb-drift-3 {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
     opacity: 0.3;
   }
+
   50% {
     transform: translate(-10%, 10%) scale(1.1);
     opacity: 0.45;
@@ -163,7 +169,7 @@
 .ambient-background__grid {
   position: absolute;
   inset: 0;
-  background-image: 
+  background-image:
     linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
@@ -192,8 +198,8 @@
 /* Particle color variants - enhanced glow for maximum visibility */
 .ambient-particle--1 {
   background: var(--ambient-primary);
-  box-shadow: 
-    0 0 8px var(--ambient-primary), 
+  box-shadow:
+    0 0 8px var(--ambient-primary),
     0 0 16px var(--ambient-primary),
     0 0 24px var(--ambient-primary),
     0 0 32px rgba(0, 212, 255, 0.5);
@@ -201,8 +207,8 @@
 
 .ambient-particle--2 {
   background: var(--ambient-secondary);
-  box-shadow: 
-    0 0 8px var(--ambient-secondary), 
+  box-shadow:
+    0 0 8px var(--ambient-secondary),
     0 0 16px var(--ambient-secondary),
     0 0 24px var(--ambient-secondary),
     0 0 32px rgba(255, 0, 255, 0.5);
@@ -210,8 +216,8 @@
 
 .ambient-particle--3 {
   background: var(--ambient-tertiary);
-  box-shadow: 
-    0 0 8px var(--ambient-tertiary), 
+  box-shadow:
+    0 0 8px var(--ambient-tertiary),
     0 0 16px var(--ambient-tertiary),
     0 0 24px var(--ambient-tertiary),
     0 0 32px rgba(139, 92, 246, 0.5);
@@ -227,12 +233,15 @@
     transform: translateY(0) translateX(0);
     opacity: 0;
   }
+
   10% {
     opacity: 0.85;
   }
+
   90% {
     opacity: 0.85;
   }
+
   100% {
     transform: translateY(-100vh) translateX(20px);
     opacity: 0;
@@ -258,12 +267,10 @@
 .ambient-background__vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 0%,
-    transparent 50%,
-    rgba(10, 10, 15, 0.4) 100%
-  );
+  background: radial-gradient(ellipse at center,
+      transparent 0%,
+      transparent 50%,
+      rgba(10, 10, 15, 0.4) 100%);
   pointer-events: none;
 }
 
@@ -281,12 +288,10 @@
 }
 
 .ambient-background--subtle .ambient-background__vignette {
-  background: radial-gradient(
-    ellipse at center,
-    transparent 0%,
-    transparent 60%,
-    rgba(10, 10, 15, 0.2) 100%
-  );
+  background: radial-gradient(ellipse at center,
+      transparent 0%,
+      transparent 60%,
+      rgba(10, 10, 15, 0.2) 100%);
 }
 
 /* Intense variant - increased effects */
@@ -300,12 +305,10 @@
 }
 
 .ambient-background--intense .ambient-background__vignette {
-  background: radial-gradient(
-    ellipse at center,
-    transparent 0%,
-    transparent 40%,
-    rgba(10, 10, 15, 0.6) 100%
-  );
+  background: radial-gradient(ellipse at center,
+      transparent 0%,
+      transparent 40%,
+      rgba(10, 10, 15, 0.6) 100%);
 }
 
 /* Minimal variant - orbs only, no particles */
@@ -323,15 +326,45 @@
 }
 
 /* ============================================
+   Thinking State (Breathing)
+   ============================================ */
+
+.ambient-background--thinking {
+  animation: background-breathe var(--vortex-pulse-speed, 3s) ease-in-out infinite;
+}
+
+.ambient-background--thinking .ambient-particle {
+  filter: brightness(1.2) contrast(1.1);
+  box-shadow:
+    0 0 12px var(--ambient-primary),
+    0 0 24px rgba(0, 212, 255, 0.4);
+}
+
+@keyframes background-breathe {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.02);
+    opacity: 0.8;
+  }
+}
+
+/* ============================================
    Reduced Motion Support
    ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
+
   .ambient-orb,
   .ambient-particle {
     animation: none !important;
   }
-  
+
   .ambient-orb--animated,
   .ambient-particle--animated {
     animation: none !important;
@@ -353,7 +386,7 @@
   .ambient-orb {
     filter: blur(60px);
   }
-  
+
   .ambient-particle:nth-child(n+50) {
     display: none;
   }

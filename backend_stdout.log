@@ -1,0 +1,20 @@
+
+> @zena/backend@1.0.0 dev
+> tsx watch src/index.ts
+
+9:07:31 AM [tsx] rerunning
+c[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+[AskZenaService] Initializing...
+[AskZenaService] OPENAI_API_KEY set: false
+[AskZenaService] GEMINI_API_KEY set: true
+[AskZenaService] GEMINI_MODEL: gemini-3-flash-preview
+WebSocket server initialized
+Starting sync engine...
+Sync engine started (interval: 60s)
+Starting calendar sync engine...
+Calendar sync engine started (interval: 600s)
+{"timestamp":"2025-12-20T20:07:31.989Z","level":"info","message":"Server started","context":{"port":"3001","environment":"development","nodeVersion":"v25.2.1","databaseConfigured":true}}
+{"timestamp":"2025-12-20T20:07:31.990Z","level":"info","message":"WebSocket server initialized","context":{"endpoint":"ws://localhost:3001/ws"}}
+Found 0 calendar accounts to sync
+Found 0 accounts to sync
+No valid accounts to sync

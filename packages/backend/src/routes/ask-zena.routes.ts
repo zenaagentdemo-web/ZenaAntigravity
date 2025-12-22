@@ -25,4 +25,7 @@ router.post('/tts', askZenaController.synthesizeSpeech);
 // POST /api/ask/draft - Generate draft communication
 router.post('/draft', askZenaController.generateDraft);
 
+// POST /api/ask/cleanup - Cleanup transcript text
+router.post('/cleanup', askZenaController.cleanupTranscript);
+
 export default router;

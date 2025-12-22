@@ -1,0 +1,155 @@
+
+> @zena/backend@1.0.0 test
+> vitest --run ai-processing.service.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv4.0.15 [39m[90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend[39m
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mThread Classification[2m > [22m[2mshould classify buyer threads using fallback when no API key
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mThread Classification[2m > [22m[2mshould classify vendor threads using fallback
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstderr[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mThread Classification[2m > [22m[2mshould classify vendor threads using fallback
+[22m[39mError parsing LLM response: Error: No JSON found in response
+    at AIProcessingService.parseClassificationResponse [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:322:15[90m)[39m
+    at AIProcessingService.classifyThread [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:101:27[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.test.ts:45:22
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@vitest/runner[24m/dist/index.js:915:20
+Error classifying thread: Error: No JSON found in response
+    at AIProcessingService.parseClassificationResponse [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:322:15[90m)[39m
+    at AIProcessingService.classifyThread [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:101:27[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.test.ts:45:22
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@vitest/runner[24m/dist/index.js:915:20
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mThread Classification[2m > [22m[2mshould classify noise/marketing threads using fallback
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mThread Classification[2m > [22m[2mshould classify lawyer/broker threads using fallback
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mThread Classification[2m > [22m[2mshould classify market contact threads using fallback
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mThread Classification[2m > [22m[2mshould handle threads with minimal information
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mThread Classification[2m > [22m[2mshould categorize reply threads as waiting
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstderr[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mThread Classification[2m > [22m[2mshould categorize reply threads as waiting
+[22m[39mError parsing LLM response: Error: No JSON found in response
+    at AIProcessingService.parseClassificationResponse [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:322:15[90m)[39m
+    at AIProcessingService.classifyThread [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:101:27[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.test.ts:139:22
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@vitest/runner[24m/dist/index.js:915:20
+Error classifying thread: Error: No JSON found in response
+    at AIProcessingService.parseClassificationResponse [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:322:15[90m)[39m
+    at AIProcessingService.classifyThread [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:101:27[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.test.ts:139:22
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@vitest/runner[24m/dist/index.js:915:20
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mThread Classification[2m > [22m[2mshould categorize new threads as focus
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mClassification Validation[2m > [22m[2mshould always return valid classification types
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mClassification Validation[2m > [22m[2mshould return confidence between 0 and 1
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould extract contacts from thread participants
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould extract property addresses from thread content
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould extract dates and event types from thread content
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould extract actions from thread content
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstderr[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould extract actions from thread content
+[22m[39mError parsing entity extraction response: SyntaxError: Expected ',' or ']' after array element in JSON at position 482 (line 25 column 6)
+    at JSON.parse (<anonymous>)
+    at AIProcessingService.parseEntityExtractionResponse [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:632:27[90m)[39m
+    at AIProcessingService.extractEntities [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:545:27[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.test.ts:280:22
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@vitest/runner[24m/dist/index.js:915:20
+Error extracting entities: SyntaxError: Expected ',' or ']' after array element in JSON at position 482 (line 25 column 6)
+    at JSON.parse (<anonymous>)
+    at AIProcessingService.parseEntityExtractionResponse [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:632:27[90m)[39m
+    at AIProcessingService.extractEntities [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:545:27[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.test.ts:280:22
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@vitest/runner[24m/dist/index.js:915:20
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould detect deal stage from thread content
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould detect risk signals from thread content
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould handle threads with no extractable entities
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould validate contact roles
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould validate date types
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+[90mstderr[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould validate date types
+[22m[39mError parsing entity extraction response: Error: No JSON found in response
+    at AIProcessingService.parseEntityExtractionResponse [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:629:15[90m)[39m
+    at AIProcessingService.extractEntities [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:545:27[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.test.ts:382:22
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@vitest/runner[24m/dist/index.js:915:20
+Error extracting entities: Error: No JSON found in response
+    at AIProcessingService.parseEntityExtractionResponse [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:629:15[90m)[39m
+    at AIProcessingService.extractEntities [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.ts:545:27[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/ai-processing.service.test.ts:382:22
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@vitest/runner[24m/dist/index.js:915:20
+
+[90mstdout[2m | src/services/ai-processing.service.test.ts[2m > [22m[2mAIProcessingService[2m > [22m[2mEntity Extraction[2m > [22m[2mshould validate action owners
+[22m[39m[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+
+ [32m✓[39m src/services/ai-processing.service.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 97782[2mms[22m[39m
+       [33m[2m✓[22m[39m should classify buyer threads using fallback when no API key [33m 3563[2mms[22m[39m
+       [33m[2m✓[22m[39m should classify vendor threads using fallback [33m 6611[2mms[22m[39m
+       [33m[2m✓[22m[39m should classify noise/marketing threads using fallback [33m 3656[2mms[22m[39m
+       [33m[2m✓[22m[39m should classify lawyer/broker threads using fallback [33m 3528[2mms[22m[39m
+       [33m[2m✓[22m[39m should classify market contact threads using fallback [33m 4082[2mms[22m[39m
+       [33m[2m✓[22m[39m should handle threads with minimal information [33m 3821[2mms[22m[39m
+       [33m[2m✓[22m[39m should categorize reply threads as waiting [33m 7375[2mms[22m[39m
+       [33m[2m✓[22m[39m should categorize new threads as focus [33m 3256[2mms[22m[39m
+       [33m[2m✓[22m[39m should always return valid classification types [33m 3540[2mms[22m[39m
+       [33m[2m✓[22m[39m should return confidence between 0 and 1 [33m 3749[2mms[22m[39m
+       [33m[2m✓[22m[39m should extract contacts from thread participants [33m 4719[2mms[22m[39m
+       [33m[2m✓[22m[39m should extract property addresses from thread content [33m 6401[2mms[22m[39m
+       [33m[2m✓[22m[39m should extract dates and event types from thread content [33m 5677[2mms[22m[39m
+       [33m[2m✓[22m[39m should extract actions from thread content [33m 5667[2mms[22m[39m
+       [33m[2m✓[22m[39m should detect deal stage from thread content [33m 4422[2mms[22m[39m
+       [33m[2m✓[22m[39m should detect risk signals from thread content [33m 4261[2mms[22m[39m
+       [33m[2m✓[22m[39m should handle threads with no extractable entities [33m 5084[2mms[22m[39m
+       [33m[2m✓[22m[39m should validate contact roles [33m 4736[2mms[22m[39m
+       [33m[2m✓[22m[39m should validate date types [33m 7350[2mms[22m[39m
+       [33m[2m✓[22m[39m should validate action owners [33m 6263[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m20 passed[39m[22m[90m (20)[39m
+[2m   Start at [22m 07:23:16
+[2m   Duration [22m 98.22s[2m (transform 91ms, setup 81ms, import 110ms, tests 97.78s, environment 0ms)[22m
+

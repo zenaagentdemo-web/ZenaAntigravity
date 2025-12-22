@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 export interface ExportOptions {
   userId: string;
@@ -27,14 +25,14 @@ export class ExportService {
    */
   async createExport(options: ExportOptions): Promise<string> {
     const { userId, type, format, recordIds } = options;
-    
+
     // Validate format for type
     if (type === 'contacts' && format === 'vcard') {
       // vCard is only valid for contacts
     } else if (format === 'vcard') {
       throw new Error('vCard format is only supported for contacts');
     }
-    
+
     // Create export record
     const exportRecord = await prisma.export.create({
       data: {
@@ -46,7 +44,7 @@ export class ExportService {
         status: 'pending',
       },
     });
-    
+
     // Start export generation asynchronously
     this.generateExport(exportRecord.id, options).catch(error => {
       console.error(`Export generation failed for ${exportRecord.id}:`, error);
@@ -56,10 +54,10 @@ export class ExportService {
         data: { status: 'failed' },
       }).catch(console.error);
     });
-    
+
     return exportRecord.id;
   }
-  
+
   /**
    * Get export status and download URL
    */
@@ -70,11 +68,11 @@ export class ExportService {
         userId,
       },
     });
-    
+
     if (!exportRecord) {
       throw new Error('Export not found');
     }
-    
+
     return {
       id: exportRecord.id,
       fileUrl: exportRecord.fileUrl,
@@ -82,23 +80,23 @@ export class ExportService {
       status: exportRecord.status as 'completed' | 'failed',
     };
   }
-  
+
   /**
    * Generate export file
    */
   private async generateExport(exportId: string, options: ExportOptions): Promise<void> {
     const { userId, type, format, recordIds } = options;
-    
+
     // Update status to processing
     await prisma.export.update({
       where: { id: exportId },
       data: { status: 'processing' },
     });
-    
+
     try {
       let fileContent: string;
       let recordCount: number;
-      
+
       switch (type) {
         case 'contacts':
           if (format === 'vcard') {
@@ -115,7 +113,7 @@ export class ExportService {
             recordCount = result.count;
           }
           break;
-          
+
         case 'properties':
           if (format === 'csv') {
             const result = await this.exportPropertiesCSV(userId, recordIds);
@@ -127,7 +125,7 @@ export class ExportService {
             recordCount = result.count;
           }
           break;
-          
+
         case 'deals':
           if (format === 'csv') {
             const result = await this.exportDealsCSV(userId, recordIds);
@@ -139,15 +137,15 @@ export class ExportService {
             recordCount = result.count;
           }
           break;
-          
+
         default:
           throw new Error(`Unsupported export type: ${type}`);
       }
-      
+
       // In a real implementation, this would upload to S3
       // For now, we'll store as a data URL or file path
       const fileUrl = this.storeExportFile(exportId, fileContent, format);
-      
+
       // Update export record with completion
       await prisma.export.update({
         where: { id: exportId },
@@ -167,7 +165,38 @@ export class ExportService {
       throw error;
     }
   }
-  
+
+  /**
+   * Create a simulated market report (PDF)
+   */
+  async createMarketReport(userId: string, address: string): Promise<string> {
+    // Create export record
+    const exportRecord = await prisma.export.create({
+      data: {
+        userId,
+        type: 'properties',
+        format: 'xlsx', // Using xlsx as proxy for pdf in this system
+        fileUrl: '',
+        recordCount: 1,
+        status: 'pending',
+      },
+    });
+
+    // Simulate delay for generation
+    setTimeout(async () => {
+      await prisma.export.update({
+        where: { id: exportRecord.id },
+        data: {
+          status: 'completed',
+          fileUrl: `/api/export/${exportRecord.id}/download`,
+          completedAt: new Date(),
+        },
+      });
+    }, 2000);
+
+    return exportRecord.id;
+  }
+
   /**
    * Export contacts as CSV
    */
@@ -176,7 +205,7 @@ export class ExportService {
     recordIds?: string[]
   ): Promise<{ content: string; count: number }> {
     const contacts = await this.fetchContacts(userId, recordIds);
-    
+
     // CSV header
     const headers = [
       'Name',
@@ -186,7 +215,7 @@ export class ExportService {
       'Associated Properties',
       'Relationship Notes',
     ];
-    
+
     // CSV rows
     const rows = contacts.map(contact => {
       const emails = contact.emails.join('; ');
@@ -198,7 +227,7 @@ export class ExportService {
       const notes = (contact.relationshipNotes as any[])
         .map(note => note.content)
         .join(' | ');
-      
+
       return [
         this.escapeCSV(contact.name),
         this.escapeCSV(emails),
@@ -208,14 +237,14 @@ export class ExportService {
         this.escapeCSV(notes),
       ];
     });
-    
+
     // Build CSV content
     const csvLines = [headers, ...rows];
     const content = csvLines.map(row => row.join(',')).join('\n');
-    
+
     return { content, count: contacts.length };
   }
-  
+
   /**
    * Export contacts as Excel (XLSX)
    */
@@ -227,7 +256,7 @@ export class ExportService {
     // In production, use a library like 'exceljs' to generate actual XLSX
     return this.exportContactsCSV(userId, recordIds);
   }
-  
+
   /**
    * Export contacts as vCard
    */
@@ -236,29 +265,29 @@ export class ExportService {
     recordIds?: string[]
   ): Promise<{ content: string; count: number }> {
     const contacts = await this.fetchContacts(userId, recordIds);
-    
+
     const vcards = contacts.map(contact => {
       const lines = ['BEGIN:VCARD', 'VERSION:3.0'];
-      
+
       // Name
       lines.push(`FN:${contact.name}`);
       lines.push(`N:${contact.name};;;;`);
-      
+
       // Emails
       contact.emails.forEach((email, index) => {
         const type = index === 0 ? 'WORK' : 'HOME';
         lines.push(`EMAIL;TYPE=${type}:${email}`);
       });
-      
+
       // Phones
       contact.phones.forEach((phone, index) => {
         const type = index === 0 ? 'WORK' : 'CELL';
         lines.push(`TEL;TYPE=${type}:${phone}`);
       });
-      
+
       // Role as organization
       lines.push(`ORG:${contact.role}`);
-      
+
       // Notes
       const notes = (contact.relationshipNotes as any[])
         .map(note => note.content)
@@ -266,17 +295,17 @@ export class ExportService {
       if (notes) {
         lines.push(`NOTE:${notes.replace(/\n/g, '\\n')}`);
       }
-      
+
       lines.push('END:VCARD');
-      
+
       return lines.join('\n');
     });
-    
+
     const content = vcards.join('\n\n');
-    
+
     return { content, count: contacts.length };
   }
-  
+
   /**
    * Export properties as CSV
    */
@@ -285,7 +314,7 @@ export class ExportService {
     recordIds?: string[]
   ): Promise<{ content: string; count: number }> {
     const properties = await this.fetchProperties(userId, recordIds);
-    
+
     // CSV header
     const headers = [
       'Address',
@@ -296,7 +325,7 @@ export class ExportService {
       'Campaign Milestones',
       'Risk Overview',
     ];
-    
+
     // CSV rows
     const rows = properties.map(property => {
       const vendorNames = property.vendors.map(v => v.name).join('; ');
@@ -307,13 +336,13 @@ export class ExportService {
         ...property.vendors.map(v => v.name),
         ...property.buyers.map(b => b.name),
       ].join('; ');
-      
+
       const stage = property.deals[0]?.stage || 'N/A';
-      
+
       const milestones = (property.milestones as any[])
         .map(m => `${m.type}: ${new Date(m.date).toLocaleDateString()}`)
         .join(' | ');
-      
+
       return [
         this.escapeCSV(property.address),
         this.escapeCSV(vendorNames),
@@ -324,14 +353,14 @@ export class ExportService {
         this.escapeCSV(property.riskOverview || ''),
       ];
     });
-    
+
     // Build CSV content
     const csvLines = [headers, ...rows];
     const content = csvLines.map(row => row.join(',')).join('\n');
-    
+
     return { content, count: properties.length };
   }
-  
+
   /**
    * Export properties as Excel (XLSX)
    */
@@ -343,7 +372,7 @@ export class ExportService {
     // In production, use a library like 'exceljs' to generate actual XLSX
     return this.exportPropertiesCSV(userId, recordIds);
   }
-  
+
   /**
    * Export deals as CSV
    */
@@ -352,7 +381,7 @@ export class ExportService {
     recordIds?: string[]
   ): Promise<{ content: string; count: number }> {
     const deals = await this.fetchDeals(userId, recordIds);
-    
+
     // CSV header
     const headers = [
       'Property Address',
@@ -366,13 +395,13 @@ export class ExportService {
       'Created Date',
       'Updated Date',
     ];
-    
+
     // CSV rows
     const rows = deals.map(deal => {
       const propertyAddress = deal.property?.address || 'N/A';
       const participants = deal.contacts.map(c => c.name).join('; ');
       const riskFlags = deal.riskFlags.join('; ');
-      
+
       return [
         this.escapeCSV(propertyAddress),
         this.escapeCSV(deal.stage),
@@ -386,14 +415,14 @@ export class ExportService {
         this.escapeCSV(deal.updatedAt.toISOString()),
       ];
     });
-    
+
     // Build CSV content
     const csvLines = [headers, ...rows];
     const content = csvLines.map(row => row.join(',')).join('\n');
-    
+
     return { content, count: deals.length };
   }
-  
+
   /**
    * Export deals as Excel (XLSX)
    */
@@ -405,7 +434,7 @@ export class ExportService {
     // In production, use a library like 'exceljs' to generate actual XLSX
     return this.exportDealsCSV(userId, recordIds);
   }
-  
+
   /**
    * Fetch contacts with related data
    */
@@ -421,7 +450,7 @@ export class ExportService {
       },
     });
   }
-  
+
   /**
    * Fetch properties with related data
    */
@@ -438,7 +467,7 @@ export class ExportService {
       },
     });
   }
-  
+
   /**
    * Fetch deals with related data
    */
@@ -454,21 +483,21 @@ export class ExportService {
       },
     });
   }
-  
+
   /**
    * Escape CSV field value
    */
   private escapeCSV(value: string): string {
     if (!value) return '';
-    
+
     // If value contains comma, quote, or newline, wrap in quotes and escape quotes
     if (value.includes(',') || value.includes('"') || value.includes('\n')) {
       return `"${value.replace(/"/g, '""')}"`;
     }
-    
+
     return value;
   }
-  
+
   /**
    * Store export file (placeholder for S3 upload)
    */

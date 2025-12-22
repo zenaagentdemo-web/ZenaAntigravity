@@ -155,7 +155,6 @@ describe('Properties Controller - Property-Based Tests', () => {
       );
     });
   });
-});
 
   /**
    * Feature: zena-ai-real-estate-pwa, Property 36: Property view completeness

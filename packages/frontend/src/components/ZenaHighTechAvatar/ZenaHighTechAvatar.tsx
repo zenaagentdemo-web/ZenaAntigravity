@@ -243,7 +243,7 @@ export const ZenaHighTechAvatar: React.FC<ZenaHighTechAvatarProps> = memo(({
         particlesRef.current = particles;
         scene.add(particles);
 
-    }, [size, clampedParticleCount, initialPositions, voiceState]);
+    }, [size, clampedParticleCount, initialPositions]); // Removed voiceState dependency
 
     // Animation loop for orbit particles
     const animate = useCallback(() => {

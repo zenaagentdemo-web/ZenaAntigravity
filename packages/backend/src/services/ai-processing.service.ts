@@ -76,8 +76,14 @@ export class AIProcessingService {
     this.apiEndpoint = process.env.OPENAI_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions';
     this.model = process.env.OPENAI_MODEL || 'gpt-4';
 
-    if (!this.apiKey) {
-      console.warn('Warning: OPENAI_API_KEY not set. AI processing will use fallback classification.');
+    // Gemini support
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    const geminiModel = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
+
+    if (geminiApiKey) {
+      console.log(`[AIProcessingService] Using Gemini for processing: ${geminiModel}`);
+    } else if (!this.apiKey) {
+      console.warn('Warning: Neither OPENAI_API_KEY nor GEMINI_API_KEY set. AI processing will use fallback classification.');
     }
   }
 
@@ -168,7 +174,14 @@ export class AIProcessingService {
       .map((p) => `${p.name} <${p.email}>`)
       .join(', ');
 
-    return `You are an AI assistant helping a residential real estate agent classify email threads. Your job is to filter emails so the agent only sees relevant real estate communications in their Focus and Waiting lists.
+    return `You are an AI assistant helping a residential real estate agent in New Zealand (NZ) classify email threads. 
+    
+    LOCALE & STANDARDS (MANDATORY):
+    - Location: New Zealand (NZ).
+    - Spelling: Use UK English spelling (e.g. "centimetre").
+    - Units: Use Metric system.
+
+    Your job is to filter emails so the agent only sees relevant real estate communications in their Focus and Waiting lists.
 
 Analyze the following email thread and provide a classification:
 
@@ -210,9 +223,10 @@ CLASSIFICATION RULES:
 IMPORTANT: Be aggressive about marking emails as "noise" if they are not directly related to real estate transactions, client communications, or professional real estate activities.
 
 Category Rules:
-- "focus" ONLY if the agent needs to reply AND it's real estate related
-- "waiting" ONLY if waiting for others to reply AND it's real estate related  
-- If classified as "noise", always use category "waiting" (it will be filtered out)
+- "focus": Use this if the agent needs to take action or reply next.
+- "waiting": Use this if the agent is waiting for a response from someone else.
+- NOTE: If the subject starts with "Re:" or "Fwd:", it usually implies the agent has already acted or is in a thread where they might be waiting, but use your best judgment. For consistency with existing rules, prefer "waiting" for "Re:" threads unless the summary clearly states the agent must act.
+- If classified as "noise", always use category "waiting" (it will be filtered out).
 
 Respond in JSON format:
 {
@@ -221,7 +235,8 @@ Respond in JSON format:
   "nextActionOwner": "agent|other",
   "confidence": 0.0-1.0,
   "reasoning": "brief explanation focusing on why this is/isn't real estate related"
-}`;
+}
+JSON; // End of prompt - ensure valid JSON output only`;
   }
 
   /**
@@ -232,9 +247,14 @@ Respond in JSON format:
   }
 
   /**
-   * Call LLM API
+   * Call LLM API - supports both OpenAI and Google Gemini
    */
   private async callLLM(prompt: string): Promise<string> {
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    if (geminiApiKey) {
+      return this.callGemini(prompt, geminiApiKey);
+    }
+
     const response = await fetch(this.apiEndpoint, {
       method: 'POST',
       headers: {
@@ -261,6 +281,41 @@ Respond in JSON format:
 
     const data = await response.json();
     return data.choices[0]?.message?.content || '';
+  }
+
+  /**
+   * Call Google Gemini API
+   */
+  private async callGemini(prompt: string, apiKey: string): Promise<string> {
+    const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    const body = JSON.stringify({
+      contents: [{
+        role: 'user',
+        parts: [{ text: prompt }]
+      }],
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 1000,
+        response_mime_type: 'application/json',
+      },
+    });
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('[Gemini] AI Processing Error:', response.status, error);
+      throw new Error(`Gemini API error: ${response.status} ${error}`);
+    }
+
+    const data = await response.json() as any;
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   }
 
   /**
@@ -340,17 +395,17 @@ Respond in JSON format:
       'google', 'yahoo', 'microsoft', 'aws', 'api', 'cloud', 'github', 'kiro',
       'security alert', 'payment received', 'quota', 'support request',
       'welcome to', 'integration', 'notification', 'system',
-      
+
       // Marketing/Newsletter patterns
       'unsubscribe', 'newsletter', 'marketing', 'promotion', 'report',
       'update', 'alert', 'notification', 'welcome', 'confirmation',
-      
+
       // Technical domains
       'noreply', 'no-reply', 'support@', 'admin@', 'system@',
       'notifications@', 'alerts@', 'billing@'
     ];
 
-    const hasNoisePattern = noisePatterns.some(pattern => 
+    const hasNoisePattern = noisePatterns.some(pattern =>
       content.includes(pattern) || participants.includes(pattern)
     );
 
@@ -814,14 +869,14 @@ Respond with ONLY the draft email body text (no subject line, no JSON, just the 
   private parseDraftResponse(response: string): string {
     // Clean up the response - remove any markdown formatting or extra whitespace
     let draft = response.trim();
-    
+
     // Remove markdown code blocks if present
     draft = draft.replace(/```[\s\S]*?```/g, '');
     draft = draft.replace(/`/g, '');
-    
+
     // Remove any "Subject:" lines that might have been included
     draft = draft.replace(/^Subject:.*$/gm, '');
-    
+
     return draft.trim();
   }
 
@@ -830,10 +885,10 @@ Respond with ONLY the draft email body text (no subject line, no JSON, just the 
    */
   private fallbackDraftResponse(thread: ThreadData): string {
     const subject = thread.subject.toLowerCase();
-    
+
     // Generate a simple template-based response
     let response = `Thank you for your email regarding ${thread.subject}.\n\n`;
-    
+
     if (subject.includes('viewing') || subject.includes('inspection')) {
       response += `I'd be happy to arrange a viewing for you. Please let me know your preferred times and I'll coordinate with the vendor.\n\n`;
     } else if (subject.includes('offer') || subject.includes('bid')) {
@@ -843,9 +898,9 @@ Respond with ONLY the draft email body text (no subject line, no JSON, just the 
     } else {
       response += `I've received your message and will get back to you with the information you need.\n\n`;
     }
-    
+
     response += `Best regards`;
-    
+
     return response;
   }
 
@@ -991,7 +1046,7 @@ Respond with ONLY the draft email body text (no subject line, no JSON, just the 
       // Automatically create deal for important threads
       const shouldCreateDeal = await this.shouldCreateDeal(thread, entities);
       let dealId: string | undefined;
-      
+
       if (shouldCreateDeal) {
         dealId = await this.createDealFromThread(thread.userId, threadId, entities, propertyId);
       }

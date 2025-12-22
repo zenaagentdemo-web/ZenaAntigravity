@@ -1,6 +1,5 @@
-import React, { useRef, useEffect, useCallback, useMemo, memo } from 'react';
+import React, { useRef, useEffect, useCallback, memo } from 'react';
 import * as THREE from 'three';
-import { noise2D } from '../../utils/perlinNoise';
 import './DissolveParticleSystem.css';
 
 export type DissolvePhase = 'idle' | 'dissolving' | 'vortex' | 'reforming' | 'speaking';
@@ -20,10 +19,8 @@ export interface DissolveParticleSystemProps {
 
 // Configuration - Ultra HD quality
 const GRID_SIZE = 80; // 80x80 grid = ~6400 particles for ultra HD density
-const MAX_PARTICLES = GRID_SIZE * GRID_SIZE;
 const DISSOLVE_DURATION = 1000; // 1 second
 const REFORM_DURATION = 800; // 0.8 seconds
-const MAX_VORTEX_RADIUS = 180;
 const VORTEX_ROTATION_SPEED = 1.5;
 
 // Vertex shader - HD quality
@@ -146,6 +143,9 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
 
     // Generate random lightning path with realistic branching
     const generateLightningPath = useCallback((centerX: number, centerY: number, radius: number): string => {
+        // NaN Guard
+        if (isNaN(centerX) || isNaN(centerY) || isNaN(radius) || radius <= 0) return '';
+
         const angle1 = Math.random() * Math.PI * 2;
         const angle2 = angle1 + Math.PI * 0.4 + Math.random() * Math.PI * 0.8;
 
@@ -154,33 +154,27 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
         const endX = centerX + Math.cos(angle2) * radius * 0.9;
         const endY = centerY + Math.sin(angle2) * radius * 0.9;
 
-        // Create realistic jagged lightning path with more segments
-        let path = `M ${startX} ${startY}`;
-        const segments = 8 + Math.floor(Math.random() * 5); // More segments for detail
+        // Final check
+        if (isNaN(startX) || isNaN(startY) || isNaN(endX) || isNaN(endY)) return '';
 
-        let lastX = startX;
-        let lastY = startY;
+        let path = `M ${startX} ${startY}`;
+        const segments = 8 + Math.floor(Math.random() * 5);
 
         for (let i = 1; i <= segments; i++) {
             const t = i / segments;
-            // Base position along the arc
             const baseX = startX + (endX - startX) * t;
             const baseY = startY + (endY - startY) * t;
-
-            // Sharp angular jitter that decreases toward the end
             const jitterScale = (1 - t * 0.5) * 30;
             const offsetX = (Math.random() - 0.5) * jitterScale;
             const offsetY = (Math.random() - 0.5) * jitterScale;
-
-            // Sometimes add a sharp direction change for realistic lightning
             const sharpTurn = Math.random() > 0.7 ? (Math.random() - 0.5) * 25 : 0;
 
             const newX = baseX + offsetX + sharpTurn;
             const newY = baseY + offsetY + (Math.random() - 0.5) * 15;
 
-            path += ` L ${newX} ${newY}`;
-            lastX = newX;
-            lastY = newY;
+            if (!isNaN(newX) && !isNaN(newY)) {
+                path += ` L ${newX} ${newY}`;
+            }
         }
 
         path += ` L ${endX} ${endY}`;
@@ -325,7 +319,23 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
         return () => {
             cancelAnimationFrame(animationFrameRef.current);
             if (rendererRef.current) {
-                rendererRef.current.dispose();
+                const renderer = rendererRef.current;
+                renderer.dispose();
+                // Force lose context to free up hardware resource (prevent "too many contexts" error)
+                const extension = renderer.getContext().getExtension('WEBGL_lose_context');
+                if (extension) extension.loseContext();
+            }
+            if (sceneRef.current) {
+                sceneRef.current.traverse((object) => {
+                    if (object instanceof THREE.Mesh || object instanceof THREE.Points) {
+                        object.geometry.dispose();
+                        if (Array.isArray(object.material)) {
+                            object.material.forEach(m => m.dispose());
+                        } else {
+                            object.material.dispose();
+                        }
+                    }
+                });
             }
         };
     }, [imageSrc, sampleImageColors, initParticles, initScene]);
@@ -401,7 +411,6 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
 
     // Easing functions
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-    const easeInOutQuad = (t: number) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
     // Animation loop
     const animate = useCallback(() => {
@@ -418,15 +427,18 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
 
         const now = Date.now();
         const elapsed = now - phaseStartTimeRef.current;
-        const centerX = size / 2;
-        const centerY = size / 2;
-        const maxDistance = size / 2;
+
+        // Ensure size is valid to prevent NaN centerX/centerY
+        const safeSize = size > 0 ? size : 500;
+        const centerX = safeSize / 2;
+        const centerY = safeSize / 2;
+        const maxDistance = safeSize / 2;
 
         const currentPhase = currentPhaseRef.current;
 
         if (currentPhase === 'idle') {
             // No particles visible in idle
-            particles.forEach((p, i) => {
+            particles.forEach((_, i) => {
                 opacities[i] = 0;
             });
         } else if (currentPhase === 'dissolving') {
@@ -470,10 +482,13 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
                     p.opacity = 0.9;
                 }
 
+                p.currentX = isNaN(p.currentX) ? centerX : p.currentX;
+                p.currentY = isNaN(p.currentY) ? centerY : p.currentY;
+
                 positions[i * 3] = p.currentX;
                 positions[i * 3 + 1] = p.currentY;
-                opacities[i] = p.opacity;
-                sizes[i] = p.size * (1 + easeProgress * 0.5); // Slightly grow as they converge
+                opacities[i] = isNaN(p.opacity) ? 0.9 : p.opacity;
+                sizes[i] = p.size * (1 + easeProgress * 0.5);
             });
 
             if (progress >= 1) {
@@ -519,21 +534,26 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
                     newY = centerY + (newY - centerY) * scale;
                 }
 
+                // Final NaN Guard
+                if (isNaN(newX) || isNaN(newY)) {
+                    newX = centerX;
+                    newY = centerY;
+                }
+
                 p.currentX = newX;
                 p.currentY = newY;
 
                 // EDGE FADE: Calculate fade based on distance from center
-                // Particles near outer edge become nearly invisible (90% reduction)
-                const edgeRatio = distFromCenter / maxRadius;
+                const edgeRatio = maxRadius > 0 ? distFromCenter / maxRadius : 0;
                 const edgeFade = edgeRatio > 0.75 ? Math.max(0.1, 1 - (edgeRatio - 0.75) / 0.25 * 0.9) : 1;
 
                 // Gentle opacity pulse with edge fade applied
-                p.opacity = (0.7 + Math.sin(time * 0.3 + p.noiseOffset * 0.1) * 0.15) * edgeFade;
+                p.opacity = (0.7 + Math.sin(time * 0.3 + p.noiseOffset * 0.1) * 0.15) * (isNaN(edgeFade) ? 1 : edgeFade);
 
                 positions[i * 3] = p.currentX;
                 positions[i * 3 + 1] = p.currentY;
                 opacities[i] = p.opacity;
-                sizes[i] = p.size * (0.85 + Math.sin(time * 0.4 + i * 0.05) * 0.15) * edgeFade;
+                sizes[i] = p.size * (0.85 + Math.sin(time * 0.4 + i * 0.05) * 0.15) * (isNaN(edgeFade) ? 1 : edgeFade);
             });
 
             // Spawn lightning arcs every 0.8-1.5 seconds
@@ -577,9 +597,12 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
                     p.currentY = centerY + Math.sin(newAngle) * dist * (1 - easedProgress * 0.3);
                 }
 
+                p.currentX = isNaN(p.currentX) ? centerX : p.currentX;
+                p.currentY = isNaN(p.currentY) ? centerY : p.currentY;
+
                 positions[i * 3] = p.currentX;
                 positions[i * 3 + 1] = p.currentY;
-                opacities[i] = p.opacity;
+                opacities[i] = isNaN(p.opacity) ? 1 : p.opacity;
             });
 
             if (progress >= 1) {
@@ -615,10 +638,10 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
             const innerRadius = size * 0.25;  // Dark hollow center
             const outerRadius = size * 0.38;  // Outer boundary
 
-            // SMOOTHED audio response - gentler, less aggressive
-            const smoothedAudio = audioLevel * 0.6; // Reduced sensitivity
-            const flowSpeed = 0.15 + smoothedAudio * 0.25; // SLOWER flow
-            const glowIntensity = 0.6 + smoothedAudio * 0.3;
+            // SMOOTHED audio response - extremely subtle
+            const smoothedAudio = audioLevel * 0.15; // Further reduced from 0.3
+            const flowSpeed = 0.12 + smoothedAudio * 0.15; // Even SLOWER flow
+            const glowIntensity = 0.4 + smoothedAudio * 0.15; // Reduced from 0.5 + 0.25
 
             // Split particles: 70% on sphere, 30% floating orbitals for dramatic effect
             const sphereParticleCount = Math.floor(particles.length * 0.7);
@@ -664,8 +687,11 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
                     const particleRadius = innerRadius + shellThickness * 0.5 + radiusOffset;
 
                     // Project to 2D with individual wander
-                    p.currentX = centerX + rotX * particleRadius + wanderX;
-                    p.currentY = centerY + baseY * particleRadius + wanderY;
+                    const newX = centerX + rotX * particleRadius + wanderX;
+                    const newY = centerY + baseY * particleRadius + wanderY;
+
+                    p.currentX = isNaN(newX) ? centerX : newX;
+                    p.currentY = isNaN(newY) ? centerY : newY;
 
                     // Edge fade
                     const dist2D = Math.sqrt(Math.pow(p.currentX - centerX, 2) + Math.pow(p.currentY - centerY, 2));
@@ -722,12 +748,15 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
                     const extraWanderX = Math.sin(time * 0.4 + orbitalIndex * 0.3) * 15;
                     const extraWanderY = Math.cos(time * 0.5 + orbitalIndex * 0.25) * 12;
 
-                    p.currentX = centerX + Math.cos(orbitAngle) * orbitRadiusX + extraWanderX;
-                    p.currentY = centerY + Math.sin(orbitAngle) * orbitRadiusY + wave2 + extraWanderY;
+                    const newX = centerX + Math.cos(orbitAngle) * orbitRadiusX + extraWanderX;
+                    const newY = centerY + Math.sin(orbitAngle) * orbitRadiusY + wave2 + extraWanderY;
+
+                    p.currentX = isNaN(newX) ? centerX : newX;
+                    p.currentY = isNaN(newY) ? centerY : newY;
 
                     // BRIGHTER floating particles - more visible
                     const pulseOpacity = 0.55 + Math.sin(time * 0.5 + orbitalIndex * 0.12) * 0.25;
-                    p.opacity = pulseOpacity;
+                    p.opacity = isNaN(pulseOpacity) ? 0.5 : pulseOpacity;
 
                     // 20% LARGER particles for visibility
                     sizes[i] = (3.0 + Math.sin(time * 0.4 + orbitalIndex) * 1.0) * 1.2;
@@ -886,7 +915,7 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
                                     left: size / 2,
                                     top: size / 2,
                                     animationDelay: `${i * 0.3}s`,
-                                    transform: `translate(-50%, -50%) scale(${1 + audioLevel * 0.5})`,
+                                    transform: `translate(-50%, -50%) scale(${1 + audioLevel * 0.1})`, // Further reduced from 0.2
                                 }}
                             />
                         ))}
@@ -908,12 +937,14 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
                         ))}
                     </div>
 
-                    {/* Glow sync overlay */}
+                    {/* Glow sync overlay - further toned down (60% reduction) */}
                     <div
                         className="dissolve-particle-system__glow-sync"
                         style={{
-                            opacity: 0.3 + audioLevel * 0.4,
-                            boxShadow: `0 0 ${40 + audioLevel * 60}px ${10 + audioLevel * 30}px rgba(0, 229, 255, ${0.3 + audioLevel * 0.3})`
+                            width: size * 1.5,
+                            height: size * 1.5,
+                            opacity: 0.04 + audioLevel * 0.06, // 60% reduction from 0.1 + 0.15
+                            boxShadow: `0 0 ${4 + audioLevel * 6}px ${1 + audioLevel * 3}px rgba(0, 229, 255, ${0.04 + audioLevel * 0.04})` // 60% reduction
                         }}
                     />
 

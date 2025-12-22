@@ -7,12 +7,19 @@
 .bottom-nav-ht {
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: var(--sidebar-width, 0px);
   right: 0;
   z-index: var(--z-index-fixed, 1000);
   height: 80px;
   /* Safe area handling for iOS */
   padding-bottom: env(safe-area-inset-bottom, 0);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 768px) {
+  .bottom-nav-ht {
+    left: 0 !important;
+  }
 }
 
 /* Glassmorphism Background Layer - Requirements: 4.1 */
@@ -57,6 +64,9 @@
   align-items: center;
   height: 100%;
   padding: 0 8px;
+  max-width: 1650px;
+  /* Match AskZenaPage chat-container max-width */
+  margin: 0 auto;
 }
 
 /* Navigation Item - Base Styles */

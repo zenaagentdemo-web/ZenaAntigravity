@@ -1,6 +1,8 @@
 import { WebSocket, WebSocketServer } from 'ws';
 import { IncomingMessage } from 'http';
 import jwt from 'jsonwebtoken';
+import { logger } from './logger.service.js';
+import { multimodalLiveService } from './multimodal-live.service.js';
 
 interface AuthenticatedWebSocket extends WebSocket {
   userId?: string;
@@ -64,18 +66,28 @@ class WebSocketService {
     }
 
     try {
-      // Verify JWT token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { userId: string };
-      ws.userId = decoded.userId;
+      let userId: string;
+
+      // In development, accept a special dev token
+      if (process.env.NODE_ENV !== 'production' && token === 'dev-token-for-testing') {
+        console.log('[WebSocket] Using development token, assigning dev user ID');
+        userId = 'dev-user-id';
+      } else {
+        // Verify JWT token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { userId: string };
+        userId = decoded.userId;
+      }
+
+      ws.userId = userId;
       ws.isAlive = true;
 
       // Add client to user's connection set
-      if (!this.clients.has(decoded.userId)) {
-        this.clients.set(decoded.userId, new Set());
+      if (!this.clients.has(userId)) {
+        this.clients.set(userId, new Set());
       }
-      this.clients.get(decoded.userId)!.add(ws);
+      this.clients.get(userId)!.add(ws);
 
-      console.log(`WebSocket client connected: ${decoded.userId}`);
+      console.log(`[WebSocket] Client connected: ${userId}`);
 
       // Handle pong responses for heartbeat
       ws.on('pong', () => {
@@ -94,7 +106,7 @@ class WebSocketService {
 
       // Handle errors
       ws.on('error', (error) => {
-        console.error('WebSocket error:', error);
+        console.error('[WebSocket] Error:', error);
       });
 
       // Send welcome message
@@ -104,7 +116,7 @@ class WebSocketService {
       });
 
     } catch (error) {
-      console.error('WebSocket authentication failed:', error);
+      console.error('[WebSocket] Authentication failed:', error);
       ws.close(1008, 'Invalid token');
     }
   }
@@ -115,6 +127,7 @@ class WebSocketService {
   private handleMessage(ws: AuthenticatedWebSocket, data: Buffer): void {
     try {
       const message: WebSocketMessage = JSON.parse(data.toString());
+      console.log(`[Websocket] Message received from ${ws.userId || 'unknown'}: ${message.type}`);
 
       switch (message.type) {
         case 'ping':
@@ -152,6 +165,24 @@ class WebSocketService {
         case 'widget.interaction':
           // Client interacted with a widget (for analytics)
           console.log(`Widget interaction by user: ${ws.userId}`, message.payload);
+          break;
+
+        case 'voice.live.start':
+          logger.info(`[Websocket] Received voice.live.start for user: ${ws.userId}`);
+          multimodalLiveService.startSession(ws.userId!, ws, message.payload?.history, message.payload?.location)
+            .catch(err => logger.error('[Websocket] startSession error:', err));
+          break;
+
+        case 'voice.live.chunk':
+          multimodalLiveService.sendAudioChunk(ws.userId!, message.payload.data);
+          break;
+
+        case 'voice.live.prompt':
+          multimodalLiveService.sendPrompt(ws.userId!, message.payload.text);
+          break;
+
+        case 'voice.live.stop':
+          multimodalLiveService.stopSession(ws.userId!);
           break;
 
         default:
@@ -233,7 +264,7 @@ class WebSocketService {
       setTimeout(() => {
         this.sendToClient(ws, {
           type: 'sync.completed',
-          payload: { 
+          payload: {
             timestamp: new Date().toISOString(),
             newThreads: Math.floor(Math.random() * 3),
             updatedDeals: Math.floor(Math.random() * 2)
@@ -270,7 +301,7 @@ class WebSocketService {
 
       this.wss.clients.forEach((ws: WebSocket) => {
         const client = ws as AuthenticatedWebSocket;
-        
+
         if (client.isAlive === false) {
           return client.terminate();
         }
@@ -282,12 +313,19 @@ class WebSocketService {
   }
 
   /**
-   * Send message to a specific client
+   * Send message to a specific client (public for service usage)
    */
-  private sendToClient(ws: WebSocket, message: WebSocketMessage): void {
+  sendToClientProxy(ws: WebSocket, message: WebSocketMessage): void {
     if (ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(message));
     }
+  }
+
+  /**
+   * Send message to a specific client
+   */
+  private sendToClient(ws: WebSocket, message: WebSocketMessage): void {
+    this.sendToClientProxy(ws, message);
   }
 
   /**

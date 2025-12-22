@@ -1,3 +1,7 @@
+/* =============================================================================
+   Ask Zena Page - High-Tech Agent Experience
+   ============================================================================= */
+
 .ask-zena-page {
   display: flex;
   height: 100vh;
@@ -17,7 +21,6 @@
   flex-direction: column;
   position: relative;
   overflow: visible;
-  /* Allow glow effects to extend - use page-level scroll if needed */
 }
 
 .ask-zena-main.hero-mode {
@@ -29,16 +32,19 @@
   display: none;
 }
 
+/* =============================================================================
+   Chat Container & Message List
+   ============================================================================= */
+
 .chat-container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  max-width: 1000px;
-  /* Slightly wider for better tech feel */
+  max-width: 1650px;
+  /* Widened by 50% from 1100px */
   width: 100%;
   margin: 0 auto;
-  padding: 1rem 2.5rem;
-  /* Better breathing room */
+  padding: 1rem 2rem;
   overflow: hidden;
   position: relative;
 }
@@ -48,7 +54,6 @@
   overflow-y: auto;
   padding-right: 1rem;
   padding-top: 4rem;
-  /* Space for the floating avatar */
   display: flex;
   flex-direction: column;
 }
@@ -62,112 +67,152 @@
   border-radius: 3px;
 }
 
-.loading-indicator {
-  padding: 1rem;
-  color: #00f3ff;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  opacity: 0.8;
-  animation: pulse 1.5s infinite;
-}
+/* =============================================================================
+   Unified Prompt UI - ChatGPT Styling
+   ============================================================================= */
 
-@keyframes pulse {
-  0% {
-    opacity: 0.4;
-  }
-
-  50% {
-    opacity: 0.8;
-  }
-
-  100% {
-    opacity: 0.4;
-  }
-}
-
-.input-area {
+.unified-prompt-container {
+  width: calc(100% - 100px);
+  /* 50px inset from each edge */
+  max-width: 1000px;
+  /* Slightly narrower for better focus */
+  margin: 0 auto;
   padding: 1rem 0;
-  padding-bottom: 5rem;
-  /* Proper clearance for bottom navigation bar */
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  z-index: 100;
-  position: relative;
-  width: 100%;
-  max-width: 800px;
-  /* Slightly narrower for better proportions */
-  align-self: center;
+  z-index: 1000;
+  animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.input-card {
+.hero-mode .unified-prompt-container {
+  margin-top: 2rem;
+}
+
+.assistant-mode .unified-prompt-container {
+  position: sticky;
+  bottom: 0;
+  background: transparent;
+  padding-bottom: 90px;
+  /* Increased to clear the bottom navbar completely */
+}
+
+.unified-prompt-card {
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: 1rem 1.25rem;
+  backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  display: flex;
+  align-items: flex-end;
+  /* Align to bottom for multi-line expansion */
+  padding: 0.75rem 1.25rem;
+  gap: 0.75rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 0 20px rgba(255, 255, 255, 0.02);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.unified-prompt-card:focus-within {
+  border-color: rgba(0, 243, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 40px rgba(0, 243, 255, 0.1), 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.prompt-input-wrapper {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4),
-    inset 0 0 30px rgba(255, 255, 255, 0.01);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 44px;
 }
 
-.input-card:focus-within {
-  border-color: rgba(0, 243, 255, 0.25);
-  box-shadow: 0 0 30px rgba(0, 243, 255, 0.1), 0 20px 50px rgba(0, 0, 0, 0.5);
-  transform: translateY(-2px);
-}
-
-.input-card textarea {
-  flex: 1;
-  background: none;
-  border: none;
+.prompt-input-wrapper textarea {
+  width: 100%;
+  background: transparent;
+  border: none !important;
+  /* CRITICAL: Remove the box-inside-box */
   color: white;
   resize: none;
-  padding: 0;
+  padding: 10px 0;
   font-family: inherit;
-  font-size: 1rem;
-  line-height: 1.5;
-  min-height: 24px;
-  max-height: 200px;
-  outline: none;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-height: 500px;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-.input-actions {
+.prompt-input-wrapper textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Actions */
+.prompt-left-actions,
+.prompt-right-actions {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
+  padding-bottom: 4px;
+  /* Align with text baseline */
 }
 
-.voice-trigger,
-.send-trigger {
-  background: none;
+.prompt-action-btn {
+  background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.6);
-  width: 36px;
-  height: 36px;
+  color: rgba(255, 255, 255, 0.5);
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 1.1rem;
+  transition: all 0.2s ease;
 }
 
-.voice-trigger:hover {
+.prompt-action-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+
+.voice-mode-active-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.prompt-action-btn.active {
   color: #00f3ff;
   background: rgba(0, 243, 255, 0.1);
 }
 
-.voice-trigger.active {
-  color: white;
-  background: #ff4d4d;
+.dictate-btn.active {
+  color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.1);
   animation: pulse-red 1.5s infinite;
 }
+
+.send-btn {
+  background: #00f3ff;
+  color: #000;
+  width: 36px;
+  height: 36px;
+  margin-left: 0.25rem;
+}
+
+.send-btn:hover:not(:disabled) {
+  background: white;
+  transform: scale(1.05);
+}
+
+.send-btn:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: default;
+}
+
+/* =============================================================================
+   Animations & Indicators
+   ============================================================================= */
 
 @keyframes pulse-red {
   0% {
@@ -183,50 +228,49 @@
   }
 }
 
-.send-trigger:hover:not(:disabled) {
-  color: #0066ff;
-  background: rgba(0, 102, 255, 0.1);
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.send-trigger:disabled {
-  opacity: 0.3;
-  cursor: default;
+@keyframes waveform {
+
+  0%,
+  100% {
+    transform: scaleY(0.6);
+  }
+
+  50% {
+    transform: scaleY(1.3);
+  }
 }
 
-.error-toast {
-  background: rgba(255, 77, 77, 0.1);
-  border: 1px solid rgba(255, 77, 77, 0.2);
-  color: #ff4d4d;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  align-self: center;
+.voice-mode-btn.active svg path {
+  animation: waveform 0.8s ease-in-out infinite;
+  transform-origin: center;
 }
 
-.conversation-mode-trigger {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.4);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
+.voice-mode-btn.active svg path:nth-child(2) {
+  animation-delay: 0.1s;
 }
 
-.conversation-mode-trigger:hover {
-  color: #00f3ff;
-  background: rgba(0, 243, 255, 0.1);
+.voice-mode-btn.active svg path:nth-child(3) {
+  animation-delay: 0.2s;
 }
 
-.conversation-mode-trigger.active {
-  color: #ff4d4d;
-  background: rgba(255, 77, 77, 0.1);
-  box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
+.voice-mode-btn.active svg path:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.voice-mode-btn.active svg path:nth-child(5) {
+  animation-delay: 0.4s;
 }
 
 .conversation-mode-indicator {
@@ -234,9 +278,9 @@
   top: 1rem;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 77, 77, 0.15);
+  background: rgba(0, 243, 255, 0.1);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 77, 77, 0.3);
+  border: 1px solid rgba(0, 243, 255, 0.3);
   padding: 0.5rem 1.2rem;
   border-radius: 20px;
   display: flex;
@@ -244,21 +288,31 @@
   gap: 0.75rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #ff4d4d;
+  color: #00f3ff;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   z-index: 500;
-  box-shadow: 0 4px 15px rgba(255, 77, 77, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 243, 255, 0.2);
   pointer-events: none;
-  animation: slideDown 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .live-dot {
   width: 8px;
   height: 8px;
-  background-color: #ff4d4d;
+  background-color: #00f3ff;
   border-radius: 50%;
-  box-shadow: 0 0 10px #ff4d4d;
+  box-shadow: 0 0 10px #00f3ff;
+}
+
+.inline-live-transcript {
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(0, 243, 255, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  font-size: 0.8rem;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .live-dot.pulse {
@@ -282,28 +336,178 @@
   }
 }
 
-@keyframes slideDown {
-  from {
-    transform: translate(-50%, -20px);
+@keyframes attract-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(0, 243, 255, 0.2)) brightness(1);
+  }
+
+  50% {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 12px rgba(0, 243, 255, 0.6)) brightness(1.3) hue-rotate(10deg);
+  }
+}
+
+@keyframes holographic-scan {
+  0% {
+    transform: translateY(-20px);
     opacity: 0;
   }
 
-  to {
-    transform: translate(-50%, 0);
+  20% {
+    opacity: 0.6;
+  }
+
+  80% {
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+
+@keyframes idle-waveform {
+
+  0%,
+  100% {
+    transform: scaleY(0.7);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scaleY(1.2);
     opacity: 1;
   }
 }
 
-/* Inline Avatar Container - High-Tech Avatar with Effects */
+.voice-mode-btn:not(.active) {
+  position: relative;
+}
+
+.voice-mode-btn:not(.active)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.9), transparent);
+  box-shadow: 0 0 8px rgba(0, 243, 255, 0.8);
+  animation: holographic-scan 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.voice-mode-btn:not(.active) svg {
+  animation: attract-pulse 3s ease-in-out infinite;
+  color: rgba(0, 243, 255, 0.8);
+  position: relative;
+  z-index: 0;
+}
+
+.voice-mode-btn:not(.active) svg path {
+  transform-origin: center;
+  animation: idle-waveform 3s ease-in-out infinite;
+}
+
+.voice-mode-btn:not(.active) svg path:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.voice-mode-btn:not(.active) svg path:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+.voice-mode-btn:not(.active) svg path:nth-child(4) {
+  animation-delay: 1.2s;
+}
+
+.voice-mode-btn:not(.active) svg path:nth-child(5) {
+  animation-delay: 1.6s;
+}
+
+/* =============================================================================
+   Avatar Logic
+   ============================================================================= */
+
+.hero-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.hero-controls {
+  width: 100%;
+  max-width: 1100px;
+  /* Consistently wide across modes */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-avatar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 320px;
+  min-height: 320px;
+}
+
+.hero-greeting {
+  text-align: center;
+  animation: slideUpFade 0.6s ease-out;
+}
+
+.hero-greeting h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.live-user-transcript {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-style: italic;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.transcript-label {
+  color: #00f3ff;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  margin-right: 0.5rem;
+  font-style: normal;
+}
+
+.hero-status {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #00f3ff;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  animation: pulse 1.5s infinite;
+}
+
 .avatar-inline-container {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
   padding-left: 0.25rem;
-  margin-bottom: 1rem;
-  margin-top: 1rem;
-  overflow: visible;
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .avatar-inline-container.loading,
@@ -313,16 +517,18 @@
   gap: 0.5rem;
 }
 
-.avatar-inline-container .loading-indicator {
-  padding: 0;
-  margin-top: 0.5rem;
+.loading-indicator {
+  color: #00f3ff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  animation: pulse 1.5s infinite;
 }
 
-/* Ensure the assistant bubble next to the mini avatar looks good */
-.avatar-inline-container.speaking .message-bubble-wrapper {
-  margin-top: 0.5rem;
-  width: 100%;
-}
+/* =============================================================================
+   Responsive
+   ============================================================================= */
 
 @media (max-width: 768px) {
   .chat-sidebar {
@@ -339,187 +545,85 @@
   }
 }
 
-.voice-recorder-overlay {
-  position: absolute;
-  inset: 0;
+/* Drop Zone Overlay */
+.drop-zone-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 5, 10, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(5px);
-  z-index: 2000;
+  pointer-events: none;
+  /* Let the drop event pass through to the page container */
+  animation: overlayFadeIn 0.3s ease-out;
+  border: 2px dashed rgba(0, 255, 157, 0.3);
+  margin: 10px;
+  box-sizing: border-box;
+  border-radius: 24px;
 }
 
-.floating-recorder {
-  background: rgba(20, 20, 25, 0.8) !important;
-  backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(0, 243, 255, 0.3) !important;
-  box-shadow: 0 0 50px rgba(0, 243, 255, 0.2) !important;
-  border-radius: 24px !important;
-  padding: 2rem !important;
-  width: 320px !important;
-}
-
-/* ============================================
-   Hero Controls - Centered Input & Hands-Free
-   ============================================ */
-
-.hero-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  width: 100%;
-  max-width: 500px;
-  padding: 0 2rem;
-  margin-top: 2rem;
-  z-index: 100;
-}
-
-.hero-input-form {
-  width: 100%;
-}
-
-.hero-input-card {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 50px;
-  padding: 0.75rem 1rem 0.75rem 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.hero-input-card:focus-within {
-  border-color: rgba(0, 243, 255, 0.4);
-  box-shadow: 0 0 25px rgba(0, 243, 255, 0.15);
-}
-
-.hero-input-card textarea {
-  flex: 1;
-  background: none;
-  border: none;
-  color: white;
-  resize: none;
-  padding: 0.5rem 0;
-  font-family: inherit;
-  font-size: 1rem;
-  max-height: 100px;
-  outline: none;
-}
-
-.hero-input-card textarea::placeholder {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.hero-send-btn {
-  background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(139, 92, 246, 0.2));
-  border: 1px solid rgba(0, 243, 255, 0.3);
-  color: #00f3ff;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1.2rem;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-}
-
-.hero-send-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(0, 243, 255, 0.35), rgba(139, 92, 246, 0.35));
-  box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-  transform: scale(1.05);
-}
-
-.hero-send-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
-.hero-controls .conversation-mode-toggle {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.7);
-  padding: 0.75rem 2rem;
-  border-radius: 30px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.hero-controls .conversation-mode-toggle:hover {
-  border-color: rgba(0, 243, 255, 0.4);
-  color: #00f3ff;
-  box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
-}
-
-.hero-controls .conversation-mode-toggle.active {
-  background: rgba(255, 77, 77, 0.15);
-  border-color: rgba(255, 77, 77, 0.4);
-  color: #ff4d4d;
-}
-
-/* =============================================================================
-   HERO AVATAR SECTION - High-Tech Avatar with Special Effects
-   ============================================================================= */
-
-.hero-avatar-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.hero-avatar-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  /* Fixed height to prevent layout shift during dissolve effects */
-  height: 320px;
-  min-height: 320px;
-}
-
-.hero-greeting {
-  text-align: center;
-  animation: fadeIn 0.6s ease-out;
-}
-
-.hero-greeting h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
-  letter-spacing: 0.05em;
-}
-
-.hero-status {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  color: rgba(0, 243, 255, 0.8);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes fadeIn {
+@keyframes overlayFadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: scale(1.02);
   }
 
   to {
     opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.drop-zone-content {
+  text-align: center;
+  color: #fff;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 32px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+  width: 90%;
+}
+
+.drop-icon {
+  font-size: 64px;
+  margin-bottom: 24px;
+  color: #00ff9d;
+  filter: drop-shadow(0 0 15px rgba(0, 255, 157, 0.4));
+  animation: dropBounce 1.5s infinite ease-in-out;
+}
+
+@keyframes dropBounce {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.drop-zone-content h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #fff 0%, #00ff9d 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.drop-zone-content p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
 }

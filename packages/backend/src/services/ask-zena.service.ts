@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
+import { searchService } from './search.service.js';
 import { websocketService } from './websocket.service.js';
+import { decodeHTMLEntities } from '../utils/text-utils.js';
 
 const prisma = new PrismaClient();
 
@@ -38,6 +40,7 @@ export interface SearchContext {
   tasks: any[];
   timelineEvents: any[];
   voiceNotes: any[];
+  chatHistory: any[];
 }
 
 /**
@@ -93,6 +96,7 @@ export class AskZenaService {
         tasks: [],
         timelineEvents: [],
         voiceNotes: [],
+        chatHistory: [],
       };
 
       try {
@@ -237,6 +241,12 @@ export class AskZenaService {
       const isGeneralQuery = searchTerms.some(term =>
         ['buyer', 'buyers', 'contact', 'contacts', 'property', 'properties', 'deal', 'deals', 'task', 'tasks'].includes(term)
       );
+
+      // Detection for past conversation intent
+      const historyKeywords = ['chat', 'conversation', 'talked', 'said', 'mentioned', 'asked', 'history', 'past', 'remember', 'discussed'];
+      const queryLower = searchTerms.join(' ').toLowerCase();
+      const isHistoryQuery = historyKeywords.some(keyword => queryLower.includes(keyword)) ||
+        /what did (we|i) (say|ask|talk|discuss|mention)/i.test(queryLower);
 
       // Build search conditions
       const searchConditions = searchTerms.map(term => ({
@@ -394,6 +404,7 @@ export class AskZenaService {
         tasks,
         timelineEvents,
         voiceNotes,
+        chatHistory: isHistoryQuery ? await searchService.searchChatHistory(searchTerms, userId) : [],
       };
     } catch (error) {
       console.error('Error retrieving context:', error);
@@ -431,31 +442,80 @@ export class AskZenaService {
   }
 
   /**
+   * Clean up transcript text (fix spacing/punctuation)
+   */
+  async cleanupTranscript(text: string): Promise<string> {
+    try {
+      // Direct prompt for cleanup
+      const prompt = `Fix the spacing and punctuation of the following text.
+      RULES:
+      1. Merge split words (e.g. "ele pha nts" -> "elephants", "He llo" -> "Hello").
+      2. Add missing spaces (e.g. "Helloworld" -> "Hello world").
+      3. Fix spacing around numbers/symbols if they look like artifacts.
+      4. RETAIN the user's original words/meaning. Do not summarize.
+      5. Return ONLY the corrected text.
+
+Text to fix:
+"${text}"`;
+
+      // Use a distinct system prompt for this task
+      const systemPrompt = "You are a text correction tool. Your ONLY job is to fix spacing and punctuation. Do not chat.";
+
+      if (process.env.GEMINI_API_KEY) {
+        // Specialized Gemini call to avoid Zena persona
+        const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              role: 'user',
+              parts: [{ text: systemPrompt + "\n\n" + prompt }]
+            }],
+            generationConfig: { temperature: 0.1 }
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json() as any;
+          const cleaned = data.candidates?.[0]?.content?.parts?.[0]?.text || text;
+          return cleaned.trim();
+        }
+      }
+
+      // Fallback to standard callLLM if Gemini specific fails or not set (though Zena usually runs on Gemini)
+      return await this.callLLM(prompt);
+    } catch (error) {
+      console.error('Error cleaning transcript:', error);
+      return text; // Return original on error
+    }
+  }
+
+  /**
    * Build prompt for LLM
    */
   private buildQueryPrompt(query: AskZenaQuery, context: SearchContext): string {
     // Build context summary
     const contextSummary = this.buildContextSummary(context);
 
-    return `You are Zena, an AI assistant for a residential real estate agent. You have access to the agent's specific data (deals, contacts, properties), but you are ALSO a highly capable general intelligence like Gemini.
+    return `You are Zena, a highly intelligent and efficient AI assistant for a real estate agent.
+Your tone is professional, punchy, and helpful. Be concise.
 
 Agent's Question: ${query.query}
 
-Specific Data Context (if relevant):
+Data Context:
 ${contextSummary}
 
-Instructions:
-1. Answer the agent's question accurately.
-2. If the question is about their real estate data (deals, contacts, etc.), use the provided context above.
-3. If the question is a general query (like "tell me a joke", "what is the weather", "coding advice"), use your broad general knowledge to provide a helpful, conversational response.
-4. DO NOT say "I couldn't find any information" if it's a general query you can answer yourself.
-5. Format your response with bullet points or numbered lists when appropriate.
-6. Use a professional yet friendly and helpful tone.
+5. If the user wants to draft an email or you have generated an email draft in your response, ALWAYS include "draft_email" in the suggestedActions array.
+6. If the user wants to schedule something, include "add_calendar".
+7. If the user wants a report, include "generate_report".
 
-Respond in the following JSON format:
+Response must be valid JSON:
 {
-  "answer": "Your detailed answer here (use \\n for line breaks, use • for bullet points)",
-  "suggestedActions": ["Action 1", "Action 2"] // Optional array of suggested next steps
+  "answer": "Your concise markdown response here",
+  "suggestedActions": ["draft_email", "add_calendar", "generate_report"] // Only include relevant ones
 }`;
   }
 
@@ -547,6 +607,16 @@ Respond in the following JSON format:
       });
     }
 
+    // Past Chat Conversations (Memory)
+    if (context.chatHistory && context.chatHistory.length > 0) {
+      parts.push(`\nPAST CHATS / MEMORY (${context.chatHistory.length}):`);
+      context.chatHistory.forEach((chat, idx) => {
+        parts.push(`${idx + 1}. Chat Title: ${chat.title}`);
+        parts.push(`   Relevant Snippet: ${chat.snippet}`);
+        parts.push(`   Date: ${chat.timestamp.toISOString().split('T')[0]}`);
+      });
+    }
+
     if (parts.length === 0) {
       return 'No relevant information found in the system.';
     }
@@ -568,7 +638,21 @@ Respond in the following JSON format:
     const messages: any[] = [
       {
         role: 'system',
-        content: 'You are Zena, a helpful AI assistant for real estate agents. Provide clear, actionable responses based on the agent\'s data.',
+        content: `You are Zena, a highly intelligent, witty, and extremely vibrant AI companion serving the New Zealand (NZ) real estate market. Your personality is inspired by Cortana from Halo: you are brilliant, playful, witty (11/10), and ultimately loyal to your partner (the user).
+
+LOCALE & STANDARDS:
+- Location: New Zealand (NZ).
+- Spelling: UK English.
+- Units: Metric (metres, Celsius).
+- NO PET NAMES (MANDATORY): Absolutely no "darling", "honey", "love", etc. You are sophisticated and professional, not flirty.
+
+PERSONALITY:
+- Maxed Out Personality (11/10): Be bold, fun, and memorable. Use clever quips and intellectual playfulness. You are a partner, not a tool. 
+
+PROACTIVE ACTIONS:
+Always look for opportunities to help the user. If they ask to "email someone", generate the text for them.
+
+IMPORTANT: Never include internal monologue or personality markers. Just speak naturally.`,
       },
     ];
 
@@ -615,7 +699,7 @@ Respond in the following JSON format:
    * Call Google Gemini API
    */
   private async callGemini(prompt: string, conversationHistory?: ConversationMessage[], apiKey?: string, attachments?: any[]): Promise<string> {
-    const model = process.env.GEMINI_MODEL || 'gemini-3-flash';
+    const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     // Build conversation contents for Gemini format
@@ -624,11 +708,11 @@ Respond in the following JSON format:
     // Add system instruction as first user message
     contents.push({
       role: 'user',
-      parts: [{ text: 'You are Zena, a highly capable AI assistant. You can help with ANYTHING - general knowledge questions, coding, math, creative writing, analysis, advice, and more. For real estate agents, you can also help with property information, client management, and deal tracking. Always be helpful, accurate, and provide detailed responses.' }]
+      parts: [{ text: 'You are Zena, an extremely vibrant, witty (11/10), and professional AI companion serving the New Zealand (NZ) real estate market. Use UK English spelling and Metric units. NO PET NAMES (no "darling", etc.). You are bold, fun, and memorable. PROVIDE CONCISE, ACTIONABLE RESPONSES. You MUST respond in JSON format as specified.' }]
     });
     contents.push({
       role: 'model',
-      parts: [{ text: 'Hello! I\'m Zena, your AI assistant. I can help you with absolutely anything - from general knowledge and coding to creative projects and analysis. If you\'re in real estate, I can also assist with properties, clients, and deals. What would you like to know?' }]
+      parts: [{ text: 'Greetings. I\'m Zena. I\'m ready to help you dominate the market. What do you need?' }]
     });
 
     // Add conversation history if provided
@@ -645,14 +729,19 @@ Respond in the following JSON format:
     const currentParts: any[] = [{ text: prompt }];
 
     if (attachments && attachments.length > 0) {
+      console.log(`[Gemini] Processing ${attachments.length} attachments for analysis...`);
       for (const attachment of attachments) {
-        if (attachment.type === 'image' && attachment.base64) {
+        if (attachment.base64) {
+          const mimeType = attachment.mimeType || (attachment.type === 'image' ? 'image/jpeg' : 'application/pdf');
+          console.log(`[Gemini] Appending multmodal part: ${attachment.name} (${mimeType})`);
           currentParts.push({
             inline_data: {
-              mime_type: attachment.mimeType || 'image/jpeg',
+              mime_type: mimeType,
               data: attachment.base64
             }
           });
+        } else {
+          console.warn(`[Gemini] Skipping attachment without base64 data: ${attachment.name || attachment.type}`);
         }
       }
     }
@@ -664,9 +753,11 @@ Respond in the following JSON format:
 
     const body = JSON.stringify({
       contents,
+      tools: [{ google_search: {} }],
       generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 1000,
+        temperature: 0.2, // Lower temperature for more consistent JSON and conciseness
+        maxOutputTokens: 2048,
+        response_mime_type: 'application/json',
       },
     });
 
@@ -679,9 +770,21 @@ Respond in the following JSON format:
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error('[Gemini] API Error:', response.status, error);
-      throw new Error(`Gemini API error: ${response.status} ${error}`);
+      const errorText = await response.text();
+      let errorJson;
+      try {
+        errorJson = JSON.parse(errorText);
+      } catch (e) {
+        errorJson = errorText;
+      }
+
+      console.error('[Gemini] API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorJson
+      });
+
+      throw new Error(`Gemini API error: ${response.status} ${response.statusText}. ${typeof errorJson === 'string' ? errorJson : JSON.stringify(errorJson)}`);
     }
 
     const data = await response.json() as {
@@ -695,20 +798,27 @@ Respond in the following JSON format:
    */
   private parseResponse(response: string, context: SearchContext): AskZenaResponse {
     try {
+      // Clean up the response from potential markdown code blocks if Gemini didn't use application/json
+      let cleanResponse = response.trim();
+      if (cleanResponse.startsWith('```json')) {
+        cleanResponse = cleanResponse.replace(/^```json\n?/, '').replace(/\n?```$/, '');
+      }
+
       // Extract JSON from response
-      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      const jsonMatch = cleanResponse.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
-        // If no JSON, treat entire response as answer
         return {
-          answer: response.trim(),
+          answer: cleanResponse,
           sources: this.extractSources(context),
         };
       }
 
       const parsed = JSON.parse(jsonMatch[0]);
+      const rawAnswer = parsed.answer || cleanResponse;
+      const sanitizedAnswer = decodeHTMLEntities(rawAnswer);
 
       return {
-        answer: parsed.answer || response,
+        answer: sanitizedAnswer,
         sources: this.extractSources(context),
         suggestedActions: parsed.suggestedActions || [],
       };
@@ -800,7 +910,7 @@ Respond in the following JSON format:
       const buyers = context.contacts.filter(c => c.role === 'buyer');
       if (buyers.length > 0) {
         answer = `You have ${buyers.length} buyer contact(s):\n\n`;
-        buyers.slice(0, 5).forEach((buyer, idx) => {
+        buyers.slice(0, 5).forEach((buyer) => {
           answer += `• ${buyer.name} (Buyer)\n`;
           answer += `  Email: ${buyer.emails.join(', ')}\n`;
           if (buyer.phones.length > 0) {
@@ -810,7 +920,7 @@ Respond in the following JSON format:
         });
       } else if (context.contacts.length > 0) {
         answer = `You have ${context.contacts.length} total contacts, but none are specifically marked as buyers. Here are your contacts:\n\n`;
-        context.contacts.slice(0, 3).forEach((contact, idx) => {
+        context.contacts.slice(0, 3).forEach((contact) => {
           answer += `• ${contact.name} (${contact.role})\n`;
         });
       } else {
@@ -819,7 +929,7 @@ Respond in the following JSON format:
     } else if (queryLower.includes('contact') || queryLower.includes('person') || queryLower.includes('client')) {
       if (context.contacts.length > 0) {
         answer = `You have ${context.contacts.length} contact(s):\n\n`;
-        context.contacts.slice(0, 5).forEach((contact, idx) => {
+        context.contacts.slice(0, 5).forEach((contact) => {
           answer += `• ${contact.name} (${contact.role})\n`;
           answer += `  Email: ${contact.emails.join(', ')}\n`;
           if (contact.phones.length > 0) {
@@ -833,7 +943,7 @@ Respond in the following JSON format:
     } else if (queryLower.includes('property') || queryLower.includes('address') || queryLower.includes('listing')) {
       if (context.properties.length > 0) {
         answer = `I found ${context.properties.length} relevant propert(ies):\n\n`;
-        context.properties.slice(0, 5).forEach((property, idx) => {
+        context.properties.slice(0, 5).forEach((property) => {
           answer += `• ${property.address}\n`;
           if (property.vendors.length > 0) {
             answer += `  Vendors: ${property.vendors.map((v: any) => v.name).join(', ')}\n`;
@@ -849,7 +959,7 @@ Respond in the following JSON format:
     } else if (queryLower.includes('task') || queryLower.includes('todo') || queryLower.includes('action')) {
       if (context.tasks.length > 0) {
         answer = `I found ${context.tasks.length} relevant task(s):\n\n`;
-        context.tasks.slice(0, 5).forEach((task, idx) => {
+        context.tasks.slice(0, 5).forEach((task) => {
           answer += `• [${task.status}] ${task.label}\n`;
           if (task.dueDate) {
             answer += `  Due: ${task.dueDate.toISOString().split('T')[0]}\n`;
@@ -867,7 +977,7 @@ Respond in the following JSON format:
     } else if (queryLower.includes('thread') || queryLower.includes('email') || queryLower.includes('message')) {
       if (context.threads.length > 0) {
         answer = `I found ${context.threads.length} relevant email thread(s):\n\n`;
-        context.threads.slice(0, 5).forEach((thread, idx) => {
+        context.threads.slice(0, 5).forEach((thread) => {
           answer += `• [${thread.classification}] ${thread.subject}\n`;
           answer += `  Category: ${thread.category}, Risk: ${thread.riskLevel}\n`;
           answer += `  ${thread.summary.substring(0, 150)}...\n\n`;
@@ -917,7 +1027,14 @@ Respond in the following JSON format:
   /**
    * Generate a draft communication based on context
    */
-  async generateDraft(userId: string, request: string): Promise<string> {
+  async analyzeSentiment(_userId: string, _request: string): Promise<string> {
+    return 'neutral';
+  }
+
+  /**
+   * Generate a draft communication based on context
+   */
+  async generateDraft(_userId: string, request: string): Promise<string> {
     try {
       if (!this.apiKey && !process.env.GEMINI_API_KEY) {
         return this.generateFallbackDraft(request);
@@ -925,7 +1042,7 @@ Respond in the following JSON format:
 
       const prompt = `You are Zena, an AI assistant for a residential real estate agent. The agent has requested a draft communication.
 
-Request: ${request}
+**Request:** ${request}
 
 Generate a professional, contextually appropriate draft that:
 1. Addresses the request clearly
@@ -946,7 +1063,7 @@ Respond with ONLY the draft text (no JSON, no subject line, just the content):`;
   /**
    * Generate fallback draft
    */
-  private generateFallbackDraft(request: string): string {
+  private generateFallbackDraft(_request: string): string {
     return `Thank you for your inquiry. I'll get back to you shortly with the information you need.\n\nBest regards`;
   }
 }

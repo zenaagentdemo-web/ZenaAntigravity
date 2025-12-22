@@ -5,6 +5,7 @@ import { ZenaPromptInput } from '../../components/ZenaPromptInput/ZenaPromptInpu
 import { ZenaTalkButton, TalkButtonState } from '../../components/ZenaTalkButton/ZenaTalkButton';
 import { useVoiceInteraction } from '../../hooks/useVoiceInteraction';
 import { DissolvePhase } from '../../components/DissolveParticleSystem/DissolveParticleSystem';
+import { decodeHTMLEntities } from '../../utils/text-utils';
 import './ZenaAskPage.css';
 
 // API base URL
@@ -44,7 +45,8 @@ export const ZenaAskPage: React.FC = () => {
 
     // Simulate audio from text for visual effects
     const simulateTextAudio = useCallback(async (text: string) => {
-        const words = text.split(/\s+/);
+        const cleanText = decodeHTMLEntities(text);
+        const words = cleanText.split(/\s+/);
         const wordDelay = 80; // ms per word
 
         setDisplayedWords([]);

@@ -95,6 +95,16 @@
     font-size: 0.8rem;
 }
 
+.attachment-preview.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.attachment-preview.clickable:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+}
+
 [data-theme='day'] .assistant .message-bubble {
     background: #f0f2f5;
     color: #333;

@@ -21,6 +21,7 @@ import crmIntegrationRoutes from './routes/crm-integration.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import dataDeletionRoutes from './routes/data-deletion.routes.js';
 import historyRoutes from './routes/history.routes.js';
+import actionsRoutes from './routes/actions.routes.js';
 import { syncEngineService } from './services/sync-engine.service.js';
 import { calendarSyncEngineService } from './services/calendar-sync-engine.service.js';
 import { websocketService } from './services/websocket.service.js';
@@ -47,8 +48,8 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware - Order matters!
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Logging and monitoring middleware
 app.use(requestContextMiddleware);
@@ -61,6 +62,7 @@ app.locals.prisma = prisma;
 
 // Health check endpoints
 app.get('/health', healthCheckService.healthCheckHandler.bind(healthCheckService));
+app.get('/api/health', healthCheckService.healthCheckHandler.bind(healthCheckService));
 app.get('/health/live', healthCheckService.livenessHandler.bind(healthCheckService));
 app.get('/health/ready', healthCheckService.readinessHandler.bind(healthCheckService));
 
@@ -130,6 +132,9 @@ app.use('/api/data', dataDeletionRoutes);
 
 // History routes
 app.use('/api/history', historyRoutes);
+
+// Custom action routes
+app.use('/api/actions', actionsRoutes);
 
 // 404 handler - must be after all routes
 app.use(notFoundMiddleware);

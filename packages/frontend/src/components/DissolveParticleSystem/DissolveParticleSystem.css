@@ -623,8 +623,8 @@
     border-radius: 50%;
     transform: translate(-50%, -50%);
     background: radial-gradient(circle,
-            rgba(0, 229, 255, 0.25) 0%,
-            rgba(0, 150, 255, 0.12) 40%,
+            rgba(0, 229, 255, 0.1) 0%,
+            rgba(0, 150, 255, 0.05) 40%,
             transparent 70%);
     pointer-events: none;
     z-index: 5;

@@ -114,3 +114,36 @@ export async function updateTitle(req: Request, res: Response): Promise<void> {
         res.status(500).json({ error: 'Failed to update conversation title' });
     }
 }
+/**
+ * Add a message to a conversation
+ */
+export async function addMessage(req: Request, res: Response): Promise<void> {
+    try {
+        const userId = (req as any).user?.id;
+        const { id } = req.params;
+        const { role, content, attachments } = req.body;
+
+        if (!userId) {
+            res.status(401).json({ error: 'Unauthorized' });
+            return;
+        }
+
+        if (!role || !content) {
+            res.status(400).json({ error: 'Role and content are required' });
+            return;
+        }
+
+        // Verify conversation belongs to user
+        const conversation = await historyService.getConversation(id, userId);
+        if (!conversation) {
+            res.status(404).json({ error: 'Conversation not found' });
+            return;
+        }
+
+        const message = await historyService.addMessage(id, { role, content, attachments });
+        res.status(201).json({ message });
+    } catch (error) {
+        console.error('Error in addMessage:', error);
+        res.status(500).json({ error: 'Failed to add message' });
+    }
+}

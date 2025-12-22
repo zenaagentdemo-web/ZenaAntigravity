@@ -20,6 +20,8 @@ export interface WebSocketMessage {
 export type DataUpdateCallback = (data: Partial<DashboardData>) => void;
 export type ConnectionStatusCallback = (connected: boolean) => void;
 export type ErrorCallback = (error: Error) => void;
+export type LiveTranscriptCallback = (text: string, isFinal: boolean) => void;
+export type UserTranscriptCallback = (text: string, isFinal: boolean) => void;
 
 class RealTimeDataService {
   private ws: WebSocket | null = null;
@@ -34,6 +36,8 @@ class RealTimeDataService {
   private dataUpdateCallbacks: Set<DataUpdateCallback> = new Set();
   private connectionStatusCallbacks: Set<ConnectionStatusCallback> = new Set();
   private errorCallbacks: Set<ErrorCallback> = new Set();
+  private liveTranscriptCallbacks: Set<LiveTranscriptCallback> = new Set();
+  private userTranscriptCallbacks: Set<UserTranscriptCallback> = new Set();
 
   private currentData: DashboardData | null = null;
   private isConnected = false;
@@ -62,15 +66,24 @@ class RealTimeDataService {
 
     try {
       // Get auth token from localStorage or auth service
-      const token = localStorage.getItem('auth_token');
+      let token = localStorage.getItem('auth_token');
+
+      // In development, if no token exists, use a fallback for testing
+      if (!token && import.meta.env.DEV) {
+        console.warn('[RealTimeDataService] No auth token found, using development fallback');
+        token = 'dev-token-for-testing';
+      }
+
       if (!token) {
-        throw new Error('No authentication token available');
+        console.error('[RealTimeDataService] No authentication token available');
+        this.isConnecting = false;
+        return;
       }
 
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const wsUrl = `${protocol}//${window.location.host}/ws?token=${encodeURIComponent(token)}`;
-      
-      console.log('Connecting to WebSocket:', wsUrl);
+
+      console.log('[RealTimeDataService] Connecting to WebSocket:', wsUrl);
       this.ws = new WebSocket(wsUrl);
 
       this.ws.onopen = this.handleOpen;
@@ -79,10 +92,54 @@ class RealTimeDataService {
       this.ws.onerror = this.handleError;
 
     } catch (error) {
-      console.error('Failed to create WebSocket connection:', error);
+      console.error('[RealTimeDataService] Failed to create WebSocket connection:', error);
       this.isConnecting = false;
       this.handleConnectionError(error as Error);
     }
+  }
+
+  /**
+   * Ensure connection is established (for Live Mode)
+   */
+  async ensureConnection(): Promise<boolean> {
+    console.log('[RealTimeDataService] ensureConnection called, isConnected:', this.isConnected, 'isConnecting:', this.isConnecting, 'isDestroyed:', this.isDestroyed);
+
+    if (this.isConnected) {
+      return true;
+    }
+
+    // Reset destroyed flag to allow reconnection
+    this.isDestroyed = false;
+
+    // If not connected and not connecting, try to connect
+    if (!this.isConnecting && !this.ws) {
+      console.log('[RealTimeDataService] Initiating connection...');
+      this.connect();
+    }
+
+    // Wait for connection with timeout
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        console.error('[RealTimeDataService] Connection timeout after 5 seconds');
+        resolve(false);
+      }, 5000);
+
+      const checkConnection = () => {
+        if (this.isConnected) {
+          console.log('[RealTimeDataService] Connection established successfully');
+          clearTimeout(timeout);
+          resolve(true);
+        } else if (this.isConnecting) {
+          setTimeout(checkConnection, 100);
+        } else {
+          console.error('[RealTimeDataService] Connection failed - not connecting');
+          clearTimeout(timeout);
+          resolve(false);
+        }
+      };
+
+      checkConnection();
+    });
   }
 
   /**
@@ -117,60 +174,134 @@ class RealTimeDataService {
   private handleMessage = (event: MessageEvent): void => {
     try {
       const message: WebSocketMessage = JSON.parse(event.data);
-      console.log('WebSocket message received:', message.type);
+      if (message.type !== 'voice.live.chunk' && message.type !== 'pong') {
+        console.log(`[RealTime] Message received: ${message.type}`, message.payload);
+      }
 
       switch (message.type) {
+        case 'connection.established':
+          // Quietly acknowledged
+          break;
+
         case 'dashboard.data':
           this.handleDashboardData(message.payload);
           break;
-        
+
         case 'dashboard.update':
           this.handleDashboardUpdate(message.payload);
           break;
-        
+
         case 'sync.started':
           this.handleSyncStarted(message.payload);
           break;
-        
+
         case 'sync.completed':
           this.handleSyncCompleted(message.payload);
           break;
-        
+
         case 'thread.new':
         case 'thread.updated':
           this.handleThreadUpdate(message.payload);
           break;
-        
+
         case 'deal.risk':
           this.handleDealRisk(message.payload);
           break;
-        
+
         case 'notification.new':
           this.handleNewNotification(message.payload);
           break;
-        
+
         case 'activity.new':
           this.handleNewActivity(message.payload);
           break;
-        
+
         case 'appointment.reminder':
           this.handleAppointmentReminder(message.payload);
           break;
-        
+
         case 'appointment.conflict':
           this.handleAppointmentConflict(message.payload);
           break;
-        
+
         case 'error':
           this.handleServerError(message.payload);
           break;
-        
+
         case 'pong':
           // Heartbeat response
           break;
-        
+
+        case 'voice.live.response':
+          if (message.payload.model_draft?.parts) {
+            for (const part of message.payload.model_draft.parts) {
+              if (part.inline_data?.data) {
+                console.log('[RealTime] Relaying audio chunk to LiveAudioService');
+                import('./live-audio.service').then(m => {
+                  m.liveAudioService.handleIncomingAudio(part.inline_data.data);
+                });
+              }
+              if (part.text) {
+                console.log('[RealTime] Live transcript segment:', part.text);
+                this.notifyLiveTranscript(part.text, false);
+              }
+            }
+          }
+          if (message.payload.turn_complete) {
+            console.log('[RealTime] Turn complete');
+            this.notifyLiveTranscript('', true);
+          }
+          break;
+
+        case 'voice.live.connected':
+          console.log('[RealTime] Gemini Live connected');
+          break;
+
+        case 'voice.live.audio':
+          console.log('[RealTime] Received voice.live.audio chunk');
+          if (message.payload?.data) {
+            import('./live-audio.service').then(m => {
+              m.liveAudioService.handleIncomingAudio(message.payload.data);
+            });
+          }
+          break;
+
+        case 'voice.live.transcript':
+          console.log('[RealTime] Received voice.live.transcript:', message.payload?.text);
+          if (message.payload?.text) {
+            this.notifyLiveTranscript(message.payload.text, message.payload.isFinal || false);
+          }
+          break;
+
+        case 'voice.live.turn_complete':
+          console.log('[RealTime] Turn complete');
+          this.notifyLiveTranscript('', true);
+          break;
+
+        case 'voice.live.input_transcript':
+          console.log('[RealTime] Received user input transcript:', message.payload);
+          if (message.payload?.text) {
+            this.notifyUserTranscript(message.payload.text, message.payload.isFinal || false);
+          }
+          break;
+
+        case 'voice.live.interrupted':
+          console.log('[RealTime] Interrupt Signal RECEIVED - Flushing audio buffers');
+          import('./live-audio.service').then(m => {
+            m.liveAudioService.clearPlayback();
+          });
+          break;
+
+        case 'voice.live.user_turn_complete':
+          console.log('[RealTime] User turn complete with finalized transcript:', message.payload?.text);
+          if (message.payload?.text) {
+            // Send the finalized, complete user transcript
+            this.notifyUserTranscript(message.payload.text, true);
+          }
+          break;
+
         default:
-          console.log('Unknown WebSocket message type:', message.type);
+          console.log('Unknown WebSocket message type:', message.type, message.payload);
       }
     } catch (error) {
       console.error('Error parsing WebSocket message:', error);
@@ -219,7 +350,7 @@ class RealTimeDataService {
    */
   private handleConnectionError(error: Error): void {
     errorHandlingService.reportNetworkError('WebSocket', 'CONNECT', undefined, error);
-    
+
     this.errorCallbacks.forEach(callback => {
       try {
         callback(error);
@@ -240,9 +371,9 @@ class RealTimeDataService {
 
     this.reconnectAttempts++;
     const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), this.maxReconnectDelay);
-    
+
     console.log(`Scheduling reconnection attempt ${this.reconnectAttempts} in ${delay}ms`);
-    
+
     setTimeout(() => {
       if (!this.isDestroyed) {
         this.connect();
@@ -292,7 +423,9 @@ class RealTimeDataService {
       lastUpdated: new Date()
     };
 
-    this.notifyDataUpdate(this.currentData);
+    if (this.currentData) {
+      this.notifyDataUpdate(this.currentData);
+    }
   }
 
   /**
@@ -305,15 +438,14 @@ class RealTimeDataService {
         ...update,
         lastUpdated: new Date()
       };
+      this.notifyDataUpdate(update);
     }
-
-    this.notifyDataUpdate(update);
   }
 
   /**
    * Handle sync started event
    */
-  private handleSyncStarted(payload: any): void {
+  private handleSyncStarted(_payload: any): void {
     this.notifyDataUpdate({
       syncStatus: 'syncing',
       lastUpdated: new Date()
@@ -461,7 +593,7 @@ class RealTimeDataService {
    */
   onDataUpdate(callback: DataUpdateCallback): () => void {
     this.dataUpdateCallbacks.add(callback);
-    
+
     // Return unsubscribe function
     return () => {
       this.dataUpdateCallbacks.delete(callback);
@@ -473,10 +605,10 @@ class RealTimeDataService {
    */
   onConnectionStatus(callback: ConnectionStatusCallback): () => void {
     this.connectionStatusCallbacks.add(callback);
-    
+
     // Immediately call with current status
     callback(this.isConnected);
-    
+
     // Return unsubscribe function
     return () => {
       this.connectionStatusCallbacks.delete(callback);
@@ -484,11 +616,35 @@ class RealTimeDataService {
   }
 
   /**
+   * Subscribe to live transcripts
+   */
+  onLiveTranscript(callback: LiveTranscriptCallback): () => void {
+    this.liveTranscriptCallbacks.add(callback);
+    return () => this.liveTranscriptCallbacks.delete(callback);
+  }
+
+  private notifyLiveTranscript(text: string, isFinal: boolean): void {
+    this.liveTranscriptCallbacks.forEach(cb => cb(text, isFinal));
+  }
+
+  /**
+   * Subscribe to user input transcripts (what Gemini hears)
+   */
+  onUserTranscript(callback: UserTranscriptCallback): () => void {
+    this.userTranscriptCallbacks.add(callback);
+    return () => this.userTranscriptCallbacks.delete(callback);
+  }
+
+  private notifyUserTranscript(text: string, isFinal: boolean): void {
+    this.userTranscriptCallbacks.forEach(cb => cb(text, isFinal));
+  }
+
+  /**
    * Subscribe to errors
    */
   onError(callback: ErrorCallback): () => void {
     this.errorCallbacks.add(callback);
-    
+
     // Return unsubscribe function
     return () => {
       this.errorCallbacks.delete(callback);
@@ -526,11 +682,16 @@ class RealTimeDataService {
    */
   sendMessage(type: string, payload?: any): void {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({
+      const message = {
         type,
         payload,
         timestamp: new Date().toISOString()
-      }));
+      };
+      // Debug logging for voice.live messages
+      if (type.startsWith('voice.live')) {
+        console.log(`[RealTimeDataService] Sending ${type}:`, JSON.stringify(message).substring(0, 200));
+      }
+      this.ws.send(JSON.stringify(message));
     } else {
       console.warn('Cannot send message: WebSocket not connected');
     }
@@ -542,7 +703,7 @@ class RealTimeDataService {
   disconnect(): void {
     this.isDestroyed = true;
     this.stopHeartbeat();
-    
+
     if (this.ws) {
       this.ws.close(1000, 'Client disconnecting');
       this.ws = null;

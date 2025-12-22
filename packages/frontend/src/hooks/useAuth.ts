@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 interface User {
   id: string;
@@ -30,7 +30,7 @@ export function useAuth() {
    */
   const checkAuth = useCallback(async () => {
     const token = localStorage.getItem('authToken');
-    
+
     if (!token) {
       setAuthState({
         user: null,
@@ -62,7 +62,7 @@ export function useAuth() {
     } catch {
       localStorage.removeItem('authToken');
       localStorage.removeItem('refreshToken');
-      
+
       setAuthState({
         user: null,
         isAuthenticated: false,
@@ -83,7 +83,7 @@ export function useAuth() {
    */
   const refreshToken = useCallback(async (): Promise<boolean> => {
     const refresh = localStorage.getItem('refreshToken');
-    
+
     if (!refresh) {
       return false;
     }
@@ -113,7 +113,7 @@ export function useAuth() {
     } catch {
       localStorage.removeItem('authToken');
       localStorage.removeItem('refreshToken');
-      
+
       setAuthState({
         user: null,
         isAuthenticated: false,
@@ -129,7 +129,7 @@ export function useAuth() {
    */
   const logout = useCallback(async () => {
     const token = localStorage.getItem('authToken');
-    
+
     try {
       await fetch(`${API_BASE_URL}/api/auth/logout`, {
         method: 'POST',
@@ -143,7 +143,7 @@ export function useAuth() {
     } finally {
       localStorage.removeItem('authToken');
       localStorage.removeItem('refreshToken');
-      
+
       setAuthState({
         user: null,
         isAuthenticated: false,

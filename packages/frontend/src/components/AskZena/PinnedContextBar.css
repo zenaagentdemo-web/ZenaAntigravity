@@ -1,0 +1,66 @@
+.pinned-context-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1.2rem;
+    background: rgba(0, 243, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid rgba(0, 243, 255, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    animation: slide-down 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pinned-context-content {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.pinned-icon {
+    font-size: 1.1rem;
+    filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.5));
+}
+
+.pinned-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgba(0, 243, 255, 0.8);
+    letter-spacing: 1px;
+}
+
+.pinned-text {
+    font-size: 0.9rem;
+    color: #fff;
+    font-weight: 500;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+}
+
+.clear-context-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0 5px;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.clear-context-btn:hover {
+    color: #ff4d4d;
+    transform: scale(1.1);
+}
+
+@keyframes slide-down {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

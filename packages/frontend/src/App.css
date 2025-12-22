@@ -1,3 +1,7 @@
+:root {
+  --sidebar-width: 0px;
+}
+
 .app {
   display: flex;
   flex-direction: column;

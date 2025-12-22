@@ -1,0 +1,662 @@
+
+> @zena/backend@1.0.0 dev
+> tsx watch src/index.ts
+
+8:09:33 AM [tsx] rerunning
+c[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+[AskZenaService] Initializing...
+[AskZenaService] OPENAI_API_KEY set: false
+[AskZenaService] GEMINI_API_KEY set: true
+[AskZenaService] GEMINI_MODEL: gemini-3-flash-preview
+WebSocket server initialized
+Starting sync engine...
+Sync engine started (interval: 60s)
+Starting calendar sync engine...
+Calendar sync engine started (interval: 600s)
+{"timestamp":"2025-12-20T19:09:33.756Z","level":"info","message":"Server started","context":{"port":"3001","environment":"development","nodeVersion":"v25.2.1","databaseConfigured":true}}
+{"timestamp":"2025-12-20T19:09:33.757Z","level":"info","message":"WebSocket server initialized","context":{"endpoint":"ws://localhost:3001/ws"}}
+Found 0 calendar accounts to sync
+Found 0 accounts to sync
+No valid accounts to sync
+{"timestamp":"2025-12-20T19:10:02.345Z","level":"info","message":"Incoming request","context":{"requestId":"a808c868-052c-43a3-9a19-f3785e546766","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+{"timestamp":"2025-12-20T19:10:02.346Z","level":"warn","message":"Client error occurred","context":{"requestId":"a808c868-052c-43a3-9a19-f3785e546766","method":"HEAD","url":"/api/health","statusCode":404,"errorCode":"NOT_FOUND"}}
+{"timestamp":"2025-12-20T19:10:02.349Z","level":"warn","message":"Request completed","context":{"requestId":"a808c868-052c-43a3-9a19-f3785e546766","method":"HEAD","url":"/api/health","statusCode":404,"duration":"5ms"}}
+{"timestamp":"2025-12-20T19:10:32.341Z","level":"info","message":"Incoming request","context":{"requestId":"3f44e548-2796-473c-ba90-a053ee6f677b","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+{"timestamp":"2025-12-20T19:10:32.342Z","level":"warn","message":"Client error occurred","context":{"requestId":"3f44e548-2796-473c-ba90-a053ee6f677b","method":"HEAD","url":"/api/health","statusCode":404,"errorCode":"NOT_FOUND"}}
+{"timestamp":"2025-12-20T19:10:32.342Z","level":"warn","message":"Request completed","context":{"requestId":"3f44e548-2796-473c-ba90-a053ee6f677b","method":"HEAD","url":"/api/health","statusCode":404,"duration":"1ms"}}
+Found 0 accounts to sync
+No valid accounts to sync
+{"timestamp":"2025-12-20T19:11:02.342Z","level":"info","message":"Incoming request","context":{"requestId":"4bf0a903-b1e0-4760-899d-d754d4a33ed2","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+{"timestamp":"2025-12-20T19:11:02.343Z","level":"warn","message":"Client error occurred","context":{"requestId":"4bf0a903-b1e0-4760-899d-d754d4a33ed2","method":"HEAD","url":"/api/health","statusCode":404,"errorCode":"NOT_FOUND"}}
+{"timestamp":"2025-12-20T19:11:02.343Z","level":"warn","message":"Request completed","context":{"requestId":"4bf0a903-b1e0-4760-899d-d754d4a33ed2","method":"HEAD","url":"/api/health","statusCode":404,"duration":"1ms"}}
+{"timestamp":"2025-12-20T19:11:32.343Z","level":"info","message":"Incoming request","context":{"requestId":"fadd95a7-ab5d-4e9f-9e14-1e21fec2d31d","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:11:32.343Z","level":"warn","message":"Client error occurred","context":{"requestId":"fadd95a7-ab5d-4e9f-9e14-1e21fec2d31d","method":"HEAD","url":"/api/health","statusCode":404,"errorCode":"NOT_FOUND"}}
+{"timestamp":"2025-12-20T19:11:32.344Z","level":"warn","message":"Request completed","context":{"requestId":"fadd95a7-ab5d-4e9f-9e14-1e21fec2d31d","method":"HEAD","url":"/api/health","statusCode":404,"duration":"1ms"}}
+Found 0 accounts to sync
+No valid accounts to sync
+{"timestamp":"2025-12-20T19:12:02.344Z","level":"info","message":"Incoming request","context":{"requestId":"1ac6a69b-7d32-451d-85d6-07a653ab58cd","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:12:02.345Z","level":"warn","message":"Client error occurred","context":{"requestId":"1ac6a69b-7d32-451d-85d6-07a653ab58cd","method":"HEAD","url":"/api/health","statusCode":404,"errorCode":"NOT_FOUND"}}
+{"timestamp":"2025-12-20T19:12:02.345Z","level":"warn","message":"Request completed","context":{"requestId":"1ac6a69b-7d32-451d-85d6-07a653ab58cd","method":"HEAD","url":"/api/health","statusCode":404,"duration":"1ms"}}
+{"timestamp":"2025-12-20T19:12:32.343Z","level":"info","message":"Incoming request","context":{"requestId":"62178a1e-0226-4ab2-9846-5f21480a61a6","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:12:32.343Z","level":"warn","message":"Client error occurred","context":{"requestId":"62178a1e-0226-4ab2-9846-5f21480a61a6","method":"HEAD","url":"/api/health","statusCode":404,"errorCode":"NOT_FOUND"}}
+{"timestamp":"2025-12-20T19:12:32.343Z","level":"warn","message":"Request completed","context":{"requestId":"62178a1e-0226-4ab2-9846-5f21480a61a6","method":"HEAD","url":"/api/health","statusCode":404,"duration":"0ms"}}
+Found 0 accounts to sync
+No valid accounts to sync
+{"timestamp":"2025-12-20T19:13:02.343Z","level":"info","message":"Incoming request","context":{"requestId":"8ff05ee9-e5ff-4a34-8e02-b4dd71a70e5c","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:13:02.344Z","level":"warn","message":"Client error occurred","context":{"requestId":"8ff05ee9-e5ff-4a34-8e02-b4dd71a70e5c","method":"HEAD","url":"/api/health","statusCode":404,"errorCode":"NOT_FOUND"}}
+{"timestamp":"2025-12-20T19:13:02.344Z","level":"warn","message":"Request completed","context":{"requestId":"8ff05ee9-e5ff-4a34-8e02-b4dd71a70e5c","method":"HEAD","url":"/api/health","statusCode":404,"duration":"1ms"}}
+8:13:15 AM [tsx] restarting
+{"timestamp":"2025-12-20T19:13:15.801Z","level":"info","message":"Received SIGTERM, shutting down gracefully..."}
+Sync engine stopped
+Calendar sync engine stopped
+WebSocket server shut down
+{"timestamp":"2025-12-20T19:13:15.802Z","level":"info","message":"HTTP server closed"}
+{"timestamp":"2025-12-20T19:13:15.802Z","level":"info","message":"Database disconnected"}
+{"timestamp":"2025-12-20T19:13:15.802Z","level":"info","message":"Graceful shutdown completed"}
+c[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+[AskZenaService] Initializing...
+[AskZenaService] OPENAI_API_KEY set: false
+[AskZenaService] GEMINI_API_KEY set: true
+[AskZenaService] GEMINI_MODEL: gemini-3-flash-preview
+WebSocket server initialized
+Starting sync engine...
+Sync engine started (interval: 60s)
+Starting calendar sync engine...
+Calendar sync engine started (interval: 600s)
+{"timestamp":"2025-12-20T19:13:16.466Z","level":"info","message":"Server started","context":{"port":"3001","environment":"development","nodeVersion":"v25.2.1","databaseConfigured":true}}
+{"timestamp":"2025-12-20T19:13:16.467Z","level":"info","message":"WebSocket server initialized","context":{"endpoint":"ws://localhost:3001/ws"}}
+Found 0 accounts to sync
+No valid accounts to sync
+Found 0 calendar accounts to sync
+{"timestamp":"2025-12-20T19:13:32.352Z","level":"info","message":"Incoming request","context":{"requestId":"97b2c1b9-34bd-4420-81fc-306af42b1b2e","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:13:32.361Z","level":"error","message":"Request completed","context":{"requestId":"97b2c1b9-34bd-4420-81fc-306af42b1b2e"},"error":{}}
+{"timestamp":"2025-12-20T19:14:02.345Z","level":"info","message":"Incoming request","context":{"requestId":"a5621faf-d6b1-46cd-95cc-795a608c5fc6","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:14:02.347Z","level":"error","message":"Request completed","context":{"requestId":"a5621faf-d6b1-46cd-95cc-795a608c5fc6"},"error":{}}
+Found 0 accounts to sync
+No valid accounts to sync
+{"timestamp":"2025-12-20T19:14:32.346Z","level":"info","message":"Incoming request","context":{"requestId":"542e0605-b9ad-4c7e-b9cd-f08f21f54e7e","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:14:32.347Z","level":"error","message":"Request completed","context":{"requestId":"542e0605-b9ad-4c7e-b9cd-f08f21f54e7e"},"error":{}}
+{"timestamp":"2025-12-20T19:15:02.348Z","level":"info","message":"Incoming request","context":{"requestId":"92d7634c-86e0-4cb8-a9e1-1cbd23fdcdd9","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:15:02.349Z","level":"error","message":"Request completed","context":{"requestId":"92d7634c-86e0-4cb8-a9e1-1cbd23fdcdd9"},"error":{}}
+Found 0 accounts to sync
+No valid accounts to sync
+{"timestamp":"2025-12-20T19:15:32.348Z","level":"info","message":"Incoming request","context":{"requestId":"f9224444-045b-47a8-adf9-11f22b90a8dd","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:15:32.349Z","level":"error","message":"Request completed","context":{"requestId":"f9224444-045b-47a8-adf9-11f22b90a8dd"},"error":{}}
+{"timestamp":"2025-12-20T19:16:02.349Z","level":"info","message":"Incoming request","context":{"requestId":"d6ddba64-003d-472f-be70-41c67e37b062","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:16:02.350Z","level":"error","message":"Request completed","context":{"requestId":"d6ddba64-003d-472f-be70-41c67e37b062"},"error":{}}
+Found 0 accounts to sync
+No valid accounts to sync
+{"timestamp":"2025-12-20T19:16:32.348Z","level":"info","message":"Incoming request","context":{"requestId":"de74121f-1139-4412-a027-2e88648bf6b7","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:16:32.349Z","level":"error","message":"Request completed","context":{"requestId":"de74121f-1139-4412-a027-2e88648bf6b7"},"error":{}}
+{"timestamp":"2025-12-20T19:16:54.388Z","level":"info","message":"Incoming request","context":{"requestId":"cb3d85a4-a7d2-4467-9de7-30e350c9c798","method":"POST","url":"/api/history","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:16:54.401Z","level":"info","message":"Request completed","context":{"requestId":"cb3d85a4-a7d2-4467-9de7-30e350c9c798","method":"POST","url":"/","statusCode":201,"duration":"13ms"}}
+{"timestamp":"2025-12-20T19:16:54.407Z","level":"info","message":"Incoming request","context":{"requestId":"e3353a0b-76e2-4b5d-88c1-f980bcf3075e","method":"POST","url":"/api/ask","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:16:54.445Z","level":"info","message":"Incoming request","context":{"requestId":"5fc5c49c-c05f-43fe-9e31-1b58f26c3fbb","method":"GET","url":"/api/history/170cb6eb-0088-44b5-9ab4-d4b39ad6a8e8","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /170cb6eb-0088-44b5-9ab4-d4b39ad6a8e8
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:16:54.448Z","level":"info","message":"Request completed","context":{"requestId":"5fc5c49c-c05f-43fe-9e31-1b58f26c3fbb","method":"GET","url":"/170cb6eb-0088-44b5-9ab4-d4b39ad6a8e8","statusCode":200,"duration":"3ms"}}
+{"timestamp":"2025-12-20T19:16:58.604Z","level":"warn","message":"Slow request detected","context":{"method":"POST","endpoint":"/","duration":"4197ms","threshold":"1000ms"}}
+{"timestamp":"2025-12-20T19:16:58.604Z","level":"info","message":"Request completed","context":{"requestId":"e3353a0b-76e2-4b5d-88c1-f980bcf3075e","method":"POST","url":"/","statusCode":200,"duration":"4197ms"}}
+{"timestamp":"2025-12-20T19:16:59.591Z","level":"info","message":"Incoming request","context":{"requestId":"d5d4e50c-4849-451e-b95a-7eb8d03d5676","method":"GET","url":"/api/history","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:16:59.595Z","level":"info","message":"Request completed","context":{"requestId":"d5d4e50c-4849-451e-b95a-7eb8d03d5676","method":"GET","url":"/","statusCode":200,"duration":"4ms"}}
+{"timestamp":"2025-12-20T19:17:02.349Z","level":"info","message":"Incoming request","context":{"requestId":"15f21279-4704-429a-b972-c8a978ce90a8","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:17:02.350Z","level":"error","message":"Request completed","context":{"requestId":"15f21279-4704-429a-b972-c8a978ce90a8"},"error":{}}
+{"timestamp":"2025-12-20T19:17:10.435Z","level":"info","message":"Incoming request","context":{"requestId":"e613a230-7be7-4b53-9036-7fc14f63d3ba","method":"GET","url":"/api/auth/me","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /me
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:10.436Z","level":"info","message":"Request completed","context":{"requestId":"e613a230-7be7-4b53-9036-7fc14f63d3ba","method":"GET","url":"/me","statusCode":200,"duration":"1ms"}}
+{"timestamp":"2025-12-20T19:17:10.437Z","level":"info","message":"Incoming request","context":{"requestId":"6bc3f57d-b9da-47ad-8313-a7bb02b0de92","method":"GET","url":"/api/auth/me","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /me
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:10.438Z","level":"info","message":"Request completed","context":{"requestId":"6bc3f57d-b9da-47ad-8313-a7bb02b0de92","method":"GET","url":"/me","statusCode":200,"duration":"1ms"}}
+{"timestamp":"2025-12-20T19:17:10.444Z","level":"info","message":"Incoming request","context":{"requestId":"66cd2d9d-a013-44ca-8d94-fbaec7095a62","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:17:10.445Z","level":"info","message":"Incoming request","context":{"requestId":"957cdabc-a12b-40b6-8f45-72eb8529df8a","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:17:10.446Z","level":"error","message":"Request completed","context":{"requestId":"66cd2d9d-a013-44ca-8d94-fbaec7095a62"},"error":{}}
+{"timestamp":"2025-12-20T19:17:10.448Z","level":"error","message":"Request completed","context":{"requestId":"957cdabc-a12b-40b6-8f45-72eb8529df8a"},"error":{}}
+{"timestamp":"2025-12-20T19:17:10.508Z","level":"info","message":"Incoming request","context":{"requestId":"fdf272da-1a8e-4ca2-83ee-f2ba95e9b2c8","method":"GET","url":"/api/history","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:10.512Z","level":"info","message":"Request completed","context":{"requestId":"fdf272da-1a8e-4ca2-83ee-f2ba95e9b2c8","method":"GET","url":"/","statusCode":304,"duration":"4ms"}}
+{"timestamp":"2025-12-20T19:17:10.524Z","level":"info","message":"Incoming request","context":{"requestId":"6f994091-0e1f-42a8-92a8-3c54ed4738f0","method":"GET","url":"/api/history","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:10.526Z","level":"info","message":"Request completed","context":{"requestId":"6f994091-0e1f-42a8-92a8-3c54ed4738f0","method":"GET","url":"/","statusCode":304,"duration":"2ms"}}
+Found 0 accounts to sync
+No valid accounts to sync
+{"timestamp":"2025-12-20T19:17:18.682Z","level":"info","message":"Incoming request","context":{"requestId":"53c2d87b-c61a-4abf-9d1b-2da94bb0828c","method":"GET","url":"/api/auth/me","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+[Auth] Checking authorization for: /me
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:18.683Z","level":"info","message":"Request completed","context":{"requestId":"53c2d87b-c61a-4abf-9d1b-2da94bb0828c","method":"GET","url":"/me","statusCode":200,"duration":"1ms"}}
+{"timestamp":"2025-12-20T19:17:18.683Z","level":"info","message":"Incoming request","context":{"requestId":"4c97c2c4-5c84-4ef6-8884-ba08585adcfd","method":"GET","url":"/api/auth/me","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+[Auth] Checking authorization for: /me
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:18.683Z","level":"info","message":"Request completed","context":{"requestId":"4c97c2c4-5c84-4ef6-8884-ba08585adcfd","method":"GET","url":"/me","statusCode":200,"duration":"0ms"}}
+{"timestamp":"2025-12-20T19:17:18.704Z","level":"info","message":"Incoming request","context":{"requestId":"4a84cfd1-7220-4e8a-b9bf-426229a56d75","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+{"timestamp":"2025-12-20T19:17:18.705Z","level":"info","message":"Incoming request","context":{"requestId":"1e5f5dcb-838e-4ecc-8400-64e4a86f568a","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+{"timestamp":"2025-12-20T19:17:18.706Z","level":"error","message":"Request completed","context":{"requestId":"4a84cfd1-7220-4e8a-b9bf-426229a56d75"},"error":{}}
+{"timestamp":"2025-12-20T19:17:18.707Z","level":"error","message":"Request completed","context":{"requestId":"1e5f5dcb-838e-4ecc-8400-64e4a86f568a"},"error":{}}
+{"timestamp":"2025-12-20T19:17:18.830Z","level":"info","message":"Incoming request","context":{"requestId":"bc7a13d4-d5cf-4f45-870f-62181cf793c4","method":"GET","url":"/api/history","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+[Auth] Checking authorization for: /
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:18.835Z","level":"info","message":"Request completed","context":{"requestId":"bc7a13d4-d5cf-4f45-870f-62181cf793c4","method":"GET","url":"/","statusCode":200,"duration":"5ms"}}
+{"timestamp":"2025-12-20T19:17:18.855Z","level":"info","message":"Incoming request","context":{"requestId":"59117838-5ee1-4a13-821a-37554dadc0b1","method":"GET","url":"/api/history","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+[Auth] Checking authorization for: /
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:18.857Z","level":"info","message":"Request completed","context":{"requestId":"59117838-5ee1-4a13-821a-37554dadc0b1","method":"GET","url":"/","statusCode":200,"duration":"2ms"}}
+{"timestamp":"2025-12-20T19:17:24.777Z","level":"info","message":"Incoming request","context":{"requestId":"f714ff0c-806b-4e05-b855-b85bd4977019","method":"POST","url":"/api/history","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:24.779Z","level":"info","message":"Request completed","context":{"requestId":"f714ff0c-806b-4e05-b855-b85bd4977019","method":"POST","url":"/","statusCode":201,"duration":"2ms"}}
+{"timestamp":"2025-12-20T19:17:24.790Z","level":"info","message":"Incoming request","context":{"requestId":"7f747c0b-1da2-40e2-bb52-90e294a20427","method":"POST","url":"/api/ask","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:24.820Z","level":"info","message":"Incoming request","context":{"requestId":"d4535024-62e6-4cd8-800f-f172cbde3c85","method":"GET","url":"/api/history/4fb0ee3f-7bd2-4e88-b720-a266d1260f13","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /4fb0ee3f-7bd2-4e88-b720-a266d1260f13
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:24.822Z","level":"info","message":"Request completed","context":{"requestId":"d4535024-62e6-4cd8-800f-f172cbde3c85","method":"GET","url":"/4fb0ee3f-7bd2-4e88-b720-a266d1260f13","statusCode":200,"duration":"2ms"}}
+{"timestamp":"2025-12-20T19:17:28.419Z","level":"warn","message":"Slow request detected","context":{"method":"POST","endpoint":"/","duration":"3629ms","threshold":"1000ms"}}
+{"timestamp":"2025-12-20T19:17:28.419Z","level":"info","message":"Request completed","context":{"requestId":"7f747c0b-1da2-40e2-bb52-90e294a20427","method":"POST","url":"/","statusCode":200,"duration":"3629ms"}}
+{"timestamp":"2025-12-20T19:17:29.107Z","level":"info","message":"Incoming request","context":{"requestId":"dc2ba477-1d81-4b01-a10d-d137369135e6","method":"GET","url":"/api/history","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+[Auth] Checking authorization for: /
+[Auth] Auth header present: true
+[Auth] Token length: 191
+[Auth] Token verified for user: demo-user-id
+{"timestamp":"2025-12-20T19:17:29.110Z","level":"info","message":"Request completed","context":{"requestId":"dc2ba477-1d81-4b01-a10d-d137369135e6","method":"GET","url":"/","statusCode":200,"duration":"3ms"}}
+[WebSocket] Using development token, assigning dev user ID
+[WebSocket] Client connected: dev-user-id
+[Websocket] Message received from dev-user-id: dashboard.request
+[Websocket] Message received from dev-user-id: voice.live.start
+[Websocket] *** Received voice.live.start for user: dev-user-id
+[Websocket] MultimodalLiveService imported, starting session...
+[MultimodalLive] Starting session for dev-user-id with history: 2
+[MultimodalLive] Connected to Gemini for dev-user-id
+[MultimodalLive] Session stored for dev-user-id
+[MultimodalLive] Sending 2 history turns to Gemini after connection
+[MultimodalLive] Session started for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] Closed for dev-user-id: Request contains an invalid argument.
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+{"timestamp":"2025-12-20T19:17:48.702Z","level":"info","message":"Incoming request","context":{"requestId":"4f0b00b0-0001-4f2c-9a12-ba366ff520a9","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","ip":"::1"}}
+{"timestamp":"2025-12-20T19:17:48.703Z","level":"error","message":"Request completed","context":{"requestId":"4f0b00b0-0001-4f2c-9a12-ba366ff520a9"},"error":{}}
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.chunk
+[MultimodalLive] No session for dev-user-id
+[Websocket] Message received from dev-user-id: voice.live.stop
+[Websocket] Message received from dev-user-id: voice.live.stop
+[Websocket] Message received from dev-user-id: ping
+Found 0 accounts to sync
+No valid accounts to sync
+{"timestamp":"2025-12-20T19:18:18.701Z","level":"info","message":"Incoming request","context":{"requestId":"c5336357-d816-4db2-8a0d-0e25cb029717","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+{"timestamp":"2025-12-20T19:18:18.702Z","level":"error","message":"Request completed","context":{"requestId":"c5336357-d816-4db2-8a0d-0e25cb029717"},"error":{}}
+[Websocket] Message received from dev-user-id: ping
+{"timestamp":"2025-12-20T19:18:48.703Z","level":"info","message":"Incoming request","context":{"requestId":"1d301b34-a100-48bc-8969-db597e4f5e60","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+{"timestamp":"2025-12-20T19:18:48.712Z","level":"error","message":"Request completed","context":{"requestId":"1d301b34-a100-48bc-8969-db597e4f5e60"},"error":{}}
+[Websocket] Message received from dev-user-id: ping
+Found 0 accounts to sync
+No valid accounts to sync
+{"timestamp":"2025-12-20T19:19:18.704Z","level":"info","message":"Incoming request","context":{"requestId":"1290b96b-405b-4815-9f0e-1e3ed5cb5028","method":"HEAD","url":"/api/health","userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1","ip":"::1"}}
+{"timestamp":"2025-12-20T19:19:18.705Z","level":"error","message":"Request completed","context":{"requestId":"1290b96b-405b-4815-9f0e-1e3ed5cb5028"},"error":{}}

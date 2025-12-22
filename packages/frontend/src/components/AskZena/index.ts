@@ -1,3 +1,5 @@
+export * from './PinnedContextBar';
+export * from './ActionChips';
 export * from './ChatSidebar';
 export * from './MessageBubble';
 export * from './AttachmentManager';

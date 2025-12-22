@@ -29,51 +29,54 @@ export class SearchService {
    */
   async search(options: SearchOptions): Promise<SearchResult[]> {
     const { query, userId, types, limit = 50 } = options;
-    
+
     // Default to searching all types if none specified
     const searchTypes = types || ['deal', 'contact', 'property', 'thread'];
-    
+
     const results: SearchResult[] = [];
-    
+
     // Search each entity type in parallel
     const searchPromises = [];
-    
+
     if (searchTypes.includes('deal')) {
       searchPromises.push(this.searchDeals(query, userId));
     }
-    
+
     if (searchTypes.includes('contact')) {
       searchPromises.push(this.searchContacts(query, userId));
     }
-    
+
     if (searchTypes.includes('property')) {
       searchPromises.push(this.searchProperties(query, userId));
     }
-    
+
     if (searchTypes.includes('thread')) {
       searchPromises.push(this.searchThreads(query, userId));
     }
-    
+
+    // We don't include chat history in the default "all" search to avoid noise
+    // It must be explicitly requested or handled via AskZenaService
+
     const allResults = await Promise.all(searchPromises);
-    
+
     // Flatten and combine all results
     allResults.forEach(typeResults => {
       results.push(...typeResults);
     });
-    
+
     // Sort by relevance and recency
     const rankedResults = this.rankResults(results, query);
-    
+
     // Return top results up to limit
     return rankedResults.slice(0, limit);
   }
-  
+
   /**
    * Search deals by summary, next action, and property address
    */
   private async searchDeals(query: string, userId: string): Promise<SearchResult[]> {
     const queryLower = query.toLowerCase();
-    
+
     const deals = await prisma.deal.findMany({
       where: {
         userId,
@@ -88,14 +91,14 @@ export class SearchService {
       },
       take: 100,
     });
-    
+
     return deals.map(deal => {
       const snippet = this.generateSnippet(deal.summary, query, 150);
       const relevanceScore = this.calculateRelevance(
         [deal.summary, deal.nextAction || '', deal.property?.address || ''],
         query
       );
-      
+
       return {
         type: 'deal' as const,
         id: deal.id,
@@ -112,13 +115,13 @@ export class SearchService {
       };
     });
   }
-  
+
   /**
    * Search contacts by name, email, and relationship notes
    */
   private async searchContacts(query: string, userId: string): Promise<SearchResult[]> {
     const queryLower = query.toLowerCase();
-    
+
     const contacts = await prisma.contact.findMany({
       where: {
         userId,
@@ -136,20 +139,20 @@ export class SearchService {
       },
       take: 100,
     });
-    
+
     return contacts.map(contact => {
       const emailsText = contact.emails.join(', ');
       const notesText = contact.relationshipNotes
         .map((note: any) => note.content)
         .join(' ');
-      
+
       const searchableText = [contact.name, emailsText, notesText].join(' ');
       const snippet = this.generateSnippet(searchableText, query, 150);
       const relevanceScore = this.calculateRelevance(
         [contact.name, emailsText, notesText],
         query
       );
-      
+
       return {
         type: 'contact' as const,
         id: contact.id,
@@ -168,7 +171,7 @@ export class SearchService {
       };
     });
   }
-  
+
   /**
    * Search properties by address
    */
@@ -189,7 +192,7 @@ export class SearchService {
       },
       take: 100,
     });
-    
+
     return properties.map(property => {
       const vendorNames = property.vendors.map(v => v.name).join(', ');
       const buyerNames = property.buyers.map(b => b.name).join(', ');
@@ -199,13 +202,13 @@ export class SearchService {
         buyerNames,
         property.riskOverview || '',
       ].join(' ');
-      
+
       const snippet = this.generateSnippet(searchableText, query, 150);
       const relevanceScore = this.calculateRelevance(
         [property.address, vendorNames, buyerNames],
         query
       );
-      
+
       return {
         type: 'property' as const,
         id: property.id,
@@ -222,7 +225,7 @@ export class SearchService {
       };
     });
   }
-  
+
   /**
    * Search threads by subject, summary, and participants
    */
@@ -241,24 +244,24 @@ export class SearchService {
       },
       take: 100,
     });
-    
+
     return threads.map(thread => {
       const participants = (thread.participants as any[])
         .map(p => p.name || p.email)
         .join(', ');
-      
+
       const searchableText = [
         thread.subject,
         thread.summary,
         participants,
       ].join(' ');
-      
+
       const snippet = this.generateSnippet(searchableText, query, 150);
       const relevanceScore = this.calculateRelevance(
         [thread.subject, thread.summary, participants],
         query
       );
-      
+
       return {
         type: 'thread' as const,
         id: thread.id,
@@ -276,7 +279,7 @@ export class SearchService {
       };
     });
   }
-  
+
   /**
    * Calculate relevance score based on query match quality
    * Higher score = more relevant
@@ -284,30 +287,30 @@ export class SearchService {
   private calculateRelevance(fields: string[], query: string): number {
     const queryLower = query.toLowerCase();
     const queryWords = queryLower.split(/\s+/).filter(w => w.length > 0);
-    
+
     let score = 0;
-    
+
     fields.forEach((field, fieldIndex) => {
       if (!field) return;
-      
+
       const fieldLower = field.toLowerCase();
-      
+
       // Exact match in field (highest score)
       if (fieldLower === queryLower) {
         score += 100 * (fields.length - fieldIndex);
         return;
       }
-      
+
       // Field starts with query
       if (fieldLower.startsWith(queryLower)) {
         score += 50 * (fields.length - fieldIndex);
       }
-      
+
       // Field contains query as whole phrase
       if (fieldLower.includes(queryLower)) {
         score += 30 * (fields.length - fieldIndex);
       }
-      
+
       // Count matching words
       queryWords.forEach(word => {
         if (fieldLower.includes(word)) {
@@ -315,54 +318,54 @@ export class SearchService {
         }
       });
     });
-    
+
     return score;
   }
-  
+
   /**
    * Rank results by relevance and recency
    */
   private rankResults(results: SearchResult[], query: string): SearchResult[] {
     const now = Date.now();
     const dayInMs = 24 * 60 * 60 * 1000;
-    
+
     return results.sort((a, b) => {
       // Calculate recency score (0-1, where 1 is most recent)
       const aRecency = Math.max(0, 1 - (now - a.timestamp.getTime()) / (90 * dayInMs));
       const bRecency = Math.max(0, 1 - (now - b.timestamp.getTime()) / (90 * dayInMs));
-      
+
       // Combine relevance (70%) and recency (30%)
       const aScore = a.relevanceScore * 0.7 + aRecency * 100 * 0.3;
       const bScore = b.relevanceScore * 0.7 + bRecency * 100 * 0.3;
-      
+
       return bScore - aScore;
     });
   }
-  
+
   /**
    * Generate a context snippet showing why the result matched
    */
   private generateSnippet(text: string, query: string, maxLength: number): string {
     if (!text) return '';
-    
+
     const queryLower = query.toLowerCase();
     const textLower = text.toLowerCase();
-    
+
     // Find the position of the query in the text
     const queryIndex = textLower.indexOf(queryLower);
-    
+
     if (queryIndex === -1) {
       // Query not found as exact phrase, just return beginning
       return text.substring(0, maxLength) + (text.length > maxLength ? '...' : '');
     }
-    
+
     // Calculate snippet boundaries
     const contextBefore = 50;
     const contextAfter = maxLength - query.length - contextBefore;
-    
+
     let start = Math.max(0, queryIndex - contextBefore);
     let end = Math.min(text.length, queryIndex + query.length + contextAfter);
-    
+
     // Adjust to word boundaries
     if (start > 0) {
       const spaceIndex = text.indexOf(' ', start);
@@ -370,20 +373,76 @@ export class SearchService {
         start = spaceIndex + 1;
       }
     }
-    
+
     if (end < text.length) {
       const spaceIndex = text.lastIndexOf(' ', end);
       if (spaceIndex !== -1 && spaceIndex > queryIndex + query.length) {
         end = spaceIndex;
       }
     }
-    
+
     let snippet = text.substring(start, end);
-    
+
     if (start > 0) snippet = '...' + snippet;
     if (end < text.length) snippet = snippet + '...';
-    
+
     return snippet;
+  }
+
+  /**
+   * Search through past chat conversations and messages
+   */
+  async searchChatHistory(searchTerms: string[], userId: string): Promise<SearchResult[]> {
+    // Filter out common "intent" words that shouldn't be searched in the content
+    const intentWords = new Set(['chat', 'conversation', 'talked', 'said', 'mentioned', 'asked', 'history', 'past', 'remember', 'find', 'tell', 'me', 'what', 'we']);
+    const filteredTerms = searchTerms.filter(term => !intentWords.has(term.toLowerCase()));
+
+    if (filteredTerms.length === 0) return [];
+
+    const messages = await prisma.chatMessage.findMany({
+      where: {
+        conversation: { userId },
+        OR: filteredTerms.flatMap(term => [
+          { content: { contains: term, mode: 'insensitive' } },
+          { conversation: { title: { contains: term, mode: 'insensitive' } } }
+        ])
+      },
+      include: {
+        conversation: true
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    });
+
+    // Create a map to keep only the best match per conversation
+    const conversationMatches = new Map<string, SearchResult>();
+
+    messages.forEach(msg => {
+      const existing = conversationMatches.get(msg.conversationId);
+      const relevanceScore = this.calculateRelevance(
+        [msg.content, msg.conversation.title || ''],
+        filteredTerms.join(' ')
+      );
+
+      if (!existing || relevanceScore > existing.relevanceScore) {
+        conversationMatches.set(msg.conversationId, {
+          type: 'thread' as const,
+          id: msg.conversationId,
+          title: `Past Chat: ${msg.conversation.title || 'Untitled'}`,
+          snippet: this.generateSnippet(msg.content, filteredTerms[0], 150),
+          relevanceScore,
+          timestamp: msg.createdAt,
+          metadata: {
+            role: msg.role,
+            conversationId: msg.conversationId
+          }
+        });
+      }
+    });
+
+    return Array.from(conversationMatches.values())
+      .sort((a, b) => b.relevanceScore - a.relevanceScore)
+      .slice(0, 10);
   }
 }
 

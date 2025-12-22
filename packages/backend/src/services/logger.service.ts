@@ -1,7 +1,10 @@
-/**
- * Centralized logging service for structured logging
- * Supports different log levels and contextual information
- */
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const LOG_FILE = path.join(__dirname, '../../debug.log');
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 
@@ -87,6 +90,13 @@ class LoggerService {
         console.error(output);
         break;
     }
+
+    // Also write to file for debugging
+    try {
+      fs.appendFileSync(LOG_FILE, output + '\n');
+    } catch (e) {
+      // Ignore write errors
+    }
   }
 
   debug(message: string, context?: LogContext): void {
@@ -134,7 +144,7 @@ class ChildLogger {
   constructor(
     private parent: LoggerService,
     private defaultContext: LogContext
-  ) {}
+  ) { }
 
   private mergeContext(context?: LogContext): LogContext {
     return { ...this.defaultContext, ...context };
