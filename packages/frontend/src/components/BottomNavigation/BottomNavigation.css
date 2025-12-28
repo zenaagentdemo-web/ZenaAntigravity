@@ -158,160 +158,77 @@
 
 .bottom-nav-ht__dealflow-orb {
   position: relative;
-  width: 72px;
-  height: 72px;
-  margin-top: -32px;
-  /* Elevated positioning - more prominent */
-  border-radius: 50%;
+  width: 95px;
+  height: 95px;
+  margin-top: -45px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  overflow: visible;
-  z-index: 10;
-}
-
-.bottom-nav-ht__dealflow-orb-inner {
-  position: relative;
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
-  border: 2px solid rgba(255, 215, 0, 0.3);
-  box-shadow:
-    0 0 20px rgba(0, 212, 255, 0.6),
-    0 0 40px rgba(255, 0, 255, 0.3),
-    0 0 60px rgba(255, 215, 0, 0.2),
-    inset 0 0 20px rgba(0, 0, 0, 0.3);
-  animation: dealflow-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  transition: box-shadow 300ms ease,
-    transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  box-shadow: none;
+  transition: transform 0.3s ease;
 }
 
-.bottom-nav-ht__dealflow-orb:hover .bottom-nav-ht__dealflow-orb-inner {
-  transform: scale(1.08);
-  box-shadow:
-    0 0 35px rgba(0, 212, 255, 0.8),
-    0 0 70px rgba(255, 0, 255, 0.4),
-    0 0 100px rgba(255, 215, 0, 0.3),
-    inset 0 0 25px rgba(0, 0, 0, 0.2);
+.bottom-nav-ht__dealflow-orb:hover {
+  transform: scale(1.1);
 }
 
-.bottom-nav-ht__dealflow-orb:active .bottom-nav-ht__dealflow-orb-inner {
+.bottom-nav-ht__dealflow-orb:active {
   transform: scale(0.95);
 }
 
-/* Premium Gradient Background */
-.bottom-nav-ht__dealflow-orb-gradient {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-    linear-gradient(135deg,
-      #00D4FF 0%,
-      #8B5CF6 25%,
-      #FF00FF 50%,
-      #FFD700 75%,
-      #00D4FF 100%);
-  background-size: 100% 100%, 300% 300%;
-  animation: gradient-shift 6s ease infinite;
-}
-
-/* Holographic Scanner Effect */
-.bottom-nav-ht__dealflow-scanner {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.4) 50%,
-      transparent 100%);
-  background-size: 100% 200%;
-  animation: scanner-sweep 2s linear infinite;
-  pointer-events: none;
-}
-
-/* Handshake Icon Styling - Stroke-based (Lucide) */
+/* Handshake Icon Styling - Premium Image */
 .bottom-nav-ht__dealflow-icon {
   position: relative;
-  width: 28px;
-  height: 28px;
-  color: rgba(10, 10, 15, 0.95);
-  stroke-width: 2.5;
-  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   z-index: 2;
-  animation: icon-float 3s ease-in-out infinite;
-}
-
-/* Deal Flow Label */
-.bottom-nav-ht__dealflow-label {
-  position: absolute;
-  bottom: -18px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--neon-cyan, #00D4FF);
-  text-shadow:
-    0 0 8px rgba(0, 212, 255, 0.8),
-    0 0 16px rgba(0, 212, 255, 0.4);
-  white-space: nowrap;
+  display: block;
 }
 
 /* Active State */
-.bottom-nav-ht__dealflow-orb--active .bottom-nav-ht__dealflow-orb-inner {
-  border-color: rgba(255, 215, 0, 0.6);
-  box-shadow:
-    0 0 40px rgba(0, 212, 255, 0.9),
-    0 0 80px rgba(255, 0, 255, 0.5),
-    0 0 120px rgba(255, 215, 0, 0.4),
-    inset 0 0 30px rgba(0, 0, 0, 0.2);
+.bottom-nav-ht__dealflow-orb--active {
+  filter: brightness(1.2);
 }
 
-.bottom-nav-ht__dealflow-orb--active .bottom-nav-ht__dealflow-label {
-  color: #FFD700;
-  text-shadow:
-    0 0 10px rgba(255, 215, 0, 0.9),
-    0 0 20px rgba(255, 215, 0, 0.5);
+
+/* Glow Pulse Animation */
+@keyframes dealflow-glow-pulse {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 15px rgba(0, 212, 255, 0.3),
+      0 0 30px rgba(139, 92, 246, 0.2),
+      inset 0 0 20px rgba(0, 0, 0, 0.5);
+  }
+
+  50% {
+    box-shadow:
+      0 0 25px rgba(0, 212, 255, 0.5),
+      0 0 45px rgba(139, 92, 246, 0.3),
+      0 0 60px rgba(255, 0, 255, 0.15),
+      inset 0 0 20px rgba(0, 0, 0, 0.5);
+  }
 }
 
-/* Animated Pulse Rings */
-.bottom-nav-ht__dealflow-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  border: 1px solid;
-  opacity: 0;
-  pointer-events: none;
+/* Rotating Ring Effect */
+@keyframes ring-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.bottom-nav-ht__dealflow-ring--1 {
-  width: 58px;
-  height: 58px;
-  border-color: rgba(0, 212, 255, 0.6);
-  animation: ring-expand-dealflow 3s ease-out infinite;
-}
-
-.bottom-nav-ht__dealflow-ring--2 {
-  width: 58px;
-  height: 58px;
-  border-color: rgba(255, 0, 255, 0.5);
-  animation: ring-expand-dealflow 3s ease-out infinite;
-  animation-delay: 1s;
-}
-
-.bottom-nav-ht__dealflow-ring--3 {
-  width: 58px;
-  height: 58px;
-  border-color: rgba(255, 215, 0, 0.4);
-  animation: ring-expand-dealflow 3s ease-out infinite;
-  animation-delay: 2s;
-}
 
 /* Deal Flow Animations */
 @keyframes dealflow-pulse {
@@ -346,15 +263,6 @@
   }
 }
 
-@keyframes scanner-sweep {
-  0% {
-    background-position: 0% 0%;
-  }
-
-  100% {
-    background-position: 0% 200%;
-  }
-}
 
 @keyframes icon-float {
 
@@ -368,19 +276,6 @@
   }
 }
 
-@keyframes ring-expand-dealflow {
-  0% {
-    width: 58px;
-    height: 58px;
-    opacity: 0.8;
-  }
-
-  100% {
-    width: 120px;
-    height: 120px;
-    opacity: 0;
-  }
-}
 
 /* ============================================
    Ripple Effects - Requirements: 4.4

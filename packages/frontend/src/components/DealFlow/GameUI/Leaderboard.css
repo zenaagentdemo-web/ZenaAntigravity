@@ -1,0 +1,116 @@
+.leaderboard {
+    background: rgba(13, 27, 42, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
+}
+
+.leaderboard--compact {
+    padding: 16px;
+}
+
+.leaderboard__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.leaderboard__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    margin: 0;
+}
+
+.leaderboard__your-rank {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.leaderboard__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Leaderboard Item */
+.leaderboard__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(255, 215, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.leaderboard__item:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: rgba(255, 215, 0, 0.2);
+}
+
+.leaderboard__item--you {
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(0, 243, 255, 0.05));
+    border-color: rgba(0, 243, 255, 0.4);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+.leaderboard__rank {
+    min-width: 32px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffd700;
+    text-align: center;
+}
+
+.leaderboard__avatar {
+    font-size: 24px;
+}
+
+.leaderboard__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.leaderboard__name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.leaderboard__item--you .leaderboard__name {
+    color: #00f3ff;
+}
+
+.leaderboard__level {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.leaderboard__xp {
+    font-size: 12px;
+    font-weight: 700;
+    color: #00ff41;
+    text-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
+}
+
+/* User Position (when not in top) */
+.leaderboard__user-position {
+    margin-top: 8px;
+}
+
+.leaderboard__dots {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.3);
+    padding: 4px 0;
+}

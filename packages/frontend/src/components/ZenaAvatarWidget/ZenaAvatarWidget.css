@@ -1,0 +1,461 @@
+/**
+ * ZenaAvatarWidget Styles
+ * 
+ * Compact version of the dashboard Zena avatar for secondary pages.
+ * Scaled down ~60% from the main dashboard version.
+ */
+
+/* ============================================
+   Widget Container
+   ============================================ */
+
+.zena-avatar-widget {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-4, 16px);
+    padding: var(--spacing-4, 16px) 0 var(--spacing-6, 24px);
+}
+
+/* ============================================
+   Avatar Container with Effects
+   ============================================ */
+
+.zena-avatar-widget__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2, 8px);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* Hover effects */
+.zena-avatar-widget__container:hover {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.6));
+}
+
+.zena-avatar-widget__container:active {
+    transform: scale(1.02);
+}
+
+/* Pulsating ring around avatar */
+.zena-avatar-widget__container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 160px;
+    height: 160px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 2px solid rgba(0, 229, 255, 0.5);
+    animation: widget-pulse-ring 2s ease-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Second pulsating ring with delay */
+.zena-avatar-widget__container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 160px;
+    height: 160px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 0, 255, 0.4);
+    animation: widget-pulse-ring 2s ease-out infinite 0.5s;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.zena-avatar-widget--central .zena-avatar-widget__container:hover {
+    transform: scale(1.04);
+    /* Subtle scale for the larger one */
+}
+
+@keyframes widget-pulse-ring {
+    0% {
+        transform: translate(-50%, -50%) scale(0.85);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   Hint Text
+   ============================================ */
+
+.zena-avatar-widget__hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: widget-hint-pulse 2s ease-in-out infinite;
+    opacity: 0.8;
+}
+
+.zena-avatar-widget__hint-text {
+    font-size: 10px;
+    color: var(--neon-cyan, #00e5ff);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+
+@keyframes widget-hint-pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   Coaching / Hone-In Mode
+   ============================================ */
+
+.zena-avatar-widget--coaching .zena-avatar-widget__container::before {
+    border-color: #ff003c;
+    box-shadow: 0 0 15px rgba(255, 0, 60, 0.4);
+    animation: widget-pulse-ring 1.5s ease-out infinite;
+}
+
+.zena-avatar-widget--coaching .zena-avatar-widget__container::after {
+    border-color: #00f3ff;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+    animation: widget-pulse-ring 2.5s ease-out infinite 0.5s;
+}
+
+.zena-avatar-widget--coaching .zena-avatar-widget__container {
+    filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.2));
+}
+
+.zena-avatar-widget--coaching .zena-avatar-widget__container:hover {
+    filter: drop-shadow(0 0 30px rgba(255, 0, 60, 0.5));
+}
+
+/* ============================================
+   Start Zena Live Button
+   ============================================ */
+
+.zena-avatar-widget__live-button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2, 8px);
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+    border: 2px solid rgba(0, 212, 255, 0.5);
+    border-radius: 50px;
+    color: var(--text-primary-ht, #fff);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:
+        0 0 15px rgba(0, 212, 255, 0.2),
+        inset 0 0 15px rgba(0, 212, 255, 0.05);
+}
+
+.zena-avatar-widget__live-text {
+    text-transform: uppercase;
+}
+
+/* Hover state */
+.zena-avatar-widget__live-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    border-color: var(--neon-cyan, #00d4ff);
+    box-shadow:
+        0 0 25px rgba(0, 212, 255, 0.4),
+        0 8px 30px rgba(0, 212, 255, 0.2),
+        inset 0 0 25px rgba(0, 212, 255, 0.1);
+}
+
+/* Active state */
+.zena-avatar-widget__live-button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* ============================================
+   Animated Wave Icon
+   ============================================ */
+
+.zena-avatar-widget__wave-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    height: 18px;
+}
+
+.zena-avatar-widget__wave-icon .wave-bar {
+    width: 2px;
+    height: 6px;
+    background: var(--neon-cyan, #00d4ff);
+    border-radius: 2px;
+    animation: widget-wave-animation 1s ease-in-out infinite;
+    box-shadow: 0 0 4px rgba(0, 212, 255, 0.6);
+}
+
+.zena-avatar-widget__wave-icon .wave-bar:nth-child(1) {
+    height: 6px;
+}
+
+.zena-avatar-widget__wave-icon .wave-bar:nth-child(2) {
+    height: 10px;
+}
+
+.zena-avatar-widget__wave-icon .wave-bar:nth-child(3) {
+    height: 14px;
+}
+
+.zena-avatar-widget__wave-icon .wave-bar:nth-child(4) {
+    height: 10px;
+}
+
+.zena-avatar-widget__wave-icon .wave-bar:nth-child(5) {
+    height: 6px;
+}
+
+@keyframes widget-wave-animation {
+
+    0%,
+    100% {
+        transform: scaleY(0.5);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .zena-avatar-widget__container::before,
+    .zena-avatar-widget__container::after,
+    .zena-avatar-widget__hint,
+    .zena-avatar-widget__wave-icon .wave-bar {
+        animation: none;
+    }
+
+    .zena-avatar-widget__container::before,
+    .zena-avatar-widget__container::after {
+        opacity: 0.5;
+    }
+
+    .zena-avatar-widget__hint {
+        opacity: 0.8;
+    }
+
+    .zena-avatar-widget__wave-icon .wave-bar {
+        opacity: 0.8;
+    }
+}
+
+/* ============================================
+   Mobile Responsive
+   ============================================ */
+
+@media (max-width: 480px) {
+    .zena-avatar-widget {
+        padding: var(--spacing-3, 12px) 0 var(--spacing-4, 16px);
+        gap: var(--spacing-3, 12px);
+    }
+
+    .zena-avatar-widget__container::before,
+    .zena-avatar-widget__container::after {
+        width: 120px;
+        height: 120px;
+    }
+
+    .zena-avatar-widget__live-button {
+        padding: 8px 16px;
+        font-size: 12px;
+        gap: 6px;
+    }
+
+    .zena-avatar-widget__hint-text {
+        font-size: 9px;
+    }
+}
+
+/* Avatar Instance Alignment */
+.zena-avatar-widget__avatar-instance {
+    flex-shrink: 0;
+    pointer-events: none;
+    /* Let parent handle clicks */
+}
+
+/* ============================================
+   Floating Variant
+   ============================================ */
+
+.zena-avatar-widget--floating {
+    position: fixed;
+    bottom: 104px;
+    right: 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px 10px 10px;
+    background: rgba(10, 15, 25, 0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 80px;
+    z-index: 2000;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.5),
+        0 0 15px rgba(0, 212, 255, 0.1);
+    animation: widget-slide-in 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.zena-avatar-widget--floating .zena-avatar-widget__container {
+    padding: 0;
+    gap: 0;
+}
+
+/* Floating variant pulse rings */
+.zena-avatar-widget--floating .zena-avatar-widget__container::before,
+.zena-avatar-widget--floating .zena-avatar-widget__container::after {
+    width: 80px;
+    height: 80px;
+}
+
+.zena-avatar-widget--floating .zena-avatar-widget__live-button {
+    padding: 8px 16px;
+    font-size: 11px;
+    height: 40px;
+    white-space: nowrap;
+}
+
+@keyframes widget-slide-in {
+    from {
+        transform: translateY(100px) scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   Coaching HUD Overlay
+   ============================================ */
+
+.zena-avatar-widget__coaching-hud {
+    position: absolute;
+    bottom: 5px;
+    right: 0;
+    /* Align to right of container */
+    width: auto;
+    min-width: 140px;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    /* Align pill to right */
+    gap: 8px;
+}
+
+.coaching-hud__scanner {
+    position: absolute;
+    top: -150px;
+    width: 160px;
+    height: 160px;
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    border-radius: 50%;
+    animation: hud-scanner-rotate 10s linear infinite;
+}
+
+
+.coaching-hud__status {
+    background: rgba(10, 15, 25, 0.9);
+    /* Darker for better contrast */
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 243, 255, 0.4);
+    border-radius: 20px;
+    /* More rounded pill shape */
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+    /* Prevent wrapping */
+    letter-spacing: 0.1em;
+    color: #00f3ff;
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.6),
+        0 0 20px rgba(0, 243, 255, 0.1);
+}
+
+.status__dot {
+    width: 6px;
+    height: 6px;
+    background: #00f3ff;
+    border-radius: 50%;
+    animation: status-dot-pulse 1s ease-in-out infinite;
+}
+
+@keyframes hud-scanner-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes status-dot-pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+        box-shadow: 0 0 8px #00f3ff;
+    }
+}
+
+/* Responsive adjustments for floating mode */
+@media (max-width: 768px) {
+    .zena-avatar-widget--floating {
+        bottom: 104px;
+        /* Safely above bottom navigation bar */
+        right: 16px;
+        padding: 6px 12px 6px 6px;
+    }
+}
+
+```

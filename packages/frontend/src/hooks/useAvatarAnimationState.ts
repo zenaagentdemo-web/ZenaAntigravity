@@ -1,5 +1,6 @@
 /**
- * useAvatarAnimationState - Hook for managing avatar animation state with voice reactivity
+ * useAvatarAnimationState - Custom hook for managing avatar states.
+ * Handles transitions between idle, listening, and Analysing.
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { AvatarAnimationState } from '../components/HolographicAvatar/HolographicAvatar';

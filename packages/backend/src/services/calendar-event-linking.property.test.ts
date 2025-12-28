@@ -36,7 +36,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
       if (!user) {
         return; // User already deleted, nothing to clean up
       }
-      
+
       await prisma.timelineEvent.deleteMany({ where: { userId } });
       await prisma.property.deleteMany({ where: { userId } });
       await prisma.contact.deleteMany({ where: { userId } });
@@ -48,63 +48,18 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
     }
   };
 
-  beforeEach(async () => {
-    // Clean up any existing test data
-    await prisma.timelineEvent.deleteMany({ 
-      where: { 
-        user: { 
-          email: { 
-            startsWith: 'test-' 
-          } 
-        } 
-      } 
-    });
-    await prisma.property.deleteMany({ 
-      where: { 
-        user: { 
-          email: { 
-            startsWith: 'test-' 
-          } 
-        } 
-      } 
-    });
-    await prisma.contact.deleteMany({ 
-      where: { 
-        user: { 
-          email: { 
-            startsWith: 'test-' 
-          } 
-        } 
-      } 
-    });
-    await prisma.deal.deleteMany({ 
-      where: { 
-        user: { 
-          email: { 
-            startsWith: 'test-' 
-          } 
-        } 
-      } 
-    });
-    await prisma.user.deleteMany({ 
-      where: { 
-        email: { 
-          startsWith: 'test-' 
-        } 
-      } 
-    });
-  });
+
 
   // Basic sanity test to verify database connection and user creation
   it('should create and verify test user', async () => {
     const testUserId = await createTestUser();
     expect(testUserId).toBeDefined();
     expect(testUserId).toMatch(/^[0-9a-f-]{36}$/); // UUID format
-    
+
     const user = await prisma.user.findUnique({ where: { id: testUserId } });
     expect(user).toBeTruthy();
     expect(user?.email).toMatch(/^test-/);
-    
+
     await cleanupTestUser(testUserId);
   });
 
@@ -131,7 +86,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           async (keyword, prefix, suffix) => {
             const testUserId = await createTestUser();
             const summary = `${prefix} ${keyword} ${suffix}`;
-            
+
             try {
               // Create a calendar event with viewing keyword
               const event = await prisma.timelineEvent.create({
@@ -170,7 +125,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           async (keyword, prefix, suffix) => {
             const testUserId = await createTestUser();
             const summary = `${prefix} ${keyword} ${suffix}`;
-            
+
             try {
               // Create a calendar event with appraisal keyword
               const event = await prisma.timelineEvent.create({
@@ -209,7 +164,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           async (keyword, prefix, suffix) => {
             const testUserId = await createTestUser();
             const summary = `${prefix} ${keyword} ${suffix}`;
-            
+
             try {
               // Create a calendar event with auction keyword
               const event = await prisma.timelineEvent.create({
@@ -248,7 +203,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           async (keyword, prefix, suffix) => {
             const testUserId = await createTestUser();
             const summary = `${prefix} ${keyword} ${suffix}`;
-            
+
             try {
               // Create a calendar event with settlement keyword
               const event = await prisma.timelineEvent.create({
@@ -287,7 +242,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           async (keyword, prefix, suffix) => {
             const testUserId = await createTestUser();
             const summary = `${prefix} ${keyword} ${suffix}`;
-            
+
             try {
               // Create a calendar event with meeting keyword
               const event = await prisma.timelineEvent.create({
@@ -329,7 +284,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           ),
           async (summary) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create a calendar event without real estate keywords
               const event = await prisma.timelineEvent.create({
@@ -366,7 +321,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           async (keyword) => {
             const testUserId = await createTestUser();
             const summary = `Property ${keyword}`;
-            
+
             try {
               // Create a calendar event with case-varied keyword
               const event = await prisma.timelineEvent.create({
@@ -405,7 +360,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
             const testUserId = await createTestUser();
             const summary = 'Property Event';
             const fullDescription = `${description} ${keyword}`;
-            
+
             try {
               // Create a calendar event with keyword in description
               const event = await prisma.timelineEvent.create({
@@ -447,7 +402,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
             const testUserId = await createTestUser();
             const summary = 'Property Event';
             const location = `${address} ${keyword}`;
-            
+
             try {
               // Create a calendar event with keyword in location
               const event = await prisma.timelineEvent.create({
@@ -497,7 +452,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           ),
           async (address) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create a property
               const property = await prisma.property.create({
@@ -548,7 +503,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           fc.string({ minLength: 1, maxLength: 50 }),
           async (email, name) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create a contact
               const contact = await prisma.contact.create({
@@ -602,7 +557,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           fc.string({ minLength: 1, maxLength: 50 }),
           async (address, email, name) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create a property
               const property = await prisma.property.create({
@@ -677,7 +632,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           fc.string({ minLength: 1, maxLength: 100 }),
           async (summary) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create a calendar event with no matching entities
               const event = await prisma.timelineEvent.create({
@@ -720,7 +675,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           fc.constantFrom('123 Main St', '456 Oak Ave'),
           async (baseAddress) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create multiple properties with similar addresses
               const property1 = await prisma.property.create({
@@ -777,7 +732,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           fc.array(fc.emailAddress(), { minLength: 2, maxLength: 5 }),
           async (emails) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create contacts for each email
               const contacts = await Promise.all(
@@ -836,7 +791,7 @@ describe('Calendar Event Linking - Property-Based Tests', () => {
           fc.constantFrom('123 Main St', '456 Oak Ave'),
           async (address) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create a property
               const property = await prisma.property.create({

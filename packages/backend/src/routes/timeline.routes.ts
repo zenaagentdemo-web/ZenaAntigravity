@@ -4,6 +4,8 @@ import {
   getTimeline,
   createManualNote,
   getEntityTimeline,
+  updateEvent,
+  deleteEvent,
 } from '../controllers/timeline.controller.js';
 
 const router = Router();
@@ -19,5 +21,11 @@ router.post('/notes', createManualNote);
 
 // Get timeline for specific entity
 router.get('/:entityType/:entityId', getEntityTimeline);
+
+// Update timeline event
+router.put('/:id', updateEvent);
+
+// Delete timeline event
+router.delete('/:id', deleteEvent);
 
 export default router;

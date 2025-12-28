@@ -11,6 +11,7 @@ import WebSocket from 'ws';
 import { websocketService } from './websocket.service.js';
 import { logger } from './logger.service.js';
 import { sessions, UserSession } from './live-sessions.js';
+import { dealFlowService } from './deal-flow.service.js';
 
 // Initialize Google GenAI client with v1alpha for Multimodal Live
 const ai = new GoogleGenAI({
@@ -91,6 +92,23 @@ export async function startLiveSession(userId: string, userWs: WebSocket, histor
             locationContext = `\n\nUSER CURRENT LOCATION: Latitude ${location.lat.toFixed(4)}, Longitude ${location.lng.toFixed(4)}. Use this for context about the local NZ market if they are out in the field.`;
         }
 
+        // Fetch deal pipeline context for voice queries
+        let pipelineContext = '';
+        try {
+            const stats = await dealFlowService.getDashboardStats(userId);
+
+            pipelineContext = `\n\nDEAL PIPELINE CONTEXT (User's Current Portfolio):
+- Active Buyers: ${stats.buyerDeals} deals  
+- Active Sellers: ${stats.sellerDeals} listings
+- Total Pipeline: $${(stats.totalPipelineValue / 1000).toFixed(0)}k value, $${(stats.totalPendingCommission / 1000).toFixed(0)}k projected commission
+- Urgency: ${stats.atRiskDeals} at-risk, ${stats.overdueDeals} overdue, ${stats.todayDeals} due today
+- This month: ${stats.dealsClosedThisMonth} deals closed
+\nWhen the user asks about their "pipeline", "deals", "portfolio", or mentions specific deal queries, use this context. If they ask about a specific property, let them know you can help but may need them to clarify which one.`;
+        } catch (e) {
+            // Pipeline context is optional, continue without it
+            console.log('[MultimodalLive] Could not fetch pipeline context:', e);
+        }
+
         // Connect to Gemini Live API using the most standard verified pattern
         const session = await ai.live.connect({
             model: `models/${MODEL}`,
@@ -112,7 +130,7 @@ export async function startLiveSession(userId: string, userWs: WebSocket, histor
                 inputAudioTranscription: {},
                 outputAudioTranscription: {},
                 systemInstruction: {
-                    parts: [{ text: `Current Date: ${new Date().toLocaleDateString()}\n` + SYSTEM_INSTRUCTION + locationContext + historyContext }]
+                    parts: [{ text: `Current Date: ${new Date().toLocaleDateString()}\n` + SYSTEM_INSTRUCTION + locationContext + pipelineContext + historyContext }]
                 },
                 tools: [
                     { googleSearchRetrieval: {} }

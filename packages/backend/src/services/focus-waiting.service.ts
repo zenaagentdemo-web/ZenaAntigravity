@@ -20,13 +20,12 @@ export class FocusWaitingService {
   async getFocusList(userId: string) {
     const MAX_FOCUS_SIZE = 10;
 
-    // Fetch all focus threads ordered by priority
+    // Fetch all focus threads
     const focusThreads = await prisma.thread.findMany({
       where: {
         userId,
         category: 'focus',
       },
-      orderBy: this.getPriorityOrderBy(),
       select: {
         id: true,
         subject: true,
@@ -62,8 +61,11 @@ export class FocusWaitingService {
       },
     });
 
+    // Apply sorting
+    const sortedThreads = this.sortThreadsByPriority(focusThreads);
+
     // Apply size constraint: return 3-10 threads (or fewer if insufficient)
-    const constrainedList = focusThreads.slice(0, MAX_FOCUS_SIZE);
+    const constrainedList = sortedThreads.slice(0, MAX_FOCUS_SIZE);
 
     return {
       threads: constrainedList,
@@ -105,10 +107,6 @@ export class FocusWaitingService {
 
     const waitingThreads = await prisma.thread.findMany({
       where,
-      orderBy: [
-        { riskLevel: 'desc' },
-        { lastMessageAt: 'desc' },
-      ],
       take: limit,
       skip: offset,
       select: {
@@ -145,10 +143,13 @@ export class FocusWaitingService {
       },
     });
 
+    // Apply sorting
+    const sortedThreads = this.sortThreadsByPriority(waitingThreads);
+
     const total = await prisma.thread.count({ where });
 
     return {
-      threads: waitingThreads,
+      threads: sortedThreads,
       total,
       displayed: waitingThreads.length,
       pagination: {
@@ -160,20 +161,34 @@ export class FocusWaitingService {
   }
 
   /**
-   * Calculate priority ordering for Focus list
+   * Calculate priority ordering for Focus and Waiting lists
    * Priority is based on:
    * 1. Risk level (high > medium > low > none)
    * 2. Last message time (older messages = higher priority)
-   * 
-   * @returns Prisma orderBy clause
    */
-  private getPriorityOrderBy() {
-    return [
-      // First, order by risk level (descending: high, medium, low, none)
-      { riskLevel: 'desc' as const },
-      // Then by last message time (ascending: older first)
-      { lastMessageAt: 'asc' as const },
-    ];
+  private sortThreadsByPriority(threads: any[]) {
+    const riskOrder: Record<string, number> = {
+      high: 3,
+      medium: 2,
+      low: 1,
+      none: 0,
+    };
+
+    return [...threads].sort((a, b) => {
+      const riskA = riskOrder[a.riskLevel as string] || 0;
+      const riskB = riskOrder[b.riskLevel as string] || 0;
+
+      if (riskA !== riskB) {
+        return riskB - riskA; // Higher risk first
+      }
+
+      // Secondary sort: Last message time
+      // For Focus: older messages first (higher priority)
+      // For Waiting: usually newer first, but staying consistent here
+      const timeA = new Date(a.lastMessageAt).getTime();
+      const timeB = new Date(b.lastMessageAt).getTime();
+      return timeA - timeB;
+    });
   }
 
   /**

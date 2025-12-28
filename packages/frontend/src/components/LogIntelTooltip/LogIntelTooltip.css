@@ -1,0 +1,187 @@
+/* Log Intel Tooltip Styles */
+
+.log-intel-tooltip-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.log-intel-help-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 212, 255, 0.15);
+    color: #00D4FF;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 6px;
+}
+
+.log-intel-help-btn:hover {
+    background: rgba(0, 212, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.log-intel-tooltip {
+    position: absolute;
+    z-index: 1000;
+    width: 340px;
+    background: linear-gradient(135deg, rgba(20, 25, 35, 0.98) 0%, rgba(15, 18, 28, 0.98) 100%);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 12px;
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 30px rgba(0, 212, 255, 0.1);
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+}
+
+.log-intel-tooltip--bottom {
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.log-intel-tooltip--top {
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.log-intel-tooltip__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(0, 212, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+}
+
+.log-intel-tooltip__header h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #00D4FF;
+}
+
+.log-intel-tooltip__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.log-intel-tooltip__close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.log-intel-tooltip__content {
+    padding: 16px;
+}
+
+.log-intel-tooltip__intro {
+    margin: 0 0 16px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.log-intel-tooltip__methods {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: rgba(0, 212, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.log-intel-tooltip__method {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.log-intel-tooltip__method svg {
+    color: #00D4FF;
+    flex-shrink: 0;
+}
+
+.log-intel-tooltip__tips {
+    margin-bottom: 16px;
+}
+
+.log-intel-tooltip__tips h5 {
+    margin: 0 0 10px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.log-intel-tooltip__tips ul {
+    margin: 0;
+    padding-left: 18px;
+    list-style-type: none;
+}
+
+.log-intel-tooltip__tips li {
+    position: relative;
+    margin-bottom: 6px;
+    padding-left: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.log-intel-tooltip__tips li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: #00D4FF;
+    font-weight: bold;
+}
+
+.log-intel-tooltip__tips li strong {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.log-intel-tooltip__why {
+    padding: 12px;
+    background: rgba(0, 255, 136, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 136, 0.15);
+}
+
+.log-intel-tooltip__why h5 {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #00FF88;
+}
+
+.log-intel-tooltip__why p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.75);
+}

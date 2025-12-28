@@ -1,379 +1,679 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { api } from '../../utils/apiClient';
-import { AnimatedEmptyState } from '../../components/AnimatedEmptyState';
+/**
+ * WaitingPage Container Component
+ * 
+ * The enhanced "Awaiting" page that displays email threads
+ * where others owe the user a reply.
+ * 
+ * Mirrors the NewPage design for consistency and premium experience.
+ */
+
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
+import { ThreadCard } from '../../components/ThreadCard/ThreadCard';
+import { ReplyComposer } from '../../components/ReplyComposer/ReplyComposer';
+import { FilterChips, DEFAULT_FILTER_OPTIONS } from '../../components/FilterChips/FilterChips';
+import { NewPageSkeleton } from '../../components/NewPageSkeleton/NewPageSkeleton';
+import { AnimatedEmptyState } from '../../components/AnimatedEmptyState/AnimatedEmptyState';
+import { NewPageHeader } from '../../components/NewPageHeader/NewPageHeader';
+import { NewPageError } from '../../components/NewPageError/NewPageError';
+import { NewThreadsBanner } from '../../components/NewThreadsBanner/NewThreadsBanner';
+import { SnoozeOverlay } from '../../components/SnoozeOverlay/SnoozeOverlay';
+import { ToastContainer } from '../../components/Toast/Toast';
+import { VirtualList } from '../../components/VirtualList/VirtualList';
+import { FolderSidebar } from '../../components/FolderSidebar/FolderSidebar';
+import { ForwardEmailModal } from '../../components/ForwardEmailModal/ForwardEmailModal';
+import { FolderPickerModal } from '../../components/FolderPickerModal/FolderPickerModal';
+import { CreateFolderModal } from '../../components/CreateFolderModal/CreateFolderModal';
+import { EmailFolder, CUSTOM_FOLDERS, ALL_FOLDERS } from '../../data/mockFolders';
+import { useThreadsState } from '../../hooks/useThreadsState';
+import { useFilterState } from '../../hooks/useFilterState';
+import { useBatchState } from '../../hooks/useBatchState';
+import { useThreadActions } from '../../hooks/useThreadActions';
+import { useDropdownState } from '../../hooks/useDropdownState';
+import { useReplyComposer } from '../../hooks/useReplyComposer';
+import { usePullToRefresh } from '../../hooks/usePullToRefresh';
+import { BatchActionBar } from '../../components/BatchActionBar/BatchActionBar';
+import { FloatingComposeButton } from '../../components/FloatingComposeButton/FloatingComposeButton';
+import { ComposeModal } from '../../components/ComposeModal/ComposeModal';
+import { Portal } from '../../components/Portal/Portal';
+
+import { BatchAction, FilterOption, SnoozeOptions } from '../../models/newPage.types';
+import '../NewPage/NewPage.css'; // Reuse NewPage styles
 import './WaitingPage.css';
 import './WaitingPage.hightech.css';
 
-interface Thread {
-  id: string;
-  subject: string;
-  participants: Array<{ name: string; email: string; role?: string }>;
-  classification: 'buyer' | 'vendor' | 'market' | 'lawyer_broker' | 'noise';
-  riskLevel: 'none' | 'low' | 'medium' | 'high';
-  riskReason?: string;
-  lastMessageAt: string;
-  lastReplyAt?: string;
-  summary: string;
-  nextAction?: string;
-  propertyId?: string;
-}
-
-// Swipe gesture state interface
-interface SwipeState {
-  threadId: string | null;
-  startX: number;
-  currentX: number;
-  isSwiping: boolean;
-}
-
+/**
+ * WaitingPage - Enhanced awaiting responses page
+ */
 export const WaitingPage: React.FC = () => {
-  const [threads, setThreads] = useState<Thread[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [swipeState, setSwipeState] = useState<SwipeState>({
-    threadId: null,
-    startX: 0,
-    currentX: 0,
-    isSwiping: false,
-  });
-  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const navigate = useNavigate();
 
+  // Thread state management with 'waiting' filter
+  const {
+    threads,
+    isLoading,
+    error,
+    syncStatus,
+    newThreadsCount,
+    refresh,
+    removeThread,
+    mergeNewThreads
+  } = useThreadsState({ filter: 'waiting' });
+
+  // Reference for pull-to-refresh container
+  const threadListRef = useRef<HTMLDivElement>(null);
+
+  // Thread actions with visual feedback
+  const {
+    state: actionState,
+    snoozeThread,
+    sendDraft,
+    openSnoozeOverlay,
+    closeSnoozeOverlay,
+    dismissToast,
+    getThreadAnimation
+  } = useThreadActions(removeThread);
+
+  // Filter state management
+  const {
+    activeFilters,
+    activeFolderId,
+    setFilters,
+    setSearchQuery,
+    setFolderId,
+    filteredThreads,
+    filterCounts
+  } = useFilterState(threads);
+
+  // Batch selection state
+  const {
+    isBatchMode,
+    selectedIds,
+    toggleBatchMode,
+    exitBatchMode,
+    toggleSelection
+  } = useBatchState();
+
+  // Dropdown state management (single expansion invariant)
+  const {
+    toggleDropdown,
+    closeAllDropdowns,
+    isDropdownExpanded
+  } = useDropdownState();
+
+  // Reply composer state management
+  const {
+    isOpen: isReplyComposerOpen,
+    currentThread: replyThread,
+    selectedStyle,
+    isGenerating,
+    generatedMessage,
+    openComposer: openReplyComposer,
+    closeComposer: closeReplyComposer,
+    sendReply,
+    changeStyle,
+    regenerateReply
+  } = useReplyComposer();
+
+  // Compose modal state
+  const [isComposeOpen, setIsComposeOpen] = useState(false);
+
+  // Folder sidebar state
+  const [isFolderSidebarOpen, setIsFolderSidebarOpen] = useState(false);
+  const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
+
+  // Forward modal state
+  const [forwardModalState, setForwardModalState] = useState<{
+    isOpen: boolean;
+    threadId: string | null;
+    subject: string;
+    content: string;
+  }>({ isOpen: false, threadId: null, subject: '', content: '' });
+
+  // Move to modal state
+  const [moveToModalState, setMoveToModalState] = useState<{
+    isOpen: boolean;
+    threadId: string | null;
+  }>({ isOpen: false, threadId: null });
+
+  // Custom folders state (starts with existing custom folders from mock)
+  const [customFolders, setCustomFolders] = useState<EmailFolder[]>(CUSTOM_FOLDERS);
+
+  // Scroll-aware compact mode state
+  const [isHeaderCompact, setIsHeaderCompact] = useState(false);
+
+  // Handle scroll for compact header mode
   useEffect(() => {
-    loadWaitingThreads();
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsHeaderCompact(scrollPosition > 100);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const loadWaitingThreads = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await api.get<{ threads: Thread[] }>('/api/threads?filter=waiting');
-      setThreads(response.data.threads || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load threads');
-      console.error('Failed to load waiting threads:', err);
-    } finally {
-      setLoading(false);
+  // Build filter options with counts
+  const filterOptions: FilterOption[] = useMemo(() => {
+    return DEFAULT_FILTER_OPTIONS.map(opt => ({
+      ...opt,
+      count: filterCounts[opt.type] || 0
+    }));
+  }, [filterCounts]);
+
+  // Handle dropdown toggle (single expansion invariant)
+  const handleDropdownToggle = useCallback((threadId: string) => {
+    toggleDropdown(threadId);
+  }, [toggleDropdown]);
+
+  // Handle quick reply button click
+  const handleQuickReply = useCallback((threadId: string) => {
+    const thread = threads.find(t => t.id === threadId);
+    if (thread) {
+      openReplyComposer(thread);
     }
-  };
+  }, [threads, openReplyComposer]);
 
-  const handleFollowUp = async (threadId: string) => {
-    try {
-      // Navigate to thread detail for follow-up
-      window.location.href = `/threads/${threadId}`;
-    } catch (err) {
-      console.error('Failed to open thread:', err);
+  // Handle thread selection in batch mode
+  const handleSelect = useCallback((threadId: string) => {
+    toggleSelection(threadId);
+  }, [toggleSelection]);
+
+  // Handle thread actions
+  const handleAction = useCallback((threadId: string, action: 'view' | 'snooze' | 'send_draft' | 'delete' | 'forward' | 'move_to' | 'archive' | 'mark_read') => {
+    const thread = threads.find(t => t.id === threadId);
+
+    switch (action) {
+      case 'view':
+        navigate(`/threads/${threadId}`);
+        break;
+      case 'snooze':
+        openSnoozeOverlay(threadId, thread?.subject);
+        break;
+      case 'send_draft':
+        sendDraft(threadId);
+        break;
+      case 'delete':
+        console.log('Deleting thread:', threadId);
+        removeThread(threadId);
+        break;
+      case 'forward':
+        setForwardModalState({
+          isOpen: true,
+          threadId,
+          subject: thread?.subject || '',
+          content: thread?.aiSummary || thread?.summary || ''
+        });
+        break;
+      case 'move_to':
+        setMoveToModalState({ isOpen: true, threadId });
+        break;
+      case 'archive':
+        console.log('Archiving thread:', threadId);
+        removeThread(threadId); // Move to archive (simulated)
+        break;
+      case 'mark_read':
+        console.log('Toggling read status:', threadId);
+        break;
     }
-  };
+  }, [navigate, threads, openSnoozeOverlay, sendDraft, removeThread]);
 
-  const getRiskColor = (riskLevel: string) => {
-    switch (riskLevel) {
-      case 'high': return 'var(--color-risk-high)';
-      case 'medium': return 'var(--color-risk-medium)';
-      case 'low': return 'var(--color-risk-low)';
-      default: return 'var(--color-risk-none)';
-    }
-  };
+  // Handle snooze confirmation
+  const handleSnoozeConfirm = useCallback((threadId: string, options: SnoozeOptions) => {
+    snoozeThread(threadId, options);
+  }, [snoozeThread]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    return date.toLocaleDateString();
-  };
-
-  const getDaysSinceReply = (lastReplyAt?: string): number | null => {
-    if (!lastReplyAt) return null;
-    const date = new Date(lastReplyAt);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    return Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  };
-
-  // Swipe gesture handlers
-  const handleTouchStart = useCallback((threadId: string, e: React.TouchEvent) => {
-    setSwipeState({
-      threadId,
-      startX: e.touches[0].clientX,
-      currentX: e.touches[0].clientX,
-      isSwiping: true,
-    });
+  // Handle new message send
+  const handleComposeSend = useCallback(async (data: { to: string[], subject: string, message: string }) => {
+    // In a real app, this would call the API
+    console.log('Sending new message:', data);
+    return new Promise<void>(resolve => setTimeout(resolve, 1000));
   }, []);
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!swipeState.isSwiping || !swipeState.threadId) return;
-    
-    const currentX = e.touches[0].clientX;
-    const deltaX = currentX - swipeState.startX;
-    
-    // Limit swipe distance
-    const clampedDelta = Math.max(-100, Math.min(100, deltaX));
-    
-    const card = cardRefs.current.get(swipeState.threadId);
-    if (card) {
-      card.style.transform = `translateX(${clampedDelta}px)`;
-      card.classList.add('swiping');
-    }
-    
-    setSwipeState(prev => ({ ...prev, currentX }));
-  }, [swipeState.isSwiping, swipeState.threadId, swipeState.startX]);
+  // Handle batch actions
+  const handleBatchAction = useCallback((action: BatchAction) => {
+    // In a real app, these would call the actual batch API
+    console.log(`Executing batch action: ${action} on ${selectedIds.size} threads`);
 
-  const handleTouchEnd = useCallback(() => {
-    if (!swipeState.isSwiping || !swipeState.threadId) return;
-    
-    const deltaX = swipeState.currentX - swipeState.startX;
-    const card = cardRefs.current.get(swipeState.threadId);
-    
-    if (card) {
-      card.classList.remove('swiping');
-      card.style.transform = '';
-    }
-    
-    // Threshold for action trigger
-    const threshold = 80;
-    
-    if (deltaX > threshold) {
-      // Swipe right - View/Follow up action
-      window.location.href = `/threads/${swipeState.threadId}`;
-    }
-    
-    setSwipeState({
-      threadId: null,
-      startX: 0,
-      currentX: 0,
-      isSwiping: false,
-    });
-  }, [swipeState]);
+    // Simulate success
+    exitBatchMode();
+  }, [exitBatchMode, selectedIds]);
 
-  const setCardRef = useCallback((threadId: string, el: HTMLDivElement | null) => {
-    if (el) {
-      cardRefs.current.set(threadId, el);
-    } else {
-      cardRefs.current.delete(threadId);
-    }
+  // Handle refresh
+  const handleRefresh = useCallback(async () => {
+    await refresh();
+  }, [refresh]);
+
+  // Handle merge new threads
+  const handleMergeNewThreads = useCallback(() => {
+    mergeNewThreads();
+  }, [mergeNewThreads]);
+
+  // Folder sidebar handlers
+  const handleViewFolders = useCallback(() => {
+    setIsFolderSidebarOpen(true);
   }, []);
 
-  if (loading) {
+  const handleCreateFolder = useCallback(() => {
+    setIsCreateFolderModalOpen(true);
+  }, []);
+
+  const handleFolderCreate = useCallback((folder: { name: string; color: string }) => {
+    const newFolder: EmailFolder = {
+      id: `custom-${Date.now()}`,
+      name: folder.name,
+      type: 'custom',
+      color: folder.color,
+      unreadCount: 0,
+      totalCount: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setCustomFolders(prev => [...prev, newFolder]);
+    console.log('Created folder:', newFolder);
+  }, []);
+
+  const handleFolderSelect = useCallback((folderId: string) => {
+    setFolderId(folderId);
+    setIsFolderSidebarOpen(false);
+    console.log('Selected folder:', folderId);
+  }, [setFolderId]);
+
+  const handleDeleteFolder = useCallback((folderId: string) => {
+    // Only delete custom folders
+    const folder = customFolders.find(f => f.id === folderId);
+    if (!folder) {
+      console.log('Cannot delete: folder not found or is a system folder');
+      return;
+    }
+
+    // Clear folder filter if viewing deleted folder
+    if (activeFolderId === folderId) {
+      setFolderId(null);
+    }
+
+    // Remove folder
+    setCustomFolders(prev => prev.filter(f => f.id !== folderId));
+    console.log('Deleted folder:', folderId);
+  }, [customFolders, activeFolderId, setFolderId]);
+
+  // Render thread item for virtual list
+  const renderThreadItem = useCallback((thread: any, index: number) => {
+    const animation = getThreadAnimation(thread.id);
+    const animationClass = animation ? `thread-card--${animation}` : '';
+
     return (
-      <div className="waiting-page">
-        <div className="container">
-          <h1 className="waiting-page__title">Waiting</h1>
-          <div className="waiting-page__loading">Loading threads...</div>
-        </div>
+      <div
+        className={`new-page__thread-item ${animationClass}`}
+        style={{ animationDelay: `${index * 50}ms` }}
+        role="listitem"
+      >
+        <ThreadCard
+          thread={thread}
+          isDropdownExpanded={isDropdownExpanded(thread.id)}
+          isSelected={selectedIds.has(thread.id)}
+          isBatchMode={isBatchMode}
+          showQuickReply={true}
+          isWaiting={true}
+          onDropdownToggle={handleDropdownToggle}
+          onQuickReply={handleQuickReply}
+          onSelect={handleSelect}
+          onAction={handleAction}
+          className={animationClass}
+        />
       </div>
     );
-  }
+  }, [selectedIds, isBatchMode, isDropdownExpanded, handleDropdownToggle, handleQuickReply, handleSelect, handleAction, getThreadAnimation]);
 
-  if (error) {
+  // Pull-to-refresh hook
+  const {
+    attachPullToRefresh,
+    detachPullToRefresh,
+    isRefreshing: isPullRefreshing,
+    pullDistance,
+    getPullIndicatorStyle,
+    getPullContainerStyle
+  } = usePullToRefresh({
+    onRefresh: handleRefresh,
+    threshold: 80,
+    maxPullDistance: 120,
+    enableHapticFeedback: true
+  });
+
+  // Attach pull-to-refresh to thread list
+  useEffect(() => {
+    if (threadListRef.current) {
+      attachPullToRefresh(threadListRef.current);
+    }
+    return () => {
+      detachPullToRefresh();
+    };
+  }, [attachPullToRefresh, detachPullToRefresh]);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      // Close dropdowns if clicking outside thread cards
+      if (!target.closest('.thread-card')) {
+        closeAllDropdowns();
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [closeAllDropdowns]);
+
+  // Count urgent threads
+  const urgentCount = useMemo(() => {
+    return threads.filter(t => t.riskLevel === 'high').length;
+  }, [threads]);
+
+  // Determine if virtual scrolling should be used (>20 threads)
+  const shouldUseVirtualScrolling = filteredThreads.length > 20;
+  const THREAD_ITEM_HEIGHT = 180; // Approximate height of a thread card
+
+  // Render loading state
+  if (isLoading && threads.length === 0) {
     return (
-      <div className="waiting-page">
-        <div className="container">
-          <h1 className="waiting-page__title">Waiting</h1>
-          <div className="waiting-page__error">
-            <p>{error}</p>
-            <button onClick={loadWaitingThreads} className="waiting-page__retry-btn">
-              Retry
-            </button>
+      <div className="new-page" data-theme="high-tech" data-testid="new-page-loading">
+        <AmbientBackground variant="subtle" />
+        <div className="new-page__container">
+          <NewPageHeader
+            title="Awaiting"
+            threadCount={0}
+            urgentCount={0}
+            isCompact={isHeaderCompact}
+            syncStatus={syncStatus}
+            onRefresh={handleRefresh}
+            onSearch={setSearchQuery}
+            onFilterChange={setFilters}
+          />
+          <div className="new-page__skeleton-list">
+            <NewPageSkeleton count={4} testId="new-page-skeleton" />
           </div>
         </div>
       </div>
     );
   }
 
-  const atRiskThreads = Array.isArray(threads) ? threads.filter(t => t.riskLevel !== 'none') : [];
-  const safeThreads = Array.isArray(threads) ? threads.filter(t => t.riskLevel === 'none') : [];
+  // Render error state
+  if (error && threads.length === 0) {
+    return (
+      <div className="new-page" data-theme="high-tech" data-testid="new-page-error">
+        <AmbientBackground variant="subtle" />
+        <div className="new-page__container">
+          <NewPageHeader
+            title="Awaiting"
+            threadCount={0}
+            urgentCount={0}
+            isCompact={isHeaderCompact}
+            syncStatus={syncStatus}
+            onRefresh={handleRefresh}
+            onSearch={setSearchQuery}
+            onFilterChange={setFilters}
+          />
+          <NewPageError
+            message={error.message}
+            onRetry={handleRefresh}
+            testId="new-page-error-state"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Render empty state
+  if (!isLoading && filteredThreads.length === 0) {
+    return (
+      <div className="new-page" data-theme="high-tech">
+        <AmbientBackground variant="subtle" />
+        <div className="new-page__container">
+          <NewPageHeader
+            title="Awaiting"
+            threadCount={threads.length}
+            urgentCount={urgentCount}
+            isCompact={isHeaderCompact}
+            syncStatus={syncStatus}
+            onRefresh={handleRefresh}
+            onSearch={setSearchQuery}
+            onFilterChange={setFilters}
+          />
+
+          <FilterChips
+            filters={filterOptions}
+            activeFilters={activeFilters}
+            onFilterChange={setFilters}
+            className="new-page__filters"
+          />
+
+          <AnimatedEmptyState
+            message="No one is keeping you waiting!"
+            subMessage="You're all caught up on your sent messages. Everyone has replied or there's nothing pending."
+            avatarState="idle"
+            showParticles={true}
+            testId="new-page-empty-state"
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="waiting-page">
-      <div className="container">
-        <div className="waiting-page__header">
-          <div>
-            <h1 className="waiting-page__title">Waiting</h1>
-            <p className="waiting-page__description">
-              {threads.length} {threads.length === 1 ? 'thread' : 'threads'} waiting for replies
-              {atRiskThreads.length > 0 && (
-                <span className="waiting-page__risk-count">
-                  {' '}• {atRiskThreads.length} at risk
-                </span>
-              )}
-            </p>
+    <div className="new-page" data-theme="high-tech">
+      <AmbientBackground variant="subtle" />
+
+      <div className="new-page__container">
+        {/* Header */}
+        <NewPageHeader
+          title="Awaiting"
+          threadCount={filteredThreads.length}
+          urgentCount={urgentCount}
+          isCompact={isHeaderCompact}
+          syncStatus={syncStatus}
+          onRefresh={handleRefresh}
+          onSearch={setSearchQuery}
+          onToggleBatchMode={toggleBatchMode}
+          isBatchMode={isBatchMode}
+          onFilterChange={setFilters}
+          onViewFolders={handleViewFolders}
+          onCreateFolder={handleCreateFolder}
+          activeFolderName={activeFolderId ? [...ALL_FOLDERS, ...customFolders].find(f => f.id === activeFolderId)?.name : undefined}
+          onClearFolder={() => setFolderId(null)}
+        />
+
+        {/* Filter chips */}
+        <FilterChips
+          filters={filterOptions}
+          activeFilters={activeFilters}
+          onFilterChange={setFilters}
+          className="new-page__filters"
+        />
+
+        {/* New threads banner */}
+        <NewThreadsBanner
+          count={newThreadsCount}
+          isVisible={newThreadsCount > 0}
+          onMerge={handleMergeNewThreads}
+        />
+
+        {/* Pull-to-refresh indicator */}
+        {pullDistance > 0 && (
+          <div
+            className="new-page__pull-indicator"
+            style={getPullIndicatorStyle()}
+            aria-hidden="true"
+          >
+            <svg
+              className={`new-page__pull-icon ${isPullRefreshing ? 'new-page__pull-icon--spinning' : ''}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <polyline points="23 4 23 10 17 10" />
+              <polyline points="1 20 1 14 7 14" />
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+            </svg>
           </div>
-          <button onClick={loadWaitingThreads} className="waiting-page__refresh-btn">
-            Refresh
-          </button>
+        )}
+
+        {/* Thread list */}
+        <div
+          ref={threadListRef}
+          className="new-page__thread-list"
+          role="list"
+          aria-label="Email threads"
+          style={getPullContainerStyle()}
+        >
+          {shouldUseVirtualScrolling ? (
+            <VirtualList
+              items={filteredThreads}
+              itemHeight={THREAD_ITEM_HEIGHT}
+              renderItem={renderThreadItem}
+              overscan={5}
+              className="new-page__virtual-list"
+            />
+          ) : (
+            filteredThreads.map((thread, index) => {
+              const animation = getThreadAnimation(thread.id);
+              const animationClass = animation ? `thread-card--${animation}` : '';
+
+              return (
+                <div
+                  key={thread.id}
+                  className={`new-page__thread-item ${animationClass}`}
+                  style={{ animationDelay: `${index * 50}ms` }}
+                  role="listitem"
+                >
+                  <ThreadCard
+                    thread={thread}
+                    isDropdownExpanded={isDropdownExpanded(thread.id)}
+                    isSelected={selectedIds.has(thread.id)}
+                    isBatchMode={isBatchMode}
+                    showQuickReply={true}
+                    isWaiting={true}
+                    onDropdownToggle={handleDropdownToggle}
+                    onQuickReply={handleQuickReply}
+                    onSelect={handleSelect}
+                    onAction={handleAction}
+                    className={animationClass}
+                  />
+                </div>
+              );
+            })
+          )}
         </div>
 
-        {threads.length === 0 ? (
-          <AnimatedEmptyState
-            message="Nothing waiting"
-            subMessage="No threads are waiting for replies right now. Check back later or start a new conversation."
-            avatarState="idle"
-            avatarSize="lg"
-          />
-        ) : (
-          <>
-            {atRiskThreads.length > 0 && (
-              <div className="waiting-page__section">
-                <h2 className="waiting-page__section-title">
-                  ⚠️ At Risk ({atRiskThreads.length})
-                </h2>
-                <div className="waiting-page__threads">
-                  {atRiskThreads.map(thread => (
-                    <div 
-                      key={thread.id} 
-                      className="thread-card thread-card--at-risk"
-                      ref={(el) => setCardRef(thread.id, el)}
-                      onTouchStart={(e) => handleTouchStart(thread.id, e)}
-                      onTouchMove={handleTouchMove}
-                      onTouchEnd={handleTouchEnd}
-                    >
-                      <div className="thread-card__header">
-                        <div className="thread-card__indicators">
-                          <span 
-                            className="thread-card__risk-badge"
-                            style={{ backgroundColor: getRiskColor(thread.riskLevel) }}
-                          >
-                            {thread.riskLevel.toUpperCase()} RISK
-                          </span>
-                          <span className="thread-card__classification">
-                            {thread.classification.replace('_', ' ')}
-                          </span>
-                        </div>
-                        <span className="thread-card__date">
-                          {formatDate(thread.lastMessageAt)}
-                        </span>
-                      </div>
-
-                      <h3 className="thread-card__subject">{thread.subject}</h3>
-
-                      <div className="thread-card__participants">
-                        {thread.participants.slice(0, 3).map((p, idx) => (
-                          <span key={idx} className="thread-card__participant">
-                            {p.name || p.email}
-                          </span>
-                        ))}
-                        {thread.participants.length > 3 && (
-                          <span className="thread-card__participant-more">
-                            +{thread.participants.length - 3} more
-                          </span>
-                        )}
-                      </div>
-
-                      {thread.riskReason && (
-                        <div className="thread-card__risk-reason">
-                          ⚠️ {thread.riskReason}
-                        </div>
-                      )}
-
-                      {thread.lastReplyAt && (
-                        <div className="thread-card__waiting-info">
-                          Waiting {getDaysSinceReply(thread.lastReplyAt)} days for reply
-                        </div>
-                      )}
-
-                      <p className="thread-card__summary">{thread.summary}</p>
-
-                      {thread.nextAction && (
-                        <div className="thread-card__next-action">
-                          <strong>Suggested action:</strong> {thread.nextAction}
-                        </div>
-                      )}
-
-                      <div className="thread-card__actions">
-                        <button 
-                          onClick={() => handleFollowUp(thread.id)}
-                          className="thread-card__action thread-card__action--primary"
-                        >
-                          Follow Up
-                        </button>
-                        <button 
-                          onClick={() => window.location.href = `/threads/${thread.id}`}
-                          className="thread-card__action"
-                        >
-                          View Details
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {safeThreads.length > 0 && (
-              <div className="waiting-page__section">
-                <h2 className="waiting-page__section-title">
-                  ✓ On Track ({safeThreads.length})
-                </h2>
-                <div className="waiting-page__threads">
-                  {safeThreads.map(thread => (
-                    <div 
-                      key={thread.id} 
-                      className="thread-card"
-                      ref={(el) => setCardRef(thread.id, el)}
-                      onTouchStart={(e) => handleTouchStart(thread.id, e)}
-                      onTouchMove={handleTouchMove}
-                      onTouchEnd={handleTouchEnd}
-                    >
-                      <div className="thread-card__header">
-                        <div className="thread-card__indicators">
-                          <span className="thread-card__classification">
-                            {thread.classification.replace('_', ' ')}
-                          </span>
-                        </div>
-                        <span className="thread-card__date">
-                          {formatDate(thread.lastMessageAt)}
-                        </span>
-                      </div>
-
-                      <h3 className="thread-card__subject">{thread.subject}</h3>
-
-                      <div className="thread-card__participants">
-                        {thread.participants.slice(0, 3).map((p, idx) => (
-                          <span key={idx} className="thread-card__participant">
-                            {p.name || p.email}
-                          </span>
-                        ))}
-                        {thread.participants.length > 3 && (
-                          <span className="thread-card__participant-more">
-                            +{thread.participants.length - 3} more
-                          </span>
-                        )}
-                      </div>
-
-                      {thread.lastReplyAt && (
-                        <div className="thread-card__waiting-info">
-                          Waiting {getDaysSinceReply(thread.lastReplyAt)} days for reply
-                        </div>
-                      )}
-
-                      <p className="thread-card__summary">{thread.summary}</p>
-
-                      {thread.nextAction && (
-                        <div className="thread-card__next-action">
-                          <strong>Suggested action:</strong> {thread.nextAction}
-                        </div>
-                      )}
-
-                      <div className="thread-card__actions">
-                        <button 
-                          onClick={() => window.location.href = `/threads/${thread.id}`}
-                          className="thread-card__action"
-                        >
-                          View Details
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
+        {/* Reply Composer Modal */}
+        {isReplyComposerOpen && replyThread && (
+          <Portal>
+            <ReplyComposer
+              isOpen={isReplyComposerOpen}
+              thread={replyThread}
+              selectedStyle={selectedStyle}
+              isGenerating={isGenerating}
+              generatedMessage={generatedMessage}
+              onClose={closeReplyComposer}
+              onSend={sendReply}
+              onStyleChange={changeStyle}
+              onRegenerate={regenerateReply}
+            />
+          </Portal>
         )}
       </div>
+
+      {/* Snooze Overlay */}
+      <SnoozeOverlay
+        isOpen={actionState.isSnoozeOpen}
+        threadId={actionState.snoozeThreadId}
+        threadSubject={actionState.snoozeThreadSubject || undefined}
+        onConfirm={handleSnoozeConfirm}
+        onClose={closeSnoozeOverlay}
+      />
+
+      {/* Toast Notifications */}
+      <ToastContainer
+        toasts={actionState.toasts}
+        onDismiss={dismissToast}
+      />
+
+      {/* Batch Action Bar */}
+      <Portal>
+        <BatchActionBar
+          selectedCount={selectedIds.size}
+          isVisible={isBatchMode}
+          onAction={handleBatchAction}
+          onCancel={exitBatchMode}
+        />
+      </Portal>
+
+      {/* Compose Features */}
+      <Portal>
+        <FloatingComposeButton
+          onClick={() => setIsComposeOpen(true)}
+        />
+      </Portal>
+
+      <ComposeModal
+        isOpen={isComposeOpen}
+        onClose={() => setIsComposeOpen(false)}
+        onSend={handleComposeSend}
+      />
+
+      {/* Folder Sidebar */}
+      <Portal>
+        <FolderSidebar
+          isOpen={isFolderSidebarOpen}
+          onClose={() => setIsFolderSidebarOpen(false)}
+          activeFolderId={activeFolderId ?? undefined}
+          onFolderSelect={handleFolderSelect}
+          onCreateFolder={handleCreateFolder}
+          onDeleteFolder={handleDeleteFolder}
+          customFolders={customFolders}
+        />
+      </Portal>
+
+      {/* Create Folder Modal */}
+      <Portal>
+        <CreateFolderModal
+          isOpen={isCreateFolderModalOpen}
+          onClose={() => setIsCreateFolderModalOpen(false)}
+          onCreateFolder={handleFolderCreate}
+          existingFolderNames={[...ALL_FOLDERS.map(f => f.name), ...customFolders.map(f => f.name)]}
+        />
+      </Portal>
+
+      {/* Forward Email Modal */}
+      <Portal>
+        <ForwardEmailModal
+          isOpen={forwardModalState.isOpen}
+          originalSubject={forwardModalState.subject}
+          originalContent={forwardModalState.content}
+          onClose={() => setForwardModalState({ isOpen: false, threadId: null, subject: '', content: '' })}
+          onSend={async (data) => {
+            console.log('Forwarding email:', data);
+          }}
+        />
+      </Portal>
+
+      {/* Move to Folder Modal */}
+      <Portal>
+        <FolderPickerModal
+          isOpen={moveToModalState.isOpen}
+          onClose={() => setMoveToModalState({ isOpen: false, threadId: null })}
+          onFolderSelect={(folderId) => {
+            console.log('Moving thread', moveToModalState.threadId, 'to folder', folderId);
+            if (moveToModalState.threadId) {
+              removeThread(moveToModalState.threadId);
+            }
+          }}
+        />
+      </Portal>
+
     </div>
   );
 };
+
+export default WaitingPage;

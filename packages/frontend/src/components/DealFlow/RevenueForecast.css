@@ -1,0 +1,278 @@
+.revenue-forecast {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.revenue-forecast--loading,
+.revenue-forecast--error {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.revenue-forecast__skeleton {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(90deg, var(--color-background) 25%, var(--color-surface) 50%, var(--color-background) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--border-radius-sm);
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.revenue-forecast__error-icon {
+    font-size: 2rem;
+}
+
+/* Header */
+.revenue-forecast__header {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.revenue-forecast__header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.revenue-forecast__subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+/* Summary Stats */
+.revenue-forecast__summary {
+    display: flex;
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.revenue-forecast__stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.revenue-forecast__stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.revenue-forecast__stat:first-child .revenue-forecast__stat-value {
+    color: var(--color-success, #22c55e);
+}
+
+.revenue-forecast__stat-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Bar Chart */
+.revenue-forecast__chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 180px;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) 0;
+}
+
+.revenue-forecast__bar-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.revenue-forecast__bar-container:hover {
+    opacity: 0.8;
+}
+
+.revenue-forecast__bar-container--expanded {
+    opacity: 1;
+}
+
+.revenue-forecast__bar-wrapper {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.revenue-forecast__bar {
+    width: 80%;
+    max-width: 60px;
+    background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+    border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.revenue-forecast__bar--raw {
+    background: linear-gradient(180deg, rgba(34, 197, 94, 0.3) 0%, rgba(22, 163, 74, 0.3) 100%);
+    border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+    border: 1px dashed rgba(34, 197, 94, 0.5);
+    border-bottom: none;
+}
+
+.revenue-forecast__bar-value {
+    position: absolute;
+    top: -24px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--color-text);
+    white-space: nowrap;
+}
+
+.revenue-forecast__bar-label {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    text-align: center;
+}
+
+/* Breakdown */
+.revenue-forecast__breakdown {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background-color: var(--color-background);
+    border-radius: var(--border-radius-sm);
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.revenue-forecast__breakdown h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 var(--spacing-md) 0;
+}
+
+.revenue-forecast__breakdown-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.875rem;
+}
+
+.revenue-forecast__breakdown-item:last-child {
+    border-bottom: none;
+}
+
+.revenue-forecast__breakdown-stage {
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+.revenue-forecast__breakdown-deals {
+    color: var(--color-text-secondary);
+}
+
+.revenue-forecast__breakdown-value {
+    color: var(--color-success, #22c55e);
+    font-weight: 600;
+}
+
+.revenue-forecast__breakdown-prob {
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: var(--border-radius-full);
+}
+
+/* Legend */
+.revenue-forecast__legend {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+}
+
+.revenue-forecast__legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+.revenue-forecast__legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.revenue-forecast__legend-color--expected {
+    background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+}
+
+.revenue-forecast__legend-color--raw {
+    background: rgba(34, 197, 94, 0.3);
+    border: 1px dashed rgba(34, 197, 94, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .revenue-forecast__summary {
+        flex-wrap: wrap;
+        gap: var(--spacing-md);
+    }
+
+    .revenue-forecast__stat-value {
+        font-size: 1.25rem;
+    }
+
+    .revenue-forecast__chart {
+        height: 150px;
+    }
+
+    .revenue-forecast__bar-wrapper {
+        height: 120px;
+    }
+}

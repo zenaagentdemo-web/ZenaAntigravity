@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import type { ThreadClassification, ThreadCategory, ActionOwner } from '../models/types.js';
 import { websocketService } from './websocket.service.js';
+import { contactCategorizationService } from './contact-categorization.service.js';
 
 const prisma = new PrismaClient();
 
@@ -23,7 +24,7 @@ export interface ExtractedContact {
   name: string;
   email: string;
   phone?: string;
-  role: 'buyer' | 'vendor' | 'market' | 'other';
+  role: 'buyer' | 'vendor' | 'market' | 'tradesperson' | 'agent' | 'other';
   confidence: number;
 }
 
@@ -576,7 +577,13 @@ Summary: ${thread.summary}
 
 Extract the following information:
 
-1. CONTACTS: People mentioned in the thread (name, email if available, phone if available, role: buyer/vendor/market/other)
+1. CONTACTS: People mentioned in the thread (name, email if available, phone if available, role: buyer/vendor/market/tradesperson/agent/other)
+    - "buyer": Interested in purchasing a property
+    - "vendor": Interested in selling a property
+    - "market": Real estate industry service providers or generic professionals
+    - "tradesperson": Plumbers, electricians, cleaners, maintenance staff, etc.
+    - "agent": Other real estate agents from concurrent or different agencies
+    - "other": General contacts
 2. PROPERTIES: Property addresses mentioned
 3. DATES: Important dates mentioned (viewings, appraisals, meetings, auctions, settlements)
 4. ACTIONS: Next actions or tasks mentioned (who should do what, when)
@@ -590,7 +597,7 @@ Respond in JSON format:
       "name": "string",
       "email": "string (optional)",
       "phone": "string (optional)",
-      "role": "buyer|vendor|market|other",
+      "role": "buyer|vendor|market|tradesperson|agent|other",
       "confidence": 0.0-1.0
     }
   ],
@@ -678,10 +685,10 @@ Respond in JSON format:
   /**
    * Validate contact role
    */
-  private validateContactRole(value: string): 'buyer' | 'vendor' | 'market' | 'other' {
-    const valid = ['buyer', 'vendor', 'market', 'other'];
+  private validateContactRole(value: string): 'buyer' | 'vendor' | 'market' | 'tradesperson' | 'agent' | 'other' {
+    const valid = ['buyer', 'vendor', 'market', 'tradesperson', 'agent', 'other'];
     if (valid.includes(value)) {
-      return value as 'buyer' | 'vendor' | 'market' | 'other';
+      return value as 'buyer' | 'vendor' | 'market' | 'tradesperson' | 'agent' | 'other';
     }
     return 'other';
   }
@@ -827,9 +834,14 @@ Respond in JSON format:
 
       const prompt = this.buildDraftResponsePrompt(thread);
       const response = await this.callLLM(prompt);
-      const draftResponse = this.parseDraftResponse(response);
 
+      if (!response) {
+        return this.fallbackDraftResponse(thread);
+      }
+
+      const draftResponse = this.parseDraftResponse(response);
       return draftResponse;
+
     } catch (error) {
       console.error('Error generating draft response:', error);
       return this.fallbackDraftResponse(thread);
@@ -1043,6 +1055,21 @@ Respond with ONLY the draft email body text (no subject line, no JSON, just the 
         propertyId = await this.storeOrUpdateProperty(thread.userId, property, threadId);
       }
 
+      // Update contact intelligence for all extracted contacts
+      for (const contact of entities.contacts) {
+        const contactRecord = await prisma.contact.findFirst({
+          where: {
+            userId: thread.userId,
+            emails: { has: contact.email }
+          }
+        });
+        if (contactRecord) {
+          await this.updateContactIntelligence(contactRecord.id).catch(err =>
+            console.error(`Failed to update intelligence for contact ${contactRecord.id}:`, err)
+          );
+        }
+      }
+
       // Automatically create deal for important threads
       const shouldCreateDeal = await this.shouldCreateDeal(thread, entities);
       let dealId: string | undefined;
@@ -1225,6 +1252,7 @@ Respond with ONLY the draft email body text (no subject line, no JSON, just the 
         return existingContact.id;
       } else {
         // Create new contact
+
         const newContact = await prisma.contact.create({
           data: {
             userId,
@@ -1291,6 +1319,134 @@ Respond with ONLY the draft email body text (no subject line, no JSON, just the 
       console.error('Error storing property:', error);
       throw error;
     }
+  }
+
+  /**
+   * Update contact intelligence box based on recent activity
+   */
+  async updateContactIntelligence(contactId: string): Promise<void> {
+    try {
+      const contact = await prisma.contact.findUnique({
+        where: { id: contactId },
+      });
+
+      if (!contact) {
+        throw new Error(`Contact ${contactId} not found`);
+      }
+
+      // Fetch recent timeline events (notes, call summaries, thread summaries)
+      const events = await prisma.timelineEvent.findMany({
+        where: {
+          entityType: 'contact',
+          entityId: contactId,
+        },
+        orderBy: { timestamp: 'desc' },
+        take: 20,
+      });
+
+      // Fetch recent threads related to this contact
+      const allThreads = await prisma.thread.findMany({
+        where: {
+          userId: contact.userId,
+        },
+        orderBy: { lastMessageAt: 'desc' },
+        take: 100, // Look at last 100 threads to find those involving this contact
+      });
+
+      const contactThreads = allThreads.filter((t: any) => {
+        const participants = t.participants as any[];
+        return participants.some(p => contact.emails.includes(p.email));
+      }).slice(0, 10);
+
+      if (events.length === 0 && contactThreads.length === 0) {
+        return;
+      }
+
+      const prompt = this.buildContactIntelligencePrompt(contact, events, contactThreads);
+      const response = await this.callLLM(prompt);
+
+      try {
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('No JSON found in response');
+        const result = JSON.parse(jsonMatch[0]);
+
+        await prisma.contact.update({
+          where: { id: contactId },
+          data: {
+            intelligenceSnippet: result.intelligenceSnippet,
+            zenaIntelligence: result.zenaIntelligence || contact.zenaIntelligence || {},
+            updatedAt: new Date(),
+          },
+        });
+
+        // Broadcast update via websocket
+        websocketService.broadcastToUser(contact.userId, 'contact.updated', {
+          contactId,
+          intelligenceSnippet: result.intelligenceSnippet,
+          zenaIntelligence: result.zenaIntelligence
+        });
+
+        console.log(`Updated intelligence for contact ${contact.name}`);
+
+        // Trigger category re-evaluation after intelligence update
+        await contactCategorizationService.categorizeContact(contactId).catch(err =>
+          console.error(`Failed to categorize contact ${contactId}:`, err)
+        );
+      } catch (parseError) {
+        console.error('Error parsing contact intelligence response:', parseError);
+        // Fallback to raw string if JSON parsing fails
+        await prisma.contact.update({
+          where: { id: contactId },
+          data: { intelligenceSnippet: response.substring(0, 500) }
+        });
+      }
+    } catch (error) {
+      console.error(`Error updating contact intelligence for ${contactId}:`, error);
+    }
+  }
+
+  /**
+   * Build prompt for contact intelligence
+   */
+  private buildContactIntelligencePrompt(contact: any, events: any[], threads: any[]): string {
+    const eventText = events.map(e => `[${e.timestamp.toISOString()}] ${e.type.toUpperCase()}: ${e.summary}\n${e.content || ''}`).join('\n---\n');
+    const threadText = threads.map(t => `[${t.lastMessageAt.toISOString()}] ${t.classification.toUpperCase()}: ${t.subject}\nSummary: ${t.summary}`).join('\n---\n');
+
+    return `You are Zena, a high-tech AI agent for real estate. Your goal is to synthesize relationship intelligence for a contact.
+
+CONTACT: ${contact.name} (${contact.role})
+CURRENT INTEL: ${contact.intelligenceSnippet || 'None'}
+
+RECENT ACTIVITY:
+${eventText}
+
+RECENT EMAIL THREADS:
+${threadText}
+
+YOUR TASK:
+1. Generate a NEW "Intelligence Snippet" (max 15 words). It must be punchy, insightful, and professional. 
+   Example: "First-home buyer. Pre-approval valid for 60 days. High urgency."
+   Example: "Downsizing vendor. Exploring smaller apartments in Mission Bay."
+2. Extract structured "Zena Intelligence" data:
+   - propertyType (e.g., "3BR House", "Apartment")
+   - minBudget / maxBudget (numbers)
+   - location (preferred areas)
+   - bedrooms / bathrooms (numbers)
+   - timeline (e.g., "ASAP", "6 months", "Next Year")
+
+RESPOND IN JSON ONLY:
+{
+  "intelligenceSnippet": "string",
+  "zenaIntelligence": {
+    "propertyType": "string",
+    "minBudget": number,
+    "maxBudget": number,
+    "location": "string",
+    "bedrooms": number,
+    "bathrooms": number,
+    "timeline": "string"
+  }
+}`;
   }
 }
 

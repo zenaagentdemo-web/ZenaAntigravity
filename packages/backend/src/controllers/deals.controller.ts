@@ -1,7 +1,17 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import {
+  dealFlowService,
+  BUYER_STAGES,
+  SELLER_STAGES,
+  STAGE_LABELS
+} from '../services/deal-flow.service.js';
+import { PipelineType } from '../models/types.js';
 
 const prisma = new PrismaClient();
+
+const VALID_PIPELINE_TYPES = ['buyer', 'seller'];
+const VALID_SALE_METHODS = ['negotiation', 'auction', 'tender', 'deadline_sale'];
 
 export class DealsController {
   /**
@@ -21,11 +31,11 @@ export class DealsController {
         return;
       }
 
-      const { 
-        stage, 
+      const {
+        stage,
         riskLevel,
-        limit = '50', 
-        offset = '0' 
+        limit = '50',
+        offset = '0'
       } = req.query;
 
       const where: any = {
@@ -226,20 +236,7 @@ export class DealsController {
         return;
       }
 
-      // Validate stage
-      const validStages = ['lead', 'qualified', 'viewing', 'offer', 'conditional', 'pre_settlement', 'sold', 'nurture'];
-      if (!stage || !validStages.includes(stage)) {
-        res.status(400).json({
-          error: {
-            code: 'VALIDATION_FAILED',
-            message: `stage must be one of: ${validStages.join(', ')}`,
-            retryable: false,
-          },
-        });
-        return;
-      }
-
-      // Verify deal belongs to user
+      // Validate stage based on pipeline type
       const deal = await prisma.deal.findFirst({
         where: {
           id,
@@ -258,6 +255,18 @@ export class DealsController {
         return;
       }
 
+      const validStages = deal.pipelineType === 'seller' ? SELLER_STAGES : BUYER_STAGES;
+      if (!stage || !validStages.includes(stage)) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: `stage must be one of: ${validStages.join(', ')}`,
+            retryable: false,
+          },
+        });
+        return;
+      }
+
       const oldStage = deal.stage;
 
       // Update deal stage
@@ -265,6 +274,7 @@ export class DealsController {
         where: { id },
         data: {
           stage,
+          stageEnteredAt: new Date(), // Reset stage timer
         },
         include: {
           property: {
@@ -402,6 +412,463 @@ export class DealsController {
         error: {
           code: 'INTERNAL_ERROR',
           message: 'Failed to create task',
+          retryable: true,
+        },
+      });
+    }
+  }
+  /**
+   * GET /api/deals/pipeline/:type
+   * Get deals grouped by stage for kanban view
+   */
+  async getPipelineDeals(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const { type } = req.params;
+
+      if (!type || !VALID_PIPELINE_TYPES.includes(type)) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: `type must be one of: ${VALID_PIPELINE_TYPES.join(', ')}`,
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const pipeline = await dealFlowService.getPipelineDeals(
+        req.user.userId,
+        type as PipelineType
+      );
+
+      res.status(200).json(pipeline);
+    } catch (error) {
+      console.error('Get pipeline deals error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to fetch pipeline deals',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * GET /api/deals/dashboard
+   * Get aggregated dashboard statistics
+   */
+  async getDashboardStats(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const stats = await dealFlowService.getDashboardStats(req.user.userId);
+      res.status(200).json(stats);
+    } catch (error) {
+      console.error('Get dashboard stats error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to fetch dashboard stats',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * GET /api/deals/forecast
+   * Get revenue forecast by month with stage-weighted probabilities
+   */
+  async getRevenueForecast(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const monthsAhead = parseInt(req.query.months as string, 10) || 6;
+      const forecast = await dealFlowService.getRevenueForecast(req.user.userId, monthsAhead);
+      res.status(200).json(forecast);
+    } catch (error) {
+      console.error('Get revenue forecast error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to fetch revenue forecast',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * POST /api/deals
+   * Create a new deal
+   */
+  async createDeal(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const {
+        pipelineType,
+        saleMethod,
+        stage,
+        summary,
+        propertyId,
+        dealValue,
+        commissionFormulaId,
+        conditions,
+        settlementDate,
+        goLiveDate,
+        auctionDate,
+        tenderCloseDate,
+        contactIds,
+      } = req.body;
+
+      // Validate required fields
+      if (!pipelineType || !VALID_PIPELINE_TYPES.includes(pipelineType)) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: `pipelineType must be one of: ${VALID_PIPELINE_TYPES.join(', ')}`,
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      if (saleMethod && !VALID_SALE_METHODS.includes(saleMethod)) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: `saleMethod must be one of: ${VALID_SALE_METHODS.join(', ')}`,
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const validStages = pipelineType === 'seller' ? SELLER_STAGES : BUYER_STAGES;
+      if (!stage || !validStages.includes(stage)) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: `stage must be one of: ${validStages.join(', ')}`,
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      if (!summary || typeof summary !== 'string' || summary.trim().length === 0) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'summary is required and must be a non-empty string',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const deal = await dealFlowService.createDeal({
+        userId: req.user.userId,
+        pipelineType,
+        saleMethod: saleMethod || 'negotiation',
+        stage,
+        summary: summary.trim(),
+        propertyId,
+        dealValue: dealValue ? parseFloat(dealValue) : undefined,
+        commissionFormulaId,
+        conditions,
+        settlementDate: settlementDate ? new Date(settlementDate) : undefined,
+        goLiveDate: goLiveDate ? new Date(goLiveDate) : undefined,
+        auctionDate: auctionDate ? new Date(auctionDate) : undefined,
+        tenderCloseDate: tenderCloseDate ? new Date(tenderCloseDate) : undefined,
+        contactIds,
+      });
+
+      res.status(201).json({
+        deal,
+        message: 'Deal created successfully',
+      });
+    } catch (error) {
+      console.error('Create deal error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to create deal',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * PUT /api/deals/:id
+   * Update deal details
+   */
+  async updateDeal(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Verify deal belongs to user
+      const existingDeal = await prisma.deal.findFirst({
+        where: { id, userId: req.user.userId },
+      });
+
+      if (!existingDeal) {
+        res.status(404).json({
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Deal not found',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const {
+        summary,
+        nextAction,
+        dealValue,
+        commissionFormulaId,
+        settlementDate,
+        goLiveDate,
+        auctionDate,
+        tenderCloseDate,
+        lastContactAt,
+        contactIds,
+      } = req.body;
+
+      // Build update data
+      const updateData: any = {};
+      if (summary !== undefined) updateData.summary = summary;
+      if (nextAction !== undefined) updateData.nextAction = nextAction;
+      if (dealValue !== undefined) updateData.dealValue = parseFloat(dealValue);
+      if (commissionFormulaId !== undefined) updateData.commissionFormulaId = commissionFormulaId;
+      if (settlementDate !== undefined) updateData.settlementDate = settlementDate ? new Date(settlementDate) : null;
+      if (goLiveDate !== undefined) updateData.goLiveDate = goLiveDate ? new Date(goLiveDate) : null;
+      if (auctionDate !== undefined) updateData.auctionDate = auctionDate ? new Date(auctionDate) : null;
+      if (tenderCloseDate !== undefined) updateData.tenderCloseDate = tenderCloseDate ? new Date(tenderCloseDate) : null;
+      if (lastContactAt !== undefined) updateData.lastContactAt = lastContactAt ? new Date(lastContactAt) : null;
+
+      // Recalculate commission if value or formula changed
+      if ((dealValue !== undefined || commissionFormulaId !== undefined) && updateData.dealValue) {
+        const formulaId = commissionFormulaId || existingDeal.commissionFormulaId;
+        if (formulaId) {
+          const formula = await prisma.commissionFormula.findUnique({ where: { id: formulaId } });
+          if (formula) {
+            const tiers = formula.tiers as any[];
+            updateData.estimatedCommission = dealFlowService.calculateCommission(updateData.dealValue, tiers);
+          }
+        }
+      }
+
+      const updatedDeal = await prisma.deal.update({
+        where: { id },
+        data: updateData,
+        include: {
+          property: { select: { id: true, address: true } },
+          contacts: { select: { id: true, name: true } },
+          commissionFormula: true,
+        },
+      });
+
+      // Update contacts if provided
+      if (contactIds !== undefined) {
+        await prisma.deal.update({
+          where: { id },
+          data: {
+            contacts: {
+              set: contactIds.map((cid: string) => ({ id: cid })),
+            },
+          },
+        });
+      }
+
+      res.status(200).json({
+        deal: updatedDeal,
+        message: 'Deal updated successfully',
+      });
+    } catch (error) {
+      console.error('Update deal error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to update deal',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * PUT /api/deals/:id/conditions
+   * Update deal conditions
+   */
+  async updateConditions(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { conditions } = req.body;
+
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Verify deal belongs to user
+      const deal = await prisma.deal.findFirst({
+        where: { id, userId: req.user.userId },
+      });
+
+      if (!deal) {
+        res.status(404).json({
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Deal not found',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Validate conditions array
+      if (!Array.isArray(conditions)) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'conditions must be an array',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Update conditions and reassess risk
+      const updatedDeal = await prisma.deal.update({
+        where: { id },
+        data: { conditions },
+      });
+
+      // Reassess risk level
+      const { riskLevel, riskFlags } = await dealFlowService.assessDealRisk(updatedDeal);
+
+      const finalDeal = await prisma.deal.update({
+        where: { id },
+        data: { riskLevel, riskFlags },
+        include: {
+          property: { select: { id: true, address: true } },
+          contacts: { select: { id: true, name: true } },
+        },
+      });
+
+      res.status(200).json({
+        deal: finalDeal,
+        message: 'Conditions updated successfully',
+      });
+    } catch (error) {
+      console.error('Update conditions error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to update conditions',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * GET /api/deals/stages
+   * Get available stages for a pipeline type
+   */
+  async getStages(req: Request, res: Response): Promise<void> {
+    try {
+      const { type } = req.query;
+
+      if (type && !VALID_PIPELINE_TYPES.includes(type as string)) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: `type must be one of: ${VALID_PIPELINE_TYPES.join(', ')}`,
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      if (type) {
+        const stages = type === 'seller' ? SELLER_STAGES : BUYER_STAGES;
+        res.status(200).json({
+          pipelineType: type,
+          stages: stages.map(s => ({ value: s, label: STAGE_LABELS[s] || s })),
+        });
+      } else {
+        res.status(200).json({
+          buyer: BUYER_STAGES.map(s => ({ value: s, label: STAGE_LABELS[s] || s })),
+          seller: SELLER_STAGES.map(s => ({ value: s, label: STAGE_LABELS[s] || s })),
+        });
+      }
+    } catch (error) {
+      console.error('Get stages error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to fetch stages',
           retryable: true,
         },
       });

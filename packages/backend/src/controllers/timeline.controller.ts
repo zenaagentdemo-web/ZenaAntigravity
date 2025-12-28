@@ -208,3 +208,63 @@ export async function getEntityTimeline(req: Request, res: Response) {
     });
   }
 }
+
+/**
+ * Update timeline event
+ * PUT /api/timeline/:id
+ */
+export async function updateEvent(req: Request, res: Response) {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { id } = req.params;
+    const { summary, content, metadata } = req.body;
+
+    // Validate that at least one field is being updated
+    if (summary === undefined && content === undefined && metadata === undefined) {
+      return res.status(400).json({ error: 'No update fields provided' });
+    }
+
+    await timelineService.updateEvent(userId, id, {
+      summary,
+      content,
+      metadata
+    });
+
+    res.json({ message: 'Event updated successfully' });
+  } catch (error) {
+    console.error('Error updating event:', error);
+    res.status(500).json({
+      error: 'Failed to update event',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * Delete timeline event
+ * DELETE /api/timeline/:id
+ */
+export async function deleteEvent(req: Request, res: Response) {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { id } = req.params;
+
+    await timelineService.deleteEvent(userId, id);
+
+    res.json({ message: 'Event deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    res.status(500).json({
+      error: 'Failed to delete event',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}

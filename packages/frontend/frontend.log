@@ -1,0 +1,38 @@
+
+> @zena/frontend@1.0.0 dev
+> vite
+
+
+  VITE v7.3.0  ready in 218 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+9:39:30 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.tsx
+9:39:32 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+9:41:48 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+9:47:21 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+9:47:38 AM [vite] (client) hmr update /src/pages/ContactsPage/ContactsPage.tsx
+9:47:42 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+9:48:34 AM [vite] (client) hmr update /src/pages/ContactsPage/ContactsPage.css
+9:50:26 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.tsx
+9:50:43 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+9:50:45 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+9:54:45 AM [vite] (client) hmr update /src/pages/DealFlowPage/DealFlowPage.tsx
+9:55:10 AM [vite] (client) hmr update /src/components/DealFlow/DealCard.tsx
+9:55:34 AM [vite] (client) hmr update /src/components/DealFlow/DealFlow.css
+9:55:36 AM [vite] (client) hmr update /src/pages/DealFlowPage/DealFlowPage.tsx
+9:55:38 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+9:57:18 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+9:57:18 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+10:03:01 AM [vite] (client) hmr update /src/pages/ContactsPage/ContactsPage.tsx
+10:03:33 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+10:05:18 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+10:12:55 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+10:21:02 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+10:21:02 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+10:22:25 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
+10:22:40 AM [vite] (client) hmr update /src/components/DealFlow/KanbanBoard.tsx
+10:22:43 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.tsx
+10:24:38 AM [vite] (client) hmr update /src/App.tsx
+10:25:09 AM [vite] (client) hmr update /src/App.tsx
+10:27:38 AM [vite] (client) hmr update /src/pages/HighTechDashboardPage/HighTechDashboardPage.tsx

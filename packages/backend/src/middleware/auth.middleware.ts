@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
+import { PrismaClient } from '@prisma/client';
 import { authService } from '../services/auth.service.js';
+
+const prisma = new PrismaClient();
 
 // Extend Express Request type to include user
 declare global {
@@ -48,11 +51,36 @@ export const authenticate = async (
     // Development mode: allow demo-token for testing
     if (token === 'demo-token' && process.env.NODE_ENV !== 'production') {
       console.log('[Auth] Using demo token bypass for development');
-      req.user = {
-        id: 'demo-user-id',
-        userId: 'demo-user-id',
-        email: 'demo@example.com',
-      };
+
+      // Try to find the demo user in the database
+      try {
+        const demoUser = await prisma.user.findUnique({
+          where: { email: 'demo@zena.ai' }
+        });
+
+        if (demoUser) {
+          req.user = {
+            id: demoUser.id,
+            userId: demoUser.id,
+            email: demoUser.email,
+          };
+        } else {
+          console.warn('[Auth] Demo user not found in DB, using fallback ID');
+          req.user = {
+            id: 'demo-user-id',
+            userId: 'demo-user-id',
+            email: 'demo@example.com',
+          };
+        }
+      } catch (error) {
+        console.error('[Auth] Failed to lookup demo user:', error);
+        req.user = {
+          id: 'demo-user-id',
+          userId: 'demo-user-id',
+          email: 'demo@example.com',
+        };
+      }
+
       next();
       return;
     }

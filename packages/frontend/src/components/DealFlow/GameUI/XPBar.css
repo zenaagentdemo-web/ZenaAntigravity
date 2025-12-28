@@ -1,0 +1,272 @@
+.xp-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    background: rgba(13, 27, 42, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 255, 65, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.1);
+}
+
+/* Level Badge */
+.xp-bar__level-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, rgba(0, 255, 65, 0.2), rgba(0, 255, 65, 0.05));
+    border: 1px solid rgba(0, 255, 65, 0.4);
+    border-radius: 8px;
+}
+
+.xp-bar__level-number {
+    font-size: 24px;
+    font-weight: 800;
+    color: #00ff41;
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.xp-bar__level-title {
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Main XP Bar */
+.xp-bar__main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.xp-bar__track {
+    position: relative;
+    height: 12px;
+    background: rgba(0, 255, 65, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.xp-bar__fill {
+    height: 100%;
+    border-radius: 6px;
+    position: relative;
+}
+
+.xp-bar__glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: xpShimmer 2s ease-in-out infinite;
+}
+
+@keyframes xpShimmer {
+
+    0%,
+    100% {
+        transform: translateX(-100%);
+    }
+
+    50% {
+        transform: translateX(100%);
+    }
+}
+
+.xp-bar__info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+}
+
+.xp-bar__xp-text {
+    color: #00ff41;
+    font-weight: 600;
+}
+
+.xp-bar__next-level {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Bonuses */
+.xp-bar__bonuses {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end;
+}
+
+.xp-bar__streak {
+    padding: 4px 10px;
+    background: linear-gradient(135deg, rgba(255, 0, 60, 0.3), rgba(255, 0, 60, 0.1));
+    border: 1px solid rgba(255, 0, 60, 0.4);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ff003c;
+}
+
+.xp-bar__multiplier {
+    padding: 4px 10px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffd700;
+    animation: multiplierPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes multiplierPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Session XP */
+.xp-bar__session {
+    position: absolute;
+    top: -8px;
+    right: 16px;
+    padding: 4px 12px;
+    background: rgba(0, 255, 65, 0.2);
+    border: 1px solid rgba(0, 255, 65, 0.4);
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #00ff41;
+}
+
+/* Compact Version */
+.xp-bar-compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.xp-bar-compact__level {
+    font-size: 12px;
+    font-weight: 700;
+    color: #00ff41;
+}
+
+.xp-bar-compact__bar {
+    width: 60px;
+    height: 6px;
+    background: rgba(0, 255, 65, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.xp-bar-compact__fill {
+    height: 100%;
+    background: #00ff41;
+    border-radius: 3px;
+}
+
+/* Level Up Overlay */
+.level-up-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.level-up-content {
+    position: relative;
+    text-align: center;
+    padding: 48px 64px;
+    background: linear-gradient(135deg, rgba(13, 27, 42, 0.98), rgba(0, 0, 0, 0.95));
+    border: 2px solid #ffd700;
+    border-radius: 24px;
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.5), inset 0 0 30px rgba(255, 215, 0, 0.1);
+}
+
+.level-up-burst {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    height: 400px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.3), transparent 60%);
+    animation: burstPulse 1s ease-out infinite;
+    pointer-events: none;
+}
+
+@keyframes burstPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+.level-up-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    animation: iconBounce 0.6s ease-out;
+}
+
+@keyframes iconBounce {
+    0% {
+        transform: scale(0) rotate(-180deg);
+    }
+
+    60% {
+        transform: scale(1.2) rotate(10deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.level-up-title {
+    font-size: 36px;
+    font-weight: 900;
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    margin: 0;
+}
+
+.level-up-level {
+    font-size: 72px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    margin: 8px 0;
+}
+
+.level-up-title-new {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}

@@ -56,6 +56,22 @@
   gap: var(--spacing-4, 16px);
 }
 
+.floating-metric-orbs--chip {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: var(--spacing-3, 12px);
+  padding: var(--spacing-2, 8px) 0;
+  overflow-x: auto;
+  justify-content: flex-start;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.floating-metric-orbs--chip::-webkit-scrollbar {
+  display: none;
+}
+
 /* ============================================
    Metric Orb Base Styles
    ============================================ */
@@ -70,19 +86,54 @@
   height: 80px;
   border-radius: 50%;
   cursor: pointer;
-  transition: 
+  transition:
     transform var(--duration-normal, 300ms) var(--ease-smooth),
     box-shadow var(--duration-normal, 300ms) var(--ease-smooth);
-  
+
   /* Glassmorphism background */
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-bg-border, rgba(255, 255, 255, 0.1));
-  
+
   /* Float animation */
   animation: orb-float 4s ease-in-out infinite;
   animation-delay: calc(var(--orb-index, 0) * 0.5s);
+}
+
+.metric-orb--chip {
+  width: auto;
+  min-width: 100px;
+  height: auto;
+  padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+  border-radius: 16px;
+  flex-direction: row;
+  gap: var(--spacing-3, 12px);
+  animation: none;
+  background: var(--glass-bg-accent, rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.metric-orb--chip .metric-orb__content {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-2, 8px);
+}
+
+.metric-orb--chip .metric-orb__value {
+  font-size: 20px;
+  text-shadow: 0 0 10px currentColor;
+}
+
+.metric-orb--chip .metric-orb__label {
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.metric-orb--chip:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 @supports not (backdrop-filter: blur(20px)) {
@@ -92,9 +143,12 @@
 }
 
 @keyframes orb-float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-4px);
   }
@@ -259,9 +313,12 @@
 }
 
 @keyframes orb-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 15px currentColor;
   }
+
   50% {
     box-shadow: 0 0 25px currentColor, 0 0 40px currentColor;
   }
@@ -277,7 +334,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
+  padding: 8px;
+  text-align: center;
+  width: 100%;
 }
 
 .metric-orb__icon {
@@ -299,6 +360,10 @@
   color: var(--text-secondary-ht);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  text-align: center;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 
 .metric-orb__subtitle {
@@ -336,15 +401,15 @@
     width: 100px;
     height: 100px;
   }
-  
+
   .metric-orb__value {
     font-size: 32px;
   }
-  
+
   .metric-orb__label {
     font-size: 11px;
   }
-  
+
   .metric-orb__icon {
     font-size: 16px;
   }
@@ -354,16 +419,16 @@
   .floating-metric-orbs {
     gap: var(--spacing-2, 8px);
   }
-  
+
   .metric-orb {
     width: 70px;
     height: 70px;
   }
-  
+
   .metric-orb__value {
     font-size: 20px;
   }
-  
+
   .metric-orb__label {
     font-size: 9px;
   }
@@ -377,7 +442,7 @@
   .metric-orb {
     animation: none !important;
   }
-  
+
   .metric-orb:hover {
     transform: scale(1.05);
   }

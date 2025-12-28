@@ -160,6 +160,217 @@ export async function generateDraft(req: Request, res: Response): Promise<void> 
     });
   }
 }
+
+/**
+ * POST /api/ask/compose-email
+ * Generate AI-powered email draft for contacts
+ * This connects ZenaBatchComposeModal to Zena's high intelligence brain
+ */
+export async function composeEmail(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { contacts, draftType = 'quick' } = req.body;
+
+    if (!contacts || !Array.isArray(contacts) || contacts.length === 0) {
+      res.status(400).json({ error: 'contacts array is required and must not be empty' });
+      return;
+    }
+
+    // Validate draftType
+    if (draftType !== 'quick' && draftType !== 'detailed') {
+      res.status(400).json({ error: 'draftType must be "quick" or "detailed"' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Generating ${draftType} email for ${contacts.length} contact(s)`);
+
+    // Generate AI email draft
+    const result = await askZenaService.generateContactEmail(userId, contacts, draftType);
+
+    res.status(200).json({
+      subject: result.subject,
+      body: result.body,
+      draftType
+    });
+  } catch (error) {
+    console.error('Error in composeEmail:', error);
+    res.status(500).json({
+      error: 'Failed to generate email draft',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/ask/improvement-actions
+ * Generate AI-powered improvement actions for a contact
+ * This powers the IntelScoreTooltip "Improve Now" feature
+ */
+export async function getImprovementActions(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { contact } = req.body;
+
+    if (!contact || !contact.id || !contact.name) {
+      res.status(400).json({ error: 'contact object with id and name is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Generating improvement actions for ${contact.name}`);
+
+    // Generate AI improvement actions
+    const result = await askZenaService.generateImprovementActions(userId, contact);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in getImprovementActions:', error);
+    res.status(500).json({
+      error: 'Failed to generate improvement actions',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * GET /api/ask/contact-call-intel/:id
+ * Generate AI-powered call intelligence for a contact (Best time, talking points)
+ */
+export async function getContactCallIntel(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const contactId = req.params.id;
+    if (!contactId) {
+      res.status(400).json({ error: 'Contact ID is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Generating call intel for contact ${contactId}`);
+
+    // Generate Call Intel
+    // Note: We'll implement this method in the service next
+    const result = await askZenaService.generateCallIntel(userId, contactId);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in getContactCallIntel:', error);
+    res.status(500).json({
+      error: 'Failed to generate call intelligence',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/ask/smart-search
+ * Parse natural language search query into structured filters
+ */
+export async function parseSearchQuery(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { query } = req.body;
+    if (!query) {
+      res.status(400).json({ error: 'Search query is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Parsing smart search query: "${query}"`);
+
+    const result = await askZenaService.parseSearchQuery(userId, query);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in parseSearchQuery:', error);
+    res.status(500).json({
+      error: 'Failed to parse search query',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/ask/record-action
+ * Record execution of an AI-suggested action
+ */
+export async function recordAction(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { contactId, actionType, actionDescription } = req.body;
+    if (!contactId || !actionType) {
+      res.status(400).json({ error: 'contactId and actionType are required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Recording action "${actionType}" for contact ${contactId}`);
+
+    const result = await askZenaService.recordActionExecution(userId, contactId, actionType, actionDescription);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in recordAction:', error);
+    res.status(500).json({
+      error: 'Failed to record action execution',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/ask/discover
+ * Trigger deep intelligence discovery for a contact
+ */
+export async function discover(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { contactId } = req.body;
+    if (!contactId) {
+      res.status(400).json({ error: 'contactId is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Triggering intelligence discovery for contact ${contactId}`);
+
+    const result = await askZenaService.runDiscovery(userId, contactId);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in discover:', error);
+    res.status(500).json({
+      error: 'Failed to run intelligence discovery',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
 /**
  * POST /api/ask/stt
  * Transcribe audio

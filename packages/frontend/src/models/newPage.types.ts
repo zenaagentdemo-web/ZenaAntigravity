@@ -199,9 +199,9 @@ export interface FilterOption {
 export type ThreadAction = 'view' | 'snooze' | 'send_draft' | 'archive' | 'mark_read';
 
 /**
- * Batch actions for multiple threads
+ * Batch actions for multiple items (threads, contacts, etc.)
  */
-export type BatchAction = 'snooze_all' | 'archive_all' | 'mark_read' | 'delete_all';
+export type BatchAction = 'snooze_all' | 'archive_all' | 'mark_read' | 'delete_all' | 'compose' | 'tag';
 
 /**
  * Snooze duration options

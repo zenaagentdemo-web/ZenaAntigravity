@@ -10,7 +10,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MiniZenaAvatar } from '../MiniZenaAvatar/MiniZenaAvatar';
 import { HamburgerMenu } from '../HamburgerMenu/HamburgerMenu';
 import { SyncStatus } from '../../models/newPage.types';
 import { FilterType } from '../../models/newPage.types';
@@ -44,6 +43,8 @@ export interface NewPageHeaderProps {
   activeFolderName?: string;
   /** Callback to clear folder filter */
   onClearFolder?: () => void;
+  /** Optional title for the header */
+  title?: string;
   /** Optional className for styling */
   className?: string;
 }
@@ -73,6 +74,7 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
   onCreateFolder,
   activeFolderName,
   onClearFolder,
+  title = 'New mail',
   className = ''
 }) => {
   const navigate = useNavigate();
@@ -145,10 +147,6 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
     }
   }, [onSearch]);
 
-  // Handle Ask Zena click
-  const handleAskZenaClick = useCallback(() => {
-    navigate('/avatar-demo');
-  }, [navigate]);
 
 
   const headerClasses = [
@@ -182,7 +180,7 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
         {/* Title Section */}
         <div className="new-page-header__title-section">
           <h1 className="new-page-header__title" data-testid="header-title">
-            New mail
+            {title}
             {urgentCount > 0 && (
               <span
                 className="new-page-header__notification-dot"
@@ -197,17 +195,15 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
               <span className="new-page-header__count" data-testid="thread-count">
                 {threadCount} thread{threadCount !== 1 ? 's' : ''}
               </span>
+              {urgentCount > 0 && (
+                <div className="new-page-header__urgent-badge" data-testid="urgent-badge">
+                  <span>{urgentCount} urgent</span>
+                </div>
+              )}
             </div>
           )}
-        </div>
 
-        {/* Zena Avatar - Navigate to Immersive */}
-        <div className="new-page-header__center">
-          <MiniZenaAvatar
-            onClick={handleAskZenaClick}
-            label="Ask Zena"
-            showPulseRing={true}
-          />
+          {/* Active Folder Badge */}
 
           {/* Active Folder Badge */}
           {activeFolderName && (
@@ -334,6 +330,24 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
                 <path d="M9 11l3 3L22 4" />
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
               </svg>
+              <span className="new-page-header__select-label">Select</span>
+            </button>
+          )}
+
+          {/* Create Folder Quick Action */}
+          {onCreateFolder && (
+            <button
+              className="new-page-header__action-btn"
+              onClick={onCreateFolder}
+              aria-label="Create new folder"
+              title="Create new folder"
+              data-testid="quick-create-folder"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                <line x1="12" y1="11" x2="12" y2="17" />
+                <line x1="9" y1="14" x2="15" y2="14" />
+              </svg>
             </button>
           )}
 
@@ -362,7 +376,7 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
           )}
         </div>
       </div>
-    </header>
+    </header >
   );
 };
 

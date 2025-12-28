@@ -70,7 +70,7 @@ Or run them separately:
 # Frontend only (http://localhost:5173)
 npm run dev --workspace=@zena/frontend
 
-# Backend only (http://localhost:3000)
+# Backend only (http://localhost:3001)
 npm run dev --workspace=@zena/backend
 ```
 

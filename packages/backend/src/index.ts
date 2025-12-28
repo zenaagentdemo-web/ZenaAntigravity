@@ -22,9 +22,11 @@ import notificationRoutes from './routes/notification.routes.js';
 import dataDeletionRoutes from './routes/data-deletion.routes.js';
 import historyRoutes from './routes/history.routes.js';
 import actionsRoutes from './routes/actions.routes.js';
+import zenaActionsRoutes from './routes/zena-actions.routes.js';
 import { syncEngineService } from './services/sync-engine.service.js';
 import { calendarSyncEngineService } from './services/calendar-sync-engine.service.js';
 import { websocketService } from './services/websocket.service.js';
+import { dealSchedulerService } from './services/deal-scheduler.service.js';
 import { logger } from './services/logger.service.js';
 import { healthCheckService } from './services/health-check.service.js';
 import {
@@ -44,7 +46,7 @@ import {
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Middleware - Order matters!
 app.use(cors());
@@ -136,6 +138,13 @@ app.use('/api/history', historyRoutes);
 // Custom action routes
 app.use('/api/actions', actionsRoutes);
 
+// Zena Actions routes (AI-powered deal actions)
+app.use('/api/zena-actions', zenaActionsRoutes);
+
+// Communications routes
+import communicationsRoutes from './routes/communications.routes.js';
+app.use('/api/communications', communicationsRoutes);
+
 // 404 handler - must be after all routes
 app.use(notFoundMiddleware);
 
@@ -152,6 +161,9 @@ websocketService.initialize(server);
 syncEngineService.start();
 calendarSyncEngineService.start();
 
+// Start deal scheduler (Phase 2b)
+dealSchedulerService.start();
+
 // Graceful shutdown
 const shutdown = async (signal: string) => {
   logger.info(`Received ${signal}, shutting down gracefully...`);
@@ -165,6 +177,7 @@ const shutdown = async (signal: string) => {
     // Stop background services
     syncEngineService.stop();
     calendarSyncEngineService.stop();
+    dealSchedulerService.stop();
     websocketService.shutdown();
 
     // Disconnect from database

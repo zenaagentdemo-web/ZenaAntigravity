@@ -45,6 +45,8 @@ export interface UseThreadActionsReturn {
   isThreadAnimating: (threadId: string) => boolean;
   /** Get animation type for a thread */
   getThreadAnimation: (threadId: string) => string | undefined;
+  /** Add a manual toast notification */
+  addToast: (type: ToastType, message: string, action?: ToastData['action']) => string;
 }
 
 /**
@@ -65,7 +67,7 @@ export const useThreadActions = (
   const [isSnoozeOpen, setIsSnoozeOpen] = useState(false);
   const [snoozeThreadId, setSnoozeThreadId] = useState<string | null>(null);
   const [snoozeThreadSubject, setSnoozeThreadSubject] = useState<string | null>(null);
-  
+
   // Track pending actions for retry
   const pendingActionsRef = useRef<Map<string, () => Promise<ActionResult>>>(new Map());
 
@@ -132,34 +134,34 @@ export const useThreadActions = (
    */
   const snoozeThread = useCallback(async (threadId: string, options: SnoozeOptions): Promise<ActionResult> => {
     const timestamp = new Date().toISOString();
-    
+
     try {
       // Start slide-out animation
       startAnimation(threadId, 'slide-out');
-      
+
       // Simulate API call (replace with actual API)
       await new Promise(resolve => setTimeout(resolve, 300));
-      
+
       // Close overlay
       closeSnoozeOverlay();
-      
+
       // Wait for animation to complete
       await new Promise(resolve => setTimeout(resolve, 300));
-      
+
       // Remove thread from list
       endAnimation(threadId);
       onThreadRemoved?.(threadId);
-      
+
       // Show success toast
-      const durationLabel = options.duration === 'custom' 
-        ? 'custom time' 
+      const durationLabel = options.duration === 'custom'
+        ? 'custom time'
         : options.duration === '1h' ? '1 hour'
-        : options.duration === '4h' ? '4 hours'
-        : options.duration === 'tomorrow' ? 'tomorrow'
-        : 'next week';
-      
+          : options.duration === '4h' ? '4 hours'
+            : options.duration === 'tomorrow' ? 'tomorrow'
+              : 'next week';
+
       addToast('success', `Thread snoozed until ${durationLabel}`);
-      
+
       return {
         success: true,
         threadId,
@@ -168,11 +170,11 @@ export const useThreadActions = (
       };
     } catch (error) {
       endAnimation(threadId);
-      
+
       // Store retry action
       const retryAction = () => snoozeThread(threadId, options);
       pendingActionsRef.current.set(threadId, retryAction);
-      
+
       addToast('error', 'Failed to snooze thread', {
         label: 'Retry',
         onClick: () => {
@@ -180,7 +182,7 @@ export const useThreadActions = (
           pendingActionsRef.current.delete(threadId);
         }
       });
-      
+
       return {
         success: false,
         threadId,
@@ -196,23 +198,23 @@ export const useThreadActions = (
    */
   const sendDraft = useCallback(async (threadId: string): Promise<ActionResult> => {
     const timestamp = new Date().toISOString();
-    
+
     try {
       // Start pulsing glow animation
       startAnimation(threadId, 'pulse-glow');
-      
+
       // Simulate API call (replace with actual API)
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       // End animation
       endAnimation(threadId);
-      
+
       // Remove thread from list after successful send
       onThreadRemoved?.(threadId);
-      
+
       // Show success toast
       addToast('success', 'Draft sent successfully');
-      
+
       return {
         success: true,
         threadId,
@@ -221,11 +223,11 @@ export const useThreadActions = (
       };
     } catch (error) {
       endAnimation(threadId);
-      
+
       // Store retry action
       const retryAction = () => sendDraft(threadId);
       pendingActionsRef.current.set(threadId, retryAction);
-      
+
       addToast('error', 'Failed to send draft', {
         label: 'Retry',
         onClick: () => {
@@ -233,7 +235,7 @@ export const useThreadActions = (
           pendingActionsRef.current.delete(threadId);
         }
       });
-      
+
       return {
         success: false,
         threadId,
@@ -249,23 +251,23 @@ export const useThreadActions = (
    */
   const archiveThread = useCallback(async (threadId: string): Promise<ActionResult> => {
     const timestamp = new Date().toISOString();
-    
+
     try {
       // Start fade-out animation
       startAnimation(threadId, 'fade-out');
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 300));
-      
+
       // Wait for animation
       await new Promise(resolve => setTimeout(resolve, 300));
-      
+
       // Remove thread
       endAnimation(threadId);
       onThreadRemoved?.(threadId);
-      
+
       addToast('success', 'Thread archived');
-      
+
       return {
         success: true,
         threadId,
@@ -274,12 +276,12 @@ export const useThreadActions = (
       };
     } catch (error) {
       endAnimation(threadId);
-      
+
       addToast('error', 'Failed to archive thread', {
         label: 'Retry',
         onClick: () => archiveThread(threadId)
       });
-      
+
       return {
         success: false,
         threadId,
@@ -295,13 +297,13 @@ export const useThreadActions = (
    */
   const markAsRead = useCallback(async (threadId: string): Promise<ActionResult> => {
     const timestamp = new Date().toISOString();
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 200));
-      
+
       addToast('success', 'Marked as read');
-      
+
       return {
         success: true,
         threadId,
@@ -310,7 +312,7 @@ export const useThreadActions = (
       };
     } catch (error) {
       addToast('error', 'Failed to mark as read');
-      
+
       return {
         success: false,
         threadId,
@@ -351,7 +353,8 @@ export const useThreadActions = (
     closeSnoozeOverlay,
     dismissToast,
     isThreadAnimating,
-    getThreadAnimation
+    getThreadAnimation,
+    addToast
   };
 };
 

@@ -27,7 +27,7 @@ export class TimelineService {
    * Create a timeline event
    */
   async createEvent(input: TimelineEventInput) {
-    return await prisma.timelineEvent.create({
+    const event = await prisma.timelineEvent.create({
       data: {
         userId: input.userId,
         type: input.type,
@@ -39,6 +39,16 @@ export class TimelineService {
         timestamp: input.timestamp,
       },
     });
+
+    // If this is a contact event, trigger intelligence update
+    if (input.entityType === 'contact') {
+      const { aiProcessingService } = await import('./ai-processing.service.js');
+      aiProcessingService.updateContactIntelligence(input.entityId).catch(err =>
+        console.error(`Failed to update intelligence for contact ${input.entityId}:`, err)
+      );
+    }
+
+    return event;
   }
 
   /**
@@ -237,12 +247,25 @@ export class TimelineService {
    * Delete timeline event
    */
   async deleteEvent(userId: string, eventId: string) {
-    return await prisma.timelineEvent.deleteMany({
+    const event = await prisma.timelineEvent.findFirst({
+      where: { id: eventId, userId }
+    });
+
+    const result = await prisma.timelineEvent.deleteMany({
       where: {
         id: eventId,
         userId,
       },
     });
+
+    if (event && event.entityType === 'contact') {
+      const { aiProcessingService } = await import('./ai-processing.service.js');
+      aiProcessingService.updateContactIntelligence(event.entityId).catch(err =>
+        console.error(`Failed to update intelligence for contact ${event.entityId}:`, err)
+      );
+    }
+
+    return result;
   }
 
   /**
@@ -257,13 +280,26 @@ export class TimelineService {
       metadata?: Record<string, any>;
     }
   ) {
-    return await prisma.timelineEvent.updateMany({
+    const result = await prisma.timelineEvent.updateMany({
       where: {
         id: eventId,
         userId,
       },
       data: updates,
     });
+
+    const event = await prisma.timelineEvent.findFirst({
+      where: { id: eventId, userId }
+    });
+
+    if (event && event.entityType === 'contact') {
+      const { aiProcessingService } = await import('./ai-processing.service.js');
+      aiProcessingService.updateContactIntelligence(event.entityId).catch(err =>
+        console.error(`Failed to update intelligence for contact ${event.entityId}:`, err)
+      );
+    }
+
+    return result;
   }
 }
 

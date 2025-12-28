@@ -1,0 +1,48 @@
+.leaflet-territory-map {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0d1b2a;
+}
+
+.leaflet-map-container {
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+    background: #0d1b2a;
+}
+
+/* Override Leaflet's default styles for dark mode */
+.leaflet-container {
+    background: #0d1b2a;
+    font-family: inherit;
+}
+
+/* Style the attribution to match dark theme */
+.leaflet-control-attribution {
+    background: rgba(13, 27, 42, 0.8) !important;
+    color: #8ecae6 !important;
+    padding: 4px 8px;
+    font-size: 10px;
+}
+
+.leaflet-control-attribution a {
+    color: #00f3ff !important;
+}
+
+/* Hide zoom control (we have custom HUD) */
+.leaflet-control-zoom {
+    display: none;
+}
+
+/* Bloom overlay canvas */
+.bloom-overlay {
+    pointer-events: none;
+}
+
+.bloom-overlay canvas {
+    display: block;
+}

@@ -4,7 +4,7 @@
  */
 
 const DB_NAME = 'zena-offline-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 // Store names
 export const STORES = {
@@ -15,6 +15,7 @@ export const STORES = {
   TIMELINE: 'timeline',
   TASKS: 'tasks',
   SYNC_QUEUE: 'sync_queue',
+  SYNC_CONFLICTS: 'sync_conflicts',
   METADATA: 'metadata',
 } as const;
 
@@ -84,6 +85,10 @@ export function initDB(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains(STORES.SYNC_QUEUE)) {
         const syncStore = db.createObjectStore(STORES.SYNC_QUEUE, { keyPath: 'id' });
         syncStore.createIndex('timestamp', 'timestamp', { unique: false });
+      }
+
+      if (!db.objectStoreNames.contains(STORES.SYNC_CONFLICTS)) {
+        db.createObjectStore(STORES.SYNC_CONFLICTS, { keyPath: 'id' });
       }
 
       if (!db.objectStoreNames.contains(STORES.METADATA)) {

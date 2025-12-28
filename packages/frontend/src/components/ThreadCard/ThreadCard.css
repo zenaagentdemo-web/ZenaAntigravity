@@ -674,6 +674,43 @@
   transform: translateY(0);
 }
 
+/* Promoted Icon Actions */
+.thread-card__icon-action {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.thread-card__icon-action svg {
+  width: 18px;
+  height: 18px;
+}
+
+.thread-card__icon-action:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+  color: var(--neon-cyan, #00D4FF);
+  transform: translateY(-1px);
+}
+
+.thread-card__icon-action--danger:hover {
+  background: rgba(255, 68, 68, 0.1);
+  border-color: rgba(255, 68, 68, 0.3);
+  color: #FF4444;
+}
+
 /* Dropdown Toggle Button */
 .thread-card__dropdown-toggle {
   width: 44px;

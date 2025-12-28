@@ -19,10 +19,40 @@ import { voiceInteractionService } from '../../services/voice-interaction.servic
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
 import { liveAudioService } from '../../services/live-audio.service';
 import { realTimeDataService } from '../../services/realTimeDataService';
+import { TranscriptionMerger } from '../../utils/transcription/transcription-merger';
+import { decodeHTMLEntities } from '../../utils/text-utils';
+import { StrategySessionContext, STRATEGY_SESSION_KEY, buildStrategyOpener } from '../../components/DealFlow/types';
 import './AskZenaPage.css';
 import './TapToTalkButton.css';
-import { decodeHTMLEntities } from '../../utils/text-utils';
-import { TranscriptionMerger } from '../../utils/transcription/transcription-merger';
+
+interface StarterPrompt {
+  label: string;
+  icon: string;
+  prompt: string;
+}
+
+const STARTER_PROMPTS: StarterPrompt[] = [
+  {
+    label: "Practice a tough client call",
+    icon: "🎯",
+    prompt: "I want to practice my objection handling. You play a skeptical seller who is thinking about cutting my commission. Challenge my value proposition naturally."
+  },
+  {
+    label: "Who should I call right now?",
+    icon: "📞",
+    prompt: "Scan my latest leads and CRM activity. Based on who is most likely to move, tell me who I should call right now and give me a specific strategic angle to use."
+  },
+  {
+    label: "Give me your daily debrief.",
+    icon: "📊",
+    prompt: "Let's do my daily debrief. I'll tell you about my meetings, wins, and new leads from today so you can update my context and core databases."
+  },
+  {
+    label: "Solve a deal roadblock.",
+    icon: "🌉",
+    prompt: "I have a deal that's hitting a roadblock. I'll describe the current hurdle in negotiations or closing, and I want you to help me brainstorm creative workarounds."
+  }
+];
 
 export const AskZenaPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -52,6 +82,8 @@ export const AskZenaPage: React.FC = () => {
   const dragCounterRef = useRef(0);
   const userMergerRef = useRef(new TranscriptionMerger());
   const currentUtteranceIdRef = useRef<string | null>(null);
+  const strategySessionContextRef = useRef<StrategySessionContext | null>(null);
+  const hasStrategySessionStartedRef = useRef(false); // Prevent double-trigger in React Strict Mode
 
   // Sync ref with state
   useEffect(() => {
@@ -150,7 +182,7 @@ export const AskZenaPage: React.FC = () => {
 
     if (hasAction('calendar', 'add_calendar')) {
       chips.push({
-        label: "Schedule Viewing",
+        label: "Schedule Meeting",
         icon: "🗓️",
         onClick: () => console.log("Scheduling via API...")
       });
@@ -534,20 +566,25 @@ export const AskZenaPage: React.FC = () => {
             console.log('[AskZena] 10s inactivity reached - Zena asking check-in');
             zenaAskedRef.current = true;
 
+            // CRITICAL: Reset timer IMMEDIATELY so the next interval check doesn't immediately deactivate
+            lastActivityRef.current = Date.now();
+
             // FIX: Verbally say the prompt using local TTS
             const promptText = 'Zena is checking if you need anything else...';
 
             (async () => {
               try {
+                zenaSpeakingRef.current = true; // Block timer while speaking
                 const buffer = await voiceInteractionService.speak(promptText);
                 liveAudioService.setMicMuted(true);
-                // TIMING FIX: Await the prompt finishing before starting the Stage 2 (5s) countdown
                 await liveAudioService.playBuffer(buffer);
-                console.log('[AskZena] Check-in prompt finished - Stage 2 countdown starting');
-                lastActivityRef.current = Date.now();
+                console.log('[AskZena] Check-in prompt finished - Stage 2 countdown starting NOW');
+                zenaSpeakingRef.current = false;
+                lastActivityRef.current = Date.now(); // Reset again after speaking finishes
                 liveAudioService.setMicMuted(false);
               } catch (err) {
                 console.error('[AskZena] Inactivity prompt failed:', err);
+                zenaSpeakingRef.current = false;
                 liveAudioService.setMicMuted(false);
                 lastActivityRef.current = Date.now();
               }
@@ -672,6 +709,76 @@ export const AskZenaPage: React.FC = () => {
     if (mode === 'handsfree') {
       setIsConversationMode(true);
       setShowVoiceRecorder(true);
+    }
+
+    // Strategy Session Mode - context-aware Zena Live from Deal Flow
+    if (mode === 'strategy-session' && !hasStrategySessionStartedRef.current) {
+      hasStrategySessionStartedRef.current = true; // Prevent double trigger from React Strict Mode
+      console.log('[AskZena] Strategy session mode DETECTED!');
+      try {
+        const contextJson = sessionStorage.getItem(STRATEGY_SESSION_KEY);
+        console.log('[AskZena] SessionStorage context:', contextJson);
+        if (contextJson) {
+          const context: StrategySessionContext = JSON.parse(contextJson);
+          strategySessionContextRef.current = context;
+          console.log('[AskZena] Parsed strategy context:', context);
+
+          // Build conversational opener based on risk type
+          const opener = buildStrategyOpener(context);
+          console.log('[AskZena] Strategy opener:', opener);
+
+          // Add context message to chat first
+          setMessages([{
+            id: `strategy-context-${Date.now()}`,
+            role: 'assistant',
+            content: opener,
+            timestamp: new Date()
+          }]);
+
+          // Pin the deal address as context - this shows at the top!
+          const pinnedText = `${context.address} • ${context.stageLabel} • ${context.healthScore}% health`;
+          console.log('[AskZena] Setting pinned context:', pinnedText);
+          setPinnedContext(pinnedText);
+
+          // Switch to assistant mode so the chat is visible!
+          setAvatarMode('assistant');
+
+          // Start Live Mode (for voice listening after Zena speaks)
+          setIsConversationMode(true);
+
+          // Auto-submit a strategy request so Zena immediately provides advice
+          // The API response will be spoken via the submitQuery flow
+          setTimeout(() => {
+            console.log('[AskZena] Auto-submitting strategy request for immediate advice...');
+            submitQuery('Give me your strategy and action plan for this deal. What should I do first?');
+          }, 500);
+
+          // Clear sessionStorage to prevent re-trigger on refresh
+          sessionStorage.removeItem(STRATEGY_SESSION_KEY);
+
+          // Clear URL params
+          setSearchParams({}, { replace: true });
+        } else {
+          // No context found - fallback to normal conversation
+          console.warn('[AskZena] Strategy session mode but no context found - starting normal conversation');
+          setMessages([{
+            id: `fallback-${Date.now()}`,
+            role: 'assistant',
+            content: "Hey, it looks like I lost the deal context. What deal would you like to discuss?",
+            timestamp: new Date()
+          }]);
+          setSearchParams({}, { replace: true });
+        }
+      } catch (err) {
+        console.error('[AskZena] Failed to parse strategy session context:', err);
+        setMessages([{
+          id: `error-${Date.now()}`,
+          role: 'assistant',
+          content: "Hey, I had trouble loading the deal details. What deal would you like to discuss?",
+          timestamp: new Date()
+        }]);
+        setSearchParams({}, { replace: true });
+      }
     }
 
     if (prompt && !hasAutoSubmitted.current) {
@@ -865,12 +972,42 @@ export const AskZenaPage: React.FC = () => {
     setDissolvePhase('dissolving');
 
     console.log('[AskZena] State updated, starting API call...');
+
+    // Build strategy context as a system message for conversation history
+    const strategyContext = strategySessionContextRef.current;
+    let conversationHistoryWithContext = messages.slice(-20).map(m => ({ role: m.role, content: m.content }));
+
+    if (strategyContext) {
+      // Prepend a system message with deal context (invisible to UI, visible to AI)
+      const systemContextMessage = {
+        role: 'system' as const,
+        content: `[STRATEGY SESSION - DEAL CONTEXT]
+You are helping the user strategize on a specific real estate deal. Here are the details:
+- Property: ${strategyContext.address}
+- Stage: ${strategyContext.stageLabel}
+- Days in Stage: ${strategyContext.daysInStage}
+- Health Score: ${strategyContext.healthScore}%
+- Health Status: ${strategyContext.healthStatus}
+- Primary Risk: ${strategyContext.primaryRisk}
+- Risk Type: ${strategyContext.riskType}
+- Coaching Insight: ${strategyContext.coachingInsight}
+${strategyContext.suggestedAction ? `- Suggested Action: ${strategyContext.suggestedAction}` : ''}
+${strategyContext.contactName ? `- Primary Contact: ${strategyContext.contactName}` : ''}
+${strategyContext.dealValue ? `- Deal Value: $${strategyContext.dealValue.toLocaleString()}` : ''}
+
+Provide specific, actionable coaching advice for THIS deal. Reference the property by name. Be conversational and strategic. The user has already been informed about the deal; dive straight into advice and solutions.`
+      };
+      conversationHistoryWithContext = [systemContextMessage, ...conversationHistoryWithContext];
+      console.log('[AskZena] Including strategy context as system message for:', strategyContext.address);
+    }
+
     try {
       const response = await api.post<{ response: string; messageId: string; suggestedActions?: string[] }>('/api/ask', {
-        query: queryText,
+        query: queryText, // User's actual query - no prepended context!
         conversationId: convId,
         attachments: attachmentData,
-        conversationHistory: messages.slice(-20).map(m => ({ role: m.role, content: m.content }))
+        conversationHistory: conversationHistoryWithContext,
+        strategyContext: strategyContext || undefined
       });
 
       const fullContent = response.data.response;
@@ -886,20 +1023,59 @@ export const AskZenaPage: React.FC = () => {
 
       setIsLoading(false);
 
-      // Transition to Assistant mode ONLY when the response arrives
-      console.log('[AskZena] Transitioning to Assistant mode layout...');
-
-      setAvatarMode('assistant');
+      // Transition to Assistant mode ONLY when the response arrives if not in Live Mode
+      if (!isConversationMode) {
+        console.log('[AskZena] Transitioning to Assistant mode layout...');
+        setAvatarMode('assistant');
+      }
 
       // Ensure we are in speaking phase for the dissolve system
       console.log('[AskZena] Setting dissolvePhase to speaking...');
       setDissolvePhase('speaking');
 
-      // (User requested mute for written responses)
-      // playTTS(fullContent);
+      // Speak the response if in Live Mode (Hybrid Strategy Session) or if this is a strategy session
+      const shouldSpeak = isConversationMode || strategySessionContextRef.current;
+      if (shouldSpeak) {
+        try {
+          console.log('[AskZena] Speaking response in Live/Strategy Mode...');
 
-      // Simulate real-time word-by-word streaming in the chat bubble
-      await simulateStreamingResponse(fullContent, chips);
+          // SIGNAL ACTIVITY: Zena is starting to speak
+          zenaSpeakingRef.current = true;
+          updateActivity(false, 'strategy-response-start', false);
+
+          const buffer = await voiceInteractionService.speak(fullContent);
+          liveAudioService.setMicMuted(true);
+
+          // Run TTS playback and text streaming CONCURRENTLY so user sees text while hearing voice
+          await Promise.all([
+            liveAudioService.playBuffer(buffer),
+            simulateStreamingResponse(fullContent, chips)
+          ]);
+
+          liveAudioService.setMicMuted(false);
+
+          // SIGNAL ACTIVITY: Zena finished speaking, reset inactivity timer
+          zenaSpeakingRef.current = false;
+          zenaHasRespondedRef.current = true; // Timer starts counting NOW
+          updateActivity(false, 'strategy-response-end', true);
+
+          // Re-enable voice listening after speaking finishes
+          setTimeout(() => {
+            if (isConversationMode) {
+              setShowVoiceRecorder(true);
+            }
+          }, 500);
+        } catch (err) {
+          console.error('[AskZena] Failed to speak response:', err);
+          zenaSpeakingRef.current = false;
+          liveAudioService.setMicMuted(false);
+        }
+      }
+
+      // For non-speaking mode, still do the streaming simulation
+      if (!shouldSpeak) {
+        await simulateStreamingResponse(fullContent, chips);
+      }
 
       // After streaming is done, add the final message to the list
       setMessages(prev => [...prev, assistantMessage]);
@@ -918,6 +1094,17 @@ export const AskZenaPage: React.FC = () => {
   const handleSubmit = (e?: React.FormEvent | React.KeyboardEvent) => {
     if (e) e.preventDefault();
     if (!inputValue.trim() || isLoading) return;
+
+    // Manual Barge-In: If user types while Zena is talking or Live Mode is active
+    if (isSpeaking || isConversationMode) {
+      console.log('[AskZena] Text barge-in detected. Stopping current audio/response.');
+      stopSpeaking();
+      liveAudioService.clearPlayback();
+      // Signal backend that user interrupted via text if in Live Mode
+      if (isConversationMode) {
+        realTimeDataService.sendMessage('voice.live.interrupted');
+      }
+    }
 
     console.log('[AskZena] Submitting query:', inputValue);
     submitQuery(inputValue);
@@ -945,6 +1132,9 @@ export const AskZenaPage: React.FC = () => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   handleSubmit(e);
+                } else if (e.key === 'Escape') {
+                  stopSpeaking();
+                  liveAudioService.clearPlayback();
                 }
               }}
               placeholder="Ask Zena anything..."
@@ -991,6 +1181,27 @@ export const AskZenaPage: React.FC = () => {
         </div>
         {error && <div className="error-toast">{error}</div>}
       </form>
+
+      {/* Starter Prompts - Only show in Hero mode when not typing and not in strategy session */}
+      {!inputValue && avatarMode === 'hero' && !isLoading && !strategySessionContextRef.current && (
+        <div className="starter-prompts-container">
+          {STARTER_PROMPTS.map((starter, idx) => (
+            <button
+              key={idx}
+              className="starter-prompt-btn"
+              type="button"
+              onClick={() => {
+                setIsConversationMode(true);
+                // Small delay to ensure live mode starts before the query
+                setTimeout(() => submitQuery(starter.prompt), 100);
+              }}
+            >
+              <span className="starter-icon">{starter.icon}</span>
+              <span className="starter-label">{starter.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 
@@ -1033,7 +1244,7 @@ export const AskZenaPage: React.FC = () => {
         onDeleteConversation={handleDeleteConversation}
       />
 
-      <main className={`ask-zena-main ${avatarMode === 'hero' ? 'hero-mode' : 'assistant-mode'}`}>
+      <main className={`ask-zena-main ${avatarMode === 'hero' ? 'hero-mode' : 'assistant-mode'} ${isConversationMode ? 'live-active' : ''}`}>
         <PinnedContextBar
           contextText={pinnedContext}
           onClear={() => setPinnedContext(null)}

@@ -2,7 +2,7 @@
 > @zena/backend@1.0.0 dev
 > tsx watch src/index.ts
 
-9:07:31 AM [tsx] rerunning
+2:57:01 PM [tsx] rerunning
 c[AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
 [AskZenaService] Initializing...
 [AskZenaService] OPENAI_API_KEY set: false
@@ -13,8 +13,27 @@ Starting sync engine...
 Sync engine started (interval: 60s)
 Starting calendar sync engine...
 Calendar sync engine started (interval: 600s)
-{"timestamp":"2025-12-20T20:07:31.989Z","level":"info","message":"Server started","context":{"port":"3001","environment":"development","nodeVersion":"v25.2.1","databaseConfigured":true}}
-{"timestamp":"2025-12-20T20:07:31.990Z","level":"info","message":"WebSocket server initialized","context":{"endpoint":"ws://localhost:3001/ws"}}
+[DealScheduler] Starting scheduler...
+[DealScheduler] Scheduler started
+{"timestamp":"2025-12-24T01:57:01.792Z","level":"info","message":"Server started","context":{"port":"3001","environment":"development","nodeVersion":"v25.2.1","databaseConfigured":true}}
+{"timestamp":"2025-12-24T01:57:01.793Z","level":"info","message":"WebSocket server initialized","context":{"endpoint":"ws://localhost:3001/ws"}}
 Found 0 calendar accounts to sync
-Found 0 accounts to sync
-No valid accounts to sync
+Found 2 accounts to sync
+Starting sync for account e6c5ace9-5b2c-4ba4-8390-e0456376092c (gmail)
+Starting sync for account 52dee2cc-d13d-4220-afce-e2cc10a095c4 (gmail)
+Sync error for account e6c5ace9-5b2c-4ba4-8390-e0456376092c: Error: ENCRYPTION_KEY environment variable is not set
+    at getEncryptionKey (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/utils/encryption.ts:14:11)
+    at decryptToken (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/utils/encryption.ts:48:15)
+    at EmailAccountService.getEmailAccountById (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/email-account.service.ts:98:20)
+    at EmailAccountService.getValidAccessToken (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/email-account.service.ts:169:21)
+    at SyncEngineService.syncAccount (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/sync-engine.service.ts:180:27)
+    at async Promise.allSettled (index 0)
+    at SyncEngineService.syncAllAccounts (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/sync-engine.service.ts:121:23)
+Sync error for account 52dee2cc-d13d-4220-afce-e2cc10a095c4: Error: ENCRYPTION_KEY environment variable is not set
+    at getEncryptionKey (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/utils/encryption.ts:14:11)
+    at decryptToken (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/utils/encryption.ts:48:15)
+    at EmailAccountService.getEmailAccountById (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/email-account.service.ts:98:20)
+    at EmailAccountService.getValidAccessToken (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/email-account.service.ts:169:21)
+    at SyncEngineService.syncAccount (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/sync-engine.service.ts:180:27)
+    at async Promise.allSettled (index 1)
+    at SyncEngineService.syncAllAccounts (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/sync-engine.service.ts:121:23)

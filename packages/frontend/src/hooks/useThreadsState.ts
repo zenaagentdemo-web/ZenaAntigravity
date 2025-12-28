@@ -56,17 +56,20 @@ function sortThreadsByPriority(threads: Thread[]): Thread[] {
 
 /**
  * Hook for managing thread state with caching and real-time updates
+ * @param options - Hook options
+ * @param options.filter - Category filter ('focus' | 'waiting' | 'all')
  */
-export function useThreadsState(): UseThreadsStateReturn {
+export function useThreadsState(options: { filter?: 'focus' | 'waiting' | 'all' } = {}): UseThreadsStateReturn {
+  const { filter = 'all' } = options;
   const [threads, setThreads] = useState<Thread[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [newThreadsCount, setNewThreadsCount] = useState(0);
-  
+
   // Store pending new threads
   const pendingThreadsRef = useRef<Thread[]>([]);
-  
+
   // Cache reference
   const cacheRef = useRef<ThreadCache | null>(null);
 
@@ -75,21 +78,23 @@ export function useThreadsState(): UseThreadsStateReturn {
    */
   const fetchThreads = useCallback(async (): Promise<Thread[]> => {
     try {
-      // Use the same endpoint as FocusPage: /api/threads?filter=focus
-      const response = await api.get<{ threads: Thread[] }>('/api/threads?filter=focus');
+      // Use the specified filter in the API call
+      // If filter is 'all', we don't send the filter param to get everything
+      const filterParam = filter === 'all' ? '' : `?filter=${filter}`;
+      const response = await api.get<{ threads: Thread[] }>(`/api/threads${filterParam}`);
       const threadsData = response.data.threads || [];
-      
+
       // Calculate priority scores for threads that don't have them
       const threadsWithScores = threadsData.map(thread => ({
         ...thread,
         priorityScore: thread.priorityScore ?? calculatePriorityScore(thread).score
       }));
-      
+
       return sortThreadsByPriority(threadsWithScores);
     } catch (err) {
       throw err instanceof Error ? err : new Error('Failed to fetch threads');
     }
-  }, []);
+  }, [filter]);
 
   /**
    * Refresh threads from the server
@@ -97,16 +102,16 @@ export function useThreadsState(): UseThreadsStateReturn {
   const refresh = useCallback(async (): Promise<void> => {
     setSyncStatus('syncing');
     setError(null);
-    
+
     try {
       const fetchedThreads = await fetchThreads();
-      
+
       // Update cache
       cacheRef.current = {
         threads: fetchedThreads,
         timestamp: Date.now()
       };
-      
+
       setThreads(fetchedThreads);
       setSyncStatus('idle');
       setNewThreadsCount(0);
@@ -137,12 +142,12 @@ export function useThreadsState(): UseThreadsStateReturn {
         }
         return thread;
       });
-      
+
       // Re-sort if priority might have changed
       if (updates.riskLevel || updates.classification || updates.lastMessageAt || updates.priorityScore) {
         return sortThreadsByPriority(updatedThreads);
       }
-      
+
       return updatedThreads;
     });
   }, []);
@@ -151,7 +156,7 @@ export function useThreadsState(): UseThreadsStateReturn {
    * Remove a thread from the list
    */
   const removeThread = useCallback((threadId: string): void => {
-    setThreads(currentThreads => 
+    setThreads(currentThreads =>
       currentThreads.filter(thread => thread.id !== threadId)
     );
   }, []);
@@ -162,19 +167,19 @@ export function useThreadsState(): UseThreadsStateReturn {
    */
   const mergeNewThreads = useCallback((): void => {
     if (pendingThreadsRef.current.length === 0) return;
-    
+
     setThreads(currentThreads => {
       // Add priority scores to new threads
       const newThreadsWithScores = pendingThreadsRef.current.map(thread => ({
         ...thread,
         priorityScore: thread.priorityScore ?? calculatePriorityScore(thread).score
       }));
-      
+
       // Merge and sort
       const mergedThreads = [...currentThreads, ...newThreadsWithScores];
       return sortThreadsByPriority(mergedThreads);
     });
-    
+
     // Clear pending threads
     pendingThreadsRef.current = [];
     setNewThreadsCount(0);
@@ -201,7 +206,7 @@ export function useThreadsState(): UseThreadsStateReturn {
       setIsLoading(false);
       return;
     }
-    
+
     refresh();
   }, [refresh]);
 
@@ -211,19 +216,19 @@ export function useThreadsState(): UseThreadsStateReturn {
       setSyncStatus('idle');
       refresh();
     };
-    
+
     const handleOffline = () => {
       setSyncStatus('offline');
     };
-    
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     // Set initial offline status
     if (!navigator.onLine) {
       setSyncStatus('offline');
     }
-    
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);

@@ -1,0 +1,1154 @@
+/**
+ * HighTechDashboard Component Styles
+ * 
+ * AI-centric dashboard layout with futuristic high-tech aesthetic.
+ * Features central Zena orb, floating metrics, glassmorphism panels.
+ * 
+ * Requirements: 1.1, 1.2, 2.1, 2.3, 3.1
+ */
+
+/* ============================================
+   Dashboard Container
+   ============================================ */
+
+.high-tech-dashboard {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(180deg,
+      var(--bg-primary) 0%,
+      var(--bg-secondary) 50%,
+      var(--bg-tertiary) 100%);
+  color: var(--text-primary-ht);
+  overflow-x: hidden;
+  padding-bottom: 100px;
+  /* Space for bottom navigation */
+}
+
+/* ============================================
+   Ambient Background Effects
+   ============================================ */
+
+.high-tech-dashboard__ambient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ambient-gradient {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 20%,
+      var(--neon-cyan-subtle) 0%,
+      transparent 40%),
+    radial-gradient(ellipse at 70% 80%,
+      var(--neon-magenta-subtle) 0%,
+      transparent 40%),
+    radial-gradient(ellipse at 50% 50%,
+      var(--neon-purple-subtle) 0%,
+      transparent 50%);
+  animation: ambient-shift 20s ease-in-out infinite;
+  opacity: 0.5;
+}
+
+@keyframes ambient-shift {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  25% {
+    transform: translate(5%, 5%) rotate(2deg);
+  }
+
+  50% {
+    transform: translate(-5%, 10%) rotate(-2deg);
+  }
+
+  75% {
+    transform: translate(10%, -5%) rotate(1deg);
+  }
+}
+
+.ambient-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, var(--neon-cyan-dim), transparent),
+    radial-gradient(2px 2px at 40% 70%, var(--neon-magenta-dim), transparent),
+    radial-gradient(1px 1px at 60% 20%, var(--neon-purple-dim), transparent),
+    radial-gradient(1px 1px at 80% 60%, var(--neon-cyan-dim), transparent),
+    radial-gradient(2px 2px at 10% 80%, var(--neon-magenta-dim), transparent),
+    radial-gradient(1px 1px at 90% 40%, var(--neon-purple-dim), transparent);
+  background-size: 100% 100%;
+  animation: particle-float 30s linear infinite;
+  opacity: 0.3;
+}
+
+@keyframes particle-float {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+/* ============================================
+   Header Bar
+   ============================================ */
+
+.high-tech-dashboard__header {
+  position: relative;
+  z-index: 10;
+  padding: var(--spacing-4, 16px) var(--spacing-6, 24px);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: var(--border-glow);
+}
+
+@supports not (backdrop-filter: blur(20px)) {
+  .high-tech-dashboard__header {
+    background: var(--glass-fallback-bg);
+  }
+}
+
+.high-tech-dashboard__title {
+  font-size: var(--font-size-lg, 18px);
+  font-weight: 600;
+  text-align: center;
+  margin: 0;
+  color: var(--text-secondary-ht);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.title-glow {
+  color: var(--neon-cyan);
+  text-shadow: var(--text-glow);
+  font-weight: 700;
+}
+
+/* ============================================
+   Main Content Area
+   ============================================ */
+
+.high-tech-dashboard__content {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6, 24px);
+  padding: var(--spacing-6, 24px);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   Dashboard Grid Layout
+   ============================================ */
+@media (min-width: 1024px) {
+  .high-tech-dashboard__content {
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: var(--spacing-8, 32px);
+    align-items: start;
+  }
+
+  .high-tech-dashboard__hero {
+    grid-column: 1 / -1;
+  }
+
+  .dashboard-col-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6, 24px);
+  }
+
+  .dashboard-col-side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6, 24px);
+    position: sticky;
+    top: 100px;
+  }
+}
+
+/* ============================================
+   Hero Section - Central Zena Orb
+   ============================================ */
+
+.high-tech-dashboard__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-6, 24px);
+  padding: var(--spacing-8, 32px) 0;
+}
+
+/* ============================================
+   Zena Container with Hint
+   ============================================ */
+
+.high-tech-dashboard__zena-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-3, 12px);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* Hover effects - enlarge and glow */
+.high-tech-dashboard__zena-container:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.7));
+}
+
+.high-tech-dashboard__zena-container:active {
+  transform: scale(1.05);
+}
+
+/* Pulsating ring around avatar */
+.high-tech-dashboard__zena-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 220px;
+  height: 220px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid rgba(0, 229, 255, 0.5);
+  animation: dashboard-pulse-ring 2s ease-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Second pulsating ring with delay */
+.high-tech-dashboard__zena-container::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 220px;
+  height: 220px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 0, 255, 0.4);
+  animation: dashboard-pulse-ring 2s ease-out infinite 0.5s;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes dashboard-pulse-ring {
+  0% {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+.high-tech-dashboard__zena-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-1, 4px);
+  animation: hint-pulse 2s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+.zena-hint__text {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 10px var(--neon-cyan-dim);
+}
+
+.zena-hint__arrow {
+  font-size: var(--font-size-lg, 18px);
+  color: var(--neon-cyan);
+  animation: hint-bounce 1s ease-in-out infinite;
+  text-shadow: 0 0 10px var(--neon-cyan-dim);
+}
+
+@keyframes hint-pulse {
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes hint-bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* ============================================
+   Quick Intelligence Actions
+   ============================================ */
+
+.high-tech-dashboard__quick-intel {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: var(--spacing-4, 16px);
+  width: 100%;
+  margin-top: var(--spacing-2, 8px);
+  flex-wrap: nowrap;
+  z-index: 100;
+  overflow-x: auto;
+  padding: var(--spacing-2, 8px) 0;
+  scrollbar-width: none;
+}
+
+.high-tech-dashboard__quick-intel::-webkit-scrollbar {
+  display: none;
+}
+
+.intel-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-3, 12px);
+  background: var(--glass-bg-accent, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  border-radius: 12px;
+  padding: var(--spacing-3, 12px) var(--spacing-5, 20px);
+  min-width: 160px;
+  color: var(--text-primary-ht);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.intel-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--neon-cyan);
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.intel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(0, 243, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 243, 255, 0.15);
+}
+
+.intel-btn:hover::before {
+  opacity: 1;
+}
+
+.intel-btn__icon {
+  font-size: 1.4rem;
+  transition: transform 0.3s ease;
+}
+
+.intel-btn:hover .intel-btn__icon {
+  transform: scale(1.1);
+}
+
+.intel-btn__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary-ht);
+  transition: color 0.3s ease;
+}
+
+.intel-btn:hover .intel-btn__label {
+  color: var(--neon-cyan);
+}
+
+/* Neon accents for each button */
+.intel-btn--emails:hover {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+.intel-btn--emails::before {
+  background: var(--neon-cyan);
+}
+
+.intel-btn--brief:hover {
+  border-color: var(--neon-magenta);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+}
+
+.intel-btn--brief::before {
+  background: var(--neon-magenta);
+}
+
+.intel-btn--tasks:hover {
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 20px rgba(128, 0, 255, 0.2);
+}
+
+.intel-btn--tasks::before {
+  background: var(--neon-purple);
+}
+
+@media (max-width: 600px) {
+  .high-tech-dashboard__quick-intel {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-3, 12px);
+  }
+
+  .intel-btn {
+    width: 100%;
+    max-width: 320px;
+    flex-direction: row;
+    justify-content: center;
+    min-width: unset;
+  }
+}
+
+/* ============================================
+   Start Zena Live Button
+   ============================================ */
+
+.high-tech-dashboard__live-button-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: var(--spacing-4, 16px) 0;
+}
+
+.zena-live-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3, 12px);
+  padding: 14px 28px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border: 2px solid rgba(0, 212, 255, 0.5);
+  border-radius: 50px;
+  color: var(--text-primary-ht, #fff);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 0 20px rgba(0, 212, 255, 0.2),
+    inset 0 0 20px rgba(0, 212, 255, 0.05);
+}
+
+/* Animated Wave Icon */
+.zena-live-button__wave-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 24px;
+}
+
+.zena-live-button__wave-icon .wave-bar {
+  width: 3px;
+  height: 8px;
+  background: var(--neon-cyan, #00d4ff);
+  border-radius: 2px;
+  animation: wave-animation 1s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(0, 212, 255, 0.6);
+}
+
+.zena-live-button__wave-icon .wave-bar:nth-child(1) {
+  height: 8px;
+}
+
+.zena-live-button__wave-icon .wave-bar:nth-child(2) {
+  height: 14px;
+}
+
+.zena-live-button__wave-icon .wave-bar:nth-child(3) {
+  height: 20px;
+}
+
+.zena-live-button__wave-icon .wave-bar:nth-child(4) {
+  height: 14px;
+}
+
+.zena-live-button__wave-icon .wave-bar:nth-child(5) {
+  height: 8px;
+}
+
+@keyframes wave-animation {
+
+  0%,
+  100% {
+    transform: scaleY(0.5);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+.zena-live-button__text {
+  text-transform: uppercase;
+}
+
+.zena-live-button__badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  background: linear-gradient(135deg, var(--neon-cyan, #00d4ff) 0%, var(--neon-purple, #8b5cf6) 100%);
+  border-radius: 10px;
+  color: #000;
+  letter-spacing: 0.1em;
+}
+
+/* Hover state */
+.zena-live-button:hover {
+  transform: translateY(-3px) scale(1.02);
+  border-color: var(--neon-cyan, #00d4ff);
+  box-shadow:
+    0 0 30px rgba(0, 212, 255, 0.4),
+    0 10px 40px rgba(0, 212, 255, 0.2),
+    inset 0 0 30px rgba(0, 212, 255, 0.1);
+}
+
+.zena-live-button:hover .zena-live-button__icon {
+  animation: none;
+  transform: scale(1.2);
+}
+
+/* Active state */
+.zena-live-button:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .zena-live-button {
+    padding: 12px 24px;
+    font-size: 14px;
+    gap: var(--spacing-2, 8px);
+  }
+
+  .zena-live-button__badge {
+    font-size: 8px;
+    padding: 2px 6px;
+  }
+}
+
+.high-tech-dashboard__weather .weather-time-widget__time-section {
+  display: flex;
+  align-items: center;
+  padding-right: 8px;
+  margin-right: 8px;
+  border-right: 1px solid rgba(0, 212, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__time {
+  font-size: 14px !important;
+  font-weight: 600;
+  color: var(--text-primary-ht);
+  text-shadow: 0 0 6px var(--neon-cyan-dim);
+  white-space: nowrap;
+  min-width: auto !important;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__weather-section {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 1;
+  position: static !important;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__weather {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin: 0;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__weather-icon {
+  font-size: 16px;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__temperature {
+  font-size: 14px !important;
+  font-weight: 600;
+  color: var(--neon-cyan, #00d4ff);
+  white-space: nowrap;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__location {
+  font-size: 9px;
+  color: var(--text-tertiary-ht);
+  margin: 0;
+  white-space: nowrap;
+  opacity: 0.6;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__details {
+  display: flex;
+  gap: 6px;
+  font-size: 9px;
+  color: var(--text-tertiary-ht);
+  margin: 0;
+  opacity: 0.6;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__detail {
+  white-space: nowrap;
+}
+
+/* Tips button - compact pill on right */
+.high-tech-dashboard__weather .weather-time-widget__recommendations-wrapper {
+  position: relative;
+  margin-left: auto;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+  width: auto !important;
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__recommendations-toggle {
+  display: flex !important;
+  align-items: center;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  border-radius: 10px;
+  color: var(--neon-cyan, #00d4ff);
+  font-size: 9px;
+  padding: 2px 6px;
+  gap: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  pointer-events: auto !important;
+  z-index: 101;
+  position: relative;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__recommendations-toggle:hover {
+  background: rgba(0, 212, 255, 0.18);
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.25);
+}
+
+.high-tech-dashboard__weather .weather-time-widget__toggle-icon {
+  font-size: 10px;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__toggle-text {
+  color: var(--text-secondary-ht);
+  font-size: 9px;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__toggle-chevron {
+  color: var(--neon-cyan, #00d4ff);
+  font-size: 7px;
+  transition: transform 0.2s ease;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__toggle-chevron--up {
+  transform: rotate(180deg);
+}
+
+/* Dropdown panel - floating absolute (hidden by default) */
+.high-tech-dashboard__weather .weather-time-widget__recommendations {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: auto;
+  margin-top: 4px;
+  padding: 6px;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+  max-width: 260px;
+  width: max-content;
+  background: rgba(8, 12, 24, 0.97);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 212, 255, 0.12);
+  z-index: 1000;
+  animation: none;
+}
+
+/* Hide dropdown by default - use visibility for better control */
+.high-tech-dashboard__weather .weather-time-widget__recommendations:not(.weather-time-widget__recommendations--expanded) {
+  display: none;
+}
+
+/* CRITICAL: Show dropdown when expanded - high specificity to override base styles */
+.high-tech-dashboard__weather .weather-time-widget .weather-time-widget__recommendations-wrapper .weather-time-widget__recommendations.weather-time-widget__recommendations--expanded,
+.high-tech-dashboard__weather .weather-time-widget__recommendations.weather-time-widget__recommendations--expanded {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  right: 0 !important;
+  left: auto !important;
+  width: max-content !important;
+  min-width: 200px !important;
+  max-width: 260px !important;
+  background: rgba(8, 12, 24, 0.97) !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 212, 255, 0.12) !important;
+  z-index: 1000 !important;
+  padding: 6px !important;
+  margin-top: 0 !important;
+  border-top: 1px solid rgba(0, 212, 255, 0.3) !important;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__recommendation {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 5px 7px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+  border-left: 2px solid var(--neon-cyan);
+  transition: all 0.12s ease;
+  animation: none !important;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__recommendation:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: none;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__recommendation--high {
+  border-left-color: var(--status-urgent, #ff6b6b);
+  background: rgba(255, 107, 107, 0.08);
+}
+
+.high-tech-dashboard__weather .weather-time-widget__recommendation--medium {
+  border-left-color: var(--status-warning, #ffc107);
+  background: rgba(255, 193, 7, 0.06);
+}
+
+.high-tech-dashboard__weather .weather-time-widget__recommendation--low {
+  border-left-color: var(--neon-green, #00ff88);
+  background: rgba(0, 255, 136, 0.05);
+}
+
+.high-tech-dashboard__weather .weather-time-widget__recommendation-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__recommendation-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__recommendation-reason {
+  font-size: 9px;
+  color: var(--neon-cyan, #00d4ff);
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__recommendation-text {
+  font-size: 10px;
+  color: var(--text-secondary-ht);
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__alert {
+  display: none !important;
+}
+
+/* Loading/error states compact */
+.high-tech-dashboard__weather .weather-time-widget__loading,
+.high-tech-dashboard__weather .weather-time-widget__error {
+  padding: 2px 6px;
+  font-size: 10px;
+}
+
+.high-tech-dashboard__weather .weather-time-widget__loading-spinner {
+  width: 12px;
+  height: 12px;
+}
+
+/* ============================================
+   Metrics Section
+   ============================================ */
+
+.high-tech-dashboard__metrics {
+  padding: var(--spacing-4, 16px) 0;
+}
+
+/* ============================================
+   Alerts Section
+   ============================================ */
+
+.high-tech-dashboard__alerts {
+  padding: var(--spacing-2, 8px) 0;
+}
+
+/* ============================================
+   Quick Actions Section
+   ============================================ */
+
+.high-tech-dashboard__actions {
+  padding: var(--spacing-4, 16px) 0;
+}
+
+/* ============================================
+   Calendar Widget Section - High-Tech Style
+   ============================================ */
+
+.high-tech-dashboard__calendar {
+  padding: var(--spacing-3, 12px) 0;
+}
+
+.high-tech-dashboard__calendar .calendar-widget {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.03) 0%, rgba(139, 92, 246, 0.03) 100%);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 12px;
+  padding: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.high-tech-dashboard__calendar .calendar-widget::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan, #00d4ff), transparent);
+  opacity: 0.6;
+}
+
+.high-tech-dashboard__calendar .calendar-widget__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.high-tech-dashboard__calendar .calendar-widget__title {
+  color: var(--neon-cyan, #00d4ff);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin: 0;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+.high-tech-dashboard__calendar .appointment-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.high-tech-dashboard__calendar .appointment-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
+  background: var(--neon-cyan, #00d4ff);
+  opacity: 0.8;
+}
+
+.high-tech-dashboard__calendar .appointment-item:hover {
+  background: rgba(0, 212, 255, 0.06);
+  border-color: rgba(0, 212, 255, 0.25);
+  transform: translateX(4px);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+}
+
+.high-tech-dashboard__calendar .appointment-item--urgent::before {
+  background: linear-gradient(180deg, #ff6b6b, #ff4757);
+  box-shadow: 0 0 8px rgba(255, 107, 107, 0.5);
+  animation: urgentPulse 2s ease-in-out infinite;
+}
+
+.high-tech-dashboard__calendar .appointment-item--medium::before {
+  background: linear-gradient(180deg, #ffc107, #ff9800);
+}
+
+.high-tech-dashboard__calendar .appointment-item--low::before {
+  background: linear-gradient(180deg, #00ff88, #00d4ff);
+}
+
+@keyframes urgentPulse {
+
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(255, 107, 107, 0.7);
+  }
+}
+
+.high-tech-dashboard__calendar .appointment-item__time {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--neon-cyan, #00d4ff);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.high-tech-dashboard__calendar .appointment-item__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary-ht, #fff);
+  margin: 2px 0;
+}
+
+.high-tech-dashboard__calendar .appointment-item__location {
+  font-size: 11px;
+  color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.5));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.high-tech-dashboard__calendar .appointment-item__type-icon {
+  font-size: 14px;
+  margin-right: 6px;
+}
+
+/* ============================================
+   Recent Activity Section - High-Tech Style
+   ============================================ */
+
+.high-tech-dashboard__activity {
+  padding: var(--spacing-3, 12px) 0;
+}
+
+.high-tech-dashboard__activity .recent-activity-stream {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(236, 72, 153, 0.03) 100%);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 12px;
+  padding: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.high-tech-dashboard__activity .recent-activity-stream::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-purple, #8b5cf6), transparent);
+  opacity: 0.6;
+}
+
+.high-tech-dashboard__activity .recent-activity-stream__title {
+  color: var(--neon-purple, #8b5cf6);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin: 0 0 12px 0;
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
+.high-tech-dashboard__activity .activity-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.high-tech-dashboard__activity .activity-item:hover {
+  background: rgba(139, 92, 246, 0.06);
+  border-color: rgba(139, 92, 246, 0.25);
+  transform: translateX(4px);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+.high-tech-dashboard__activity .activity-item__icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.high-tech-dashboard__activity .activity-item__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.high-tech-dashboard__activity .activity-item__description {
+  font-size: 12px;
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.8));
+  line-height: 1.4;
+  margin: 0;
+}
+
+.high-tech-dashboard__activity .activity-item__time {
+  font-size: 10px;
+  color: var(--neon-purple, #8b5cf6);
+  font-weight: 500;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.high-tech-dashboard__activity .activity-item__time::before {
+  content: '●';
+  font-size: 6px;
+  opacity: 0.6;
+}
+
+/* Activity type-specific colors */
+.high-tech-dashboard__activity .activity-item[data-type="email"] .activity-item__icon {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.2);
+}
+
+.high-tech-dashboard__activity .activity-item[data-type="deal_update"] .activity-item__icon {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: rgba(0, 255, 136, 0.2);
+}
+
+.high-tech-dashboard__activity .activity-item[data-type="voice_note"] .activity-item__icon {
+  background: rgba(236, 72, 153, 0.1);
+  border-color: rgba(236, 72, 153, 0.2);
+}
+
+/* Empty state styling */
+.high-tech-dashboard__calendar .calendar-widget__empty,
+.high-tech-dashboard__activity .recent-activity-stream__empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.4));
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (min-width: 768px) {
+  .high-tech-dashboard__content {
+    max-width: 800px;
+    padding: var(--spacing-8, 32px);
+  }
+
+  .high-tech-dashboard__hero {
+    padding: var(--spacing-12, 48px) 0;
+  }
+
+  .greeting-text {
+    font-size: var(--font-size-2xl, 24px);
+  }
+
+  .status-text {
+    font-size: var(--font-size-base, 16px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .high-tech-dashboard__content {
+    max-width: 1000px;
+  }
+}
+
+/* ============================================
+   Reduced Motion Support
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ambient-gradient,
+  .ambient-particles {
+    animation: none !important;
+  }
+}

@@ -42,10 +42,14 @@ import { Portal } from '../../components/Portal/Portal';
 import { BatchAction, FilterOption, SnoozeOptions } from '../../models/newPage.types';
 import './NewPage.css';
 
+interface NewPageProps {
+  filterMode?: 'focus' | 'waiting' | 'all';
+}
+
 /**
  * NewPage - Enhanced thread management page
  */
-export const NewPage: React.FC = () => {
+export const NewPage: React.FC<NewPageProps> = ({ filterMode = 'focus' }) => {
   const navigate = useNavigate();
 
   // Thread state management
@@ -58,7 +62,7 @@ export const NewPage: React.FC = () => {
     refresh,
     removeThread,
     mergeNewThreads
-  } = useThreadsState();
+  } = useThreadsState({ filter: filterMode });
 
   // Reference for pull-to-refresh container
   const threadListRef = useRef<HTMLDivElement>(null);
@@ -71,7 +75,8 @@ export const NewPage: React.FC = () => {
     openSnoozeOverlay,
     closeSnoozeOverlay,
     dismissToast,
-    getThreadAnimation
+    getThreadAnimation,
+    addToast
   } = useThreadActions(removeThread);
 
   // Filter state management
@@ -233,13 +238,46 @@ export const NewPage: React.FC = () => {
   }, []);
 
   // Handle batch actions
-  const handleBatchAction = useCallback((action: BatchAction) => {
-    // In a real app, these would call the actual batch API
-    console.log(`Executing batch action: ${action} on ${selectedIds.size} threads`);
+  const handleBatchAction = useCallback(async (action: BatchAction) => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
 
-    // Simulate success
-    exitBatchMode();
-  }, [exitBatchMode, selectedIds]);
+    console.log(`Executing batch action: ${action} on ${ids.length} threads`);
+
+    try {
+      // For archive/delete/mark_read, we'll perform them in a simulated batch
+      // In a real app, this would be a single API call
+      let actionLabel = '';
+      switch (action) {
+        case 'archive_all':
+          ids.forEach(id => removeThread(id));
+          actionLabel = 'archived';
+          break;
+        case 'delete_all':
+          ids.forEach(id => removeThread(id));
+          actionLabel = 'deleted';
+          break;
+        case 'mark_read':
+          // Simulate marking read
+          actionLabel = 'marked as read';
+          break;
+        case 'snooze_all':
+          // For snooze, we might want to open a modal or just snooze for a default time
+          // Here we'll simulate a 4h snooze for simplicity
+          ids.forEach(id => removeThread(id));
+          actionLabel = 'snoozed';
+          break;
+      }
+
+      // Show success notification
+      addToast('success', `${ids.length} thread${ids.length === 1 ? '' : 's'} ${actionLabel}`);
+
+      // Exit batch mode
+      exitBatchMode();
+    } catch (error) {
+      console.error('Batch action failed:', error);
+    }
+  }, [exitBatchMode, selectedIds, removeThread]);
 
   // Handle refresh
   const handleRefresh = useCallback(async () => {
@@ -300,7 +338,7 @@ export const NewPage: React.FC = () => {
   }, [customFolders, activeFolderId, setFolderId]);
 
   // Render thread item for virtual list
-  const renderThreadItem = useCallback((thread: any, index: number) => {
+  const renderThreadItem = useCallback((thread: Thread, index: number) => {
     const animation = getThreadAnimation(thread.id);
     const animationClass = animation ? `thread-card--${animation}` : '';
 
@@ -475,6 +513,7 @@ export const NewPage: React.FC = () => {
           onFilterChange={setFilters}
           onViewFolders={handleViewFolders}
           onCreateFolder={handleCreateFolder}
+          title={filterMode === 'focus' ? 'New mail' : filterMode === 'waiting' ? 'Awaiting response' : 'All inbox'}
           activeFolderName={activeFolderId ? [...ALL_FOLDERS, ...customFolders].find(f => f.id === activeFolderId)?.name : undefined}
           onClearFolder={() => setFolderId(null)}
         />

@@ -1,0 +1,11 @@
+
+> @zena/frontend@1.0.0 dev
+> vite --port 5173 --force
+
+11:33:19 PM [vite] (client) Forced re-optimization of dependencies
+
+  VITE v7.2.7  ready in 188 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help

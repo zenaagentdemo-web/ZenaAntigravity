@@ -65,8 +65,8 @@ cp packages/frontend/.env.example packages/frontend/.env
 ```
 
 Edit `packages/frontend/.env` and set:
-- `VITE_API_URL` - Backend API URL (default: http://localhost:3000/api)
-- `VITE_WS_URL` - WebSocket URL (default: ws://localhost:3000)
+- `VITE_API_URL` - Backend API URL (default: http://localhost:3001/api)
+- `VITE_WS_URL` - WebSocket URL (default: ws://localhost:3001)
 
 **Backend:**
 ```bash
@@ -96,7 +96,7 @@ npm run dev
 
 **Option 2: Run separately**
 ```bash
-# Terminal 1 - Backend (http://localhost:3000)
+# Terminal 1 - Backend (http://localhost:3001)
 npm run dev --workspace=@zena/backend
 
 # Terminal 2 - Frontend (http://localhost:5173)
@@ -106,7 +106,7 @@ npm run dev --workspace=@zena/frontend
 ### 5. Verify Setup
 
 - Frontend: Open http://localhost:5173 in your browser
-- Backend: Open http://localhost:3000/health in your browser
+- Backend: Open http://localhost:3001/health in your browser
 
 You should see:
 - Frontend: "Zena AI Real Estate Assistant" welcome page
@@ -138,7 +138,7 @@ npm run build
 
 ### Port Already in Use
 
-If port 3000 or 5173 is already in use:
+If port 3001 or 5173 is already in use:
 - Change `PORT` in `packages/backend/.env`
 - Update `VITE_API_URL` in `packages/frontend/.env` accordingly
 

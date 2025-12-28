@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// Hardcode to empty string to force proxy usage
+const API_BASE_URL = '';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,10 +24,13 @@ export const LoginPage: React.FC = () => {
     setLoading(true);
 
     console.log('[LoginPage] Form submitted', { email });
+    const loginUrl = `${API_BASE_URL}/api/auth/login`;
+    console.log('[LoginPage] Attempting login to:', loginUrl);
 
     try {
       // Use direct fetch to avoid IndexedDB issues
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      console.log('[LoginPage] Starting fetch request...');
+      const response = await fetch(loginUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,13 +38,20 @@ export const LoginPage: React.FC = () => {
         body: JSON.stringify({ email, password }),
       });
 
+      console.log('[LoginPage] Response received', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+
       const data = await response.json();
+      console.log('[LoginPage] Response body parsed', { hasToken: !!data.accessToken, error: data.error });
 
       if (!response.ok) {
-        throw new Error(data.error?.message || 'Login failed');
+        throw new Error(data.error?.message || `Login failed with status: ${response.status}`);
       }
 
-      console.log('[LoginPage] Login successful');
+      console.log('[LoginPage] Login successful, saving tokens...');
 
       // Store the JWT token
       if (data.accessToken) {
@@ -50,14 +61,16 @@ export const LoginPage: React.FC = () => {
           localStorage.setItem('refreshToken', data.refreshToken);
         }
 
+        console.log('[LoginPage] Tokens saved, redirecting...');
         // Redirect to home page with full page reload
         window.location.href = '/';
       } else {
+        console.error('[LoginPage] No access token in response');
         setError('Login failed: No token received');
         setLoading(false);
       }
     } catch (err: any) {
-      console.error('[LoginPage] Login error:', err);
+      console.error('[LoginPage] Login error details:', err);
       setError(err.message || 'Login failed. Please check your credentials.');
       setLoading(false);
     }

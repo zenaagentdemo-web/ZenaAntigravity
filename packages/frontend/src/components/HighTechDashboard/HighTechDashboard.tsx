@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { ZenaAvatarState } from '../ZenaAvatar/ZenaAvatar';
 import { HolographicAvatar } from '../HolographicAvatar/HolographicAvatar';
 import { FloatingMetricOrbs, MetricOrb } from '../FloatingMetricOrbs/FloatingMetricOrbs';
-import { CollapsibleAlertsPanel, PriorityAlert } from '../CollapsibleAlertsPanel/CollapsibleAlertsPanel';
+
 import { QuickActionsCarousel, CarouselAction } from '../QuickActionsCarousel/QuickActionsCarousel';
 import { AmbientBackground } from '../AmbientBackground/AmbientBackground';
 import { CalendarWidget, CalendarAppointment } from '../CalendarWidget/CalendarWidget';
@@ -32,8 +32,7 @@ export interface HighTechDashboardProps {
   atRiskDealsCount?: number;
   /** Active tasks count */
   activeTasksCount?: number;
-  /** Priority alerts */
-  alerts?: PriorityAlert[];
+
   /** Upcoming appointments for calendar widget */
   appointments?: CalendarAppointment[];
   /** Recent activity items */
@@ -45,8 +44,7 @@ export interface HighTechDashboardProps {
   onZenaClick?: () => void;
   /** Callback when a metric orb is clicked */
   onMetricClick?: (metricId: string) => void;
-  /** Callback when an alert action is triggered */
-  onAlertAction?: (alertId: string, action: string) => void;
+
   /** Callback when a quick action is triggered */
   onQuickAction?: (actionId: string) => void;
   /** Callback when an appointment is clicked */
@@ -65,13 +63,13 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
   waitingThreadsCount = 0,
   atRiskDealsCount = 0,
   activeTasksCount = 0,
-  alerts = [],
+
   appointments = [],
   recentActivities = [],
   aiState = 'idle',
   onZenaClick,
   onMetricClick,
-  onAlertAction,
+
   onQuickAction,
   onAppointmentClick,
   onActivityClick,
@@ -90,7 +88,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
   const metricOrbs: MetricOrb[] = [
     {
       id: 'focus',
-      label: 'New',
+      label: focusThreadsCount === 1 ? 'NEW MESSAGE' : 'NEW MESSAGES',
       value: focusThreadsCount,
       color: 'cyan',
       urgency: focusThreadsCount > 5 ? 'high' : focusThreadsCount > 2 ? 'medium' : 'low',
@@ -104,7 +102,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
     },
     {
       id: 'waiting',
-      label: 'Awaiting',
+      label: 'FOLLOW UP',
       value: waitingThreadsCount,
       color: 'purple',
       urgency: waitingThreadsCount > 10 ? 'high' : waitingThreadsCount > 5 ? 'medium' : 'low',
@@ -124,30 +122,35 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
       id: 'voice-note',
       label: 'Voice Note',
       icon: '🎤',
+      iconImage: '/assets/icons/voice-note-final.png',
       color: 'cyan',
     },
     {
       id: 'search',
       label: 'Search',
       icon: '🔍',
+      iconImage: '/assets/icons/search-final.png',
       color: 'purple',
     },
     {
       id: 'calendar',
       label: 'Calendar',
       icon: '📅',
+      iconImage: '/assets/icons/calendar-final.png',
       color: 'magenta',
     },
     {
-      id: 'contacts',
-      label: 'Contacts',
-      icon: '👥',
+      id: 'add-deal',
+      label: 'Add Deal',
+      icon: '💼',
+      iconImage: '/assets/icons/add-deal-final.png',
       color: 'green',
     },
     {
-      id: 'properties',
-      label: 'Properties',
-      icon: '🏠',
+      id: 'schedule-viewing',
+      label: 'Schedule Meeting',
+      icon: '🗓️',
+      iconImage: '/assets/icons/schedule-meeting-final.png',
       color: 'orange',
     },
   ];
@@ -188,12 +191,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
     }
   }, [onMetricClick, navigate]);
 
-  // Handle alert action
-  const handleAlertAction = useCallback((alertId: string, action: string) => {
-    if (onAlertAction) {
-      onAlertAction(alertId, action);
-    }
-  }, [onAlertAction]);
+
 
   // Handle quick action
   const handleQuickAction = useCallback((actionId: string) => {
@@ -211,11 +209,11 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
         case 'calendar':
           navigate('/calendar');
           break;
-        case 'contacts':
-          navigate('/contacts');
+        case 'add-deal':
+          navigate('/deals/new');
           break;
-        case 'properties':
-          navigate('/properties');
+        case 'schedule-viewing':
+          navigate('/viewings/new');
           break;
       }
     }
@@ -245,7 +243,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
 
       {/* Main Content */}
       <main className="high-tech-dashboard__content">
-        {/* Central Zena Orb Hero Section */}
+        {/* Central Zena Orb Hero Section (Full Width) */}
         <section
           className="high-tech-dashboard__hero"
           aria-label="Zena AI Assistant"
@@ -264,14 +262,31 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
             </div>
           </div>
 
+          {/* Start Zena Live Button - Speech-to-Speech Conversation */}
+          <div className="high-tech-dashboard__live-button-container">
+            <button
+              className="zena-live-button"
+              onClick={() => navigate('/ask-zena?mode=handsfree')}
+              aria-label="Start Zena Live voice conversation"
+            >
+              <span className="zena-live-button__text">Start Zena Live</span>
+              <span className="zena-live-button__wave-icon">
+                <span className="wave-bar" style={{ animationDelay: '0ms' }} />
+                <span className="wave-bar" style={{ animationDelay: '150ms' }} />
+                <span className="wave-bar" style={{ animationDelay: '300ms' }} />
+                <span className="wave-bar" style={{ animationDelay: '200ms' }} />
+                <span className="wave-bar" style={{ animationDelay: '100ms' }} />
+              </span>
+            </button>
+          </div>
 
-          {/* Quick Intelligence Actions */}
+          {/* Action Bar: Morning Routine Actions */}
           <div className="high-tech-dashboard__quick-intel">
             <button
               className="intel-btn intel-btn--emails"
               onClick={() => navigate(`/ask-zena?prompt=${encodeURIComponent("Triage my emails. Categorize by urgency, summarize important ones, and tell me which need immediate response.")}&mode=handsfree`)}
             >
-              <span className="intel-btn__icon">📧</span>
+              <img src="/assets/icons/triage-email-final.png" alt="" className="intel-btn__icon-img" />
               <span className="intel-btn__label">Triage Emails</span>
             </button>
 
@@ -279,7 +294,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
               className="intel-btn intel-btn--brief"
               onClick={() => navigate(`/ask-zena?prompt=${encodeURIComponent("Give me my morning brief. Include today's schedule, any urgent messages, and key tasks I need to focus on.")}&mode=handsfree`)}
             >
-              <span className="intel-btn__icon">☀️</span>
+              <img src="/assets/icons/morning-brief-final.png" alt="" className="intel-btn__icon-img" />
               <span className="intel-btn__label">Morning Brief</span>
             </button>
 
@@ -287,14 +302,13 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
               className="intel-btn intel-btn--tasks"
               onClick={() => navigate(`/ask-zena?prompt=${encodeURIComponent("Review my tasks for today. Generate a prioritized list from my calendar, emails, and any pending follow-ups.")}&mode=handsfree`)}
             >
-              <span className="intel-btn__icon">✅</span>
+              <img src="/assets/icons/todays-tasks-final.png" alt="" className="intel-btn__icon-img" />
               <span className="intel-btn__label">Today's Tasks</span>
             </button>
           </div>
         </section>
 
-
-        {/* Floating Metric Orbs */}
+        {/* Floating Metric Orbs - Always visible near top */}
         <section
           className="high-tech-dashboard__metrics"
           aria-label="Key Metrics"
@@ -306,21 +320,9 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
           />
         </section>
 
-        {/* Collapsible Priority Alerts Panel */}
-        {alerts.length > 0 && (
-          <section
-            className="high-tech-dashboard__alerts"
-            aria-label="Priority Alerts"
-          >
-            <CollapsibleAlertsPanel
-              alerts={alerts}
-              onAction={handleAlertAction}
-              testId="dashboard-alerts"
-            />
-          </section>
-        )}
 
-        {/* Horizontal Quick Actions Carousel */}
+
+        {/* Quick Actions Carousel */}
         <section
           className="high-tech-dashboard__actions"
           aria-label="Quick Actions"
@@ -332,7 +334,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
           />
         </section>
 
-        {/* Calendar Widget - Upcoming Appointments */}
+        {/* Upcoming Appointments */}
         <section
           className="high-tech-dashboard__calendar"
           aria-label="Upcoming Appointments"

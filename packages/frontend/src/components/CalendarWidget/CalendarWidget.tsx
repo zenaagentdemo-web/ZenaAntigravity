@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './CalendarWidget.css';
 
 export interface CalendarAppointment {
@@ -20,6 +21,8 @@ export interface CalendarWidgetProps {
   appointments: CalendarAppointment[];
   onAppointmentClick?: (appointment: CalendarAppointment) => void;
   onConflictResolve?: (appointmentId: string, action: 'reschedule' | 'cancel' | 'ignore') => void;
+  onCallClick?: (appointment: CalendarAppointment) => void;
+  onMapClick?: (appointment: CalendarAppointment) => void;
   maxAppointments?: number;
   showConflicts?: boolean;
 }
@@ -28,9 +31,13 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
   appointments,
   onAppointmentClick,
   onConflictResolve,
+  onCallClick,
+  onMapClick,
   maxAppointments = 3,
   showConflicts = true
 }) => {
+  const navigate = useNavigate();
+
   // Sort appointments by time and filter to upcoming only
   const upcomingAppointments = appointments
     .filter(appointment => appointment.time > new Date())
@@ -40,8 +47,8 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
   // Detect conflicts (appointments within 30 minutes of each other)
   const detectConflicts = (appointment: CalendarAppointment): boolean => {
     if (!showConflicts) return false;
-    
-    return appointments.some(other => 
+
+    return appointments.some(other =>
       other.id !== appointment.id &&
       Math.abs(other.time.getTime() - appointment.time.getTime()) < 30 * 60 * 1000 // 30 minutes
     );
@@ -51,7 +58,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
     const now = new Date();
     const timeUntil = appointment.time.getTime() - now.getTime();
     const hoursUntil = timeUntil / (1000 * 60 * 60);
-    
+
     // Determine urgency based on time until appointment and explicit urgency
     if (appointment.urgency === 'high' || hoursUntil < 1) {
       return 'appointment-item--urgent';
@@ -80,7 +87,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
     const timeUntil = appointmentTime.getTime() - now.getTime();
     const hoursUntil = Math.floor(timeUntil / (1000 * 60 * 60));
     const minutesUntil = Math.floor((timeUntil % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hoursUntil < 1) {
       return `in ${minutesUntil}m`;
     } else if (hoursUntil < 24) {
@@ -111,19 +118,19 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
   };
 
   return (
-    <section 
+    <section
       className="calendar-widget"
       role="region"
       aria-labelledby="calendar-widget-title"
     >
-      <h2 
-        id="calendar-widget-title" 
+      <h2
+        id="calendar-widget-title"
         className="calendar-widget__title"
       >
         Upcoming Appointments
       </h2>
-      
-      <div 
+
+      <div
         className="calendar-widget__appointments"
         role="list"
         aria-label="List of upcoming appointments"
@@ -132,7 +139,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
           upcomingAppointments.map((appointment) => {
             const hasConflict = detectConflicts(appointment);
             const urgencyClass = getUrgencyClass(appointment);
-            
+
             return (
               <div
                 key={appointment.id}
@@ -151,19 +158,19 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
               >
                 <div className="appointment-item__time-section">
                   <div className="appointment-item__time">
-                    {appointment.time.toLocaleTimeString([], { 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
+                    {appointment.time.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit'
                     })}
                   </div>
                   <div className="appointment-item__time-until">
                     {formatTimeUntil(appointment.time)}
                   </div>
                 </div>
-                
+
                 <div className="appointment-item__content">
                   <div className="appointment-item__header">
-                    <span 
+                    <span
                       className="appointment-item__type-icon"
                       aria-label={`Appointment type: ${appointment.type}`}
                     >
@@ -173,7 +180,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
                       {appointment.title}
                     </div>
                   </div>
-                  
+
                   {appointment.property && (
                     <div className="appointment-item__property">
                       <span className="appointment-item__property-icon" aria-hidden="true">📍</span>
@@ -187,18 +194,44 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
                       )}
                     </div>
                   )}
-                  
+
                   {appointment.location && !appointment.property && (
                     <div className="appointment-item__location">
                       <span className="appointment-item__location-icon" aria-hidden="true">📍</span>
                       {appointment.location}
                     </div>
                   )}
+
+                  {/* Quick Action Buttons */}
+                  <div className="appointment-item__actions">
+                    <button
+                      className="appointment-action appointment-action--map"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onMapClick ? onMapClick(appointment) : window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(appointment.property?.address || appointment.location || '')}`, '_blank');
+                      }}
+                      aria-label="Get directions"
+                    >
+                      🗺️
+                    </button>
+                    {(appointment.type === 'call' || appointment.title.toLowerCase().includes('call')) && (
+                      <button
+                        className="appointment-action appointment-action--call"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onCallClick ? onCallClick(appointment) : console.log('Initiating call...');
+                        }}
+                        aria-label="Call client"
+                      >
+                        📞
+                      </button>
+                    )}
+                  </div>
                 </div>
-                
+
                 <div className="appointment-item__indicators">
                   {hasConflict && (
-                    <div 
+                    <div
                       className="appointment-item__conflict-indicator"
                       role="alert"
                       aria-label="Scheduling conflict detected"
@@ -228,8 +261,8 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
                       </div>
                     </div>
                   )}
-                  
-                  <div 
+
+                  <div
                     className={`appointment-item__urgency-indicator appointment-item__urgency-indicator--${appointment.urgency || 'low'}`}
                     aria-label={`Priority level: ${appointment.urgency || 'low'}`}
                   >
@@ -240,7 +273,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
             );
           })
         ) : (
-          <div 
+          <div
             className="appointment-item appointment-item--empty"
             role="listitem"
           >
@@ -255,21 +288,19 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({
           </div>
         )}
       </div>
-      
+
       {appointments.length > maxAppointments && (
         <div className="calendar-widget__footer">
-          <button 
+          <button
             className="calendar-widget__view-all"
-            onClick={() => {
-              // Navigate to full calendar view
-              console.log('Navigate to full calendar');
-            }}
+            onClick={() => navigate('/calendar')}
             aria-label={`View all ${appointments.length} appointments in calendar`}
           >
             View all {appointments.length} appointments
           </button>
         </div>
       )}
+
     </section>
   );
 };

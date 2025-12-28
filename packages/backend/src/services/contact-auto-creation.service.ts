@@ -12,13 +12,13 @@ export interface EmailParticipant {
  * Automatically creates contacts from email participants
  */
 export class ContactAutoCreationService {
-  
+
   /**
    * Create contacts from email participants if they don't exist
    */
   async createContactsFromParticipants(
-    userId: string, 
-    participants: any, 
+    userId: string,
+    participants: any,
     userEmail: string
   ): Promise<void> {
     try {
@@ -37,8 +37,8 @@ export class ContactAutoCreationService {
           // Legacy format: "Name <email@domain.com>" or just "email@domain.com"
           const emailMatch = participant.match(/<(.+?)>/) || [null, participant];
           email = emailMatch[1] || participant;
-          name = participant.includes('<') 
-            ? participant.split('<')[0].trim().replace(/"/g, '') 
+          name = participant.includes('<')
+            ? participant.split('<')[0].trim().replace(/"/g, '')
             : this.extractNameFromEmail(email);
         } else if (typeof participant === 'object' && participant.email) {
           // New format: { name: "Name", email: "email@domain.com" }
@@ -100,7 +100,7 @@ export class ContactAutoCreationService {
    */
   private extractNameFromEmail(email: string): string {
     const localPart = email.split('@')[0];
-    
+
     // Handle common patterns
     if (localPart.includes('.')) {
       // john.smith -> John Smith
@@ -127,34 +127,34 @@ export class ContactAutoCreationService {
     const emailLower = email.toLowerCase();
     const nameLower = name.toLowerCase();
 
-    // Real estate professional patterns
+    // Tradesperson patterns
     if (
-      emailLower.includes('realestate') ||
-      emailLower.includes('property') ||
-      emailLower.includes('agent') ||
-      nameLower.includes('realty') ||
-      nameLower.includes('estate')
+      emailLower.includes('plumb') ||
+      emailLower.includes('sparky') ||
+      emailLower.includes('electric') ||
+      emailLower.includes('clean') ||
+      emailLower.includes('build') ||
+      emailLower.includes('maintenance') ||
+      emailLower.includes('repair') ||
+      nameLower.includes('plumb') ||
+      nameLower.includes('electric') ||
+      nameLower.includes('maintenance')
     ) {
-      return 'market';
+      return 'tradesperson';
     }
 
-    // Legal/financial patterns
+    // Agent patterns (other agents)
     if (
-      emailLower.includes('law') ||
-      emailLower.includes('legal') ||
-      emailLower.includes('solicitor') ||
-      emailLower.includes('lawyer') ||
-      emailLower.includes('conveyancer') ||
-      emailLower.includes('mortgage') ||
+      emailLower.includes('realty') ||
+      emailLower.includes('agent') ||
       emailLower.includes('broker') ||
-      nameLower.includes('law') ||
-      nameLower.includes('legal')
+      nameLower.includes('realty') ||
+      nameLower.includes('agency')
     ) {
-      return 'lawyer_broker';
+      return 'agent';
     }
 
     // Default to 'other' - can be manually updated later
-    // In a real system, you might use AI to analyze email content to determine if they're a buyer/vendor
     return 'other';
   }
 
@@ -162,9 +162,9 @@ export class ContactAutoCreationService {
    * Update contact role based on email content analysis
    */
   async updateContactRoleFromContext(
-    userId: string, 
-    email: string, 
-    emailSubject: string, 
+    userId: string,
+    email: string,
+    emailSubject: string,
     emailSummary: string
   ): Promise<void> {
     try {
@@ -206,13 +206,34 @@ export class ContactAutoCreationService {
       ) {
         newRole = 'vendor';
       }
+      // Analyze content for tradesperson indicators
+      else if (
+        content.includes('quote') ||
+        content.includes('repair') ||
+        content.includes('fix') ||
+        content.includes('maintenance') ||
+        content.includes('invoice') ||
+        content.includes('plumbing') ||
+        content.includes('electrical')
+      ) {
+        newRole = 'tradesperson';
+      }
+      // Analyze content for agent indicators
+      else if (
+        content.includes('conjunctional') ||
+        content.includes('split') ||
+        content.includes('other agency') ||
+        content.includes('referral')
+      ) {
+        newRole = 'agent';
+      }
 
       if (newRole !== contact.role) {
         console.log(`🔄 Updating contact role: ${contact.name} (${email}) from ${contact.role} to ${newRole}`);
-        
+
         await prisma.contact.update({
           where: { id: contact.id },
-          data: { 
+          data: {
             role: newRole,
             relationshipNotes: [
               ...contact.relationshipNotes as any[],

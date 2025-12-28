@@ -29,7 +29,9 @@ export type WebSocketEventType =
   | 'notification.new'
   | 'activity.new'
   | 'appointment.reminder'
-  | 'appointment.conflict';
+  | 'appointment.conflict'
+  | 'contact.categorized'
+  | 'contact.engagement';
 
 class WebSocketService {
   private wss: WebSocketServer | null = null;
@@ -398,6 +400,19 @@ class WebSocketService {
    */
   broadcastAppointmentReminder(userId: string, appointment: any): void {
     this.broadcastToUser(userId, 'appointment.reminder', appointment);
+  }
+
+  /**
+   * Broadcast contact engagement update
+   */
+  broadcastContactEngagement(userId: string, data: {
+    contactId: string;
+    engagementScore: number;
+    momentum: number;
+    dealStage: string | null;
+    nextBestAction?: string;
+  }): void {
+    this.broadcastToUser(userId, 'contact.engagement', data);
   }
 
   /**

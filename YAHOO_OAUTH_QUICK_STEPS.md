@@ -11,7 +11,7 @@
 
 ### 1. Start Backend Server
 ```bash
-cd /Users/hamishmcgee/Desktop/ZenaKiro/packages/backend
+cd /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend
 npm run dev
 ```
 

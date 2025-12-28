@@ -1,0 +1,363 @@
+/* Intel Score Tooltip Styles */
+.intel-tooltip-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.intel-help-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.4));
+    transition: all 0.2s ease;
+    padding: 0;
+    margin-left: 0.35rem;
+}
+
+.intel-help-btn:hover {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: var(--neon-cyan, #00D4FF);
+    color: var(--neon-cyan, #00D4FF);
+    transform: scale(1.1);
+}
+
+.intel-help-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.3);
+}
+
+/* Tooltip Panel - Default (bottom position) */
+.intel-tooltip {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    background: rgba(15, 15, 25, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 16px;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.6),
+        0 0 20px rgba(0, 212, 255, 0.1);
+    z-index: 1000;
+    animation: tooltipFadeIn 0.2s ease-out;
+}
+
+/* Top position variant - when near bottom of screen */
+.intel-tooltip.intel-tooltip--top {
+    top: auto;
+    bottom: calc(100% + 8px);
+    animation: tooltipFadeInTop 0.2s ease-out;
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes tooltipFadeInTop {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* Arrow pointer - default (points up) */
+.intel-tooltip::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 12px;
+    height: 12px;
+    background: rgba(15, 15, 25, 0.98);
+    border-left: 1px solid rgba(0, 212, 255, 0.3);
+    border-top: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+/* Arrow for top-positioned tooltip (points down) */
+.intel-tooltip.intel-tooltip--top::before {
+    top: auto;
+    bottom: -6px;
+    border-left: none;
+    border-top: none;
+    border-right: 1px solid rgba(0, 212, 255, 0.3);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.intel-tooltip__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(to right, rgba(0, 212, 255, 0.08), transparent);
+    border-radius: 16px 16px 0 0;
+}
+
+.intel-tooltip__header h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--neon-cyan, #00D4FF);
+    letter-spacing: 0.02em;
+}
+
+.intel-tooltip__close {
+    background: none;
+    border: none;
+    color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.4));
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.intel-tooltip__close:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.intel-tooltip__content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.intel-tooltip__section {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.intel-tooltip__metric {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+
+.intel-tooltip__label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.4));
+}
+
+.intel-tooltip__value {
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.intel-tooltip__value[data-status="good"] {
+    color: var(--neon-cyan, #00D4FF);
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.intel-tooltip__value[data-status="needs-attention"] {
+    color: #FF6B35;
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}
+
+.intel-tooltip__target {
+    font-size: 0.75rem;
+    color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.4));
+}
+
+.intel-tooltip__momentum {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+}
+
+.intel-tooltip__momentum.positive {
+    color: #00FF88;
+    background: rgba(0, 255, 136, 0.1);
+}
+
+.intel-tooltip__momentum.negative {
+    color: #FF6B35;
+    background: rgba(255, 107, 53, 0.1);
+}
+
+.intel-tooltip__velocity.neutral {
+    color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.intel-tooltip__explanation {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+    margin: 0;
+}
+
+.intel-tooltip__context {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border-left: 2px solid var(--neon-cyan, #00D4FF);
+}
+
+.intel-tooltip__stage-label {
+    color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.4));
+    font-weight: 600;
+}
+
+.intel-tooltip__stage-text {
+    color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+}
+
+.intel-tooltip__tips {
+    background: rgba(139, 92, 246, 0.08);
+    border-radius: 10px;
+    padding: 0.75rem;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.intel-tooltip__tips-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #8B5CF6;
+    margin-bottom: 0.5rem;
+}
+
+.intel-tooltip__tips ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+}
+
+.intel-tooltip__tips li {
+    margin-bottom: 0.25rem;
+}
+
+.intel-tooltip__why {
+    font-size: 0.75rem;
+    color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.5));
+    line-height: 1.4;
+}
+
+.intel-tooltip__why strong {
+    display: block;
+    color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+    margin-bottom: 0.25rem;
+}
+
+.intel-tooltip__why p {
+    margin: 0;
+}
+
+/* Improve Now Button */
+.intel-tooltip__improve-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.65rem 1rem;
+    background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #00D4FF 100%);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.intel-tooltip__improve-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 20px rgba(139, 92, 246, 0.4),
+        0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.intel-tooltip__improve-btn:active {
+    transform: translateY(0);
+}
+
+.intel-tooltip__improve-btn span {
+    flex: 1;
+    text-align: center;
+}
+
+/* Responsive - ensure tooltip doesn't overflow on mobile */
+@media (max-width: 480px) {
+    .intel-tooltip {
+        width: 280px;
+        left: auto;
+        right: -10px;
+        transform: none;
+    }
+
+    .intel-tooltip::before {
+        left: auto;
+        right: 15px;
+        transform: rotate(45deg);
+    }
+}
+
+/* Loading State for AI Actions */
+.intel-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    color: var(--neon-cyan, #00D4FF);
+    font-size: 0.85rem;
+    font-weight: 500;
+    min-height: 80px;
+}
+
+.spinning {
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

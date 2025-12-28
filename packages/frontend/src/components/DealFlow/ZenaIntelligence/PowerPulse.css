@@ -1,0 +1,81 @@
+/**
+ * PowerPulse - Visual health indicator styles
+ */
+
+.power-pulse {
+    position: relative;
+    width: 100%;
+}
+
+/* Size variants */
+.power-pulse--small .power-pulse__bar {
+    height: 4px;
+}
+
+.power-pulse--medium .power-pulse__bar {
+    height: 6px;
+}
+
+.power-pulse--large .power-pulse__bar {
+    height: 8px;
+}
+
+/* Progress bar container */
+.power-pulse__bar {
+    position: relative;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: visible;
+}
+
+/* Filled portion */
+.power-pulse__fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Pulsing glow at the end of the bar */
+.power-pulse__glow {
+    position: absolute;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+/* Ambient glow effect */
+.power-pulse__ambient {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    pointer-events: none;
+    z-index: -1;
+    border-radius: 12px;
+}
+
+/* Critical state - add glitch effect */
+.power-pulse--critical .power-pulse__bar {
+    animation: pulse-glitch 0.5s infinite;
+}
+
+@keyframes pulse-glitch {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-1px);
+    }
+
+    75% {
+        transform: translateX(1px);
+    }
+}

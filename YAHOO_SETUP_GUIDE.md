@@ -27,7 +27,7 @@ OAuth 2.0 is the easiest and most secure way to connect your Yahoo Mail. Users s
 
 4. **Update your .env file**
    ```bash
-   cd /Users/hamishmcgee/Desktop/ZenaKiro/packages/backend
+   cd /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend
    open .env
    ```
    
@@ -78,7 +78,7 @@ OAuth 2.0 is the easiest and most secure way to connect your Yahoo Mail. Users s
 
 1. **Open the .env file** (if not already open)
    ```bash
-   cd /Users/hamishmcgee/Desktop/ZenaKiro/packages/backend
+   cd /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend
    open .env
    ```
 
@@ -102,13 +102,13 @@ OAuth 2.0 is the easiest and most secure way to connect your Yahoo Mail. Users s
 
 1. **Start the backend server** (if not already running):
    ```bash
-   cd /Users/hamishmcgee/Desktop/ZenaKiro/packages/backend
+   cd /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend
    npm run dev
    ```
 
 2. **Start the frontend** (in a new terminal):
    ```bash
-   cd /Users/hamishmcgee/Desktop/ZenaKiro/packages/frontend
+   cd /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend
    npm run dev
    ```
 
@@ -159,7 +159,7 @@ If OAuth doesn't work for your account, you can use IMAP with an app password.
 
 1. **Open the .env file**
    ```bash
-   cd /Users/hamishmcgee/Desktop/ZenaKiro/packages/backend
+   cd /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend
    open .env
    ```
 
@@ -177,7 +177,7 @@ If OAuth doesn't work for your account, you can use IMAP with an app password.
 ### Step 3: Test the Connection
 
 ```bash
-cd /Users/hamishmcgee/Desktop/ZenaKiro/packages/backend
+cd /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend
 npm run test:yahoo
 ```
 

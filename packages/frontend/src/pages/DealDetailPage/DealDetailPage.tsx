@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { STAGE_LABELS } from '../../components/DealFlow/types';
 import './DealDetailPage.css';
 
 interface Participant {
@@ -63,6 +64,39 @@ interface Deal {
   property?: Property;
   contacts: Contact[];
   threads?: Thread[];
+  // Phase 2 fields
+  pipelineType?: 'buyer' | 'seller';
+  saleMethod?: string;
+  dealValue?: number;
+  estimatedCommission?: number;
+  conditions?: DealCondition[];
+  settlementDate?: string;
+  auctionDate?: string;
+  tenderCloseDate?: string;
+  stageEnteredAt?: string;
+  lastContactAt?: string;
+}
+
+interface DealCondition {
+  id: string;
+  type: string;
+  label: string;
+  dueDate: string;
+  status: 'pending' | 'satisfied' | 'waived' | 'failed';
+  satisfiedAt?: string;
+}
+
+interface SuggestedAction {
+  type: string;
+  reason: string;
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  context: Record<string, unknown>;
+}
+
+interface ActionConfig {
+  label: string;
+  emoji: string;
+  description: string;
 }
 
 interface DealDetailResponse {
@@ -80,19 +114,19 @@ export const DealDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showTimeline, setShowTimeline] = useState(false);
+  // Phase 2 state
+  const [suggestedActions, setSuggestedActions] = useState<SuggestedAction[]>([]);
+  const [actionConfigs, setActionConfigs] = useState<Record<string, ActionConfig>>({});
+  const [updatingCondition, setUpdatingCondition] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchDealDetails();
-  }, [id]);
-
-  const fetchDealDetails = async () => {
+  const fetchDealDetails = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
       const response = await fetch(`/api/deals/${id}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
         },
       });
 
@@ -101,7 +135,7 @@ export const DealDetailPage: React.FC = () => {
       }
 
       const data: DealDetailResponse | Deal = await response.json();
-      
+
       // Handle both wrapped and unwrapped responses
       if ('deal' in data) {
         setDeal(data.deal);
@@ -117,6 +151,83 @@ export const DealDetailPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  }, [id]);
+
+  // Fetch Zena suggestions
+  const fetchSuggestions = useCallback(async () => {
+    if (!id) return;
+    try {
+      const response = await fetch(`/api/zena-actions/deal/${id}/pending`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setSuggestedActions(data.suggestedActions || []);
+        setActionConfigs(data.actionConfigs || {});
+      }
+    } catch (err) {
+      console.error('Error fetching suggestions:', err);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchDealDetails();
+  }, [fetchDealDetails]);
+
+  useEffect(() => {
+    if (deal) {
+      fetchSuggestions();
+    }
+  }, [deal, fetchSuggestions]);
+
+  // Update condition status
+  const handleConditionUpdate = async (conditionId: string, newStatus: 'satisfied' | 'waived') => {
+    if (!deal?.conditions) return;
+
+    setUpdatingCondition(conditionId);
+    try {
+      const updatedConditions = deal.conditions.map(c =>
+        c.id === conditionId
+          ? { ...c, status: newStatus, satisfiedAt: new Date().toISOString() }
+          : c
+      );
+
+      const response = await fetch(`/api/deals/${id}/conditions`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        body: JSON.stringify({ conditions: updatedConditions }),
+      });
+
+      if (response.ok) {
+        setDeal(prev => prev ? { ...prev, conditions: updatedConditions } : null);
+      }
+    } catch (err) {
+      console.error('Error updating condition:', err);
+    } finally {
+      setUpdatingCondition(null);
+    }
+  };
+
+  // Format currency
+  const formatCurrency = (value: number): string => {
+    return new Intl.NumberFormat('en-NZ', {
+      style: 'currency',
+      currency: 'NZD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
+  // Get days remaining for condition
+  const getDaysRemaining = (dueDate: string): number => {
+    const now = new Date();
+    const due = new Date(dueDate);
+    return Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
   };
 
   const getRiskColor = (riskLevel: string): string => {
@@ -133,17 +244,7 @@ export const DealDetailPage: React.FC = () => {
   };
 
   const getStageLabel = (stage: string): string => {
-    const stageLabels: Record<string, string> = {
-      lead: 'Lead',
-      qualified: 'Qualified',
-      viewing: 'Viewing',
-      offer: 'Offer',
-      conditional: 'Conditional',
-      pre_settlement: 'Pre-Settlement',
-      sold: 'Sold',
-      nurture: 'Nurture',
-    };
-    return stageLabels[stage] || stage;
+    return STAGE_LABELS[stage] || stage.replace(/_/g, ' ');
   };
 
   const formatDate = (dateString: string): string => {
@@ -263,21 +364,129 @@ export const DealDetailPage: React.FC = () => {
           </div>
         )}
 
-        {/* Next Action */}
-        {deal.nextAction && (
-          <div className="deal-detail-page__next-action">
-            <h3 className="deal-detail-page__section-title">Next Action</h3>
-            <div className="deal-detail-page__action-content">
-              <div className="deal-detail-page__action-text">
-                {deal.nextAction}
-              </div>
-              <div className="deal-detail-page__action-owner">
-                Owner: {deal.nextActionOwner === 'agent' ? 'You' : 'Other Party'}
-              </div>
+        {/* Next Action & Zena Insights */}
+        {(deal.nextAction || suggestedActions.length > 0) && (
+          <div className="deal-detail-page__premium-action-zone">
+            <h3 className="deal-detail-page__section-title">Strategic Next Steps</h3>
+            <div className="deal-detail-page__holographic-card">
+              {deal.nextAction && (
+                <div className="deal-detail-page__action-item">
+                  <div className="deal-detail-page__action-meta">Manual Protocol</div>
+                  <div className="deal-detail-page__action-text">{deal.nextAction.replace(/_/g, ' ')}</div>
+                  <div className="deal-detail-page__action-owner">
+                    Managed by: {deal.nextActionOwner === 'agent' ? 'You' : 'Other Party'}
+                  </div>
+                </div>
+              )}
+
+              {suggestedActions.map((action, index) => {
+                const config = actionConfigs[action.type];
+                if (!config) return null;
+                return (
+                  <div key={`zena-${index}`} className={`deal-detail-page__action-item deal-detail-page__action-item--zena deal-detail-page__action-item--${action.priority}`}>
+                    <div className="deal-detail-page__action-meta">
+                      <span className="deal-detail-page__zena-tag">ZENA RECOMMENDATION</span>
+                      <span className="deal-detail-page__priority-dot"></span>
+                    </div>
+                    <div className="deal-detail-page__action-header">
+                      <span className="deal-detail-page__action-emoji">{config.emoji}</span>
+                      <div className="deal-detail-page__action-title">{config.label}</div>
+                    </div>
+                    <div className="deal-detail-page__action-reason">{action.reason}</div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
       </div>
+
+      {/* Deal Value & Commission */}
+      {(deal.dealValue || deal.estimatedCommission) && (
+        <div className="deal-detail-page__financials">
+          <h3 className="deal-detail-page__section-title">Financials</h3>
+          <div className="deal-detail-page__financials-row">
+            {deal.dealValue && (
+              <div className="deal-detail-page__financial-item">
+                <span className="deal-detail-page__financial-label">Deal Value</span>
+                <span className="deal-detail-page__financial-value">{formatCurrency(deal.dealValue)}</span>
+              </div>
+            )}
+            {deal.estimatedCommission && (
+              <div className="deal-detail-page__financial-item">
+                <span className="deal-detail-page__financial-label">Est. Commission</span>
+                <span className="deal-detail-page__financial-value deal-detail-page__financial-value--commission">
+                  {formatCurrency(deal.estimatedCommission)}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Conditions Checklist */}
+      {deal.conditions && deal.conditions.length > 0 && (
+        <div className="deal-detail-page__conditions">
+          <h3 className="deal-detail-page__section-title">Conditions</h3>
+          <div className="deal-detail-page__conditions-list">
+            {deal.conditions.map((condition) => {
+              const daysRemaining = getDaysRemaining(condition.dueDate);
+              const isOverdue = daysRemaining < 0 && condition.status === 'pending';
+              const isUrgent = daysRemaining <= 3 && daysRemaining >= 0 && condition.status === 'pending';
+
+              return (
+                <div
+                  key={condition.id}
+                  className={`deal-detail-page__condition ${condition.status !== 'pending' ? 'deal-detail-page__condition--completed' : ''
+                    } ${isOverdue ? 'deal-detail-page__condition--overdue' : ''} ${isUrgent ? 'deal-detail-page__condition--urgent' : ''
+                    }`}
+                >
+                  <div className="deal-detail-page__condition-header">
+                    <span className="deal-detail-page__condition-status">
+                      {condition.status === 'satisfied' && '✅'}
+                      {condition.status === 'waived' && '↩️'}
+                      {condition.status === 'pending' && (isOverdue ? '⚠️' : '⏳')}
+                      {condition.status === 'failed' && '❌'}
+                    </span>
+                    <span className="deal-detail-page__condition-label">{condition.label}</span>
+                    <span className="deal-detail-page__condition-due">
+                      {condition.status === 'pending' ? (
+                        isOverdue
+                          ? `${Math.abs(daysRemaining)} days overdue`
+                          : daysRemaining === 0
+                            ? 'Due today'
+                            : `${daysRemaining} days left`
+                      ) : (
+                        condition.status.charAt(0).toUpperCase() + condition.status.slice(1)
+                      )}
+                    </span>
+                  </div>
+
+                  {condition.status === 'pending' && (
+                    <div className="deal-detail-page__condition-actions">
+                      <button
+                        className="deal-detail-page__condition-btn deal-detail-page__condition-btn--satisfy"
+                        onClick={() => handleConditionUpdate(condition.id, 'satisfied')}
+                        disabled={updatingCondition === condition.id}
+                      >
+                        {updatingCondition === condition.id ? '...' : '✓ Satisfied'}
+                      </button>
+                      <button
+                        className="deal-detail-page__condition-btn deal-detail-page__condition-btn--waive"
+                        onClick={() => handleConditionUpdate(condition.id, 'waived')}
+                        disabled={updatingCondition === condition.id}
+                      >
+                        Waive
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
 
       {/* Latest Email Preview */}
       {latestThread && (
@@ -314,9 +523,8 @@ export const DealDetailPage: React.FC = () => {
             {tasks.map((task) => (
               <div
                 key={task.id}
-                className={`deal-detail-page__task ${
-                  task.status === 'completed' ? 'deal-detail-page__task--completed' : ''
-                }`}
+                className={`deal-detail-page__task ${task.status === 'completed' ? 'deal-detail-page__task--completed' : ''
+                  }`}
               >
                 <div className="deal-detail-page__task-label">{task.label}</div>
                 {task.dueDate && (
@@ -349,11 +557,11 @@ export const DealDetailPage: React.FC = () => {
                     {event.type.toUpperCase()}
                   </div>
                   <div className="deal-detail-page__timeline-summary">
-                    {event.summary}
+                    {event.summary.replace(/_/g, ' ')}
                   </div>
                   {event.content && (
                     <div className="deal-detail-page__timeline-details">
-                      {event.content}
+                      {event.content.replace(/_/g, ' ')}
                     </div>
                   )}
                   <div className="deal-detail-page__timeline-time">

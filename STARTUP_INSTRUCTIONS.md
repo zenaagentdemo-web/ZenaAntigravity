@@ -62,7 +62,7 @@ Do both steps above + hard refresh (`Cmd+Shift+R`)
 
 ## 📊 Server Status
 
-- **Backend**: http://localhost:3000 (API)
+- **Backend**: http://localhost:3001 (API)
 - **Frontend**: http://localhost:5173 (Web App)
 - **Database**: PostgreSQL on localhost:5432
 
@@ -71,9 +71,8 @@ Do both steps above + hard refresh (`Cmd+Shift+R`)
 Already configured with your credentials:
 GOOGLE_OAUTH_CLIENT_ID=YOUR_CLIENT_ID_HERE
 GOOGLE_OAUTH_CLIENT_SECRET=YOUR_CLIENT_SECRET_HERE`
-- **Redirect URI**: `http://localhost:3000/api/accounts/email/callback`
+- **Redirect URI**: `http://localhost:3001/api/accounts/email/callback`
 
 ## ✅ Ready for Testing
 
 Everything is configured and ready. Use the clean startup script and test Gmail OAuth integration!
-

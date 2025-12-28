@@ -204,6 +204,10 @@ class RealTimeDataService {
           this.handleThreadUpdate(message.payload);
           break;
 
+        case 'contact.updated':
+          this.handleContactUpdate(message.payload);
+          break;
+
         case 'deal.risk':
           this.handleDealRisk(message.payload);
           break;
@@ -461,6 +465,18 @@ class RealTimeDataService {
       lastUpdated: new Date(),
       ...payload
     } as any);
+  }
+
+  /**
+   * Handle contact updates
+   */
+  private handleContactUpdate(payload: any): void {
+    const update: Partial<DashboardData> = {
+      lastUpdated: new Date(),
+      contactUpdate: payload // Adding a specific field for contact updates
+    } as any;
+
+    this.notifyDataUpdate(update);
   }
 
   /**

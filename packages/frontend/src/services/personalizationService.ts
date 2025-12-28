@@ -1,9 +1,9 @@
 import { UsagePattern, PersonalizationPreferences } from '../hooks/usePersonalization';
-import { 
-  WidgetPriorityCalculator, 
-  WidgetPriorityContext, 
+import {
+  WidgetPriorityCalculator,
+  WidgetPriorityContext,
   AgentBehaviorPattern,
-  WorkloadMetrics 
+  WorkloadMetrics
 } from '../utils/widgetPriorityCalculator';
 
 export interface WidgetLayoutItem {
@@ -14,7 +14,7 @@ export interface WidgetLayoutItem {
   position: number;
 }
 
-export interface PersonalizationInsight {
+export interface PersonalisationInsight {
   type: 'usage_trend' | 'time_pattern' | 'efficiency_tip' | 'feature_suggestion';
   title: string;
   description: string;
@@ -26,14 +26,14 @@ export interface PersonalizationInsight {
   confidence: number; // 0-1
 }
 
-export class PersonalizationService {
-  private static instance: PersonalizationService;
+export class PersonalisationService {
+  private static instance: PersonalisationService;
 
-  public static getInstance(): PersonalizationService {
-    if (!PersonalizationService.instance) {
-      PersonalizationService.instance = new PersonalizationService();
+  public static getInstance(): PersonalisationService {
+    if (!PersonalisationService.instance) {
+      PersonalisationService.instance = new PersonalisationService();
     }
-    return PersonalizationService.instance;
+    return PersonalisationService.instance;
   }
 
   /**
@@ -55,7 +55,7 @@ export class PersonalizationService {
     // 3. Priority Notifications Panel - THIRD
     // 4. Recent Activity - FOURTH
     // 5. Business Insights (Contextual Insights) - FIFTH
-    
+
     const fixedOrder = [
       { widgetId: 'smart-summary', size: 'large' as const, priority: 15 },
       { widgetId: 'quick-actions', size: 'medium' as const, priority: 14 },
@@ -83,69 +83,69 @@ export class PersonalizationService {
   ): Record<string, number> {
     const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     const recentPatterns = usagePatterns.filter(pattern => pattern.timestamp >= cutoffDate);
-    
+
     const scores: Record<string, number> = {};
-    
+
     recentPatterns.forEach(pattern => {
       if (!scores[pattern.actionId]) {
         scores[pattern.actionId] = 0;
       }
-      
+
       // Weight recent usage more heavily
       const daysAgo = (Date.now() - pattern.timestamp.getTime()) / (24 * 60 * 60 * 1000);
       const weight = Math.max(0.1, 1 - (daysAgo / days)); // Linear decay
-      
+
       scores[pattern.actionId] += weight;
     });
-    
+
     return scores;
   }
 
   /**
-   * Generate personalization insights based on usage patterns
+   * Generate personalisation insights based on usage patterns
    */
   public generateInsights(
     usagePatterns: UsagePattern[],
     preferences: PersonalizationPreferences
-  ): PersonalizationInsight[] {
-    const insights: PersonalizationInsight[] = [];
-    
-    // Analyze usage trends
-    const usageTrends = this.analyzeUsageTrends(usagePatterns);
+  ): PersonalisationInsight[] {
+    const insights: PersonalisationInsight[] = [];
+
+    // Analyse usage trends
+    const usageTrends = this.analyseUsageTrends(usagePatterns);
     insights.push(...usageTrends);
-    
-    // Analyze time patterns
-    const timePatterns = this.analyzeTimePatterns(usagePatterns);
+
+    // Analyse time patterns
+    const timePatterns = this.analyseTimePatterns(usagePatterns);
     insights.push(...timePatterns);
-    
+
     // Generate efficiency tips
     const efficiencyTips = this.generateEfficiencyTips(usagePatterns, preferences);
     insights.push(...efficiencyTips);
-    
+
     // Suggest new features
     const featureSuggestions = this.generateFeatureSuggestions(usagePatterns, preferences);
     insights.push(...featureSuggestions);
-    
+
     // Sort by confidence and return top insights
     return insights
       .sort((a, b) => b.confidence - a.confidence)
       .slice(0, 5);
   }
 
-  private analyzeUsageTrends(usagePatterns: UsagePattern[]): PersonalizationInsight[] {
-    const insights: PersonalizationInsight[] = [];
-    
+  private analyseUsageTrends(usagePatterns: UsagePattern[]): PersonalisationInsight[] {
+    const insights: PersonalisationInsight[] = [];
+
     if (usagePatterns.length < 20) return insights;
-    
-    // Analyze weekly trends
-    const thisWeek = usagePatterns.filter(p => 
+
+    // Analyse weekly trends
+    const thisWeek = usagePatterns.filter(p =>
       p.timestamp >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     );
-    const lastWeek = usagePatterns.filter(p => 
+    const lastWeek = usagePatterns.filter(p =>
       p.timestamp >= new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) &&
       p.timestamp < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     );
-    
+
     if (thisWeek.length > lastWeek.length * 1.5) {
       insights.push({
         type: 'usage_trend',
@@ -155,16 +155,16 @@ export class PersonalizationService {
         confidence: 0.8,
       });
     }
-    
+
     // Analyze most used features
     const actionCounts: Record<string, number> = {};
     thisWeek.forEach(pattern => {
       actionCounts[pattern.actionId] = (actionCounts[pattern.actionId] || 0) + 1;
     });
-    
+
     const topAction = Object.entries(actionCounts)
       .sort(([, a], [, b]) => b - a)[0];
-    
+
     if (topAction && topAction[1] > 5) {
       insights.push({
         type: 'usage_trend',
@@ -178,15 +178,15 @@ export class PersonalizationService {
         confidence: 0.7,
       });
     }
-    
+
     return insights;
   }
 
   private analyzeTimePatterns(usagePatterns: UsagePattern[]): PersonalizationInsight[] {
     const insights: PersonalizationInsight[] = [];
-    
+
     if (usagePatterns.length < 30) return insights;
-    
+
     // Analyze time-of-day patterns
     const timeUsage: Record<string, number> = {
       morning: 0,
@@ -194,14 +194,14 @@ export class PersonalizationService {
       evening: 0,
       night: 0,
     };
-    
+
     usagePatterns.forEach(pattern => {
       timeUsage[pattern.context.timeOfDay]++;
     });
-    
+
     const peakTime = Object.entries(timeUsage)
       .sort(([, a], [, b]) => b - a)[0];
-    
+
     if (peakTime[1] > usagePatterns.length * 0.4) {
       insights.push({
         type: 'time_pattern',
@@ -211,17 +211,17 @@ export class PersonalizationService {
         confidence: 0.9,
       });
     }
-    
+
     // Analyze day-of-week patterns
     const dayUsage: Record<number, number> = {};
     usagePatterns.forEach(pattern => {
       const day = pattern.context.dayOfWeek;
       dayUsage[day] = (dayUsage[day] || 0) + 1;
     });
-    
+
     const weekdayUsage = [1, 2, 3, 4, 5].reduce((sum, day) => sum + (dayUsage[day] || 0), 0);
     const weekendUsage = [0, 6].reduce((sum, day) => sum + (dayUsage[day] || 0), 0);
-    
+
     if (weekendUsage > weekdayUsage * 0.3) {
       insights.push({
         type: 'time_pattern',
@@ -235,7 +235,7 @@ export class PersonalizationService {
         confidence: 0.6,
       });
     }
-    
+
     return insights;
   }
 
@@ -244,16 +244,16 @@ export class PersonalizationService {
     preferences: PersonalizationPreferences
   ): PersonalizationInsight[] {
     const insights: PersonalizationInsight[] = [];
-    
+
     // Check for keyboard shortcut usage
-    const recentPatterns = usagePatterns.filter(p => 
+    const recentPatterns = usagePatterns.filter(p =>
       p.timestamp >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     );
-    
-    const quickActionUsage = recentPatterns.filter(p => 
+
+    const quickActionUsage = recentPatterns.filter(p =>
       ['voice-note', 'ask-zena', 'focus-threads', 'property-search'].includes(p.actionId)
     );
-    
+
     if (quickActionUsage.length > 10) {
       insights.push({
         type: 'efficiency_tip',
@@ -267,12 +267,12 @@ export class PersonalizationService {
         confidence: 0.8,
       });
     }
-    
+
     // Check for gesture usage opportunities
-    const swipeableActions = recentPatterns.filter(p => 
+    const swipeableActions = recentPatterns.filter(p =>
       ['smart-summary', 'contextual-insights', 'recent-activity'].includes(p.actionId)
     );
-    
+
     if (swipeableActions.length > 15) {
       insights.push({
         type: 'efficiency_tip',
@@ -282,7 +282,7 @@ export class PersonalizationService {
         confidence: 0.6,
       });
     }
-    
+
     return insights;
   }
 
@@ -291,7 +291,7 @@ export class PersonalizationService {
     preferences: PersonalizationPreferences
   ): PersonalizationInsight[] {
     const insights: PersonalizationInsight[] = [];
-    
+
     // Suggest voice features for heavy voice note users
     const voiceNoteUsage = usagePatterns.filter(p => p.actionId === 'voice-note').length;
     if (voiceNoteUsage > 20) {
@@ -307,12 +307,12 @@ export class PersonalizationService {
         confidence: 0.7,
       });
     }
-    
+
     // Suggest calendar integration for appointment-heavy users
-    const appointmentUsage = usagePatterns.filter(p => 
+    const appointmentUsage = usagePatterns.filter(p =>
       p.context.dealTypes?.includes('appointment') || p.actionId === 'calendar'
     ).length;
-    
+
     if (appointmentUsage > 10) {
       insights.push({
         type: 'feature_suggestion',
@@ -326,7 +326,7 @@ export class PersonalizationService {
         confidence: 0.8,
       });
     }
-    
+
     return insights;
   }
 
@@ -348,7 +348,7 @@ export class PersonalizationService {
   } {
     const hour = targetTime.getHours();
     const dayOfWeek = targetTime.getDay();
-    
+
     let timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
     if (hour >= 6 && hour < 12) timeOfDay = 'morning';
     else if (hour >= 12 && hour < 17) timeOfDay = 'afternoon';
@@ -359,7 +359,7 @@ export class PersonalizationService {
     const similarPatterns = usagePatterns.filter(pattern => {
       const patternHour = pattern.timestamp.getHours();
       const patternDay = pattern.timestamp.getDay();
-      
+
       return (
         pattern.context.timeOfDay === timeOfDay &&
         Math.abs(patternDay - dayOfWeek) <= 1 && // Same or adjacent day of week
@@ -410,7 +410,7 @@ export class PersonalizationService {
     historicalPatterns: UsagePattern[]
   ): string[] {
     const baseActions = ['voice-note', 'ask-zena', 'focus-threads', 'property-search'];
-    
+
     // Time-based suggestions
     const timeBasedActions: Record<string, string[]> = {
       morning: ['smart-summary', 'calendar', 'priority-notifications'],

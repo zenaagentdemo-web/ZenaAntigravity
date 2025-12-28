@@ -28,18 +28,31 @@
    Scroll Container
    ============================================ */
 
-.quick-actions-carousel__scroll {
+.quick-actions-carousel__scroll--carousel {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-3, 12px);
   overflow-x: auto;
   overflow-y: hidden;
-  padding: var(--spacing-2, 8px);
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  gap: var(--spacing-4, 16px);
+  padding: var(--spacing-2, 8px) 0;
   cursor: grab;
+}
+
+.quick-actions-carousel__scroll--grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-3, 12px);
+  padding: var(--spacing-2, 8px) 0;
+}
+
+@media (max-width: 480px) {
+  .quick-actions-carousel__scroll--grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .quick-actions-carousel__scroll::-webkit-scrollbar {
@@ -62,7 +75,9 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2, 8px);
+  width: 85px;
   min-width: 85px;
+  max-width: 85px;
   height: 95px;
   padding: var(--spacing-3, 12px);
   border-radius: 20px;
@@ -71,7 +86,7 @@
   backdrop-filter: var(--glass-blur-subtle, blur(10px));
   -webkit-backdrop-filter: var(--glass-blur-subtle, blur(10px));
   cursor: pointer;
-  transition: 
+  transition:
     transform var(--duration-fast, 150ms) var(--ease-smooth),
     box-shadow var(--duration-fast, 150ms) var(--ease-smooth),
     border-color var(--duration-fast, 150ms) var(--ease-smooth),
@@ -120,7 +135,7 @@
 .carousel-action--cyan:hover,
 .carousel-action--cyan:focus-visible {
   border-color: var(--neon-cyan);
-  box-shadow: 
+  box-shadow:
     0 0 20px var(--neon-cyan-dim),
     inset 0 0 20px rgba(0, 212, 255, 0.1);
 }
@@ -131,7 +146,7 @@
 }
 
 .carousel-action--cyan.carousel-action--active {
-  box-shadow: 
+  box-shadow:
     0 0 30px var(--neon-cyan),
     0 0 60px var(--neon-cyan-dim),
     inset 0 0 30px rgba(0, 212, 255, 0.2);
@@ -149,7 +164,7 @@
 .carousel-action--magenta:hover,
 .carousel-action--magenta:focus-visible {
   border-color: var(--neon-magenta);
-  box-shadow: 
+  box-shadow:
     0 0 20px var(--neon-magenta-dim),
     inset 0 0 20px rgba(255, 0, 255, 0.1);
 }
@@ -160,7 +175,7 @@
 }
 
 .carousel-action--magenta.carousel-action--active {
-  box-shadow: 
+  box-shadow:
     0 0 30px var(--neon-magenta),
     0 0 60px var(--neon-magenta-dim),
     inset 0 0 30px rgba(255, 0, 255, 0.2);
@@ -178,7 +193,7 @@
 .carousel-action--purple:hover,
 .carousel-action--purple:focus-visible {
   border-color: var(--neon-purple);
-  box-shadow: 
+  box-shadow:
     0 0 20px var(--neon-purple-dim),
     inset 0 0 20px rgba(139, 92, 246, 0.1);
 }
@@ -189,7 +204,7 @@
 }
 
 .carousel-action--purple.carousel-action--active {
-  box-shadow: 
+  box-shadow:
     0 0 30px var(--neon-purple),
     0 0 60px var(--neon-purple-dim),
     inset 0 0 30px rgba(139, 92, 246, 0.2);
@@ -207,7 +222,7 @@
 .carousel-action--green:hover,
 .carousel-action--green:focus-visible {
   border-color: var(--neon-green);
-  box-shadow: 
+  box-shadow:
     0 0 20px var(--neon-green-dim),
     inset 0 0 20px rgba(0, 255, 136, 0.1);
 }
@@ -218,7 +233,7 @@
 }
 
 .carousel-action--green.carousel-action--active {
-  box-shadow: 
+  box-shadow:
     0 0 30px var(--neon-green),
     0 0 60px var(--neon-green-dim),
     inset 0 0 30px rgba(0, 255, 136, 0.2);
@@ -236,7 +251,7 @@
 .carousel-action--orange:hover,
 .carousel-action--orange:focus-visible {
   border-color: var(--neon-orange);
-  box-shadow: 
+  box-shadow:
     0 0 20px var(--neon-orange-dim),
     inset 0 0 20px rgba(255, 107, 53, 0.1);
 }
@@ -247,7 +262,7 @@
 }
 
 .carousel-action--orange.carousel-action--active {
-  box-shadow: 
+  box-shadow:
     0 0 30px var(--neon-orange),
     0 0 60px var(--neon-orange-dim),
     inset 0 0 30px rgba(255, 107, 53, 0.2);
@@ -309,21 +324,46 @@
   z-index: 1;
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
   transition: transform var(--duration-fast, 150ms) var(--ease-smooth),
-              filter var(--duration-fast, 150ms) var(--ease-smooth);
+    filter var(--duration-fast, 150ms) var(--ease-smooth);
+}
+
+/* Premium Image Icon Styles */
+.carousel-action__icon-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.4));
+  transition: all 0.3s ease;
+}
+
+.carousel-action:hover .carousel-action__icon-img {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 12px rgba(0, 243, 255, 0.6));
+}
+
+/* Specific scaling for visually smaller icons */
+.carousel-action__icon-img[src*="voice-note"],
+.carousel-action__icon-img[src*="search"] {
+  width: 44px;
+  height: 44px;
 }
 
 .carousel-action__label {
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 600;
   color: var(--text-secondary-ht);
   text-align: center;
   position: relative;
   z-index: 1;
-  white-space: nowrap;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   transition: color var(--duration-fast, 150ms) var(--ease-smooth),
-              text-shadow var(--duration-fast, 150ms) var(--ease-smooth);
+    text-shadow var(--duration-fast, 150ms) var(--ease-smooth);
 }
 
 /* ============================================
@@ -388,16 +428,18 @@
 
 @media (min-width: 768px) {
   .carousel-action {
+    width: 100px;
     min-width: 100px;
+    max-width: 100px;
     height: 110px;
   }
-  
+
   .carousel-action__icon {
     font-size: 28px;
   }
-  
+
   .carousel-action__label {
-    font-size: 12px;
+    font-size: 10px;
   }
 }
 
@@ -409,19 +451,19 @@
   .carousel-action {
     transition: none;
   }
-  
+
   .carousel-action:hover {
     transform: none;
   }
-  
+
   .carousel-action--active {
     transform: none;
   }
-  
+
   .carousel-action__spinner {
     animation: none;
   }
-  
+
   .quick-actions-carousel__scroll {
     scroll-behavior: auto;
   }

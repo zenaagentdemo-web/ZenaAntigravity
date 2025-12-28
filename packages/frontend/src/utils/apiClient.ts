@@ -201,6 +201,18 @@ async function cacheResponse(endpoint: string, data: any): Promise<void> {
   try {
     if (Array.isArray(data)) {
       await saveToStore(storeName, data);
+    } else if (data.contacts && Array.isArray(data.contacts)) {
+      await saveToStore(storeName, data.contacts);
+    } else if (data.properties && Array.isArray(data.properties)) {
+      await saveToStore(storeName, data.properties);
+    } else if (data.deals && Array.isArray(data.deals)) {
+      await saveToStore(storeName, data.deals);
+    } else if (data.threads && Array.isArray(data.threads)) {
+      await saveToStore(storeName, data.threads);
+    } else if (data.tasks && Array.isArray(data.tasks)) {
+      await saveToStore(storeName, data.tasks);
+    } else if (data.timeline && Array.isArray(data.timeline)) {
+      await saveToStore(storeName, data.timeline);
     } else if (data.id) {
       await saveToStore(storeName, data);
     }

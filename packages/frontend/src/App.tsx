@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { BottomNavigation } from './components/BottomNavigation/BottomNavigation';
 import { OfflineIndicator } from './components/OfflineIndicator/OfflineIndicator';
 import { PrivateRoute } from './components/PrivateRoute/PrivateRoute';
@@ -10,6 +10,7 @@ import { PageTransition } from './components/PageTransition/PageTransition';
 import { useAuth } from './hooks/useAuth';
 import { realTimeDataService } from './services/realTimeDataService';
 import { errorHandlingService } from './services/errorHandlingService';
+import { ZenaAvatarWidget } from './components/ZenaAvatarWidget/ZenaAvatarWidget';
 import './App.css';
 
 // Lazy load pages for code splitting
@@ -19,8 +20,7 @@ const HomePage = lazy(() => import('./pages/HomePage/HomePage').then(m => ({ def
 const EnhancedHomeDashboard = lazy(() => import('./pages/EnhancedHomeDashboard/EnhancedHomeDashboard').then(m => ({ default: m.EnhancedHomeDashboard })));
 const HighTechDashboardPage = lazy(() => import('./pages/HighTechDashboardPage/HighTechDashboardPage').then(m => ({ default: m.HighTechDashboardPage })));
 const FocusPage = lazy(() => import('./pages/FocusPage/FocusPage').then(m => ({ default: m.FocusPage })));
-const NewPage = lazy(() => import('./pages/NewPage/NewPage').then(m => ({ default: m.NewPage })));
-const WaitingPage = lazy(() => import('./pages/WaitingPage/WaitingPage').then(m => ({ default: m.WaitingPage })));
+const InboxPage = lazy(() => import('./pages/InboxPage/InboxPage').then(m => ({ default: m.InboxPage })));
 const ContactsPage = lazy(() => import('./pages/ContactsPage/ContactsPage').then(m => ({ default: m.ContactsPage })));
 const ContactDetailPage = lazy(() => import('./pages/ContactDetailPage/ContactDetailPage').then(m => ({ default: m.ContactDetailPage })));
 const PropertiesPage = lazy(() => import('./pages/PropertiesPage/PropertiesPage').then(m => ({ default: m.PropertiesPage })));
@@ -33,8 +33,11 @@ const AvatarDemoPage = lazy(() => import('./pages/AvatarDemoPage/AvatarDemoPage'
 const AskZenaPage = lazy(() => import('./pages/AskZenaPage/AskZenaPage').then(m => ({ default: m.AskZenaPage })));
 const AskZenaImmersive = lazy(() => import('./pages/AskZenaPage/AskZenaImmersive').then(m => ({ default: m.AskZenaImmersive })));
 const DealFlowPage = lazy(() => import('./pages/DealFlowPage/DealFlowPage').then(m => ({ default: m.DealFlowPage })));
+const TasksPage = lazy(() => import('./pages/TasksPage/TasksPage').then(m => ({ default: m.TasksPage })));
 const PixelExplosionDemo = lazy(() => import('./pages/PixelExplosionDemo/PixelExplosionDemo'));
 const ZenaAskPageDemo = lazy(() => import('./pages/ZenaAskPage/ZenaAskPage').then(m => ({ default: m.ZenaAskPage })));
+const CalendarPage = lazy(() => import('./pages/CalendarPage/CalendarPage').then(m => ({ default: m.CalendarPage })));
+
 
 // Minimal loading skeleton - appears instantly for fast perceived loading
 const LoadingSkeleton: React.FC = () => (
@@ -47,6 +50,20 @@ const LoadingSkeleton: React.FC = () => (
     <p className="sr-only">Loading page content, please wait...</p>
   </div>
 );
+
+/**
+ * GlobalFloatingZena - Persistent Zena widget that follows the user
+ * across the application, except on the Ask Zena pages.
+ */
+const GlobalFloatingZena: React.FC = () => {
+  const location = useLocation();
+  const hidePaths = ['/ask-zena', '/ask-zena-immersive', '/zena-demo', '/deal-flow'];
+  const shouldHide = hidePaths.some(path => location.pathname.startsWith(path));
+
+  if (shouldHide) return null;
+
+  return <ZenaAvatarWidget variant="floating" />;
+};
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -85,6 +102,7 @@ function App() {
                 { targetId: 'bottom-navigation', text: 'Skip to navigation' }
               ]}
             />
+            <GlobalFloatingZena />
             <Suspense fallback={<LoadingSkeleton />}>
               <Routes>
                 {/* Public routes */}
@@ -131,9 +149,10 @@ function App() {
                                 <Route path="/home-enhanced" element={<EnhancedHomeDashboard />} />
                                 <Route path="/home-classic" element={<HomePage />} />
                                 <Route path="/focus" element={<FocusPage />} />
-                                <Route path="/new" element={<NewPage />} />
+                                <Route path="/inbox" element={<InboxPage />} />
+                                <Route path="/new" element={<Navigate to="/inbox?tab=new" replace />} />
+                                <Route path="/waiting" element={<Navigate to="/inbox?tab=awaiting" replace />} />
                                 <Route path="/deal-flow" element={<DealFlowPage />} />
-                                <Route path="/waiting" element={<WaitingPage />} />
                                 <Route path="/ask-zena" element={<AskZenaPage />} />
                                 <Route path="/contacts" element={<ContactsPage />} />
                                 <Route path="/contacts/:id" element={<ContactDetailPage />} />
@@ -142,6 +161,8 @@ function App() {
                                 <Route path="/deals/:id" element={<DealDetailPage />} />
                                 <Route path="/threads/:id" element={<ThreadDetailPage />} />
                                 <Route path="/search" element={<SearchPage />} />
+                                <Route path="/tasks" element={<TasksPage />} />
+                                <Route path="/calendar" element={<CalendarPage />} />
                                 <Route path="/settings" element={<SettingsPage />} />
                               </Routes>
                             </PageTransition>

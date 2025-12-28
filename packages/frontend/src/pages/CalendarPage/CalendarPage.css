@@ -1,0 +1,224 @@
+:root {
+    --neon-cyan: #00f2ff;
+    --neon-magenta: #ff00ff;
+    --neon-purple: #bc13fe;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glow-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+}
+
+.calendar-page {
+    min-height: 100vh;
+    background: radial-gradient(circle at top right, #1a0b2e, #050208);
+    color: #fff;
+    padding: 2rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.calendar-page__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.calendar-page__title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(to right, var(--neon-cyan), var(--neon-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+}
+
+.back-button {
+    background: none;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: rgba(0, 242, 255, 0.1);
+    box-shadow: var(--glow-shadow);
+}
+
+.calendar-view-toggles {
+    display: flex;
+    gap: 0.5rem;
+    background: var(--glass-bg);
+    padding: 0.3rem;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+}
+
+.view-toggle {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-toggle.active {
+    background: var(--neon-cyan);
+    color: #000;
+    font-weight: bold;
+    box-shadow: var(--glow-shadow);
+}
+
+.calendar-page__content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 2rem;
+}
+
+.high-tech-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.section-title {
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1.5rem;
+    color: var(--neon-cyan);
+}
+
+.appointment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.appt-card {
+    display: grid;
+    grid-template-columns: 100px 1fr auto;
+    align-items: center;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    border-left: 4px solid #666;
+    transition: transform 0.3s ease;
+}
+
+.appt-card:hover {
+    transform: translateX(10px);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.appt-card--high {
+    border-left-color: #ff4d4d;
+}
+
+.appt-card--medium {
+    border-left-color: #ffcc00;
+}
+
+.appt-card--low {
+    border-left-color: var(--neon-cyan);
+}
+
+.appt-time {
+    font-family: 'Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--neon-cyan);
+}
+
+.appt-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 0.3rem;
+}
+
+.appt-location {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.appt-btn {
+    background: var(--glass-border);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.calendar-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.zena-suggestions {
+    border: 1px solid rgba(188, 19, 254, 0.3);
+}
+
+.suggestion-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(188, 19, 254, 0.05);
+    border-radius: 12px;
+}
+
+.suggestion-icon {
+    font-size: 1.5rem;
+}
+
+.zena-action-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(45deg, var(--neon-purple), var(--neon-magenta));
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.zena-action-btn:hover {
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.fab-add-event {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    color: #000;
+    font-size: 2rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.fab-add-event:hover {
+    transform: scale(1.1) rotate(90deg);
+}
+
+@media (max-width: 1024px) {
+    .calendar-page__content {
+        grid-template-columns: 1fr;
+    }
+}

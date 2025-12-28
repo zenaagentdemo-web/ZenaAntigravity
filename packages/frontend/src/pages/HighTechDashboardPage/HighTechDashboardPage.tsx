@@ -5,10 +5,9 @@
  * Integrates the HighTechDashboard component with app data.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HighTechDashboard } from '../../components/HighTechDashboard/HighTechDashboard';
-import { PriorityAlert } from '../../components/CollapsibleAlertsPanel/CollapsibleAlertsPanel';
 import { CalendarAppointment } from '../../components/CalendarWidget/CalendarWidget';
 import { ActivityItem } from '../../components/RecentActivityStream/RecentActivityStream';
 import { useAuth } from '../../hooks/useAuth';
@@ -112,132 +111,84 @@ const generateMockActivities = (): ActivityItem[] => {
 export const HighTechDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [activeTasksCount, setActiveTasksCount] = useState(0);
+
+  // Read real task count from localStorage
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('zena_tasks');
+    if (savedTasks) {
+      try {
+        const tasks = JSON.parse(savedTasks);
+        const pendingCount = tasks.filter((t: any) => t.status !== 'completed').length;
+        setActiveTasksCount(pendingCount);
+      } catch (e) {
+        console.error('Failed to parse tasks for dashboard', e);
+      }
+    }
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'zena_tasks' && e.newValue) {
+        try {
+          const tasks = JSON.parse(e.newValue);
+          const pendingCount = tasks.filter((t: any) => t.status !== 'completed').length;
+          setActiveTasksCount(pendingCount);
+        } catch (err) {
+          console.error('Error parsing storage tasks', err);
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   // Dashboard data state
   const [focusThreadsCount] = useState(3);
   const [waitingThreadsCount] = useState(7);
   const [atRiskDealsCount] = useState(2);
-  const [activeTasksCount] = useState(4);
 
-  // Mock data for appointments and activities
   const [appointments] = useState<CalendarAppointment[]>(generateMockAppointments);
   const [activities] = useState<ActivityItem[]>(generateMockActivities);
-
-  // Priority alerts
-  const [alerts, setAlerts] = useState<PriorityAlert[]>([
-    {
-      id: 'alert-1',
-      priority: 'urgent',
-      title: 'At-Risk Deal: 123 Main St',
-      message: 'No response in 5 days. Client may be losing interest.',
-      actions: [
-        { id: 'view', label: 'View Deal', primary: true },
-        { id: 'dismiss', label: 'Dismiss' },
-      ],
-      timestamp: new Date(),
-    },
-    {
-      id: 'alert-2',
-      priority: 'warning',
-      title: 'Follow-up Required',
-      message: '3 threads need your response today.',
-      actions: [
-        { id: 'view-focus', label: 'View Focus', primary: true },
-      ],
-      timestamp: new Date(Date.now() - 30 * 60 * 1000),
-    },
-  ]);
 
   // Get user's first name for greeting
   const userName = user?.name?.split(' ')[0] || 'there';
 
-  // Handle Zena orb click
+  // Handlers
   const handleZenaClick = useCallback(() => {
     navigate('/ask-zena');
   }, [navigate]);
 
-  // Handle metric orb click
   const handleMetricClick = useCallback((metricId: string) => {
     switch (metricId) {
-      case 'focus':
-        navigate('/new');
-        break;
-      case 'deals':
-        navigate('/deals?filter=at-risk');
-        break;
-      case 'waiting':
-        navigate('/waiting');
-        break;
-      case 'tasks':
-        navigate('/tasks');
-        break;
+      case 'focus': navigate('/inbox?tab=new'); break;
+      case 'deals': navigate('/deal-flow'); break;
+      case 'waiting': navigate('/inbox?tab=awaiting'); break;
+      case 'tasks': navigate('/tasks'); break;
     }
   }, [navigate]);
 
-  // Handle alert action
-  const handleAlertAction = useCallback((alertId: string, actionId: string) => {
-    if (actionId === 'dismiss') {
-      setAlerts(prev => prev.filter(a => a.id !== alertId));
-      return;
-    }
-
-    // Navigate based on action
-    if (actionId === 'view') {
-      navigate('/deals/123');
-    } else if (actionId === 'view-focus') {
-      navigate('/new');
-    }
-  }, [navigate]);
-
-  // Handle quick action
   const handleQuickAction = useCallback((actionId: string) => {
     switch (actionId) {
-      case 'voice-note':
-        navigate('/voice-note');
-        break;
-      case 'search':
-        navigate('/search');
-        break;
-      case 'calendar':
-        navigate('/calendar');
-        break;
-      case 'contacts':
-        navigate('/contacts');
-        break;
-      case 'properties':
-        navigate('/properties');
-        break;
+      case 'voice-note': navigate('/voice-note'); break;
+      case 'search': navigate('/search'); break;
+      case 'calendar': navigate('/calendar'); break;
+      case 'contacts': navigate('/contacts'); break;
+      case 'properties': navigate('/properties'); break;
     }
   }, [navigate]);
 
-  // Handle appointment click
   const handleAppointmentClick = useCallback((appointment: CalendarAppointment) => {
-    if (appointment.property?.id) {
-      navigate(`/properties/${appointment.property.id}`);
-    } else {
-      navigate('/calendar');
-    }
+    if (appointment.property?.id) navigate(`/properties/${appointment.property.id}`);
+    else navigate('/calendar');
   }, [navigate]);
 
-  // Handle activity click
   const handleActivityClick = useCallback((activity: ActivityItem) => {
     if (activity.relatedId && activity.relatedType) {
       switch (activity.relatedType) {
-        case 'thread':
-          navigate(`/threads/${activity.relatedId}`);
-          break;
-        case 'deal':
-          navigate(`/deals/${activity.relatedId}`);
-          break;
-        case 'property':
-          navigate(`/properties/${activity.relatedId}`);
-          break;
-        case 'contact':
-          navigate(`/contacts/${activity.relatedId}`);
-          break;
-        case 'appointment':
-          navigate('/calendar');
-          break;
+        case 'thread': navigate(`/threads/${activity.relatedId}`); break;
+        case 'deal': navigate(`/deals/${activity.relatedId}`); break;
+        case 'property': navigate(`/properties/${activity.relatedId}`); break;
+        case 'contact': navigate(`/contacts/${activity.relatedId}`); break;
+        case 'appointment': navigate('/calendar'); break;
       }
     }
   }, [navigate]);
@@ -250,13 +201,11 @@ export const HighTechDashboardPage: React.FC = () => {
         waitingThreadsCount={waitingThreadsCount}
         atRiskDealsCount={atRiskDealsCount}
         activeTasksCount={activeTasksCount}
-        alerts={alerts}
         appointments={appointments}
         recentActivities={activities}
         aiState="idle"
         onZenaClick={handleZenaClick}
         onMetricClick={handleMetricClick}
-        onAlertAction={handleAlertAction}
         onQuickAction={handleQuickAction}
         onAppointmentClick={handleAppointmentClick}
         onActivityClick={handleActivityClick}

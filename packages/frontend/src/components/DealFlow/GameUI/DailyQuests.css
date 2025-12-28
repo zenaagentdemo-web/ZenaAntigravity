@@ -1,0 +1,185 @@
+.daily-quests {
+    background: rgba(13, 27, 42, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
+}
+
+.daily-quests__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+}
+
+.daily-quests__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #00f3ff;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+    margin: 0;
+}
+
+.daily-quests__count {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.daily-quests__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Quest Item */
+.quest-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(0, 243, 255, 0.05);
+    border: 1px solid rgba(0, 243, 255, 0.15);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quest-item:hover {
+    background: rgba(0, 243, 255, 0.1);
+    border-color: rgba(0, 243, 255, 0.3);
+    transform: translateX(4px);
+}
+
+.quest-item--complete {
+    background: rgba(0, 255, 65, 0.1);
+    border-color: rgba(0, 255, 65, 0.3);
+    opacity: 0.7;
+}
+
+.quest-item__checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(0, 243, 255, 0.5);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #00ff41;
+    flex-shrink: 0;
+}
+
+.quest-item--complete .quest-item__checkbox {
+    background: rgba(0, 255, 65, 0.2);
+    border-color: #00ff41;
+}
+
+.quest-item__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.quest-item__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.quest-item--complete .quest-item__title {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.quest-item__desc {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.quest-item__reward {
+    font-size: 12px;
+    font-weight: 700;
+    color: #00ff41;
+    text-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+}
+
+/* Daily Bonus */
+.daily-quests__bonus {
+    margin-top: 12px;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05));
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffd700;
+}
+
+/* Weekly Challenge */
+.weekly-challenge {
+    margin-top: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(188, 19, 254, 0.15), rgba(188, 19, 254, 0.05));
+    border: 1px solid rgba(188, 19, 254, 0.4);
+    border-radius: 12px;
+}
+
+.weekly-challenge__header {
+    margin-bottom: 8px;
+}
+
+.weekly-challenge__title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #bc13fe;
+    text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
+    margin: 0;
+}
+
+.weekly-challenge__desc {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 12px 0;
+}
+
+.weekly-challenge__progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.weekly-challenge__bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(188, 19, 254, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.weekly-challenge__fill {
+    height: 100%;
+    background: linear-gradient(90deg, #bc13fe, #ff00ff);
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
+}
+
+.weekly-challenge__count {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.weekly-challenge__reward {
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffd700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}

@@ -9,7 +9,7 @@ Follow these steps in order. Each step must complete successfully before moving 
 **Open Terminal 1** and run:
 
 ```bash
-cd /Users/hamishmcgee/Desktop/ZenaKiro/packages/backend
+cd /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend
 npm run dev
 ```
 
@@ -100,7 +100,7 @@ Replace `YOUR-NGROK-URL` with your actual ngrok URL.
 **Open Terminal 4** (new terminal window/tab) and run:
 
 ```bash
-cd /Users/hamishmcgee/Desktop/ZenaKiro/packages/frontend
+cd /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend
 npm run dev
 ```
 

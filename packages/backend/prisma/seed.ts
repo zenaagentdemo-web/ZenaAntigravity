@@ -6,6 +6,18 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Starting database seed...');
 
+  // Clean up existing data
+  console.log('Cleaning up existing data...');
+  await prisma.timelineEvent.deleteMany({});
+  await prisma.message.deleteMany({});
+  await prisma.thread.deleteMany({});
+  await prisma.task.deleteMany({});
+  await prisma.deal.deleteMany({});
+  await prisma.contact.deleteMany({});
+  await prisma.property.deleteMany({});
+  await prisma.emailAccount.deleteMany({});
+  await prisma.user.deleteMany({ where: { email: 'demo@zena.ai' } });
+
   // Create a demo user
   const passwordHash = await bcrypt.hash('DemoSecure2024!', 10);
 
@@ -41,11 +53,17 @@ async function main() {
 
   console.log(`Created demo user: ${user.email}`);
 
-  // Create a sample property
+  // Create sample properties
   const property = await prisma.property.create({
     data: {
       userId: user.id,
       address: '123 Main Street, Sydney NSW 2000',
+      type: 'residential',
+      status: 'active',
+      listingPrice: 1250000,
+      bedrooms: 4,
+      bathrooms: 2,
+      landSize: '650 sqm',
       milestones: [
         {
           id: '1',
@@ -63,23 +81,167 @@ async function main() {
     },
   });
 
+  const propertyUnderContract = await prisma.property.create({
+    data: {
+      userId: user.id,
+      address: '45 Harbour View Drive, Mosman NSW 2088',
+      type: 'residential',
+      status: 'under_contract',
+      listingPrice: 3450000,
+      bedrooms: 5,
+      bathrooms: 3,
+      landSize: '850 sqm',
+      milestones: [
+        { id: '1', type: 'listing', date: new Date('2024-01-05'), notes: 'Listed' },
+        { id: '2', type: 'offer_received', date: new Date('2024-01-25'), notes: 'Offer accepted' }
+      ]
+    }
+  });
+
+  const propertySold = await prisma.property.create({
+    data: {
+      userId: user.id,
+      address: '7a Garden Lane, Surry Hills NSW 2010',
+      type: 'residential',
+      status: 'sold',
+      listingPrice: 1850000,
+      bedrooms: 3,
+      bathrooms: 2,
+      landSize: '210 sqm',
+      milestones: [
+        { id: '1', type: 'listing', date: new Date('2023-11-01'), notes: 'Listed' },
+        { id: '2', type: 'settled', date: new Date('2023-12-20'), notes: 'Settled' }
+      ]
+    }
+  });
+
+  const propertyCommercial = await prisma.property.create({
+    data: {
+      userId: user.id,
+      address: 'Shop 4, 100 George St, Sydney NSW 2000',
+      type: 'commercial',
+      status: 'active',
+      listingPrice: 890000,
+      landSize: '45 sqm',
+      milestones: []
+    }
+  });
+
   console.log(`Created sample property: ${property.address}`);
 
-  // Create sample contacts
+  // 5. Withdrawn Property - Difficult Vendor
+  const propertyWithdrawn = await prisma.property.create({
+    data: {
+      userId: user.id,
+      address: '22 Cliff Road, Dover Heights NSW 2030',
+      type: 'residential',
+      status: 'withdrawn',
+      listingPrice: 5500000,
+      bedrooms: 5,
+      bathrooms: 4,
+      landSize: '600 sqm',
+      milestones: [
+        { id: '1', type: 'listing', date: new Date('2023-09-01'), notes: 'Listed high at vendor request' },
+        { id: '2', type: 'price_adjustment', date: new Date('2023-10-15'), notes: 'Reduced by $200k' },
+        { id: '3', type: 'withdrawn', date: new Date('2023-12-01'), notes: 'Vendor withdrew from market' }
+      ]
+    }
+  });
+
+  // 6. Vacant Land
+  const propertyLand = await prisma.property.create({
+    data: {
+      userId: user.id,
+      address: 'Lot 4, 56 Valley Road, Kumeu AUK',
+      type: 'land',
+      status: 'active',
+      listingPrice: 850000,
+      landSize: '1.2 ha',
+      milestones: [
+        { id: '1', type: 'listing', date: new Date('2024-02-01'), notes: 'New title issued' }
+      ]
+    }
+  });
+
+  // 7. Luxury Penthouse
+  const propertyLuxury = await prisma.property.create({
+    data: {
+      userId: user.id,
+      address: 'Penthouse 3, 1 Barangaroo Avenue, Sydney NSW 2000',
+      type: 'residential',
+      status: 'active',
+      listingPrice: 12000000,
+      bedrooms: 3,
+      bathrooms: 3,
+      landSize: '280 sqm',
+      milestones: [
+        { id: '1', type: 'listing', date: new Date('2024-02-10'), notes: 'Off-market campaign started' }
+      ]
+    }
+  });
+
+  // 8. Investment Unit
+  const propertyInvestment = await prisma.property.create({
+    data: {
+      userId: user.id,
+      address: 'Unit 402, 55 Symonds Street, Auckland CBD',
+      type: 'residential',
+      status: 'active',
+      listingPrice: 450000,
+      bedrooms: 2,
+      bathrooms: 1,
+      landSize: '55 sqm',
+      milestones: []
+    }
+  });
+
+  // 9. Renovator's Delight
+  const propertyRenovator = await prisma.property.create({
+    data: {
+      userId: user.id,
+      address: '14 Rust Avenue, Redfern NSW 2016',
+      type: 'residential',
+      status: 'active',
+      listingPrice: 1100000,
+      bedrooms: 2,
+      bathrooms: 1,
+      landSize: '120 sqm',
+      milestones: [
+        { id: '1', type: 'listing', date: new Date('2024-02-15'), notes: 'Executors sale' }
+      ]
+    }
+  });
+
+  // 10. Lifestyle Block
+  const propertyRural = await prisma.property.create({
+    data: {
+      userId: user.id,
+      address: '88 Country Lane, Coatesville AUK',
+      type: 'lifestyle',
+      status: 'active',
+      listingPrice: 3200000,
+      bedrooms: 5,
+      bathrooms: 3,
+      landSize: '2.5 ha',
+      milestones: []
+    }
+  });
+
+  console.log('Created 10 sample properties');
+
+  // Create sample contacts - 10 diverse contacts with varying stages
   const buyerContact = await prisma.contact.create({
     data: {
       userId: user.id,
       name: 'John Smith',
       emails: ['john.smith@example.com'],
-      phones: ['+61400123456'],
+      phones: ['+64212345678'],
       role: 'buyer',
+      intelligenceSnippet: 'First-home buyer. Pre-approval valid for 60 days. High urgency.',
+      lastActivityDetail: 'Inquired about 24 Ponsonby Road, Ponsonby',
+      lastActivityAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
       relationshipNotes: [
-        {
-          id: '1',
-          content: 'First-time buyer, looking for family home',
-          source: 'email',
-          createdAt: new Date(),
-        },
+        { id: '1', content: 'First-time buyer, looking for family home', source: 'email', createdAt: new Date() },
       ],
     },
   });
@@ -89,20 +251,136 @@ async function main() {
       userId: user.id,
       name: 'Sarah Johnson',
       emails: ['sarah.johnson@example.com'],
-      phones: ['+61400789012'],
+      phones: ['+64217890123'],
       role: 'vendor',
+      intelligenceSnippet: 'Downsizing vendor. Exploring smaller apartments in Mission Bay.',
+      lastActivityDetail: 'Requested appraisal for current property',
+      lastActivityAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
       relationshipNotes: [
-        {
-          id: '1',
-          content: 'Motivated seller, relocating for work',
-          source: 'manual',
-          createdAt: new Date(),
-        },
+        { id: '1', content: 'Motivated seller, relocating for work', source: 'manual', createdAt: new Date() },
       ],
     },
   });
 
-  console.log(`Created sample contacts: ${buyerContact.name}, ${vendorContact.name}`);
+  // Additional contacts with diverse profiles
+  await prisma.contact.create({
+    data: {
+      userId: user.id,
+      name: 'Mason Anderson',
+      emails: ['mason.anderson@yahoo.co.nz'],
+      phones: ['+64211234567'],
+      role: 'buyer',
+      intelligenceSnippet: 'First-home buyer. Pre-approval valid for 60 days. High urgency.',
+      lastActivityDetail: 'Downloaded info pack for 88 Queen Street, CBD',
+      lastActivityAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.contact.create({
+    data: {
+      userId: user.id,
+      name: 'Emma Davis',
+      emails: ['emma.davis@me.com'],
+      phones: ['+64219876543'],
+      role: 'vendor',
+      intelligenceSnippet: 'Inherited property. Unsure about market timing.',
+      lastActivityDetail: 'Requested appraisal for 45 Mount Eden Road',
+      lastActivityAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.contact.create({
+    data: {
+      userId: user.id,
+      name: 'William Jackson',
+      emails: ['william.jackson@provider.nz'],
+      phones: ['+64218765432'],
+      role: 'buyer',
+      intelligenceSnippet: 'High probability seller (6-9 months). Watching local auction clearance rates.',
+      lastActivityDetail: 'Viewed 12 Jervois Road, Herne Bay (2h ago)',
+      lastActivityAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.contact.create({
+    data: {
+      userId: user.id,
+      name: 'Olivia Wilson',
+      emails: ['olivia.wilson@gmail.com'],
+      phones: ['+64215551234'],
+      role: 'vendor',
+      intelligenceSnippet: 'Active buyer. Attending 3+ open homes per weekend in Grey Lynn area.',
+      lastActivityDetail: 'Scheduled private viewing for tomorrow',
+      lastActivityAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.contact.create({
+    data: {
+      userId: user.id,
+      name: 'James Thompson',
+      emails: ['james.thompson@tradies.co.nz'],
+      phones: ['+64216667788'],
+      role: 'tradesperson',
+      intelligenceSnippet: 'Reliable plumber. Quick turnaround on pre-settlement repairs.',
+      lastActivityDetail: 'Completed repair job at 56 Richmond Road',
+      lastActivityAt: new Date(Date.now() - 48 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.contact.create({
+    data: {
+      userId: user.id,
+      name: 'Sophia Taylor',
+      emails: ['sophia.taylor@windowslive.com'],
+      phones: ['+64213334455'],
+      role: 'vendor',
+      intelligenceSnippet: 'Trades lead. Reliable for urgent pre-settlement repairs.',
+      lastActivityDetail: 'Viewed 88 Queen Street, CBD (2h ago)',
+      lastActivityAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.contact.create({
+    data: {
+      userId: user.id,
+      name: 'Liam Thompson',
+      emails: ['liam.thompson@xtra.co.nz'],
+      phones: ['+64217778899'],
+      role: 'buyer',
+      intelligenceSnippet: 'Previous client. Portfolio investor looking for multi-unit properties.',
+      lastActivityDetail: 'Inquired about 102 Tamaki Drive, Mission Bay',
+      lastActivityAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.contact.create({
+    data: {
+      userId: user.id,
+      name: 'Charlotte Brown',
+      emails: ['charlotte.brown@realestate.co.nz'],
+      phones: ['+64212223344'],
+      role: 'agent',
+      intelligenceSnippet: 'Fellow agent. Good for referrals in North Shore area.',
+      lastActivityDetail: 'Cross-referred client for Devonport listing',
+      lastActivityAt: new Date(Date.now() - 72 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.contact.create({
+    data: {
+      userId: user.id,
+      name: 'Noah Garcia',
+      emails: ['noah.garcia@outlook.co.nz'],
+      phones: ['+64219990011'],
+      role: 'market',
+      intelligenceSnippet: 'Bank mortgage advisor. Great for pre-approval referrals.',
+      lastActivityDetail: 'Approved finance for client purchase',
+      lastActivityAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+    },
+  });
+
+  console.log(`Created 10 sample contacts including: ${buyerContact.name}, ${vendorContact.name}`);
 
   // Link contacts to property
   await prisma.property.update({
@@ -718,22 +996,228 @@ Amanda`,
 
   console.log('Created Thread 5: Urgent Settlement Issue with 3 messages');
 
-  // Add one "Normal" waiting thread just to have variety
+  // =====================================================
+  // THREAD 6: SCHOOL ZONE INQUIRY - NEW
+  // =====================================================
   await prisma.thread.create({
     data: {
       userId: user.id,
       emailAccountId: emailAccount.id,
-      externalId: 'mock-normal-waiting',
-      subject: 'Routine Maintenance Update',
-      participants: ['maintenance@example.com'],
-      lastMessageAt: new Date(),
-      summary: 'Bi-annual smoke alarm check scheduled.',
-      classification: 'market',
-      category: 'waiting',
+      externalId: 'mock-school-zone-006',
+      subject: 'School zones for 12 Karaka Street, Ponsonby',
+      participants: [{ name: 'Liam Wilson', email: 'liam.wilson@me.com' }],
+      lastMessageAt: new Date(Date.now() - 3 * 3600000),
+      summary: 'Buyer asking if property is within Auckland Grammar zone. High priority due to school enrollment deadlines.',
+      classification: 'buyer',
+      category: 'focus',
       riskLevel: 'low',
-      nextActionOwner: 'other'
+      nextActionOwner: 'agent',
+      nextAction: 'Confirm school zones and reply',
+      propertyId: property.id
     }
   });
+
+  // =====================================================
+  // THREAD 7: MARKETING UPDATE REQUEST - NEW
+  // =====================================================
+  await prisma.thread.create({
+    data: {
+      userId: user.id,
+      emailAccountId: emailAccount.id,
+      externalId: 'mock-marketing-update-007',
+      subject: 'Marketing Report - 8 Beach Road',
+      participants: [{ name: 'Graham Norton', email: 'gnorton@xtra.co.nz' }],
+      lastMessageAt: new Date(Date.now() - 5 * 3600000),
+      summary: 'Vendor requesting update on TradeMe views and social media engagement for their property.',
+      classification: 'vendor',
+      category: 'focus',
+      riskLevel: 'low',
+      nextActionOwner: 'agent',
+      nextAction: 'Send weekly marketing report',
+    }
+  });
+
+  // =====================================================
+  // THREAD 8: OPEN HOME FOLLOW UP - NEW
+  // =====================================================
+  await prisma.thread.create({
+    data: {
+      userId: user.id,
+      emailAccountId: emailAccount.id,
+      externalId: 'mock-open-home-008',
+      subject: 'Follow up from 102 Great North Road Open Home',
+      participants: [{ name: 'Sophie Taylor', email: 'sophie.taylor@gmail.com' }],
+      lastMessageAt: new Date(Date.now() - 8 * 3600000),
+      summary: 'Buyer loved the kitchen, asking for info on recent sales in Grey Lynn.',
+      classification: 'buyer',
+      category: 'focus',
+      riskLevel: 'low',
+      nextActionOwner: 'agent',
+      nextAction: 'Send CMA and Grey Lynn market update',
+    }
+  });
+
+  // =====================================================
+  // THREAD 9: PRE-AUCTION OFFER - NEW
+  // =====================================================
+  await prisma.thread.create({
+    data: {
+      userId: user.id,
+      emailAccountId: emailAccount.id,
+      externalId: 'mock-pre-auction-009',
+      subject: 'Pre-auction offer for 15 Mission Bay Drive',
+      participants: [{ name: 'Kevin Zhang', email: 'kevin.z@investments.co' }],
+      lastMessageAt: new Date(Date.now() - 1 * 3600000),
+      summary: 'URGENT: Pre-auction offer received. Buyer wants to stop the auction.',
+      classification: 'buyer',
+      category: 'focus',
+      riskLevel: 'high',
+      riskReason: 'Time-sensitive pre-auction offer',
+      nextActionOwner: 'agent',
+      nextAction: 'Contact vendor and prepare auction variation forms',
+    }
+  });
+
+  // =====================================================
+  // THREAD 10: REPAIR BEFORE SETTLEMENT - NEW
+  // =====================================================
+  await prisma.thread.create({
+    data: {
+      userId: user.id,
+      emailAccountId: emailAccount.id,
+      externalId: 'mock-repair-010',
+      subject: 'Pre-settlement inspection - Leaky faucet at 55 High St',
+      participants: [{ name: 'Sarah Connor', email: 's.connor@buyer.net' }],
+      lastMessageAt: new Date(Date.now() - 4 * 3600000),
+      summary: 'Buyer identified a leak during pre-settlement inspection. Needs fixing before settlement on Friday.',
+      classification: 'buyer',
+      category: 'focus',
+      riskLevel: 'medium',
+      nextActionOwner: 'agent',
+      nextAction: 'Arrange plumber and confirm with vendor',
+    }
+  });
+
+  // =====================================================
+  // AWAITING RESPONSES (10 THREADS)
+  // =====================================================
+
+  const awaitingThreads = [
+    { subject: 'Waiting for Bank Valuation - 123 Main St', participant: 'valuer@bank.co.nz', summary: 'Waiting for official valuation report to complete finance condition.' },
+    { subject: 'Contract Signature Required - 45 Harbour View', participant: 'vendor@outlook.com', summary: 'Sent corrected contract to vendor for initialing changes.' },
+    { subject: 'Tenant Inspection Confirmation', participant: 'tenant@gmail.com', summary: 'Asked tenant for permission to show property next Tuesday.' },
+    { subject: 'Deposit Receipt Confirmation', participant: 'trust@lawyers.co.nz', summary: 'Waiting for confirmation that 10% deposit has hit trust account.' },
+    { subject: 'Listing Photos - 7a Garden Lane', participant: 'photos@realestatepix.com', summary: 'Waiting for edited photos and drone footage.' },
+    { subject: 'Council Building Consent Status', participant: 'consent@aucklandcouncil.govt.nz', summary: 'Followed up on the CCC for the new deck.' },
+    { subject: 'Signed Offer - 102 Great North Rd', participant: 'buyer.lead@xtra.co.nz', summary: 'Buyer promised to return signed offer by COB today.' },
+    { subject: 'Pet Approval - Body Corp Unit 5', participant: 'bc.manager@strata.co.nz', summary: 'Waiting for body corp committee to approve the resident\'s dog.' },
+    { subject: 'Appraisal Date Confirmation', participant: 'potential.vendor@me.com', summary: 'Suggested two times for appraisal, waiting for choice.' },
+    { subject: 'Maintenance Quote - Leak repair', participant: 'plumbing@craftsman.co', summary: 'Requested quote for leak identified in pre-settlement.' }
+  ];
+
+  for (let i = 0; i < awaitingThreads.length; i++) {
+    await prisma.thread.create({
+      data: {
+        userId: user.id,
+        emailAccountId: emailAccount.id,
+        externalId: `mock-awaiting-${i + 1}`,
+        subject: awaitingThreads[i].subject,
+        participants: [{ name: awaitingThreads[i].participant.split('@')[0], email: awaitingThreads[i].participant }],
+        lastMessageAt: new Date(Date.now() - (i + 2) * 24 * 3600000),
+        lastReplyAt: new Date(Date.now() - (i + 2) * 24 * 3600000),
+        summary: awaitingThreads[i].summary,
+        classification: 'lawyer_broker',
+        category: 'waiting',
+        riskLevel: 'low',
+        nextActionOwner: 'other'
+      }
+    });
+  }
+
+  console.log('Generating per-contact mock email threads...');
+  const allContacts = await prisma.contact.findMany();
+
+  for (const contact of allContacts) {
+    const isBuyer = contact.role === 'buyer';
+
+    // Thread 1: Initial Relationship Setup
+    const thread1 = await prisma.thread.create({
+      data: {
+        userId: user.id,
+        emailAccountId: emailAccount.id,
+        externalId: `mock-thread-1-${contact.id}`,
+        subject: isBuyer ? 'Looking for properties in Ponsonby' : 'Considering selling my property',
+        participants: [
+          { name: contact.name, email: contact.emails[0] },
+          { name: 'Demo Agent', email: 'demo@zena.ai' }
+        ],
+        lastMessageAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+        summary: isBuyer
+          ? `Initial inquiry from ${contact.name} regarding Ponsonby listings.`
+          : `Market appraisal discussion with ${contact.name}.`,
+        classification: isBuyer ? 'buyer' : 'vendor',
+        category: 'waiting',
+        riskLevel: 'low',
+        nextActionOwner: 'agent',
+        nextAction: 'Weekly follow up nudge'
+      }
+    });
+
+    await prisma.message.create({
+      data: {
+        threadId: thread1.id,
+        externalId: `msg-1-${contact.id}`,
+        from: JSON.stringify({ name: contact.name, email: contact.emails[0] }),
+        to: [JSON.stringify({ name: 'Demo Agent', email: 'demo@zena.ai' })],
+        cc: [],
+        subject: thread1.subject,
+        body: `Hi Demo Agent, I'm reaching out to discuss ${isBuyer ? 'buying a home' : 'selling my place'}. Let me know when you're free to chat.`,
+        sentAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        receivedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        isFromUser: false
+      }
+    });
+
+    // Thread 2: Recent Activity / High Intent
+    const thread2 = await prisma.thread.create({
+      data: {
+        userId: user.id,
+        emailAccountId: emailAccount.id,
+        externalId: `mock-thread-2-${contact.id}`,
+        subject: isBuyer ? 'Feedback on recent viewing' : 'Ready to list - Next steps?',
+        participants: [
+          { name: contact.name, email: contact.emails[0] },
+          { name: 'Demo Agent', email: 'demo@zena.ai' }
+        ],
+        lastMessageAt: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
+        summary: isBuyer
+          ? `${contact.name} provided feedback on the kitchen and layout. Very interested.`
+          : `${contact.name} wants to go live next week. High urgency.`,
+        classification: isBuyer ? 'buyer' : 'vendor',
+        category: 'focus',
+        riskLevel: isBuyer ? 'low' : 'medium',
+        nextActionOwner: 'agent',
+        nextAction: isBuyer ? 'Send info pack' : 'Prepare listing agreement'
+      }
+    });
+
+    await prisma.message.create({
+      data: {
+        threadId: thread2.id,
+        externalId: `msg-2-${contact.id}`,
+        from: JSON.stringify({ name: contact.name, email: contact.emails[0] }),
+        to: [JSON.stringify({ name: 'Demo Agent', email: 'demo@zena.ai' })],
+        cc: [],
+        subject: thread2.subject,
+        body: isBuyer
+          ? "I really liked the property we saw today. Can you send through the council records?"
+          : "Let's do it. We want to be on the market by Monday. What do you need from us?",
+        sentAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+        receivedAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+        isFromUser: false
+      }
+    });
+  }
 
   console.log('Database seed completed successfully!');
   console.log('\n=== Demo Account ===');

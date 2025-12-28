@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { searchService } from './search.service.js';
 import { websocketService } from './websocket.service.js';
+import { contactCategorizationService } from './contact-categorization.service.js';
 import { decodeHTMLEntities } from '../utils/text-utils.js';
 
 const prisma = new PrismaClient();
@@ -1065,6 +1066,635 @@ Respond with ONLY the draft text (no JSON, no subject line, just the content):`;
    */
   private generateFallbackDraft(_request: string): string {
     return `Thank you for your inquiry. I'll get back to you shortly with the information you need.\n\nBest regards`;
+  }
+
+  /**
+   * Generate AI-powered email draft for contacts
+   * This connects ZenaBatchComposeModal to Zena's high intelligence brain
+   */
+  async generateContactEmail(
+    userId: string,
+    contacts: Array<{
+      id: string;
+      name: string;
+      role: string;
+      emails: string[];
+      engagementScore?: number;
+      intelligenceSnippet?: string;
+      lastActivityDetail?: string;
+      zenaCategory?: string;
+    }>,
+    draftType: 'quick' | 'detailed' = 'quick'
+  ): Promise<{ subject: string; body: string }> {
+    try {
+      const isGroupEmail = contacts.length > 1;
+
+      // Build context about the contacts
+      const contactContext = contacts.map(c =>
+        `- ${c.name} (${c.role}): ${c.intelligenceSnippet || c.lastActivityDetail || 'No recent activity'}, Engagement: ${c.engagementScore || 'N/A'}%, Category: ${c.zenaCategory || 'PULSE'}`
+      ).join('\n');
+
+      const prompt = `You are Zena, a highly intelligent AI assistant for a New Zealand real estate agent. Generate a ${draftType === 'detailed' ? 'comprehensive, value-rich' : 'concise and punchy'} email draft.
+
+RECIPIENTS (${contacts.length}):
+${contactContext}
+
+${isGroupEmail ? 'This is a GROUP email to multiple contacts.' : 'This is a PERSONAL email to one contact.'}
+
+REQUIREMENTS:
+1. ${draftType === 'detailed' ?
+          'Write a detailed email with market insights, actionable advice, and personalized recommendations. Include sections with emoji headers like 📊 and 💡.' :
+          'Write a brief, friendly email that gets straight to the point. 3-4 short paragraphs max.'}
+2. Use UK English spelling (NZ market)
+3. Be professional yet warm - no pet names
+4. Reference their specific situation based on the intelligence provided
+5. Include a clear call-to-action
+
+${isGroupEmail ? 'For group emails, find common themes across all recipients.' : ''}
+
+Respond in JSON format:
+{
+  "subject": "Email subject line here",
+  "body": "Full email body here"
+}`;
+
+      if (!this.apiKey && !process.env.GEMINI_API_KEY) {
+        return this.generateFallbackContactEmail(contacts, draftType);
+      }
+
+      const response = await this.callLLM(prompt);
+
+      try {
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          return {
+            subject: parsed.subject || 'Following up',
+            body: parsed.body || this.generateFallbackContactEmail(contacts, draftType).body
+          };
+        }
+      } catch (parseError) {
+        console.error('Error parsing email response:', parseError);
+      }
+
+      return this.generateFallbackContactEmail(contacts, draftType);
+    } catch (error) {
+      console.error('Error generating contact email:', error);
+      return this.generateFallbackContactEmail(contacts, draftType);
+    }
+  }
+
+  /**
+   * Fallback email generation when LLM is unavailable
+   */
+  private generateFallbackContactEmail(
+    contacts: Array<{ name: string; role: string; intelligenceSnippet?: string }>,
+    draftType: 'quick' | 'detailed'
+  ): { subject: string; body: string } {
+    const isGroup = contacts.length > 1;
+    const firstName = contacts[0]?.name.split(' ')[0] || 'there';
+    const greeting = isGroup ? 'Hi everyone' : `Hi ${firstName}`;
+
+    if (draftType === 'detailed') {
+      return {
+        subject: 'Market Update & Opportunities',
+        body: `${greeting},
+
+I hope this message finds you well! I wanted to reach out with some valuable market insights.
+
+📊 **Current Market Overview:**
+
+The Auckland property market is showing interesting dynamics right now:
+• Buyer activity is increasing as confidence returns
+• Quality stock remains limited, supporting pricing
+• Interest rate stability is encouraging both buyers and sellers
+
+💡 **What This Means For You:**
+
+Based on our previous conversations, I have some specific recommendations I'd like to discuss with you.
+
+📅 **Next Steps:**
+
+I'd love to schedule a brief catch-up to discuss how these market conditions impact your situation. Would you be available for a quick call this week?
+
+Warm regards`
+      };
+    }
+
+    return {
+      subject: 'Quick catch up',
+      body: `${greeting},
+
+I wanted to touch base and see how things are going. I've been keeping an eye on the market and have some updates that might interest you.
+
+Would you be available for a quick chat this week?
+
+Best regards`
+    };
+  }
+
+  /**
+   * Generate AI-powered improvement actions for a contact
+   * This powers the IntelScoreTooltip "Improve Now" feature
+   */
+  async generateImprovementActions(
+    userId: string,
+    contact: {
+      id: string;
+      name: string;
+      role: string;
+      engagementScore: number;
+      momentum: number;
+      dealStage?: string;
+      intelligenceSnippet?: string;
+      lastActivityDetail?: string;
+    }
+  ): Promise<{
+    tips: string[];
+    bestAction: {
+      type: 'email' | 'call' | 'task';
+      description: string;
+      emailDraft?: { subject: string; body: string };
+    };
+    explanation: string;
+  }> {
+    try {
+      const prompt = `You are Zena, an AI assistant for a NZ real estate agent. Analyze this contact and provide improvement recommendations.
+
+CONTACT:
+- Name: ${contact.name}
+- Role: ${contact.role}
+- Engagement Score: ${contact.engagementScore}%
+- Momentum: ${contact.momentum > 0 ? '+' : ''}${contact.momentum}%
+- Deal Stage: ${contact.dealStage || 'None'}
+- Intelligence: ${contact.intelligenceSnippet || 'None'}
+- Last Activity: ${contact.lastActivityDetail || 'Unknown'}
+
+TASK:
+1. Analyze why their engagement is at ${contact.engagementScore}%
+2. Suggest 3 specific, actionable tips to improve engagement
+3. Recommend the SINGLE best action to take right now
+4. If the best action is email, draft a ready-to-send email
+
+Respond in JSON:
+{
+  "tips": ["tip1", "tip2", "tip3"],
+  "bestAction": {
+    "type": "email|call|task",
+    "description": "What to do",
+    "emailDraft": { "subject": "...", "body": "..." }
+  },
+  "explanation": "Brief explanation of their current engagement level (1-2 sentences)"
+}`;
+
+      if (!this.apiKey && !process.env.GEMINI_API_KEY) {
+        return this.generateFallbackImprovementActions(contact);
+      }
+
+      const response = await this.callLLM(prompt);
+
+      try {
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          return {
+            tips: parsed.tips || ['Schedule a touchpoint', 'Complete profile info', 'Send market update'],
+            bestAction: parsed.bestAction || { type: 'email', description: 'Send a check-in email' },
+            explanation: parsed.explanation || 'Contact could benefit from more engagement.'
+          };
+        }
+      } catch (parseError) {
+        console.error('Error parsing improvement actions:', parseError);
+      }
+
+      return this.generateFallbackImprovementActions(contact);
+    } catch (error) {
+      console.error('Error generating improvement actions:', error);
+      return this.generateFallbackImprovementActions(contact);
+    }
+  }
+
+  /**
+   * Generate AI-powered call intelligence (Best time, talking points)
+   * This powers the ZenaCallTooltip
+   */
+  async generateCallIntel(
+    userId: string,
+    contactId: string
+  ): Promise<{
+    bestTime: string;
+    lastInteraction: string;
+    talkingPoints: string[];
+  }> {
+    try {
+      const contact = await prisma.contact.findUnique({
+        where: { id: contactId }
+      });
+
+      if (!contact) throw new Error('Contact not found');
+
+      // Fetch TimelineEvents separately
+      const timelineEvents = await prisma.timelineEvent.findMany({
+        where: { entityType: 'contact', entityId: contactId },
+        orderBy: { timestamp: 'desc' },
+        take: 10
+      });
+
+      const eventsSummary = timelineEvents.map(e => `[${e.type}] ${e.timestamp.toISOString()}: ${e.summary}`).join('\n');
+
+      // Extract location if present in zenaIntelligence
+      const intel = contact.zenaIntelligence as any;
+      const location = intel?.location || 'Unknown';
+
+      const prompt = `You are Zena, a smart CRM assistant. Analyze these interaction logs to help the agent call this contact.
+
+CONTACT:
+- Name: ${contact.name}
+- Role: ${contact.role}
+- Email: ${contact.emails[0] || 'None'}
+- Location: ${location}
+
+INTERACTION HISTORY (Newest First):
+${eventsSummary || 'No recent documented interactions.'}
+
+TASK:
+1. Determine the 'Best Time to Call' based on when they usually reply or interact. If unknown, infer from role (e.g., Agents/Vendors: 9am-5pm, Buyers: 5pm-7pm).
+2. Summarize the 'Last Interaction' in 1 sentence.
+3. Generate 3 specific 'Talking Points' for the next call to advance the relationship/deal.
+
+Respond in JSON:
+{
+  "bestTime": "e.g. Weekdays 4pm-6pm (based on email replies)",
+  "lastInteraction": "e.g. Sent market appraisal 3 days ago.",
+  "talkingPoints": ["Point 1", "Point 2", "Point 3"]
+}`;
+
+      if (!this.apiKey && !process.env.GEMINI_API_KEY) {
+        return this.generateFallbackCallIntel(contact);
+      }
+
+      const response = await this.callLLM(prompt);
+
+      try {
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          return {
+            bestTime: parsed.bestTime || 'Business Hours',
+            lastInteraction: parsed.lastInteraction || 'No recent data',
+            talkingPoints: parsed.talkingPoints || ['Check in', 'Update on market', 'Discuss requirements']
+          };
+        }
+      } catch (parseError) {
+        console.error('Error parsing call intel:', parseError);
+      }
+
+      return this.generateFallbackCallIntel(contact);
+    } catch (error) {
+      console.error('Error generating call intel:', error);
+      // Need partial contact for fallback
+      const contact = await prisma.contact.findUnique({ where: { id: contactId } });
+      return this.generateFallbackCallIntel(contact || { name: 'Contact', role: 'unknown' } as any);
+    }
+  }
+
+  private generateFallbackCallIntel(contact: { name: string; role: string }): {
+    bestTime: string;
+    lastInteraction: string;
+    talkingPoints: string[];
+  } {
+    const role = contact.role?.toLowerCase();
+    let bestTime = 'Weekdays 9am - 5pm';
+    if (role === 'buyer') bestTime = 'Weekdays 5:30pm - 7:30pm or Sat 10am - 2pm';
+    if (role === 'vendor') bestTime = 'Weekdays 10am - 4pm';
+    if (role === 'investor') bestTime = 'Tues-Thu 11am - 2pm';
+    return {
+      bestTime,
+      lastInteraction: 'No recent tracking data avail.',
+      talkingPoints: [
+        `Check in with ${contact.name.split(' ')[0]}`,
+        'Update on current market trends in their area',
+        'Ask about any changes in their plans'
+      ]
+    };
+  }
+
+  /**
+   * Parse natural language search query into structured filters
+   */
+  async parseSearchQuery(
+    userId: string,
+    query: string
+  ): Promise<{
+    role: string;
+    intel: string;
+    keywords: string;
+  }> {
+    try {
+      const prompt = `You are a helper for a CRM UI. Convert this natural language search query into structured filters.
+
+USER QUERY: "${query}"
+
+AVAILABLE FILTERS:
+- role: 'all', 'vendor', 'buyer', 'appraisal', 'investor', 'agent', 'lawyer', 'tradesperson'
+- intel: 'all', 'pulse' (recent activity), 'hot' (high score), 'cold' (nurture), 'intent' (high velocity)
+- keywords: string (any names, locations, or other text to search for)
+
+RULES:
+1. Map terms like "selling", "sellers" to role='vendor'.
+2. Map terms like "buying", "looking" to role='buyer'.
+3. Map "hot", "active", "engaged" to intel='hot'.
+4. Map "cold", "old", "lost" to intel='cold'.
+5. Extract locations, names, or other specific terms to 'keywords'.
+6. Default to 'all' if unspecified.
+
+Respond in JSON:
+{
+  "role": "...",
+  "intel": "...",
+  "keywords": "..."
+}`;
+
+      if (!this.apiKey && !process.env.GEMINI_API_KEY) {
+        return { role: 'all', intel: 'all', keywords: query };
+      }
+
+      const response = await this.callLLM(prompt);
+
+      try {
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          return {
+            role: parsed.role || 'all',
+            intel: parsed.intel || 'all',
+            keywords: parsed.keywords || ''
+          };
+        }
+      } catch (parseError) {
+        console.error('Error parsing search query:', parseError);
+      }
+
+      return { role: 'all', intel: 'all', keywords: query };
+    } catch (error) {
+      console.error('Error parsing search query:', error);
+      return { role: 'all', intel: 'all', keywords: query };
+    }
+  }
+
+  /**
+   * Fallback improvement actions when LLM is unavailable
+   */
+  private generateFallbackImprovementActions(contact: {
+    name: string;
+    role: string;
+    engagementScore: number;
+  }): {
+    tips: string[];
+    bestAction: { type: 'email' | 'call' | 'task'; description: string; emailDraft?: { subject: string; body: string } };
+    explanation: string;
+  } {
+    const firstName = contact.name.split(' ')[0];
+    const tips = contact.role === 'buyer'
+      ? ['Send new listings matching their criteria', 'Invite to upcoming open homes', 'Share market insights for preferred suburbs']
+      : contact.role === 'vendor'
+        ? ['Provide campaign update', 'Share buyer feedback', 'Send comparable sales data']
+        : ['Schedule a check-in call', 'Add to newsletter', 'Complete profile information'];
+
+    return {
+      tips,
+      bestAction: {
+        type: 'email',
+        description: `Send a personalized check-in to ${firstName}`,
+        emailDraft: {
+          subject: `Quick update for you`,
+          body: `Hi ${firstName},\n\nI wanted to touch base and see how things are going. I've been keeping an eye out for opportunities that might interest you.\n\nWould you be available for a quick chat this week?\n\nBest regards`
+        }
+      },
+      explanation: contact.engagementScore > 70
+        ? 'Strong engagement - maintain momentum with regular touchpoints.'
+        : contact.engagementScore > 40
+          ? 'Moderate engagement - could benefit from more frequent communication.'
+          : 'Low engagement - needs proactive outreach to re-engage.'
+    };
+  }
+
+  /**
+   * Record that an agent took an AI-suggested improvement action
+   * This provides feedback to the brain and boosts momentum
+   */
+  async recordActionExecution(
+    userId: string,
+    contactId: string,
+    actionType: string,
+    description: string
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      // 1. Log the activity
+      await prisma.timelineEvent.create({
+        data: {
+          userId,
+          type: actionType === 'email' ? 'email' : (actionType === 'call' ? 'call' : 'task'),
+          entityType: 'contact',
+          entityId: contactId,
+          summary: `Zena Action Executed: ${description}`,
+          timestamp: new Date()
+        }
+      });
+
+      // 2. Fetch current engagement to boost it
+      const contact = await prisma.contact.findUnique({
+        where: { id: contactId }
+      });
+
+      if (contact) {
+        // Boost momentum (+15%) for taking action
+        const stats = await this.calculateContactEngagement(contactId);
+        const boostedMomentum = Math.min(100, (stats.momentum || 0) + 15);
+        const boostedScore = Math.min(100, (stats.engagementScore || 0) + 5);
+
+        // 3. Broadcast new stats via WebSocket so UI updates immediately
+        websocketService.broadcastContactEngagement(userId, {
+          contactId,
+          engagementScore: boostedScore,
+          momentum: boostedMomentum,
+          dealStage: stats.dealStage,
+          nextBestAction: 'Keep up the momentum!'
+        });
+      }
+
+      return { success: true, message: 'Action recorded and momentum boosted' };
+    } catch (error) {
+      console.error('Error recording action execution:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Run a deep intelligence discovery process for a contact
+   * This is used for new or stale contacts to populate Zena's real memory
+   */
+  async runDiscovery(userId: string, contactId: string): Promise<{ success: boolean; data: any }> {
+    try {
+      const contact = await prisma.contact.findUnique({
+        where: { id: contactId },
+        include: {
+          deals: true,
+          timelineEvents: { take: 10, orderBy: { timestamp: 'desc' } }
+        }
+      });
+
+      if (!contact) {
+        throw new Error('Contact not found');
+      }
+
+      console.log(`[Ask Zena] Running discovery for ${contact.name}...`);
+
+      // 1. Recategorize using the categorization service
+      const categorization = await contactCategorizationService.categorizeContact(contactId);
+
+      // 2. Refresh engagement stats
+      const engagement = await this.calculateContactEngagement(contactId);
+
+      // 3. Generate a fresh intelligence snippet if needed
+      // If we have events but no snippet, or snippet is very old
+      let snippet = contact.intelligenceSnippet;
+      if (!snippet || contact.updatedAt < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) {
+        // Here we would ideally call an LLM to summarize the timeline
+        // For now we'll use a high-confidence logic-based snippet generator
+        snippet = `Zena analyzed ${contact.timelineEvents?.length || 0} activities. Current focus: ${categorization.reason}`;
+
+        await prisma.contact.update({
+          where: { id: contactId },
+          data: { intelligenceSnippet: snippet }
+        });
+      }
+
+      return {
+        success: true,
+        data: {
+          category: categorization.category,
+          engagementScore: engagement.engagementScore,
+          momentum: engagement.momentum,
+          intelligenceSnippet: snippet
+        }
+      };
+    } catch (error) {
+      console.error('Error running discovery:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Calculate engagement signals for a contact
+   * This replaces the frontend mock data with real backend calculations
+   */
+  async calculateContactEngagement(contactId: string): Promise<{
+    engagementScore: number;
+    momentum: number;
+    dealStage: string | null;
+    activityCount7d: number;
+    nextBestAction: string;
+  }> {
+    try {
+      const contact = await prisma.contact.findUnique({
+        where: { id: contactId },
+      });
+
+      if (!contact) {
+        throw new Error('Contact not found');
+      }
+
+      // Get recent timeline events
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const fourteenDaysAgo = new Date();
+      fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+
+      const recentEvents = await prisma.timelineEvent.findMany({
+        where: {
+          entityType: 'contact',
+          entityId: contactId,
+          timestamp: { gte: fourteenDaysAgo }
+        },
+        orderBy: { timestamp: 'desc' }
+      });
+
+      const events7d = recentEvents.filter(e => e.timestamp >= sevenDaysAgo).length;
+      const events14d = recentEvents.length;
+      const eventsPrevWeek = events14d - events7d;
+
+      // Get associated deals
+      const deals = await prisma.deal.findMany({
+        where: {
+          contacts: { some: { id: contactId } }
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: 1
+      });
+
+      const dealStage = deals[0]?.stage || null;
+
+      // Calculate engagement score (0-100)
+      let score = 0;
+
+      // Profile completeness (20 points)
+      if (contact.name) score += 5;
+      if (contact.emails.length > 0) score += 8;
+      if (contact.phones.length > 0) score += 5;
+      if (contact.role && contact.role !== 'other') score += 2;
+
+      // Recent activity (30 points)
+      score += Math.min(30, events7d * 6);
+
+      // Engagement depth (25 points) - based on relationship notes
+      const notes = (contact.relationshipNotes as any[]) || [];
+      score += Math.min(25, notes.length * 5);
+
+      // Deal stage bonus (25 points)
+      if (dealStage === 'offer' || dealStage === 'conditional') score += 25;
+      else if (dealStage === 'viewing') score += 20;
+      else if (dealStage === 'qualified') score += 15;
+      else if (dealStage === 'lead') score += 10;
+
+      score = Math.min(100, score);
+
+      // Calculate momentum
+      let momentum = 0;
+      if (eventsPrevWeek > 0) {
+        momentum = Math.round(((events7d - eventsPrevWeek) / eventsPrevWeek) * 100);
+      } else if (events7d > 0) {
+        momentum = 50; // New activity from zero
+      }
+      momentum = Math.max(-100, Math.min(100, momentum));
+
+      // Determine next best action
+      let nextBestAction = 'Schedule a check-in call';
+      if (events7d === 0) {
+        nextBestAction = 'Send a touchpoint email - engagement dropping';
+      } else if (contact.role === 'buyer' && dealStage === 'viewing') {
+        nextBestAction = 'Follow up on recent viewings';
+      } else if (contact.role === 'vendor') {
+        nextBestAction = 'Provide campaign update';
+      }
+
+      return {
+        engagementScore: score,
+        momentum,
+        dealStage,
+        activityCount7d: events7d,
+        nextBestAction
+      };
+    } catch (error) {
+      console.error('Error calculating contact engagement:', error);
+      return {
+        engagementScore: 50,
+        momentum: 0,
+        dealStage: null,
+        activityCount7d: 0,
+        nextBestAction: 'Add more contact information'
+      };
+    }
   }
 }
 

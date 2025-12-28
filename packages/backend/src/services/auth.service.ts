@@ -119,28 +119,10 @@ export class AuthService {
 
     console.log(`[AuthService] Attempting login for: ${email}`);
 
-    // Demo user bypass for development (no database required)
-    if (email === 'demo@zena.ai' && password === 'ZenaSecureAuth2024!') {
-      console.log('[AuthService] Demo login successful');
-      const demoUser = {
-        id: 'demo-user-id',
-        email: 'demo@zena.ai',
-        name: 'Demo User',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      const tokenPayload: TokenPayload = {
-        userId: demoUser.id,
-        email: demoUser.email,
-      };
-      return {
-        user: demoUser,
-        tokens: {
-          accessToken: this.generateAccessToken(tokenPayload),
-          refreshToken: this.generateRefreshToken(tokenPayload),
-        },
-      };
-    }
+    console.log(`[AuthService] Attempting login for: ${email}`);
+
+    // REMOVED: Demo bypass logic. We use the real seeded user in the database now.
+    // This ensures token User ID matches the data owner User ID.
 
     console.log('[AuthService] Falling back to database lookup');
     // Find user by email in database

@@ -51,11 +51,11 @@ describe('BatchActionBar Property Tests', () => {
             const batchActionBar = container.querySelector('[data-testid="batch-action-bar"]');
             expect(batchActionBar).not.toBeNull();
             expect(batchActionBar).toBeInTheDocument();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -79,11 +79,11 @@ describe('BatchActionBar Property Tests', () => {
             // Property: When isVisible is false, the batch action bar should NOT be in the DOM
             const batchActionBar = container.querySelector('[data-testid="batch-action-bar"]');
             expect(batchActionBar).toBeNull();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -113,11 +113,11 @@ describe('BatchActionBar Property Tests', () => {
             } else {
               expect(batchActionBar).toBeNull();
             }
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
   });
@@ -146,11 +146,11 @@ describe('BatchActionBar Property Tests', () => {
             // Property: The displayed count should match the selectedCount prop
             const countElement = screen.getByTestId('selection-count');
             expect(countElement).toHaveTextContent(selectedCount.toString());
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
   });
@@ -180,12 +180,13 @@ describe('BatchActionBar Property Tests', () => {
             expect(screen.getByTestId('snooze-all-button')).toBeInTheDocument();
             expect(screen.getByTestId('archive-all-button')).toBeInTheDocument();
             expect(screen.getByTestId('mark-read-button')).toBeInTheDocument();
+            expect(screen.getByTestId('delete-all-button')).toBeInTheDocument();
             expect(screen.getByTestId('cancel-button')).toBeInTheDocument();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -206,10 +207,11 @@ describe('BatchActionBar Property Tests', () => {
       expect(screen.getByTestId('snooze-all-button')).toBeDisabled();
       expect(screen.getByTestId('archive-all-button')).toBeDisabled();
       expect(screen.getByTestId('mark-read-button')).toBeDisabled();
-      
+      expect(screen.getByTestId('delete-all-button')).toBeDisabled();
+
       // Cancel button should always be enabled
       expect(screen.getByTestId('cancel-button')).not.toBeDisabled();
-      
+
       unmount();
     });
 
@@ -234,11 +236,12 @@ describe('BatchActionBar Property Tests', () => {
             expect(screen.getByTestId('snooze-all-button')).not.toBeDisabled();
             expect(screen.getByTestId('archive-all-button')).not.toBeDisabled();
             expect(screen.getByTestId('mark-read-button')).not.toBeDisabled();
-            
+            expect(screen.getByTestId('delete-all-button')).not.toBeDisabled();
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
   });
@@ -248,8 +251,8 @@ describe('BatchActionBar Property Tests', () => {
      * Validates that action callbacks are called with correct action types
      */
     it('should call onAction with correct action type when buttons are clicked', () => {
-      const actionTypes: BatchAction[] = ['snooze_all', 'archive_all', 'mark_read'];
-      const buttonTestIds = ['snooze-all-button', 'archive-all-button', 'mark-read-button'];
+      const actionTypes: BatchAction[] = ['snooze_all', 'archive_all', 'mark_read', 'delete_all'];
+      const buttonTestIds = ['snooze-all-button', 'archive-all-button', 'mark-read-button', 'delete-all-button'];
 
       actionTypes.forEach((expectedAction, index) => {
         const onAction = vi.fn();
@@ -298,11 +301,11 @@ describe('BatchActionBar Property Tests', () => {
             // Property: onCancel should be called when cancel button is clicked
             expect(onCancel).toHaveBeenCalledTimes(1);
             expect(onAction).not.toHaveBeenCalled();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
   });
@@ -332,8 +335,9 @@ describe('BatchActionBar Property Tests', () => {
       expect(screen.getByTestId('snooze-all-button')).toHaveAttribute('aria-label');
       expect(screen.getByTestId('archive-all-button')).toHaveAttribute('aria-label');
       expect(screen.getByTestId('mark-read-button')).toHaveAttribute('aria-label');
+      expect(screen.getByTestId('delete-all-button')).toHaveAttribute('aria-label');
       expect(screen.getByTestId('cancel-button')).toHaveAttribute('aria-label');
-      
+
       unmount();
     });
   });

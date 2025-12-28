@@ -1,0 +1,385 @@
+/* ============================================
+   High-Tech Bottom Navigation - Glassmorphism Design
+   Requirements: 4.1, 4.2, 4.3, 4.4, 4.5
+   ============================================ */
+
+/* Main Navigation Container */
+.bottom-nav-ht {
+  position: fixed;
+  bottom: 0;
+  left: var(--sidebar-width, 0px);
+  right: 0;
+  z-index: var(--z-index-fixed, 1000);
+  height: 80px;
+  /* Safe area handling for iOS */
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 768px) {
+  .bottom-nav-ht {
+    left: 0 !important;
+  }
+}
+
+/* Glassmorphism Background Layer - Requirements: 4.1 */
+.bottom-nav-ht__glass-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+  .bottom-nav-ht__glass-bg {
+    background: var(--glass-fallback-bg, rgba(26, 26, 46, 0.95));
+  }
+}
+
+/* Border Glow Effect - Requirements: 4.1 */
+.bottom-nav-ht__border-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      var(--neon-cyan, #00D4FF) 20%,
+      var(--neon-magenta, #FF00FF) 50%,
+      var(--neon-cyan, #00D4FF) 80%,
+      transparent 100%);
+  opacity: 0.5;
+  box-shadow: 0 0 10px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5)),
+    0 0 20px var(--neon-cyan-subtle, rgba(0, 212, 255, 0.2));
+}
+
+/* Content Container - Centered for single Zena orb */
+.bottom-nav-ht__content {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 0 8px;
+  max-width: 1650px;
+  /* Match AskZenaPage chat-container max-width */
+  margin: 0 auto;
+}
+
+/* Navigation Item - Base Styles */
+.bottom-nav-ht__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+  min-height: 48px;
+  text-decoration: none;
+  color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  padding: 8px 4px;
+  transition: color var(--duration-normal, 300ms) var(--ease-smooth, cubic-bezier(0.4, 0, 0.2, 1)),
+    transform var(--duration-fast, 150ms) var(--ease-smooth);
+}
+
+/* Navigation Item - Hover State */
+.bottom-nav-ht__item:hover {
+  color: var(--text-primary-ht, #FFFFFF);
+}
+
+/* Navigation Item - Active Press State */
+.bottom-nav-ht__item:active {
+  transform: scale(0.95);
+}
+
+/* Navigation Item - Active State with Neon Glow - Requirements: 4.2, 4.5 */
+.bottom-nav-ht__item--active {
+  color: var(--neon-cyan, #00D4FF);
+}
+
+/* Icon Styles */
+.bottom-nav-ht__icon {
+  width: 24px;
+  height: 24px;
+  transition: transform var(--duration-normal, 300ms) var(--ease-smooth),
+    filter var(--duration-normal, 300ms) var(--ease-smooth);
+}
+
+/* Icon - Active State with Glow - Requirements: 4.2 */
+.bottom-nav-ht__icon--active {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 8px var(--neon-cyan, #00D4FF));
+}
+
+/* Label Styles */
+.bottom-nav-ht__label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: text-shadow var(--duration-normal, 300ms) var(--ease-smooth),
+    font-weight var(--duration-fast, 150ms) var(--ease-smooth);
+}
+
+/* Label - Active State with Text Glow - Requirements: 4.5 */
+.bottom-nav-ht__label--active {
+  font-weight: 600;
+  text-shadow: 0 0 10px var(--neon-cyan, #00D4FF),
+    0 0 20px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
+}
+
+/* Active Glow Indicator */
+.bottom-nav-ht__active-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg,
+      transparent,
+      var(--neon-cyan, #00D4FF),
+      transparent);
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 0 10px var(--neon-cyan, #00D4FF),
+    0 0 20px var(--neon-cyan-dim, rgba(0, 212, 255, 0.5));
+  animation: glow-pulse var(--duration-pulse, 2s) var(--ease-glow, cubic-bezier(0.4, 0, 0.6, 1)) infinite;
+}
+
+
+/* ============================================
+   Central Deal Flow Button - High-Tech Design
+   ============================================ */
+
+.bottom-nav-ht__dealflow-orb {
+  position: relative;
+  width: 82px;
+  height: 82px;
+  margin-top: -38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  overflow: hidden;
+  z-index: 10;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  box-shadow: none;
+  transition: transform 0.3s ease;
+}
+
+.bottom-nav-ht__dealflow-orb:hover {
+  transform: scale(1.1);
+}
+
+.bottom-nav-ht__dealflow-orb:active {
+  transform: scale(0.95);
+}
+
+/* Handshake Icon Styling - Premium Image */
+.bottom-nav-ht__dealflow-icon {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+  display: block;
+}
+
+/* Active State */
+.bottom-nav-ht__dealflow-orb--active {
+  filter: brightness(1.2);
+}
+
+
+/* Glow Pulse Animation */
+@keyframes dealflow-glow-pulse {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 15px rgba(0, 212, 255, 0.3),
+      0 0 30px rgba(139, 92, 246, 0.2),
+      inset 0 0 20px rgba(0, 0, 0, 0.5);
+  }
+
+  50% {
+    box-shadow:
+      0 0 25px rgba(0, 212, 255, 0.5),
+      0 0 45px rgba(139, 92, 246, 0.3),
+      0 0 60px rgba(255, 0, 255, 0.15),
+      inset 0 0 20px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Rotating Ring Effect */
+@keyframes ring-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* Deal Flow Animations */
+@keyframes dealflow-pulse {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(0, 212, 255, 0.6),
+      0 0 40px rgba(255, 0, 255, 0.3),
+      0 0 60px rgba(255, 215, 0, 0.2),
+      inset 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  50% {
+    box-shadow:
+      0 0 30px rgba(0, 212, 255, 0.8),
+      0 0 55px rgba(255, 0, 255, 0.4),
+      0 0 80px rgba(255, 215, 0, 0.3),
+      inset 0 0 25px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@keyframes gradient-shift {
+
+  0%,
+  100% {
+    background-position: 0% 50%, 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%, 100% 50%;
+  }
+}
+
+
+@keyframes icon-float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+
+/* ============================================
+   Ripple Effects - Requirements: 4.4
+   ============================================ */
+
+.bottom-nav-ht__ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--neon-cyan-subtle, rgba(0, 212, 255, 0.2));
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple-expand 600ms var(--ease-smooth) forwards;
+  pointer-events: none;
+}
+
+.bottom-nav-ht__ripple--neon {
+  background: radial-gradient(circle,
+      var(--neon-cyan-dim, rgba(0, 212, 255, 0.5)) 0%,
+      var(--neon-magenta-subtle, rgba(255, 0, 255, 0.2)) 50%,
+      transparent 70%);
+}
+
+@keyframes ripple-expand {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  100% {
+    width: 120px;
+    height: 120px;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* ============================================
+   Reduced Motion Support
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .bottom-nav-ht__item,
+  .bottom-nav-ht__icon,
+  .bottom-nav-ht__label,
+  .bottom-nav-ht__zena-orb-inner,
+  .bottom-nav-ht__zena-orb-gradient {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .bottom-nav-ht__zena-ring,
+  .bottom-nav-ht__ripple,
+  .bottom-nav-ht__active-glow {
+    display: none;
+  }
+
+  .bottom-nav-ht__item:active,
+  .bottom-nav-ht__zena-orb:active .bottom-nav-ht__zena-orb-inner {
+    transform: none;
+  }
+}
+
+/* ============================================
+   Responsive Behavior
+   ============================================ */
+
+
+
+/* Smaller screens - compact layout */
+@media (max-width: 360px) {
+  .bottom-nav-ht__label {
+    font-size: 10px;
+  }
+
+  .bottom-nav-ht__zena-orb {
+    width: 56px;
+    height: 56px;
+    margin-top: -20px;
+  }
+
+  .bottom-nav-ht__zena-orb-inner {
+    width: 48px;
+    height: 48px;
+  }
+
+  .bottom-nav-ht__zena-orb-text {
+    font-size: 20px;
+  }
+}
+
+/* ============================================
+   Animation Keyframes (if not defined globally)
+   ============================================ */
+
+@keyframes glow-pulse {
+
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.2);
+  }
+}

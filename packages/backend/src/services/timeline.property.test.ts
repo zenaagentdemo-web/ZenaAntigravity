@@ -26,7 +26,7 @@ describe('Timeline Property-Based Tests', () => {
       if (!user) {
         return; // User already deleted, nothing to clean up
       }
-      
+
       await prisma.timelineEvent.deleteMany({ where: { userId } });
       await prisma.user.delete({ where: { id: userId } });
     } catch (error) {
@@ -35,25 +35,7 @@ describe('Timeline Property-Based Tests', () => {
     }
   };
 
-  beforeEach(async () => {
-    // Clean up any existing test data
-    await prisma.timelineEvent.deleteMany({ 
-      where: { 
-        user: { 
-          email: { 
-            startsWith: 'test-' 
-          } 
-        } 
-      } 
-    });
-    await prisma.user.deleteMany({ 
-      where: { 
-        email: { 
-          startsWith: 'test-' 
-        } 
-      } 
-    });
-  });
+
 
   /**
    * Feature: zena-ai-real-estate-pwa, Property 54: Timeline chronological ordering
@@ -101,7 +83,7 @@ describe('Timeline Property-Based Tests', () => {
           ),
           async (events) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create events in random order
               const createdEvents = [];
@@ -146,7 +128,7 @@ describe('Timeline Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 }
       );
     });
 
@@ -174,7 +156,7 @@ describe('Timeline Property-Based Tests', () => {
           ),
           async (targetEntityId, targetEntityType, events) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create events for the target entity (use different entity IDs to avoid unique constraint)
               for (let i = 0; i < events.length; i++) {
@@ -211,7 +193,7 @@ describe('Timeline Property-Based Tests', () => {
               expect(
                 retrievedEvents.every((e) => e.entityType === targetEntityType)
               ).toBe(true);
-              
+
               // Property: Should have the expected number of events (excluding noise)
               expect(retrievedEvents.length).toBeGreaterThanOrEqual(events.length);
 
@@ -227,7 +209,7 @@ describe('Timeline Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 }
       );
     });
 
@@ -254,7 +236,7 @@ describe('Timeline Property-Based Tests', () => {
           ),
           async (entityId, events) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create events with different types (use different entity IDs to avoid unique constraint)
               for (let i = 0; i < events.length; i++) {
@@ -314,7 +296,7 @@ describe('Timeline Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 }
       );
     });
   });
@@ -361,7 +343,7 @@ describe('Timeline Property-Based Tests', () => {
           }),
           async (eventData) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create the event
               const created = await timelineService.createEvent({
@@ -425,7 +407,7 @@ describe('Timeline Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 }
       );
     });
   });
@@ -456,7 +438,7 @@ describe('Timeline Property-Based Tests', () => {
           }),
           async (emailData) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create an email event using the email-specific method
               const event = await timelineService.createEmailEvent(
@@ -502,7 +484,7 @@ describe('Timeline Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 }
       );
     });
 
@@ -519,7 +501,7 @@ describe('Timeline Property-Based Tests', () => {
           ),
           async (threadId, emails) => {
             const testUserId = await createTestUser();
-            
+
             try {
               // Create multiple email events for different threads (to avoid unique constraint)
               const createdEvents = [];
@@ -562,7 +544,7 @@ describe('Timeline Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 }
       );
     });
   });

@@ -39,6 +39,8 @@ export interface ThreadCardProps {
   onSelect?: (threadId: string) => void;
   /** Callback for thread actions */
   onAction?: (threadId: string, action: 'view' | 'snooze' | 'send_draft' | 'delete' | 'forward' | 'move_to' | 'archive' | 'mark_read') => void;
+  /** Whether this is a waiting thread (sent by user) */
+  isWaiting?: boolean;
   /** Optional className for styling */
   className?: string;
 }
@@ -118,6 +120,7 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
   onQuickReply,
   onSelect,
   onAction,
+  isWaiting = false,
   className = ''
 }) => {
   const navigate = useNavigate();
@@ -270,7 +273,7 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
       </h3>
 
       <div className="thread-card__participants" data-testid="participants">
-        <span className="thread-card__participant-label">From: </span>
+        <span className="thread-card__participant-label">{isWaiting ? 'To: ' : 'From: '}</span>
         {displayedParticipants.filter(Boolean).map((name, index, arr) => (
           <span key={index} className="thread-card__participant">
             {name}
@@ -292,7 +295,7 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
-          AI Summary
+          {isWaiting ? 'AI Status: Waiting For...' : 'AI Summary'}
         </h4>
         <p className="thread-card__summary" data-testid="summary">
           {thread.aiSummary || thread.summary}
@@ -347,7 +350,7 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
       {/* Action row with Quick Reply button, View Thread button, and dropdown arrow */}
       <div className="thread-card__action-row" data-testid="action-row">
         {/* Quick Reply Button - positioned on the left */}
-        {showQuickReply && (
+        {showQuickReply && !isWaiting && (
           <button
             className="thread-card__quick-reply"
             onClick={handleQuickReplyClick}
@@ -364,6 +367,57 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
 
         {/* Spacer to push buttons to the right when no quick reply */}
         {!showQuickReply && <div className="thread-card__action-spacer" />}
+
+        {/* Archive Button */}
+        <button
+          className="thread-card__icon-action"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAction?.(thread.id, 'archive');
+          }}
+          aria-label="Archive thread"
+          data-testid="archive-button"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="21 8 21 21 3 21 3 8" />
+            <rect x="1" y="3" width="22" height="5" />
+            <line x1="10" y1="12" x2="14" y2="12" />
+          </svg>
+        </button>
+
+        {/* Forward Button */}
+        <button
+          className="thread-card__icon-action"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAction?.(thread.id, 'forward');
+          }}
+          aria-label="Forward thread"
+          data-testid="forward-button"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="15 17 20 12 15 7" />
+            <path d="M4 18v-2a4 4 0 0 1 4-4h12" />
+          </svg>
+        </button>
+
+        {/* Delete Button */}
+        <button
+          className="thread-card__icon-action thread-card__icon-action--danger"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowDeleteConfirm(true);
+          }}
+          aria-label="Delete thread"
+          data-testid="delete-button"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+          </svg>
+        </button>
+
+        <div className="thread-card__action-spacer" />
 
         {/* View Thread Button */}
         <button

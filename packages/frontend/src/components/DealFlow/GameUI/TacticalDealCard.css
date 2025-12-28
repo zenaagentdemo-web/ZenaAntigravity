@@ -1,0 +1,273 @@
+.tactical-card {
+    position: relative;
+    padding: 16px;
+    background: rgba(13, 27, 42, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    /* Hard edges feel more tactical */
+    font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+    cursor: pointer;
+    overflow: hidden;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: background 0.3s ease;
+}
+
+.tactical-card:hover {
+    background: rgba(13, 27, 42, 0.8);
+}
+
+.tactical-card--dimmed {
+    pointer-events: none;
+}
+
+/* Corner Brackets */
+.tactical-card__bracket {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--status-color);
+    opacity: 0.6;
+}
+
+.tl {
+    top: 0;
+    left: 0;
+    border-right: none;
+    border-bottom: none;
+}
+
+.tr {
+    top: 0;
+    right: 0;
+    border-left: none;
+    border-bottom: none;
+}
+
+.bl {
+    bottom: 0;
+    left: 0;
+    border-right: none;
+    border-top: none;
+}
+
+.br {
+    bottom: 0;
+    right: 0;
+    border-left: none;
+    border-top: none;
+}
+
+/* Scanner Line */
+.tactical-card__scanner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--status-color), transparent);
+    opacity: 0.3;
+    animation: tacticalScan 4s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes tacticalScan {
+    0% {
+        transform: translateY(-20px);
+    }
+
+    100% {
+        transform: translateY(240px);
+    }
+}
+
+/* Header */
+.tactical-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 4px;
+}
+
+.tactical-card__id-tag {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.tactical-card__status {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px currentColor;
+}
+
+/* Main Content */
+.tactical-card__address {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 12px;
+    height: 2.6em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+}
+
+.tactical-card__metrics {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric__label {
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+}
+
+.metric__value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.text-xp {
+    color: #00ff41;
+}
+
+/* Micro-Gauges */
+.tactical-card__gauges {
+    position: absolute;
+    top: 60px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gauge-item {
+    text-align: center;
+}
+
+.gauge-ring {
+    width: 28px;
+    height: 28px;
+}
+
+.gauge-ring__bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 3.8;
+}
+
+.gauge-ring__fill {
+    fill: none;
+    stroke: var(--status-color);
+    stroke-width: 3.8;
+    stroke-linecap: round;
+}
+
+.gauge-label {
+    font-size: 7px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 2px;
+}
+
+/* Footer Actions */
+.tactical-card__footer {
+    display: flex;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tactical-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    font-family: inherit;
+    font-size: 9px;
+    padding: 6px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.tactical-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.tactical-btn__icon {
+    width: 12px;
+    height: 12px;
+}
+
+/* Stall Alert */
+.tactical-card--stalled {
+    border: 1px solid #ff003c;
+    box-shadow: 0 0 15px rgba(255, 0, 60, 0.2);
+}
+
+.tactical-card__stall-alert {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 0, 60, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    backdrop-filter: blur(1px);
+}
+
+.stall-glitch {
+    color: #ff003c;
+    font-weight: 800;
+    font-size: 10px;
+    letter-spacing: 2px;
+    animation: glitchText 0.3s steps(2) infinite;
+}
+
+@keyframes glitchText {
+    0% {
+        transform: translate(0);
+    }
+
+    20% {
+        transform: translate(-2px, 2px);
+    }
+
+    40% {
+        transform: translate(-2px, -2px);
+    }
+
+    60% {
+        transform: translate(2px, 2px);
+    }
+
+    80% {
+        transform: translate(2px, -2px);
+    }
+
+    100% {
+        transform: translate(0);
+    }
+}

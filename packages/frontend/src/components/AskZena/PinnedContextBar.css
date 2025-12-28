@@ -2,14 +2,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.6rem 1.2rem;
-    background: rgba(0, 243, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border-bottom: 2px solid rgba(0, 243, 255, 0.2);
-    position: sticky;
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(135deg, rgba(0, 30, 50, 0.95), rgba(0, 20, 35, 0.95));
+    backdrop-filter: blur(15px);
+    border-bottom: 2px solid rgba(0, 243, 255, 0.4);
+    position: fixed;
     top: 0;
-    z-index: 50;
+    left: 260px;
+    /* Sidebar width */
+    right: 0;
+    z-index: 1000;
     animation: slide-down 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 243, 255, 0.1);
 }
 
 .pinned-context-content {

@@ -4,18 +4,18 @@ You need to run these three commands in **separate terminal windows/tabs**:
 
 ## Terminal 1: Backend Server
 ```bash
-cd /Users/hamishmcgee/Desktop/ZenaKiro/packages/backend
+cd /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend
 npm run dev
 ```
 
 **Expected output:**
-- Server starts on port 3000
+- Server starts on port 3001
 - Database connection established
-- "Server running on port 3000" message
+- "Server running on port 3001" message
 
 ## Terminal 2: Frontend Server  
 ```bash
-cd /Users/hamishmcgee/Desktop/ZenaKiro/packages/frontend
+cd /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend
 npm run dev
 ```
 
@@ -26,7 +26,7 @@ npm run dev
 
 ## Terminal 3: Ngrok Tunnel
 ```bash
-ngrok http 3000
+ngrok http 3001
 ```
 
 **Expected output:**
@@ -38,7 +38,7 @@ ngrok http 3000
 
 After all three are running:
 
-1. **Backend**: Visit http://localhost:3000/api/auth/me (should return 401 - auth required)
+1. **Backend**: Visit http://localhost:3001/health (should return status OK)
 2. **Frontend**: Visit http://localhost:5173 (should show login page)  
 3. **Ngrok**: Visit your ngrok URL (should proxy to backend)
 

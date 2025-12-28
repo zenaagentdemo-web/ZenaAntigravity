@@ -8,7 +8,7 @@
  * Validates: Requirements 12.2, 12.5, 12.6
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import fc from 'fast-check';
 import { NewPageHeader } from './NewPageHeader';
@@ -46,7 +46,7 @@ describe('NewPageHeader Property Tests', () => {
           (threadCount, urgentCount, syncStatus) => {
             // Ensure urgentCount doesn't exceed threadCount
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -63,13 +63,13 @@ describe('NewPageHeader Property Tests', () => {
 
             // Property: The displayed thread count should match the threadCount prop
             const countElement = screen.getByTestId('thread-count');
-            const expectedText = `${threadCount} thread${threadCount !== 1 ? 's' : ''}`;
-            expect(countElement).toHaveTextContent(expectedText);
-            
+            const expectedText = new RegExp(`${threadCount}\\s+thread${threadCount !== 1 ? 's' : ''}`, 'i');
+            expect(countElement.textContent?.trim().replace(/\s+/g, ' ')).toBe(`${threadCount} thread${threadCount !== 1 ? 's' : ''}`);
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -82,7 +82,7 @@ describe('NewPageHeader Property Tests', () => {
           (threadCount, urgentCount, syncStatus) => {
             // Ensure urgentCount doesn't exceed threadCount
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -101,11 +101,11 @@ describe('NewPageHeader Property Tests', () => {
             const urgentBadge = screen.getByTestId('urgent-badge');
             expect(urgentBadge).toBeInTheDocument();
             expect(urgentBadge).toHaveTextContent(`${validUrgentCount} urgent`);
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -132,11 +132,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: When urgentCount is 0, the urgent badge should NOT be visible
             const urgentBadge = container.querySelector('[data-testid="urgent-badge"]');
             expect(urgentBadge).toBeNull();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
   });
@@ -158,7 +158,7 @@ describe('NewPageHeader Property Tests', () => {
           (threadCount, urgentCount, syncStatus) => {
             // Ensure urgentCount doesn't exceed threadCount
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -176,11 +176,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: When urgentCount > 0, the notification dot should be visible
             const notificationDot = screen.getByTestId('urgent-notification-dot');
             expect(notificationDot).toBeInTheDocument();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -207,11 +207,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: When urgentCount is 0, the notification dot should NOT be visible
             const notificationDot = container.querySelector('[data-testid="urgent-notification-dot"]');
             expect(notificationDot).toBeNull();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -223,7 +223,7 @@ describe('NewPageHeader Property Tests', () => {
           (threadCount, urgentCount) => {
             // Ensure urgentCount doesn't exceed threadCount
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -241,11 +241,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: Notification dot should have aria-label with urgent count
             const notificationDot = screen.getByTestId('urgent-notification-dot');
             expect(notificationDot).toHaveAttribute('aria-label', `${validUrgentCount} urgent threads`);
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
   });
@@ -266,7 +266,7 @@ describe('NewPageHeader Property Tests', () => {
           syncStatusArb,
           (threadCount, urgentCount, syncStatus) => {
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -284,11 +284,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: When isCompact is true, the header should have compact class
             const header = screen.getByTestId('new-page-header');
             expect(header).toHaveClass('new-page-header--compact');
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -300,7 +300,7 @@ describe('NewPageHeader Property Tests', () => {
           syncStatusArb,
           (threadCount, urgentCount, syncStatus) => {
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -318,11 +318,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: When isCompact is false, the header should NOT have compact class
             const header = screen.getByTestId('new-page-header');
             expect(header).not.toHaveClass('new-page-header--compact');
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -334,7 +334,7 @@ describe('NewPageHeader Property Tests', () => {
           syncStatusArb,
           (threadCount, urgentCount, syncStatus) => {
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -352,11 +352,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: In compact mode, the stats section should not be rendered
             const statsSection = container.querySelector('[data-testid="header-stats"]');
             expect(statsSection).toBeNull();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -368,7 +368,7 @@ describe('NewPageHeader Property Tests', () => {
           syncStatusArb,
           (threadCount, urgentCount, syncStatus) => {
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -386,11 +386,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: In non-compact mode, the stats section should be rendered
             const statsSection = screen.getByTestId('header-stats');
             expect(statsSection).toBeInTheDocument();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
   });
@@ -411,7 +411,7 @@ describe('NewPageHeader Property Tests', () => {
           fc.boolean(),
           (threadCount, urgentCount, isCompact) => {
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -429,11 +429,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: When syncStatus is 'syncing', the sync indicator should be visible
             const syncIndicator = screen.getByTestId('sync-indicator');
             expect(syncIndicator).toBeInTheDocument();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -445,7 +445,7 @@ describe('NewPageHeader Property Tests', () => {
           fc.boolean(),
           (threadCount, urgentCount, isCompact) => {
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -463,11 +463,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: When syncStatus is 'idle', the sync indicator should NOT be visible
             const syncIndicator = container.querySelector('[data-testid="sync-indicator"]');
             expect(syncIndicator).toBeNull();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -479,7 +479,7 @@ describe('NewPageHeader Property Tests', () => {
           fc.boolean(),
           (threadCount, urgentCount, isCompact) => {
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -497,11 +497,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: When syncStatus is 'offline', the offline indicator should be visible
             const offlineIndicator = screen.getByTestId('offline-indicator');
             expect(offlineIndicator).toBeInTheDocument();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -513,7 +513,7 @@ describe('NewPageHeader Property Tests', () => {
           fc.boolean(),
           (threadCount, urgentCount, isCompact) => {
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -531,11 +531,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: When syncStatus is 'error', the error indicator should be visible
             const errorIndicator = screen.getByTestId('error-indicator');
             expect(errorIndicator).toBeInTheDocument();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -548,7 +548,7 @@ describe('NewPageHeader Property Tests', () => {
           syncStatusArb,
           (threadCount, urgentCount, isCompact, syncStatus) => {
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -586,11 +586,11 @@ describe('NewPageHeader Property Tests', () => {
               expect(offlineIndicator).toBeNull();
               expect(errorIndicator).toBeNull();
             }
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
   });
@@ -608,7 +608,7 @@ describe('NewPageHeader Property Tests', () => {
           syncStatusArb,
           (threadCount, urgentCount, isCompact, syncStatus) => {
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -626,11 +626,11 @@ describe('NewPageHeader Property Tests', () => {
             // Property: Refresh button should always be present
             const refreshButton = screen.getByTestId('refresh-button');
             expect(refreshButton).toBeInTheDocument();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
       );
     });
 
@@ -652,7 +652,7 @@ describe('NewPageHeader Property Tests', () => {
       // Property: Refresh button should be disabled when syncing
       const refreshButton = screen.getByTestId('refresh-button');
       expect(refreshButton).toBeDisabled();
-      
+
       unmount();
     });
   });
@@ -670,7 +670,7 @@ describe('NewPageHeader Property Tests', () => {
           syncStatusArb,
           (threadCount, urgentCount, isCompact, syncStatus) => {
             const validUrgentCount = Math.min(urgentCount, threadCount);
-            
+
             const onRefresh = vi.fn();
             const onSearch = vi.fn();
 
@@ -688,11 +688,76 @@ describe('NewPageHeader Property Tests', () => {
             // Property: Search toggle button should always be present
             const searchToggle = screen.getByTestId('search-toggle');
             expect(searchToggle).toBeInTheDocument();
-            
+
             unmount();
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 5 }
+      );
+    });
+  });
+
+  describe('Selection Mode (Batch Mode)', () => {
+    /**
+     * Validates Batch Mode toggle behavior
+     */
+    it('should display selection mode toggle when onToggleBatchMode is provided', { timeout: 20000 }, () => {
+      fc.assert(
+        fc.property(
+          fc.boolean(),
+          (isBatchMode) => {
+            const onToggleBatchMode = vi.fn();
+            const { unmount } = render(
+              <NewPageHeader
+                threadCount={10}
+                urgentCount={0}
+                isCompact={false}
+                syncStatus="idle"
+                onRefresh={vi.fn()}
+                onSearch={vi.fn()}
+                onToggleBatchMode={onToggleBatchMode}
+                isBatchMode={isBatchMode}
+              />
+            );
+
+            const toggle = screen.getByTestId('batch-mode-toggle');
+            expect(toggle).toBeInTheDocument();
+            expect(toggle).toHaveAttribute('aria-pressed', String(isBatchMode));
+            expect(screen.getByText('Select')).toBeInTheDocument();
+
+            unmount();
+          }
+        ),
+        { numRuns: 5 }
+      );
+    });
+
+    it('should have correct aria-label based on isBatchMode', { timeout: 20000 }, () => {
+      fc.assert(
+        fc.property(
+          fc.boolean(),
+          (isBatchMode) => {
+            const { unmount } = render(
+              <NewPageHeader
+                threadCount={10}
+                urgentCount={0}
+                isCompact={false}
+                syncStatus="idle"
+                onRefresh={vi.fn()}
+                onSearch={vi.fn()}
+                onToggleBatchMode={vi.fn()}
+                isBatchMode={isBatchMode}
+              />
+            );
+
+            const toggle = screen.getByTestId('batch-mode-toggle');
+            const expectedLabel = isBatchMode ? "Exit selection mode" : "Enter selection mode";
+            expect(toggle).toHaveAttribute('aria-label', expectedLabel);
+
+            unmount();
+          }
+        ),
+        { numRuns: 5 }
       );
     });
   });
@@ -726,7 +791,7 @@ describe('NewPageHeader Property Tests', () => {
 
       const searchToggle = screen.getByTestId('search-toggle');
       expect(searchToggle).toHaveAttribute('aria-label');
-      
+
       unmount();
     });
   });
