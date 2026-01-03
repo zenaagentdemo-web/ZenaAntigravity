@@ -123,7 +123,13 @@ export class AuthController {
         return;
       }
 
+
       console.error('Login error:', error);
+      // Log full stack trace for debugging 500 errors
+      if (error instanceof Error && error.stack) {
+        console.error(error.stack);
+      }
+
       res.status(500).json({
         error: {
           code: 'INTERNAL_ERROR',

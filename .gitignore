@@ -46,3 +46,6 @@ lerna-debug.log*
 
 # Local secrets
 .kiro/settings/mcp.json
+
+# Ignore large datasets
+/data/personality-datasets/

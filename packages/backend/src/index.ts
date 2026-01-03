@@ -27,6 +27,7 @@ import { syncEngineService } from './services/sync-engine.service.js';
 import { calendarSyncEngineService } from './services/calendar-sync-engine.service.js';
 import { websocketService } from './services/websocket.service.js';
 import { dealSchedulerService } from './services/deal-scheduler.service.js';
+import { godmodeSchedulerService } from './services/godmode-scheduler.service.js';
 import { logger } from './services/logger.service.js';
 import { healthCheckService } from './services/health-check.service.js';
 import {
@@ -145,6 +146,14 @@ app.use('/api/zena-actions', zenaActionsRoutes);
 import communicationsRoutes from './routes/communications.routes.js';
 app.use('/api/communications', communicationsRoutes);
 
+// Oracle routes (Predictive Intelligence)
+import oracleRoutes from './routes/oracle.routes.js';
+app.use('/api/oracle', oracleRoutes);
+
+// Godmode routes (Autonomous Actions)
+import godmodeRoutes from './routes/godmode.routes.js';
+app.use('/api/godmode', godmodeRoutes);
+
 // 404 handler - must be after all routes
 app.use(notFoundMiddleware);
 
@@ -163,6 +172,7 @@ calendarSyncEngineService.start();
 
 // Start deal scheduler (Phase 2b)
 dealSchedulerService.start();
+godmodeSchedulerService.start();
 
 // Graceful shutdown
 const shutdown = async (signal: string) => {
@@ -178,6 +188,7 @@ const shutdown = async (signal: string) => {
     syncEngineService.stop();
     calendarSyncEngineService.stop();
     dealSchedulerService.stop();
+    godmodeSchedulerService.stop();
     websocketService.shutdown();
 
     // Disconnect from database

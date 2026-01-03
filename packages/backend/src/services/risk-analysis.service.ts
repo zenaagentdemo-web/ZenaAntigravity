@@ -96,8 +96,29 @@ export class RiskAnalysisService {
       riskFactors.push(stageDurationRisk);
     }
 
-    // Aggregate risk factors into overall risk level
-    return this.aggregateRiskFactors(riskFactors);
+    // Aggregate heuristic risk factors
+    const heuristicResult = this.aggregateRiskFactors(riskFactors);
+
+    // BRAIN-FIRST: Sentiment & Strategic Risk Analysis
+    try {
+      const brainRisk = await this.analyzeRiskWithLLM(dealId, 'deal', {
+        stage: deal.stage,
+        threads: deal.threads.map(t => ({
+          subject: t.subject,
+          summary: t.summary,
+          riskLevel: t.riskLevel,
+          lastMessageAt: t.lastMessageAt
+        }))
+      });
+
+      if (brainRisk && this.getRiskSeverityScore(brainRisk.riskLevel) >= this.getRiskSeverityScore(heuristicResult.riskLevel)) {
+        return brainRisk;
+      }
+    } catch (error) {
+      console.warn('[ZenaBrain] LLM Risk Analysis failed:', error);
+    }
+
+    return heuristicResult;
   }
 
   /**
@@ -117,7 +138,7 @@ export class RiskAnalysisService {
     // Check if thread is in waiting category and has delayed response
     if (thread.category === 'waiting') {
       const daysSinceLastMessage = this.getDaysSince(thread.lastMessageAt);
-      
+
       if (daysSinceLastMessage >= RISK_THRESHOLDS.RESPONSE_DELAY_HIGH) {
         riskFactors.push({
           type: 'response_delay',
@@ -139,7 +160,74 @@ export class RiskAnalysisService {
       }
     }
 
-    return this.aggregateRiskFactors(riskFactors);
+    const heuristicResult = this.aggregateRiskFactors(riskFactors);
+
+    // BRAIN-FIRST: Thread Sentiment Analysis
+    try {
+      const brainRisk = await this.analyzeRiskWithLLM(threadId, 'thread', {
+        subject: thread.subject,
+        summary: thread.summary,
+        category: thread.category
+      });
+
+      if (brainRisk && this.getRiskSeverityScore(brainRisk.riskLevel) >= this.getRiskSeverityScore(heuristicResult.riskLevel)) {
+        return brainRisk;
+      }
+    } catch (error) {
+      console.warn('[ZenaBrain] LLM Thread Risk Analysis failed:', error);
+    }
+
+    return heuristicResult;
+  }
+
+  /**
+   * BRAIN-FIRST: Use LLM to identify subtle risk factors from content
+   */
+  private async analyzeRiskWithLLM(id: string, type: 'deal' | 'thread', context: any): Promise<RiskAnalysisResult | null> {
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    if (!geminiApiKey) return null;
+
+    const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+
+    const prompt = `You are Zena, a high-intelligence real estate risk analyst. Analyze this ${type} and identify potential risks based on sentiment and behavior.
+    
+CONTEXT:
+${JSON.stringify(context, null, 2)}
+
+INSTRUCTIONS:
+1. Look for subtle signs of risk: fading interest, pricing objections, competitive listings mentioned, or lack of urgency.
+2. Determine an overall Risk Level: "none", "low", "medium", or "high". 
+3. Provide a concise reason for the risk level.
+4. Return ONLY a JSON object: {"riskLevel": "high", "riskFlags": ["sentiment_negative", "stale_interest"], "riskReason": "Buyer mentioned looking at another property in the same street."}`;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.1,
+            response_mime_type: 'application/json'
+          }
+        })
+      });
+
+      if (!response.ok) return null;
+      const data = await response.json() as any;
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) return null;
+
+      const result = JSON.parse(text);
+      return {
+        riskLevel: result.riskLevel as RiskLevel,
+        riskFlags: result.riskFlags || [],
+        riskReason: result.riskReason || ''
+      };
+    } catch (error) {
+      return null;
+    }
   }
 
   /**

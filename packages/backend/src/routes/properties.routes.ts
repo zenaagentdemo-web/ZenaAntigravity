@@ -14,16 +14,38 @@ router.get('/', (req, res) => propertiesController.listProperties(req, res));
 // POST /api/properties - Create property
 router.post('/', (req, res) => propertiesController.createProperty(req, res));
 
+// POST /api/properties/bulk-delete - Bulk delete properties
+router.post('/bulk-delete', (req, res) => propertiesController.bulkDeleteProperties(req, res));
+
+// PATCH /api/properties/bulk - Bulk update properties (status, type)
+router.patch('/bulk', (req, res) => propertiesController.bulkUpdateProperties(req, res));
+
+// Property Intelligence Routes - MUST BE BEFORE /:id to avoid matching "smart-matches" as an ID
+router.get('/smart-matches', propertiesController.getAllSmartMatches.bind(propertiesController));
+
+// Dynamic ID routes - AFTER specific routes
 // GET /api/properties/:id - Get property details
 router.get('/:id', (req, res) => propertiesController.getProperty(req, res));
 
 // PUT /api/properties/:id - Update property
 router.put('/:id', (req, res) => propertiesController.updateProperty(req, res));
 
+// DELETE /api/properties/:id - Delete property
+router.delete('/:id', (req, res) => propertiesController.deleteProperty(req, res));
+
+// Smart matches for single property
+router.get('/:id/smart-matches', propertiesController.getSmartMatches.bind(propertiesController));
+
 // POST /api/properties/:id/milestones - Add campaign milestone
-router.post('/:id/milestones', (req, res) => propertiesController.addMilestone(req, res));
+router.post('/:id/milestones', propertiesController.addMilestone.bind(propertiesController));
 
 // POST /api/properties/:id/vendor-update - Generate vendor update
 router.post('/:id/vendor-update', generateVendorUpdate);
+
+// POST /api/properties/:id/intelligence/refresh - Refresh Zena Intelligence
+router.post('/:id/intelligence/refresh', (req, res) => propertiesController.refreshIntelligence(req, res));
+
+// GET /api/properties/:id/intelligence - Get Zena Intelligence
+router.get('/:id/intelligence', (req, res) => propertiesController.getIntelligence(req, res));
 
 export default router;

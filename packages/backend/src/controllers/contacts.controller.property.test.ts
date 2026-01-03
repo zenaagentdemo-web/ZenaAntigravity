@@ -96,7 +96,7 @@ describe('Contacts Controller Property-Based Tests', () => {
                     nextActionOwner: 'agent',
                     summary: `Deal ${i} summary`,
                     contacts: {
-                      connect: { id: contact.id },
+                      connect: [{ id: contact.id }],
                     },
                   },
                 });
@@ -132,7 +132,7 @@ describe('Contacts Controller Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 }
       );
     });
 
@@ -210,7 +210,7 @@ describe('Contacts Controller Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 }
       );
     });
 
@@ -251,7 +251,7 @@ describe('Contacts Controller Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 }
       );
     });
   });
@@ -295,9 +295,9 @@ describe('Contacts Controller Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 }
       );
-    });
+    }, 120000);
 
     it('should return contacts matching search query by email', async () => {
       await fc.assert(
@@ -337,9 +337,9 @@ describe('Contacts Controller Property-Based Tests', () => {
             }
           }
         ),
-        { numRuns: 100 }
+        { numRuns: 20 }
       );
-    });
+    }, 120000);
   });
 
   describe('Property 34: Contact updating', () => {

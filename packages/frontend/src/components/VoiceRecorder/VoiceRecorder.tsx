@@ -254,13 +254,6 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
         </button>
       )}
 
-      {/* Recording Duration */}
-      {voiceState === 'listening' && (
-        <div className="voice-recorder__duration">
-          {formatDuration(recordingDuration)}
-        </div>
-      )}
-
       {/* Waveform Visualization */}
       {showWaveform && voiceState === 'listening' && (
         <div className="voice-recorder__waveform">

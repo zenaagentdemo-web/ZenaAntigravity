@@ -6,26 +6,45 @@
 }
 
 .intel-help-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: var(--text-tertiary-ht, rgba(255, 255, 255, 0.4));
+    color: #8B5CF6;
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    border-radius: 50%;
     transition: all 0.2s ease;
     padding: 0;
     margin-left: 0.35rem;
+    animation: intelPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes intelPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.6);
+        transform: scale(1);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(139, 92, 246, 0);
+        transform: scale(1.1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+        transform: scale(1);
+    }
 }
 
 .intel-help-btn:hover {
-    background: rgba(0, 212, 255, 0.15);
-    border-color: var(--neon-cyan, #00D4FF);
-    color: var(--neon-cyan, #00D4FF);
-    transform: scale(1.1);
+    background: rgba(139, 92, 246, 0.25);
+    border-color: #8B5CF6;
+    color: #8B5CF6;
+    transform: scale(1.15);
+    animation: none;
 }
 
 .intel-help-btn:focus {
@@ -33,12 +52,21 @@
     box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.3);
 }
 
-/* Tooltip Panel - Default (bottom position) */
+.intel-tooltip-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: intelOverlayFadeIn 0.3s ease-out;
+}
+
 .intel-tooltip {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
+    position: relative;
     width: 320px;
     background: rgba(15, 15, 25, 0.98);
     backdrop-filter: blur(20px);
@@ -48,63 +76,29 @@
     box-shadow:
         0 10px 40px rgba(0, 0, 0, 0.6),
         0 0 20px rgba(0, 212, 255, 0.1);
-    z-index: 1000;
-    animation: tooltipFadeIn 0.2s ease-out;
+    animation: intelTooltipCenterIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Top position variant - when near bottom of screen */
-.intel-tooltip.intel-tooltip--top {
-    top: auto;
-    bottom: calc(100% + 8px);
-    animation: tooltipFadeInTop 0.2s ease-out;
-}
-
-@keyframes tooltipFadeIn {
+@keyframes intelOverlayFadeIn {
     from {
         opacity: 0;
-        transform: translateX(-50%) translateY(-5px);
     }
 
     to {
         opacity: 1;
-        transform: translateX(-50%) translateY(0);
     }
 }
 
-@keyframes tooltipFadeInTop {
+@keyframes intelTooltipCenterIn {
     from {
         opacity: 0;
-        transform: translateX(-50%) translateY(5px);
+        transform: scale(0.95);
     }
 
     to {
         opacity: 1;
-        transform: translateX(-50%) translateY(0);
+        transform: scale(1);
     }
-}
-
-/* Arrow pointer - default (points up) */
-.intel-tooltip::before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%) rotate(45deg);
-    width: 12px;
-    height: 12px;
-    background: rgba(15, 15, 25, 0.98);
-    border-left: 1px solid rgba(0, 212, 255, 0.3);
-    border-top: 1px solid rgba(0, 212, 255, 0.3);
-}
-
-/* Arrow for top-positioned tooltip (points down) */
-.intel-tooltip.intel-tooltip--top::before {
-    top: auto;
-    bottom: -6px;
-    border-left: none;
-    border-top: none;
-    border-right: 1px solid rgba(0, 212, 255, 0.3);
-    border-bottom: 1px solid rgba(0, 212, 255, 0.3);
 }
 
 .intel-tooltip__header {
@@ -255,16 +249,62 @@
     margin-bottom: 0.5rem;
 }
 
-.intel-tooltip__tips ul {
+/* Tips List with Checkboxes */
+.intel-tips-list {
     margin: 0;
-    padding-left: 1.25rem;
-    font-size: 0.75rem;
-    line-height: 1.5;
-    color: var(--text-secondary-ht, rgba(255, 255, 255, 0.7));
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.intel-tooltip__tips li {
-    margin-bottom: 0.25rem;
+.intel-tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.intel-tip-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.intel-checkbox {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    border-radius: 4px;
+    border: 1.5px solid rgba(139, 92, 246, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    transition: all 0.2s ease;
+    background: rgba(0, 0, 0, 0.2);
+    margin-top: 1px;
+}
+
+.intel-checkbox.checked {
+    background: #8B5CF6;
+    border-color: #8B5CF6;
+    color: white;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+
+.intel-tooltip__improve-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #444;
+    box-shadow: none;
 }
 
 .intel-tooltip__why {
@@ -322,16 +362,8 @@
 /* Responsive - ensure tooltip doesn't overflow on mobile */
 @media (max-width: 480px) {
     .intel-tooltip {
-        width: 280px;
-        left: auto;
-        right: -10px;
-        transform: none;
-    }
-
-    .intel-tooltip::before {
-        left: auto;
-        right: 15px;
-        transform: rotate(45deg);
+        width: calc(100% - 32px);
+        margin: 16px;
     }
 }
 

@@ -76,59 +76,63 @@ export const LogIntelTooltip: React.FC<LogIntelTooltipProps> = ({ className = ''
                 aria-label="Learn about Log Intel"
                 aria-expanded={isOpen}
             >
-                <HelpCircle size={14} />
+                <HelpCircle size={18} />
             </button>
 
             {isOpen && createPortal(
-                <div
-                    ref={tooltipRef}
-                    className={`log-intel-tooltip log-intel-tooltip--${position}`}
-                    style={tooltipStyle}
-                    role="tooltip"
-                >
-                    <div className="log-intel-tooltip__header">
-                        <h4><Lightbulb size={16} /> What is Log Intel?</h4>
-                        <button className="log-intel-tooltip__close" onClick={toggleTooltip}>
-                            <X size={14} />
-                        </button>
-                    </div>
-
-                    <div className="log-intel-tooltip__content">
-                        <p className="log-intel-tooltip__intro">
-                            Build <strong>relationship intelligence</strong> by recording private notes about your contacts.
-                            The more you know, the stronger your relationships, and the more deals you close.
-                        </p>
-
-                        <div className="log-intel-tooltip__methods">
-                            <div className="log-intel-tooltip__method">
-                                <MessageSquare size={16} />
-                                <span><strong>Written Notes</strong> — Type quick observations</span>
-                            </div>
-                            <div className="log-intel-tooltip__method">
-                                <Mic size={16} />
-                                <span><strong>Voice Notes</strong> — Record while driving or on-site</span>
-                            </div>
+                <div className="log-intel-tooltip-overlay" onClick={toggleTooltip}>
+                    <div
+                        ref={tooltipRef}
+                        className="log-intel-tooltip"
+                        onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="log-intel-title"
+                    >
+                        <div className="log-intel-tooltip__header">
+                            <h4 id="log-intel-title"><Lightbulb size={16} /> What is Log Intel?</h4>
+                            <button className="log-intel-tooltip__close" onClick={toggleTooltip}>
+                                <X size={14} />
+                            </button>
                         </div>
 
-                        <div className="log-intel-tooltip__tips">
-                            <h5>💡 What to Log</h5>
-                            <ul>
-                                <li><strong>Personal details</strong> — Kids' names, hobbies, birthday, pets</li>
-                                <li><strong>Motivations</strong> — Why are they buying/selling? Timeline pressures?</li>
-                                <li><strong>Budget / Price</strong> — What can they afford? What do they expect?</li>
-                                <li><strong>Property preferences</strong> — Must-haves, dealbreakers, areas they love</li>
-                                <li><strong>Key conversations</strong> — Promises made, concerns raised</li>
-                                <li><strong>Referral source</strong> — Who introduced them? Good for thank-yous</li>
-                            </ul>
-                        </div>
-
-                        <div className="log-intel-tooltip__why">
-                            <h5>🎯 Why It Matters</h5>
-                            <p>
-                                Great agents remember the little things. When you recall their daughter's
-                                graduation or that they wanted a north-facing garden, you build trust
-                                that competitors can't match.
+                        <div className="log-intel-tooltip__content">
+                            <p className="log-intel-tooltip__intro">
+                                Build <strong>relationship intelligence</strong> by recording private notes about your contacts.
+                                The more you know, the stronger your relationships, and the more deals you close.
                             </p>
+
+                            <div className="log-intel-tooltip__methods">
+                                <div className="log-intel-tooltip__method">
+                                    <MessageSquare size={16} />
+                                    <span><strong>Written Notes</strong> — Type quick observations</span>
+                                </div>
+                                <div className="log-intel-tooltip__method">
+                                    <Mic size={16} />
+                                    <span><strong>Voice Notes</strong> — Record while driving or on-site</span>
+                                </div>
+                            </div>
+
+                            <div className="log-intel-tooltip__tips">
+                                <h5>💡 What to Log</h5>
+                                <ul>
+                                    <li><strong>Personal details</strong> — Kids' names, hobbies, birthday, pets</li>
+                                    <li><strong>Motivations</strong> — Why are they buying/selling? Timeline pressures?</li>
+                                    <li><strong>Budget / Price</strong> — What can they afford? What do they expect?</li>
+                                    <li><strong>Property preferences</strong> — Must-haves, dealbreakers, areas they love</li>
+                                    <li><strong>Key conversations</strong> — Promises made, concerns raised</li>
+                                    <li><strong>Referral source</strong> — Who introduced them? Good for thank-yous</li>
+                                </ul>
+                            </div>
+
+                            <div className="log-intel-tooltip__why">
+                                <h5>🎯 Why It Matters</h5>
+                                <p>
+                                    Great agents remember the little things. When you recall their daughter's
+                                    graduation or that they wanted a north-facing garden, you build trust
+                                    that competitors can't match.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { STAGE_LABELS } from '../../components/DealFlow/types';
+import { api } from '../../utils/apiClient';
 import './DealDetailPage.css';
 
 interface Participant {
@@ -108,6 +109,7 @@ interface DealDetailResponse {
 export const DealDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [deal, setDeal] = useState<Deal | null>(null);
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -205,6 +207,14 @@ export const DealDetailPage: React.FC = () => {
 
       if (response.ok) {
         setDeal(prev => prev ? { ...prev, conditions: updatedConditions } : null);
+
+        // Step 1: Active Intelligence Digestion
+        // If a condition is satisfied, re-analyze property intelligence immediately
+        if (newStatus === 'satisfied' && deal.property?.id) {
+          api.post(`/api/properties/${deal.property.id}/intelligence/refresh`).catch(err => {
+            console.error('[Intelligence] Auto-digestion failed after condition satisfaction:', err);
+          });
+        }
       }
     } catch (err) {
       console.error('Error updating condition:', err);
@@ -350,7 +360,7 @@ export const DealDetailPage: React.FC = () => {
                 <div
                   key={contact.id}
                   className="deal-detail-page__contact"
-                  onClick={() => navigate(`/contacts/${contact.id}`)}
+                  onClick={() => navigate(`/contacts/${contact.id}`, { state: { from: location.pathname, label: deal.property?.address || 'Deal' } })}
                 >
                   <div className="deal-detail-page__contact-name">
                     {contact.name}

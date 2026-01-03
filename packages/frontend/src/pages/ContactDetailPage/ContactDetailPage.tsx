@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   ArrowLeft,
   Mail,
@@ -21,7 +21,10 @@ import {
   DollarSign,
   MapPin,
   Clock,
-  Shield
+  Shield,
+  Zap,
+  ArrowRight,
+  HelpCircle
 } from 'lucide-react';
 import { api } from '../../utils/apiClient';
 import { realTimeDataService } from '../../services/realTimeDataService';
@@ -31,11 +34,11 @@ import { ZenaBatchComposeModal } from '../../components/ZenaBatchComposeModal/Ze
 import { ZenaCallTooltip } from '../../components/ZenaCallTooltip/ZenaCallTooltip';
 import { NewContactModal } from '../../components/NewContactModal/NewContactModal';
 import {
-  calculateEngagementScore,
-  generateMockEngagementInput,
+  EngagementScore,
   ContactRole,
-  DealStage
-} from '../../utils/ContactEngagementScorer';
+  DealStage,
+  Contact
+} from '../../models/contact.types';
 import './ContactDetailPage.css';
 
 interface RelationshipNote {
@@ -60,6 +63,16 @@ interface TimelineEvent {
   summary: string;
   content?: string;
   timestamp: string;
+  metadata?: {
+    godmode?: boolean;
+    mode?: string;
+    actionType?: string;
+    draftSubject?: string;
+    draftBody?: string;
+    executionResult?: any;
+    success?: boolean;
+    autoExecuted?: boolean;
+  };
 }
 
 interface Thread {
@@ -72,30 +85,7 @@ interface Thread {
   lastMessageAt: string;
 }
 
-interface Contact {
-  id: string;
-  name: string;
-  emails: string[];
-  phones: string[];
-  role: 'buyer' | 'vendor' | 'market' | 'tradesperson' | 'agent' | 'other';
-  deals: Deal[];
-  relationshipNotes: RelationshipNote[];
-  intelligenceSnippet?: string;
-  lastActivityDetail?: string;
-  engagementScore?: number;
-  engagementVelocity?: number;
-  createdAt: string;
-  updatedAt: string;
-  zenaIntelligence?: {
-    propertyType?: string;
-    minBudget?: number;
-    maxBudget?: number;
-    location?: string;
-    bedrooms?: number;
-    bathrooms?: number;
-    timeline?: string;
-  };
-}
+
 
 const ROLE_THEME: Record<string, { label: string, color: string, bg: string, border: string }> = {
   buyer: { label: 'Buyer', color: '#00D4FF', bg: 'rgba(0, 212, 255, 0.1)', border: 'rgba(0, 212, 255, 0.3)' },
@@ -106,60 +96,18 @@ const ROLE_THEME: Record<string, { label: string, color: string, bg: string, bor
   other: { label: 'Contact', color: '#FFFFFF', bg: 'rgba(255, 255, 255, 0.1)', border: 'rgba(255, 255, 255, 0.2)' },
 };
 
-const hashString = (str: string): number => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash |= 0;
-  }
-  return Math.abs(hash);
-};
 
-const ENRICH_CONTACT = (contact: Contact): Contact => {
-  const snippets = [
-    "High probability seller (6-9 months). Watching local auction clearance rates.",
-    "Active buyer. Attending 3+ open homes per weekend in Grey Lynn area.",
-    "Previous client. Portfolio investor looking for low-maintenance yields.",
-    "First-home buyer. Pre-approval valid for 60 days. High urgency.",
-    "Downsizing vendor. Exploring smaller apartments in Mission Bay.",
-    "Trades lead. Reliable for urgent pre-settlement repairs."
-  ];
-
-  const seed = hashString(contact.id);
-  const snippetIndex = (seed >> 4) % snippets.length;
-
-  const dealStages: (DealStage | undefined)[] = [
-    undefined, 'lead', 'qualified', 'viewing', 'offer', 'conditional', 'sold', 'nurture'
-  ];
-  const seedIndex = contact.name.charCodeAt(0) % dealStages.length;
-  const mockDealStage = dealStages[seedIndex];
-
-  const engagementInput = generateMockEngagementInput(
-    contact.name,
-    contact.emails,
-    contact.phones,
-    contact.role as ContactRole,
-    mockDealStage
-  );
-  const scoringData = calculateEngagementScore(engagementInput);
-
-  return {
-    ...contact,
-    engagementScore: contact.engagementScore ?? scoringData.intelScore,
-    engagementVelocity: contact.engagementVelocity ?? scoringData.momentum,
-    intelligenceSnippet: contact.intelligenceSnippet ?? snippets[snippetIndex],
-    lastActivityDetail: contact.lastActivityDetail ?? (contact.role === 'vendor' ? 'Requested appraisal for property' : 'Inquired about listing')
-  };
-};
 
 export const ContactDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const backState = location.state as { from?: string; label?: string } | null;
   const [contact, setContact] = useState<Contact | null>(null);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [threads, setThreads] = useState<Thread[]>([]);
+  const [pendingActions, setPendingActions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showNoteForm, setShowNoteForm] = useState(false);
@@ -177,6 +125,30 @@ export const ContactDetailPage: React.FC = () => {
   const [editContent, setEditContent] = useState('');
   const [editSummary, setEditSummary] = useState('');
   const [isEditingIntel, setIsEditingIntel] = useState(false);
+  const [isRefreshingBrain, setIsRefreshingBrain] = useState(false);
+  const [showPulseHelp, setShowPulseHelp] = useState(false);
+
+  // Throttle state for Neural Pulse (5 minute cooldown)
+  const [lastPulseTime, setLastPulseTime] = useState<number | null>(null);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const PULSE_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
+
+  // Cooldown timer effect
+  useEffect(() => {
+    if (!lastPulseTime) return;
+
+    const interval = setInterval(() => {
+      const remaining = PULSE_COOLDOWN_MS - (Date.now() - lastPulseTime);
+      if (remaining <= 0) {
+        setCooldownRemaining(0);
+        clearInterval(interval);
+      } else {
+        setCooldownRemaining(Math.ceil(remaining / 1000));
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [lastPulseTime]);
 
   useEffect(() => {
     if (id) {
@@ -207,11 +179,13 @@ export const ContactDetailPage: React.FC = () => {
       const response = await api.get<{ contact: Contact, threads: any }>(`/api/contacts/${id}`);
       const contactData = response.data.contact;
 
-      const enrichedContact = ENRICH_CONTACT(contactData);
-
-      setContact(enrichedContact);
+      setContact(contactData);
       setDeals(contactData.deals || []);
       setThreads(response.data.threads || []);
+
+      // Load pending actions
+      const actionsResponse = await api.get(`/api/godmode/actions?contactId=${id}`);
+      setPendingActions(actionsResponse.data.actions || []);
 
       // Load timeline
       const timelineResponse = await api.get<TimelineEvent[] | { events: TimelineEvent[] }>(
@@ -439,6 +413,20 @@ export const ContactDetailPage: React.FC = () => {
     }
   };
 
+  const handleRefreshBrain = async () => {
+    if (!id || isRefreshingBrain || cooldownRemaining > 0) return;
+    try {
+      setIsRefreshingBrain(true);
+      await api.post(`/api/contacts/${id}/discovery`);
+      await loadContactData();
+      setLastPulseTime(Date.now()); // Start cooldown
+    } catch (err) {
+      console.error('Failed to run neural pulse:', err);
+    } finally {
+      setIsRefreshingBrain(false);
+    }
+  };
+
   const handleUpdateIntelligence = async (updatedData: any) => {
     if (!id || !contact) return;
     try {
@@ -503,8 +491,8 @@ export const ContactDetailPage: React.FC = () => {
       <div className="contact-detail-page">
         <div className="contact-detail-page__container">
           <div className="contact-detail-page__error">{error || 'Entity not found.'}</div>
-          <button className="contact-detail-page__back" onClick={() => navigate('/contacts')}>
-            <ArrowLeft size={18} /> Re-entry to Contacts
+          <button className="contact-detail-page__back" onClick={() => navigate(backState?.from || '/contacts')}>
+            <ArrowLeft size={18} /> {backState?.label ? `Back to ${backState.label}` : 'Re-entry to Contacts'}
           </button>
         </div>
       </div>
@@ -522,8 +510,8 @@ export const ContactDetailPage: React.FC = () => {
       <div className="contact-detail-page__container">
         <header className="contact-detail-page__header">
           <div className="contact-detail-page__header-left">
-            <button className="contact-detail-page__back" onClick={() => navigate('/contacts')}>
-              <ArrowLeft size={18} /> Contacts
+            <button className="contact-detail-page__back" onClick={() => navigate(backState?.from || '/contacts')}>
+              <ArrowLeft size={18} /> {backState?.label || 'Contacts'}
             </button>
             <button className="contact-detail-page__delete-contact-btn" onClick={handleDeleteContact} title="Delete Contact">
               <Trash2 size={16} /> Delete Contact
@@ -552,9 +540,40 @@ export const ContactDetailPage: React.FC = () => {
             <h2 className="contact-detail-page__section-title">
               <Sparkles size={18} /> AI Insight & Intelligence
             </h2>
-            <button className="edit-intel-btn" onClick={() => setIsEditingIntel(true)}>
-              <Pencil size={14} /> Update Intelligence
-            </button>
+            <div className="intel-header-actions">
+              <div className="neural-pulse-container">
+                <button
+                  className={`refresh-brain-btn ${isRefreshingBrain ? 'spinning' : ''} ${cooldownRemaining > 0 ? 'cooldown' : ''}`}
+                  onClick={handleRefreshBrain}
+                  disabled={isRefreshingBrain || cooldownRemaining > 0}
+                  title={cooldownRemaining > 0 ? `Cooldown: ${Math.floor(cooldownRemaining / 60)}:${(cooldownRemaining % 60).toString().padStart(2, '0')} remaining` : 'Trigger Neural Pulse'}
+                >
+                  <RefreshCw size={14} /> {isRefreshingBrain ? 'Pulsing...' : cooldownRemaining > 0 ? `${Math.floor(cooldownRemaining / 60)}:${(cooldownRemaining % 60).toString().padStart(2, '0')}` : 'Neural Pulse'}
+                </button>
+                <button
+                  className="neural-pulse-help-btn"
+                  onClick={() => setShowPulseHelp(!showPulseHelp)}
+                  title="What is Neural Pulse?"
+                >
+                  <HelpCircle size={14} />
+                </button>
+                {showPulseHelp && (
+                  <div className="neural-pulse-tooltip">
+                    <strong>Neural Pulse</strong>
+                    <p>
+                      Triggers Zena's AI to re-analyse this contact's activity,
+                      engagement patterns, and relationship signals. This refreshes
+                      the intelligence snippet and recalculates the Zena category
+                      (Hot Lead, Pulse, Cold Nurture, High Intent).
+                    </p>
+                    <p className="pulse-tip">💡 Use this after logging new intel or before a key meeting.</p>
+                  </div>
+                )}
+              </div>
+              <button className="edit-intel-btn" onClick={() => setIsEditingIntel(true)}>
+                <Pencil size={14} /> Update Intelligence
+              </button>
+            </div>
           </div>
           <div className="contact-detail-page__intelligence-summary">
             <Shield size={16} className="zena-shield-icon" />
@@ -574,6 +593,39 @@ export const ContactDetailPage: React.FC = () => {
               <span className="contact-detail-page__info-value">{timeline.length > 0 ? formatDate(timeline[0].timestamp) : 'N/A'}</span>
             </div>
           </div>
+
+          {/* Pending Actions Alert */}
+          {pendingActions.length > 0 && (
+            <div className="contact-detail-page__pending-alert">
+              <div className="pending-alert-header">
+                <Zap size={18} className="zap-icon" />
+                <span>{pendingActions.length} Pending Godmode Action{pendingActions.length > 1 ? 's' : ''}</span>
+              </div>
+              <div className="pending-actions-list">
+                {pendingActions.map(action => (
+                  <div key={action.id} className="pending-action-item">
+                    <div className="pending-action-main">
+                      <div className="pending-action-title-row">
+                        <span className="pending-action-title">{action.title}</span>
+                        <span className="pending-action-priority" style={{ color: action.priority >= 8 ? '#ff5050' : '#fbbf24' }}>
+                          Priority {action.priority}/10
+                        </span>
+                      </div>
+                      {action.description && (
+                        <p className="pending-action-reasoning">Why: {action.description}</p>
+                      )}
+                    </div>
+                    <button
+                      className="pending-action-view-btn"
+                      onClick={() => navigate('/contacts?openQueue=true')}
+                    >
+                      View in Queue <ArrowRight size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="intelligence-grid">
             <div className="intel-card">
@@ -739,13 +791,19 @@ export const ContactDetailPage: React.FC = () => {
           <div className="contact-detail-page__timeline">
             {timeline.length > 0 ? timeline.map(event => (
               <div key={event.id} className="contact-detail-page__timeline-event">
-                <div className="contact-detail-page__timeline-marker">
-                  {event.type === 'email' && <Mail size={16} />}
-                  {event.type === 'call' && <Phone size={16} />}
-                  {event.type === 'meeting' && <Calendar size={16} />}
-                  {event.type === 'task' && <CheckCircle2 size={16} />}
-                  {event.type === 'note' && <FileText size={16} />}
-                  {event.type === 'voice_note' && <Mic size={16} />}
+                <div className={`contact-detail-page__timeline-marker ${event.metadata?.godmode ? 'godmode' : ''}`}>
+                  {event.metadata?.godmode ? (
+                    <Zap size={18} fill="currentColor" />
+                  ) : (
+                    <>
+                      {event.type === 'email' && <Mail size={16} />}
+                      {event.type === 'call' && <Phone size={16} />}
+                      {event.type === 'meeting' && <Calendar size={16} />}
+                      {event.type === 'task' && <CheckCircle2 size={16} />}
+                      {event.type === 'note' && <FileText size={16} />}
+                      {event.type === 'voice_note' && <Mic size={16} />}
+                    </>
+                  )}
                 </div>
                 <div className="contact-detail-page__timeline-content">
                   <div className="contact-detail-page__timeline-header">
@@ -796,8 +854,40 @@ export const ContactDetailPage: React.FC = () => {
                     </div>
                   ) : (
                     <>
-                      <h4 className="contact-detail-page__timeline-summary">{event.summary}</h4>
+                      <h4 className="contact-detail-page__timeline-summary">
+                        {event.summary}
+                        {event.metadata?.godmode && (
+                          <span className={`godmode-badge ${event.metadata.mode}`}>
+                            {event.metadata.mode === 'full_god' ? '⚡ God' : '✨ Demi'}
+                          </span>
+                        )}
+                      </h4>
                       {event.content && <p className="contact-detail-page__timeline-detail">{event.content}</p>}
+
+                      {/* Rich Godmode Details */}
+                      {event.metadata?.godmode && (
+                        <div className="timeline-godmode-details">
+                          {event.metadata.draftSubject && (
+                            <div className="detail-row">
+                              <span className="detail-label">Subject:</span>
+                              <span className="detail-value">{event.metadata.draftSubject}</span>
+                            </div>
+                          )}
+                          {event.metadata.draftBody && (
+                            <div className="detail-body-preview">
+                              {event.metadata.draftBody}
+                            </div>
+                          )}
+                          <div className="detail-meta">
+                            <span className={`status-tag ${event.metadata.success ? 'success' : 'failed'}`}>
+                              {event.metadata.success ? 'Executed Successfully' : 'Execution Failed'}
+                            </span>
+                            {event.metadata.autoExecuted && (
+                              <span className="auto-tag">Autonomous Action</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>

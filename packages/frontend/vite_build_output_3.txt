@@ -1,0 +1,137 @@
+vite v7.3.0 building client environment for production...
+transforming...
+✓ 2436 modules transformed.
+[esbuild css minify]
+▲ [WARNING] Unexpected "`" [css-syntax-error]
+
+    <stdin>:2326:0:
+      2326 │ ```:root {
+           ╵ ^
+
+
+rendering chunks...
+computing gzip size...
+dist/manifest.webmanifest                         0.52 kB
+dist/index.html                                   1.11 kB │ gzip:   0.49 kB
+dist/assets/HomePage-BpZ-WupD.css                 1.08 kB │ gzip:   0.42 kB
+dist/assets/InboxPage-DoGdo2lk.css                2.24 kB │ gzip:   0.79 kB
+dist/assets/LoginPage-Bd45J09F.css                2.35 kB │ gzip:   0.70 kB
+dist/assets/RegisterPage-CpGerf2P.css             2.48 kB │ gzip:   0.71 kB
+dist/assets/LogIntelTooltip-8RIqL4BA.css          2.62 kB │ gzip:   0.83 kB
+dist/assets/AskZenaImmersive-xo8lBW45.css         2.89 kB │ gzip:   1.18 kB
+dist/assets/CalendarPage-TQ2gbJWz.css             3.43 kB │ gzip:   1.18 kB
+dist/assets/ImageLightbox-C2XVcBCJ.css            3.52 kB │ gzip:   1.13 kB
+dist/assets/RecentActivityStream-DwdBnBcl.css     3.63 kB │ gzip:   1.09 kB
+dist/assets/PixelExplosionDemo-BAdz3CtH.css       4.07 kB │ gzip:   1.33 kB
+dist/assets/SearchPage-GbgXil6c.css               4.14 kB │ gzip:   0.98 kB
+dist/assets/NewContactModal-rPUvuoDY.css          5.07 kB │ gzip:   1.57 kB
+dist/assets/BatchActionBar-BpcFGKnd.css           5.21 kB │ gzip:   1.38 kB
+dist/assets/AmbientBackground-Bo47OMvm.css        5.75 kB │ gzip:   1.49 kB
+dist/assets/HolographicAvatar-DQ7lOJmL.css        8.72 kB │ gzip:   1.99 kB
+dist/assets/ZenaAskPage-CUttWYr8.css              9.15 kB │ gzip:   2.33 kB
+dist/assets/ZenaCallTooltip-CKIMKDuF.css         10.74 kB │ gzip:   2.56 kB
+dist/assets/AnimatedEmptyState-jvhbVuzv.css      11.08 kB │ gzip:   2.26 kB
+dist/assets/DealDetailPage-DR1Qessk.css          11.71 kB │ gzip:   2.21 kB
+dist/assets/TasksPage-bzvclc9V.css               12.25 kB │ gzip:   2.63 kB
+dist/assets/FocusPage-BKn55PV5.css               14.10 kB │ gzip:   2.26 kB
+dist/assets/WaitingPage-Dv7Jgt3L.css             14.71 kB │ gzip:   2.24 kB
+dist/assets/data-viz-tV8CbdG4.css                14.99 kB │ gzip:   2.92 kB
+dist/assets/PropertyDetailPage-bcusK_4H.css      15.07 kB │ gzip:   2.86 kB
+dist/assets/ContactDetailPage-DXAvBELK.css       15.28 kB │ gzip:   3.18 kB
+dist/assets/ui-foundation-CWqUvhrM.css           15.48 kB │ gzip:   2.52 kB
+dist/assets/SettingsPage-aI2Og9GL.css            17.01 kB │ gzip:   2.72 kB
+dist/assets/ui-core-w_ET6nhw.css                 27.05 kB │ gzip:   5.04 kB
+dist/assets/AskZenaPage-BLQn5m80.css             29.39 kB │ gzip:   6.25 kB
+dist/assets/PropertiesPage-nn4BS8F9.css          30.41 kB │ gzip:   5.86 kB
+dist/assets/EnhancedHomeDashboard-BGWa6k4S.css   35.75 kB │ gzip:   5.74 kB
+dist/assets/HighTechDashboardPage-WG1D4K4v.css   35.87 kB │ gzip:   6.06 kB
+dist/assets/ThreadDetailPage-D-131KKH.css        39.88 kB │ gzip:   6.19 kB
+dist/assets/ContactsPage-DPf9WIdD.css            50.38 kB │ gzip:   8.92 kB
+dist/assets/dashboard-widgets-CDHcLuX-.css       53.01 kB │ gzip:   7.90 kB
+dist/assets/DealFlowPage-CMoky3co.css            66.15 kB │ gzip:  11.84 kB
+dist/assets/NewPage-WHDVoHKz.css                102.46 kB │ gzip:  15.33 kB
+dist/assets/index-CDP9swYA.css                  115.81 kB │ gzip:  20.36 kB
+dist/assets/data-viz-DJZR9luZ.js                  0.08 kB │ gzip:   0.10 kB │ map:     0.10 kB
+dist/assets/ui-foundation-M22-Gumf.js             0.12 kB │ gzip:   0.13 kB │ map:     0.11 kB
+dist/assets/chevron-right-CQbDQ_hy.js             0.17 kB │ gzip:   0.17 kB │ map:     0.76 kB
+dist/assets/user-DF7FMxd8.js                      0.23 kB │ gzip:   0.21 kB │ map:     0.87 kB
+dist/assets/alert-triangle-BWqhSgx5.js            0.31 kB │ gzip:   0.24 kB │ map:     1.04 kB
+dist/assets/text-utils-E6Rqgtni.js                0.37 kB │ gzip:   0.27 kB │ map:     2.10 kB
+dist/assets/trash-2-QbEHFbi9.js                   0.40 kB │ gzip:   0.28 kB │ map:     1.28 kB
+dist/assets/building-2-B_39Jsd5.js                0.48 kB │ gzip:   0.28 kB │ map:     1.38 kB
+dist/assets/lightbulb-CZ8iwrXT.js                 0.50 kB │ gzip:   0.33 kB │ map:     1.88 kB
+dist/assets/minus-CAly09uQ.js                     0.91 kB │ gzip:   0.45 kB │ map:     2.95 kB
+dist/assets/AskZenaImmersive-CvFA4pud.js          1.09 kB │ gzip:   0.55 kB │ map:     3.51 kB
+dist/assets/tag-RmX4FxIR.js                       1.46 kB │ gzip:   0.64 kB │ map:     6.05 kB
+dist/assets/HomePage-BanV3rxS.js                  1.82 kB │ gzip:   0.57 kB │ map:     3.28 kB
+dist/assets/x-Bjjt3kc-.js                         1.85 kB │ gzip:   0.97 kB │ map:     8.52 kB
+dist/assets/AmbientBackground-Av67YeeK.js         1.88 kB │ gzip:   0.84 kB │ map:     7.27 kB
+dist/assets/types-CdUi1pGA.js                     2.14 kB │ gzip:   1.18 kB │ map:    11.97 kB
+dist/assets/usePullToRefresh-C2uv9pUJ.js          2.33 kB │ gzip:   0.88 kB │ map:     8.97 kB
+dist/assets/InboxPage-BtawP0ta.js                 2.35 kB │ gzip:   0.93 kB │ map:     6.52 kB
+dist/assets/AnimatedEmptyState-XUnDRWC5.js        2.42 kB │ gzip:   0.99 kB │ map:    10.54 kB
+dist/assets/LoginPage-Ob0hhMjJ.js                 2.55 kB │ gzip:   1.07 kB │ map:     7.97 kB
+dist/assets/PixelExplosionDemo-ByKa90nv.js        2.87 kB │ gzip:   1.04 kB │ map:     8.90 kB
+dist/assets/useThreadActions-D009PwNy.js          3.13 kB │ gzip:   1.11 kB │ map:    14.56 kB
+dist/assets/RegisterPage-bBJGiJIh.js              3.18 kB │ gzip:   1.07 kB │ map:     8.25 kB
+dist/assets/CalendarPage-B0IXwZad.js              3.26 kB │ gzip:   1.18 kB │ map:     8.29 kB
+dist/assets/RecentActivityStream-DvGzq4r7.js      3.30 kB │ gzip:   1.06 kB │ map:    11.31 kB
+dist/assets/BatchActionBar-Cus8sZTd.js            4.12 kB │ gzip:   1.11 kB │ map:    10.35 kB
+dist/assets/SearchPage-Baok4O08.js                4.21 kB │ gzip:   1.47 kB │ map:    13.31 kB
+dist/assets/LogIntelTooltip-DUgjo7Hh.js           4.36 kB │ gzip:   1.88 kB │ map:    13.67 kB
+dist/assets/ImageLightbox-DDvswEnC.js             4.70 kB │ gzip:   1.79 kB │ map:    18.30 kB
+dist/assets/FocusPage-P3UqMg9N.js                 5.52 kB │ gzip:   2.00 kB │ map:    17.10 kB
+dist/assets/live-audio.service-pyO2MBvP.js        5.68 kB │ gzip:   2.10 kB │ map:    23.33 kB
+dist/assets/WaitingPage-TANLpigS.js               8.34 kB │ gzip:   3.12 kB │ map:    34.34 kB
+dist/assets/ZenaAskPage-yUB3EZ-N.js               8.36 kB │ gzip:   3.21 kB │ map:    36.02 kB
+dist/assets/NewPage-CBb-CwAL.js                   8.66 kB │ gzip:   3.29 kB │ map:    36.28 kB
+dist/assets/NewContactModal-0RHcxzYJ.js           8.66 kB │ gzip:   2.35 kB │ map:    29.35 kB
+dist/assets/DealDetailPage-9HNA4TMF.js           10.24 kB │ gzip:   2.80 kB │ map:    29.44 kB
+dist/assets/utils-BrXBH4YK.js                    10.30 kB │ gzip:   3.22 kB │ map:    36.53 kB
+dist/assets/HolographicAvatar-CWUwB_LU.js        10.81 kB │ gzip:   4.21 kB │ map:    53.36 kB
+dist/assets/HologramParticleEngine-3t2SWURs.js   12.57 kB │ gzip:   4.30 kB │ map:    29.67 kB
+dist/assets/HighTechDashboardPage-BA27c7yO.js    13.22 kB │ gzip:   4.22 kB │ map:    41.62 kB
+dist/assets/ZenaCallTooltip-DiD3tfK2.js          14.76 kB │ gzip:   5.36 kB │ map:    55.67 kB
+dist/assets/ContactDetailPage-C_8qfVV6.js        17.29 kB │ gzip:   4.91 kB │ map:    50.54 kB
+dist/assets/TasksPage-DLucgiXw.js                18.13 kB │ gzip:   5.26 kB │ map:    64.91 kB
+dist/assets/PropertyDetailPage-Btov4bo4.js       22.39 kB │ gzip:   5.77 kB │ map:    63.07 kB
+dist/assets/SettingsPage-WTspmGg2.js             24.32 kB │ gzip:   5.39 kB │ map:    70.98 kB
+dist/assets/ui-core-BQPBVs-B.js                  26.19 kB │ gzip:   8.79 kB │ map:    85.78 kB
+dist/assets/EnhancedHomeDashboard-WaoEU6o5.js    28.98 kB │ gzip:   8.57 kB │ map:   111.28 kB
+dist/assets/PropertiesPage-CkdaTwzX.js           38.84 kB │ gzip:  10.02 kB │ map:   121.89 kB
+dist/assets/dashboard-widgets-Drn01muF.js        39.13 kB │ gzip:  11.54 kB │ map:   134.60 kB
+dist/assets/ThreadDetailPage-HXepG1Bv.js         45.85 kB │ gzip:  10.75 kB │ map:   153.07 kB
+dist/assets/ContactsPage-C50XTVql.js             52.04 kB │ gzip:  14.74 kB │ map:   207.90 kB
+dist/assets/NewPage-wgaAWI32.js                  80.93 kB │ gzip:  19.16 kB │ map:   305.84 kB
+dist/assets/DealFlowPage-DWW_xpVt.js             98.29 kB │ gzip:  24.77 kB │ map:   442.74 kB
+dist/assets/react-vendor-CQgnx6SW.js            159.93 kB │ gzip:  52.34 kB │ map:   706.78 kB
+dist/assets/AskZenaPage-Crvm525I.js             186.55 kB │ gzip:  55.63 kB │ map: 1,080.40 kB
+dist/assets/index-CXPpgVo6.js                   609.31 kB │ gzip: 159.58 kB │ map: 2,697.81 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 6.40s
+
+PWA v1.2.0
+Building public/sw-custom.js service worker ("es" format)...
+vite v7.3.0 building client environment for production...
+transforming...
+✓ 1 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/sw-custom.mjs  3.30 kB │ gzip: 1.34 kB │ map: 11.49 kB
+✓ built in 232ms
+error during build:
+Error: Unable to find a place to inject the manifest. This is likely because swSrc and swDest are configured to the same file. Please ensure that your swSrc file contains the following: self.__WB_MANIFEST
+    at injectManifest (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/workbox-build/build/inject-manifest.js:77:19)
+    at async buildSW (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/node_modules/vite-plugin-pwa/dist/vite-build-BGK4YAIU.js:49:23)
+    at async generateInjectManifest (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/node_modules/vite-plugin-pwa/dist/index.js:224:3)
+    at async _generateSW (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/node_modules/vite-plugin-pwa/dist/index.js:232:5)
+    at async Object.handler (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/node_modules/vite-plugin-pwa/dist/index.js:427:13)
+    at async PluginDriver.hookParallel (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/rollup/dist/es/shared/node-entry.js:22426:17)
+    at async Object.close (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/rollup/dist/es/shared/node-entry.js:23445:13)
+    at async buildEnvironment (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/node_modules/vite/dist/node/chunks/config.js:33554:15)
+    at async Object.build (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/node_modules/vite/dist/node/chunks/config.js:33899:19)
+    at async Object.buildApp (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/node_modules/vite/dist/node/chunks/config.js:33896:153)

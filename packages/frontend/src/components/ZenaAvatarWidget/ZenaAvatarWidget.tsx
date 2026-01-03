@@ -22,6 +22,8 @@ interface ZenaAvatarWidgetProps {
     coachingStatus?: string;
     /** Test ID for testing */
     testId?: string;
+    /** Page context (e.g., 'contacts', 'properties') */
+    context?: string;
 }
 
 export const ZenaAvatarWidget: React.FC<ZenaAvatarWidgetProps> = ({
@@ -30,6 +32,7 @@ export const ZenaAvatarWidget: React.FC<ZenaAvatarWidgetProps> = ({
     variant = 'central',
     coachingStatus,
     testId = 'zena-avatar-widget',
+    context = 'app',
 }) => {
     const navigate = useNavigate();
     const [isHovered, setIsHovered] = useState(false);
@@ -46,9 +49,9 @@ export const ZenaAvatarWidget: React.FC<ZenaAvatarWidgetProps> = ({
         if (onLiveClick) {
             onLiveClick();
         } else {
-            navigate('/ask-zena?mode=handsfree');
+            navigate(`/ask-zena?mode=handsfree&context=${encodeURIComponent(context)}&t=${Date.now()}`);
         }
-    }, [onLiveClick, navigate]);
+    }, [onLiveClick, navigate, context]);
 
     const isFloating = variant === 'floating';
 

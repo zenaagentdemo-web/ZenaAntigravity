@@ -40,7 +40,23 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onPreview
                     </div>
                 )}
                 <div className="message-content">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                            // Make all links open in new tabs
+                            a: ({ node, href, children, ...props }) => (
+                                <a
+                                    href={href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="zena-source-link"
+                                    {...props}
+                                >
+                                    {children}
+                                </a>
+                            )
+                        }}
+                    >
                         {message.content}
                     </ReactMarkdown>
                 </div>

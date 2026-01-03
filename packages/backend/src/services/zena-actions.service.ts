@@ -1,6 +1,7 @@
 // Zena Actions Service - AI-powered proactive deal actions
 import { PrismaClient, Deal, ZenaAction } from '@prisma/client';
 import { DealCondition } from '../models/types.js';
+import { askZenaService } from './ask-zena.service.js';
 
 const prisma = new PrismaClient();
 
@@ -235,10 +236,13 @@ export class ZenaActionsService {
             prompt = prompt.replace(new RegExp(`\\{${key}\\}`, 'g'), String(value || 'Unknown'));
         }
 
-        // Generate draft using Gemini
+        // Generate draft using Gemini (Brain-First)
         let output: string;
         try {
-            output = await this.callGemini(prompt);
+            output = await askZenaService.askBrain(prompt, {
+                jsonMode: false,
+                systemPrompt: 'You are Zena, a world-class real estate assistant. Write ONLY the email body (no subject). Use warm, professional NZ tone.'
+            });
         } catch (error) {
             console.error('Error generating action:', error);
             output = `[Draft generation failed. Context: ${JSON.stringify(context)}]`;
@@ -452,7 +456,7 @@ export class ZenaActionsService {
         }
 
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

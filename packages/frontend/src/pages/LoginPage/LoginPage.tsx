@@ -44,8 +44,21 @@ export const LoginPage: React.FC = () => {
         ok: response.ok
       });
 
-      const data = await response.json();
-      console.log('[LoginPage] Response body parsed', { hasToken: !!data.accessToken, error: data.error });
+      let data;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          data = await response.json();
+          console.log('[LoginPage] Response body parsed', { hasToken: !!data.accessToken, error: data.error });
+        } catch (parseErr) {
+          console.error('[LoginPage] Failed to parse JSON response despite content-type', parseErr);
+          data = { error: { message: 'Invalid response format from server' } };
+        }
+      } else {
+        const text = await response.text();
+        console.warn('[LoginPage] Non-JSON response received', { text });
+        data = { error: { message: text || `Server error: ${response.status}` } };
+      }
 
       if (!response.ok) {
         throw new Error(data.error?.message || `Login failed with status: ${response.status}`);

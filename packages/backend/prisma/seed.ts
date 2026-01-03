@@ -23,7 +23,9 @@ async function main() {
 
   const user = await prisma.user.upsert({
     where: { email: 'demo@zena.ai' },
-    update: {},
+    update: {
+      passwordHash,
+    },
     create: {
       email: 'demo@zena.ai',
       passwordHash,
@@ -64,6 +66,10 @@ async function main() {
       bedrooms: 4,
       bathrooms: 2,
       landSize: '650 sqm',
+      listingDate: new Date('2024-01-10'),
+      rateableValue: 1150000,
+      viewingCount: 24,
+      inquiryCount: 42,
       milestones: [
         {
           id: '1',
@@ -91,6 +97,10 @@ async function main() {
       bedrooms: 5,
       bathrooms: 3,
       landSize: '850 sqm',
+      listingDate: new Date('2023-12-15'),
+      rateableValue: 3200000,
+      viewingCount: 12,
+      inquiryCount: 18,
       milestones: [
         { id: '1', type: 'listing', date: new Date('2024-01-05'), notes: 'Listed' },
         { id: '2', type: 'offer_received', date: new Date('2024-01-25'), notes: 'Offer accepted' }
@@ -108,6 +118,10 @@ async function main() {
       bedrooms: 3,
       bathrooms: 2,
       landSize: '210 sqm',
+      listingDate: new Date('2023-10-20'),
+      rateableValue: 1750000,
+      viewingCount: 35,
+      inquiryCount: 55,
       milestones: [
         { id: '1', type: 'listing', date: new Date('2023-11-01'), notes: 'Listed' },
         { id: '2', type: 'settled', date: new Date('2023-12-20'), notes: 'Settled' }
@@ -123,6 +137,10 @@ async function main() {
       status: 'active',
       listingPrice: 890000,
       landSize: '45 sqm',
+      listingDate: new Date('2024-02-01'),
+      rateableValue: 850000,
+      viewingCount: 5,
+      inquiryCount: 8,
       milestones: []
     }
   });
@@ -140,6 +158,10 @@ async function main() {
       bedrooms: 5,
       bathrooms: 4,
       landSize: '600 sqm',
+      listingDate: new Date('2023-08-15'),
+      rateableValue: 5200000,
+      viewingCount: 8,
+      inquiryCount: 12,
       milestones: [
         { id: '1', type: 'listing', date: new Date('2023-09-01'), notes: 'Listed high at vendor request' },
         { id: '2', type: 'price_adjustment', date: new Date('2023-10-15'), notes: 'Reduced by $200k' },
@@ -157,6 +179,10 @@ async function main() {
       status: 'active',
       listingPrice: 850000,
       landSize: '1.2 ha',
+      listingDate: new Date('2024-01-20'),
+      rateableValue: 800000,
+      viewingCount: 15,
+      inquiryCount: 22,
       milestones: [
         { id: '1', type: 'listing', date: new Date('2024-02-01'), notes: 'New title issued' }
       ]
@@ -174,6 +200,10 @@ async function main() {
       bedrooms: 3,
       bathrooms: 3,
       landSize: '280 sqm',
+      listingDate: new Date('2024-02-01'),
+      rateableValue: 11000000,
+      viewingCount: 3,
+      inquiryCount: 7,
       milestones: [
         { id: '1', type: 'listing', date: new Date('2024-02-10'), notes: 'Off-market campaign started' }
       ]
@@ -191,6 +221,10 @@ async function main() {
       bedrooms: 2,
       bathrooms: 1,
       landSize: '55 sqm',
+      listingDate: new Date('2024-02-05'),
+      rateableValue: 420000,
+      viewingCount: 28,
+      inquiryCount: 45,
       milestones: []
     }
   });
@@ -206,6 +240,10 @@ async function main() {
       bedrooms: 2,
       bathrooms: 1,
       landSize: '120 sqm',
+      listingDate: new Date('2024-02-10'),
+      rateableValue: 1050000,
+      viewingCount: 42,
+      inquiryCount: 68,
       milestones: [
         { id: '1', type: 'listing', date: new Date('2024-02-15'), notes: 'Executors sale' }
       ]
@@ -223,11 +261,55 @@ async function main() {
       bedrooms: 5,
       bathrooms: 3,
       landSize: '2.5 ha',
+      listingDate: new Date('2024-01-01'),
+      rateableValue: 3000000,
+      viewingCount: 18,
+      inquiryCount: 31,
       milestones: []
     }
   });
 
   console.log('Created 10 sample properties');
+
+  // ====================================================
+  // CREATE MOCK VENDORS FOR ALL PROPERTIES
+  // ====================================================
+  const mockVendors = [
+    { firstName: 'Margaret', lastName: 'Thompson', email: 'margaret.thompson@gmail.com', phone: '+61 412 345 678', propertyId: property.id },
+    { firstName: 'Robert', lastName: 'Harrison', email: 'robert.harrison@outlook.com', phone: '+61 423 567 890', propertyId: propertyUnderContract.id },
+    { firstName: 'Catherine', lastName: 'Mills', email: 'catherine.mills@yahoo.com', phone: '+61 434 789 012', propertyId: propertySold.id },
+    { firstName: 'David', lastName: 'Chen', email: 'david.chen@hotmail.com', phone: '+61 445 012 345', propertyId: propertyCommercial.id },
+    { firstName: 'Patricia', lastName: 'O\'Brien', email: 'patricia.obrien@gmail.com', phone: '+61 456 234 567', propertyId: propertyWithdrawn.id },
+    { firstName: 'Michael', lastName: 'Walker', email: 'michael.walker@icloud.com', phone: '+64 21 345 6789', propertyId: propertyLand.id },
+    { firstName: 'Elizabeth', lastName: 'Chang', email: 'elizabeth.chang@gmail.com', phone: '+61 467 456 789', propertyId: propertyLuxury.id },
+    { firstName: 'James', lastName: 'Patel', email: 'james.patel@xtra.co.nz', phone: '+64 22 456 7890', propertyId: propertyInvestment.id },
+    { firstName: 'Susan', lastName: 'Williams', email: 'susan.williams@outlook.com', phone: '+61 478 678 901', propertyId: propertyRenovator.id },
+    { firstName: 'Richard', lastName: 'Taylor', email: 'richard.taylor@gmail.com', phone: '+64 27 567 8901', propertyId: propertyRural.id },
+  ];
+
+  for (const vendorData of mockVendors) {
+    const vendor = await prisma.contact.create({
+      data: {
+        userId: user.id,
+        name: `${vendorData.firstName} ${vendorData.lastName}`,
+        emails: [vendorData.email],
+        phones: [vendorData.phone],
+        role: 'vendor',
+        intelligenceSnippet: `Property vendor - active listing`,
+      },
+    });
+
+    await prisma.property.update({
+      where: { id: vendorData.propertyId },
+      data: {
+        vendors: {
+          connect: { id: vendor.id },
+        },
+      },
+    });
+  }
+
+  console.log('Created and linked 10 mock vendors to properties');
 
   // Create sample contacts - 10 diverse contacts with varying stages
   const buyerContact = await prisma.contact.create({

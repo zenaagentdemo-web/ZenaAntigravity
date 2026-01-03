@@ -16,6 +16,149 @@
   z-index: 10;
 }
 
+/* --- God Mode System Status --- */
+.godmode-system-status {
+  position: relative;
+  margin-bottom: 2rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: slideInDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
+.godmode-system-status.demi_god {
+  background: rgba(139, 92, 246, 0.15);
+  /* Purple tint */
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+.godmode-system-status.full_god {
+  background: rgba(255, 215, 0, 0.1);
+  /* Gold tint */
+  border-color: rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+}
+
+.godmode-status-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.godmode-icon {
+  color: inherit;
+}
+
+.godmode-system-status.demi_god .godmode-icon {
+  color: #A78BFA;
+}
+
+.godmode-system-status.full_god .godmode-icon {
+  color: #FCD34D;
+}
+
+.godmode-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.godmode-title {
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+}
+
+.godmode-system-status.demi_god .godmode-title {
+  color: #A78BFA;
+}
+
+.godmode-system-status.full_god .godmode-title {
+  color: #FCD34D;
+}
+
+.godmode-description {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.godmode-pulse-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+  animation: pulse 2s infinite;
+}
+
+.godmode-system-status.demi_god .godmode-pulse-indicator {
+  background: #A78BFA;
+  box-shadow: 0 0 10px #A78BFA;
+}
+
+.godmode-system-status.full_god .godmode-pulse-indicator {
+  background: #FCD34D;
+  box-shadow: 0 0 15px #FCD34D;
+}
+
+/* --- Global Mode Effects --- */
+
+/* Demi-God Effects */
+[data-godmode="demi_god"] .contacts-page__title {
+  background: linear-gradient(135deg, #FFF 0%, #A78BFA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+}
+
+[data-godmode="demi_god"] .contact-card {
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+[data-godmode="demi_god"] .contact-card:hover {
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(139, 92, 246, 0.2);
+}
+
+/* Full God Effects */
+[data-godmode="full_god"] .contacts-page__title {
+  background: linear-gradient(135deg, #FFF 0%, #FCD34D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+[data-godmode="full_god"] .contact-card {
+  border-color: rgba(255, 215, 0, 0.2);
+  background: linear-gradient(180deg, rgba(255, 215, 0, 0.03) 0%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+[data-godmode="full_god"] .contact-card:hover {
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
 /* --- Header Section --- */
 .contacts-page__header {
   display: flex;
@@ -189,6 +332,51 @@
   color: var(--neon-cyan);
 }
 
+/* Reset Filters Button - Red Pulsing Style */
+.reset-filters-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1.25rem;
+  height: 52px;
+  border-radius: 100px;
+  background: linear-gradient(135deg, rgba(255, 59, 48, 0.3) 0%, rgba(255, 59, 48, 0.15) 100%);
+  border: 1px solid #FF3B30;
+  color: #FF3B30;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  animation: pulseRed 2s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(255, 59, 48, 0.3);
+}
+
+.reset-filters-btn:hover {
+  background: #FF3B30;
+  color: white;
+  box-shadow: 0 0 30px rgba(255, 59, 48, 0.6);
+  transform: translateY(-2px);
+  animation: none;
+}
+
+.reset-filters-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes pulseRed {
+
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(255, 59, 48, 0.3);
+    border-color: #FF3B30;
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(255, 59, 48, 0.6), 0 0 40px rgba(255, 59, 48, 0.3);
+    border-color: #FF6B6B;
+  }
+}
+
 .smart-search-badge {
   background: linear-gradient(90deg, rgba(0, 212, 255, 0.1), transparent);
   border-left: 3px solid var(--neon-cyan);
@@ -271,14 +459,6 @@
   gap: 1.25rem;
 }
 
-.contacts-page__intel-filters {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
 
 .intel-label {
   font-size: 0.75rem;
@@ -289,47 +469,6 @@
   margin-right: 0.5rem;
 }
 
-.intel-filter {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.4rem 1rem;
-  border-radius: 8px;
-  color: var(--text-secondary-ht);
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.intel-filter:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.intel-filter.active {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border-color: white;
-}
-
-.intel-filter.hot.active {
-  background: rgba(255, 0, 255, 0.15);
-  border-color: var(--neon-magenta);
-  color: var(--neon-magenta);
-  box-shadow: 0 0 15px var(--neon-magenta-dim);
-}
-
-.intel-filter.cold.active {
-  background: rgba(0, 212, 255, 0.1);
-  border-color: var(--neon-cyan);
-  color: var(--neon-cyan);
-}
-
-.intel-filter.intent.active {
-  background: rgba(139, 92, 246, 0.15);
-  border-color: #8B5CF6;
-  color: #8B5CF6;
-}
 
 /* --- Contact Grid --- */
 .contacts-page__grid {
@@ -486,37 +625,6 @@
   color: var(--neon-cyan);
   margin-right: 0.35rem;
   vertical-align: middle;
-}
-
-.contact-card__tactical-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom,
-      transparent 0%,
-      rgba(0, 212, 255, 0.1) 45%,
-      var(--neon-cyan) 50%,
-      rgba(0, 212, 255, 0.1) 55%,
-      transparent 100%);
-  background-size: 100% 200%;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 10;
-}
-
-.contact-card:hover .contact-card__tactical-overlay {
-  opacity: 0.3;
-  animation: scanHUD 2s linear infinite;
-}
-
-@keyframes scanHUD {
-  from {
-    background-position: 0 100%;
-  }
-
-  to {
-    background-position: 0 -100%;
-  }
 }
 
 .contact-card__info {
@@ -677,6 +785,17 @@
   background: rgba(255, 255, 255, 0.1);
   border-color: var(--neon-cyan);
   box-shadow: 0 0 15px var(--neon-cyan-dim);
+}
+
+.contacts-page__refresh-btn.spinning {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 15px var(--neon-cyan-dim);
+}
+
+.contacts-page__spin {
+  animation: spin 1s linear infinite;
 }
 
 /* --- Quick Actions --- */
@@ -846,27 +965,6 @@
   font-size: 0.85rem;
   font-weight: 700;
   position: relative;
-}
-
-.heat-ring {
-  position: absolute;
-  inset: -2px;
-  border-radius: 12px;
-  border: 2px solid transparent;
-  border-top-color: var(--neon-cyan);
-  opacity: 0.5;
-  mask-image: linear-gradient(transparent 50%, black 100%);
-  animation: spin 3s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .contact-list-item__role .role-tag {
@@ -1072,8 +1170,14 @@
 @media (max-width: 768px) {
   .contacts-page__header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 1.5rem;
+    text-align: center;
+  }
+
+  .contacts-page__header-actions {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .contacts-page__title {
@@ -1096,6 +1200,79 @@
   font-weight: 700;
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
+}
+
+.discovery-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  background: rgba(0, 212, 255, 0.05);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--neon-cyan-dim);
+  animation: fadeIn 0.3s ease-out;
+  white-space: nowrap;
+}
+
+.discovery-status-badge.tiny {
+  padding: 0.1rem 0.35rem;
+  font-size: 0.6rem;
+}
+
+
+
+.oracle-signal-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid transparent;
+}
+
+.oracle-signal-badge.sell {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8B5CF6;
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.oracle-signal-badge.risk {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.oracle-signal-badge.buy {
+  background: rgba(0, 255, 200, 0.1);
+  color: #00FFC8;
+  border-color: rgba(0, 255, 200, 0.3);
+}
+
+.oracle-signal-badge.tiny {
+  padding: 0.1rem 0.35rem;
+  font-size: 0.55rem;
+}
+
+.discovery-status-badge .spinning {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .momentum-indicator.positive {
@@ -1147,4 +1324,529 @@
 .category-badge:hover {
   transform: scale(1.15);
   box-shadow: 0 0 10px currentColor;
+}
+
+
+/* ====================================
+   Oracle & Godmode Controls
+   ==================================== */
+
+.contacts-page__godmode-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contacts-page__pending-actions-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid #f59e0b;
+  border-radius: 100px;
+  color: #fbbf24;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: mythic-radar 3s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+  margin-left: 12px;
+}
+
+.contacts-page__pending-actions-btn:hover {
+  background: rgba(245, 158, 11, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
+}
+
+@keyframes mythic-radar {
+
+  0%,
+  100% {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.1);
+  }
+
+  50% {
+    border-color: #f59e0b;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+  }
+}
+
+/* Oracle Badge Styling in Contact List */
+.score-velocity-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .contacts-page__godmode-controls {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 1rem 0;
+    padding: 0;
+    border: none;
+  }
+
+  .godmode-system-status {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .godmode-pulse-indicator {
+    align-self: flex-end;
+  }
+}
+
+/* --- Relational Intelligence Styles --- */
+.contact-card__relationship-overlay {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  background: rgba(0, 212, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  z-index: 5;
+  pointer-events: none;
+  animation: fadeIn 0.5s ease-out;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact-card__relationship-overlay span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relationship-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--neon-magenta);
+  background: rgba(255, 0, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 0, 255, 0.2);
+  margin-top: 4px;
+}
+
+.intelligence-preview {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: var(--text-tertiary-ht);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* --- Living UI Animations --- */
+.category-filter.active .filter-icon {
+  animation: livingPulse 2.5s infinite ease-in-out;
+}
+
+@keyframes livingPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 0 2px currentColor);
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.8;
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+}
+
+.activity-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 10px var(--neon-cyan);
+  animation: neuralFiring 3s infinite ease-in-out;
+}
+
+@keyframes neuralFiring {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+}
+
+.relationship-tag {
+  animation: fadeIn 0.8s ease-out;
+}
+
+/* --- Zena Brain Intelligence Badges --- */
+
+.godmode-active-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(250, 204, 21, 0.1);
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  border-radius: 6px;
+  color: #FACC15;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+  animation: neuralPulse 3s infinite ease-in-out;
+}
+
+.godmode-active-badge.tiny {
+  padding: 0.1rem 0.4rem;
+  font-size: 0.6rem;
+  gap: 0.25rem;
+}
+
+.godmode-active-badge svg {
+  filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.6));
+}
+
+@keyframes neuralPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.4);
+    border-color: rgba(250, 204, 21, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 10px 2px rgba(250, 204, 21, 0.2);
+    border-color: rgba(250, 204, 21, 0.8);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.4);
+    border-color: rgba(250, 204, 21, 0.4);
+  }
+}
+
+.discovery-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 6px;
+  color: var(--neon-cyan);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.discovery-status-badge.tiny {
+  padding: 0.1rem 0.4rem;
+  font-size: 0.6rem;
+}
+
+.discovery-status-badge .spinning {
+  animation: spin 2s linear infinite;
+}
+
+/* AI Intelligence Spotlight - Copied/adapted from PropertiesPage */
+.contacts-page__ai-spotlight {
+  background: rgba(13, 13, 13, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: slideDownFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.contacts-page__ai-spotlight::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+      rgba(0, 212, 255, 0),
+      rgba(0, 212, 255, 0.8),
+      rgba(139, 92, 246, 0.8),
+      rgba(139, 92, 246, 0));
+}
+
+.ai-spotlight__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ai-spotlight__title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.ai-spotlight__icon {
+  color: #00d4ff;
+  animation: pulse-purple 3s infinite;
+}
+
+.ai-spotlight__badge {
+  background: rgba(139, 92, 246, 0.1);
+  color: #a78bfa;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.ai-spotlight__content {
+  color: #e5e5e5;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.ai-spotlight__content p {
+  margin-bottom: 1rem;
+}
+
+.ai-spotlight__content ul {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.ai-spotlight__content li {
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.ai-spotlight__content strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.ai-spotlight__contact-link {
+  color: #00d4ff;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration-line: underline;
+  text-decoration-color: rgba(0, 212, 255, 0.3);
+  text-underline-offset: 4px;
+  transition: all 0.2s ease;
+  padding: 0 2px;
+  border-radius: 4px;
+}
+
+.ai-spotlight__contact-link:hover {
+  background: rgba(0, 212, 255, 0.1);
+  text-decoration-color: #00d4ff;
+  color: #fff;
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.intel-tooltip__no-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary-ht);
+  font-size: 0.85rem;
+}
+
+.intel-tooltip__no-actions svg {
+  color: var(--neon-cyan);
+  opacity: 0.6;
+}
+
+.ai-spotlight__query {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+.query-label {
+  color: #00d4ff;
+  font-weight: 500;
+  margin-right: 0.5rem;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+/* --- Zena Actions Button (Purple Pill) --- */
+.zena-actions-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(43, 33, 75, 0.9);
+  /* Dark purple bg */
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.zena-actions-btn:hover {
+  background: rgba(56, 43, 95, 1);
+  border-color: #A78BFA;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25);
+  transform: translateY(-1px);
+}
+
+.zena-actions-btn svg {
+  color: #A78BFA;
+}
+
+/* --- Contact Intelligence Hub Triggers --- */
+
+.intel-score-trigger-btn {
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #A78BFA;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.intel-score-trigger-btn:hover {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: #A78BFA;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+.card-heat-intel.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.card-heat-intel.clickable:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px currentColor;
+}
+
+/* Shimmer Effect for Primary Action Button */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+  color: #FFD700 !important;
+  /* Gold/Zap color */
+}
+
+.shimmer-btn:hover {
+  background: rgba(255, 215, 0, 0.15) !important;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.shimmer-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%);
+  transform: skewX(-20deg);
+  animation: shimmer 3s infinite linear;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.shimmer-btn:hover::after {
+  opacity: 0.3;
 }

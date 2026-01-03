@@ -275,3 +275,153 @@
         transform: translateY(0) scale(1);
     }
 }
+/* ====================================
+   AI Suggestions Panel Styles
+   ==================================== */
+
+.zbt-ai-panel {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(16, 185, 129, 0.1));
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.zbt-ai-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #a78bfa;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+.zbt-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.zbt-ai-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+}
+
+.zbt-ai-confidence {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 16px;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 12px;
+}
+
+.zbt-ai-confidence-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #10b981;
+}
+
+.zbt-ai-confidence-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+.zbt-ai-distribution {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 1;
+}
+
+.zbt-ai-role-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.zbt-ai-role-name {
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: capitalize;
+}
+
+.zbt-ai-role-count {
+    background: rgba(139, 92, 246, 0.3);
+    color: #a78bfa;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.zbt-ai-themes {
+    width: 100%;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.zbt-ai-themes-label {
+    margin-right: 6px;
+}
+
+.zbt-ai-themes-list {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.zbt-ai-analyze-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    color: #a78bfa;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.zbt-ai-analyze-btn:hover {
+    background: rgba(139, 92, 246, 0.2);
+    transform: translateY(-1px);
+}
+
+.zbt-ai-badge {
+    background: rgba(139, 92, 246, 0.2);
+    color: #a78bfa;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.zbt-role-card.ai-suggested {
+    border-color: rgba(139, 92, 246, 0.3);
+    position: relative;
+}
+
+.zbt-ai-count {
+    background: rgba(139, 92, 246, 0.2);
+    color: #a78bfa;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: auto;
+    margin-right: 8px;
+}

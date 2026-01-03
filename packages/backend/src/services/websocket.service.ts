@@ -1,6 +1,7 @@
 import { WebSocket, WebSocketServer } from 'ws';
 import { IncomingMessage } from 'http';
 import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 import { logger } from './logger.service.js';
 import { multimodalLiveService } from './multimodal-live.service.js';
 
@@ -31,7 +32,14 @@ export type WebSocketEventType =
   | 'appointment.reminder'
   | 'appointment.conflict'
   | 'contact.categorized'
-  | 'contact.engagement';
+  | 'contact.engagement'
+  | 'batch.contacts.updated'
+  | 'discovery.started'
+  | 'discovery.completed'
+  | 'discovery.failed'
+  | 'property.intelligence';
+
+const prisma = new PrismaClient();
 
 class WebSocketService {
   private wss: WebSocketServer | null = null;
@@ -57,7 +65,7 @@ class WebSocketService {
   /**
    * Handle new WebSocket connection
    */
-  private handleConnection(ws: AuthenticatedWebSocket, req: IncomingMessage): void {
+  private async handleConnection(ws: AuthenticatedWebSocket, req: IncomingMessage): Promise<void> {
     // Extract token from query string
     const url = new URL(req.url || '', `http://${req.headers.host}`);
     const token = url.searchParams.get('token');
@@ -71,9 +79,18 @@ class WebSocketService {
       let userId: string;
 
       // In development, accept a special dev token
-      if (process.env.NODE_ENV !== 'production' && token === 'dev-token-for-testing') {
-        console.log('[WebSocket] Using development token, assigning dev user ID');
-        userId = 'dev-user-id';
+      if (process.env.NODE_ENV !== 'production' && token === 'demo-token') {
+        console.log('[WebSocket] Using development token, resolving dummy user');
+        try {
+          const demoUser = await prisma.user.findUnique({
+            where: { email: 'demo@zena.ai' }
+          });
+          userId = demoUser ? demoUser.id : 'demo-user-id';
+          console.log('[WebSocket] Resolved demo user ID:', userId);
+        } catch (err) {
+          console.warn('[WebSocket] DB error resolving demo user, falling back:', err);
+          userId = 'demo-user-id';
+        }
       } else {
         // Verify JWT token
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { userId: string };
@@ -170,8 +187,8 @@ class WebSocketService {
           break;
 
         case 'voice.live.start':
-          logger.info(`[Websocket] Received voice.live.start for user: ${ws.userId}`);
-          multimodalLiveService.startSession(ws.userId!, ws, message.payload?.history, message.payload?.location)
+          logger.info(`[Websocket] Received voice.live.start for user: ${ws.userId} with context: ${message.payload?.context}`);
+          multimodalLiveService.startSession(ws.userId!, ws, message.payload?.history, message.payload?.location, message.payload?.context)
             .catch(err => logger.error('[Websocket] startSession error:', err));
           break;
 
@@ -411,8 +428,35 @@ class WebSocketService {
     momentum: number;
     dealStage: string | null;
     nextBestAction?: string;
+    engagementReasoning?: string;
   }): void {
     this.broadcastToUser(userId, 'contact.engagement', data);
+  }
+
+  /**
+   * Broadcast contact categorization update
+   */
+  broadcastContactCategorization(userId: string, data: {
+    contactId: string;
+    zenaCategory: string;
+    intelligenceSnippet: string;
+    role?: string;
+  }): void {
+    this.broadcastToUser(userId, 'contact.categorized', data);
+  }
+
+  /**
+   * Broadcast discovery status
+   */
+  broadcastDiscoveryStatus(userId: string, data: {
+    contactId: string;
+    status: 'started' | 'completed' | 'failed';
+    contactName?: string;
+    message?: string;
+    payload?: any;
+  }): void {
+    const type = `discovery.${data.status}` as WebSocketEventType;
+    this.broadcastToUser(userId, type, data);
   }
 
   /**

@@ -1,0 +1,1733 @@
+[
+  {
+    "label": "Skip to main content",
+    "selector": "a.skip-link:nth-child(1)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Skip_to_main_content_before.png",
+    "screenshotAfter": "qa-report/_contacts_Skip_to_main_content_after.png"
+  },
+  {
+    "label": "Skip to navigation",
+    "selector": "a.skip-link:nth-child(2)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Skip_to_navigation_before.png",
+    "screenshotAfter": "qa-report/_contacts_Skip_to_navigation_after.png"
+  },
+  {
+    "label": "LIVE",
+    "selector": "button.zena-avatar-widget__live-button:nth-child(2)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load conversations: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "Failed to load conversations: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "[LiveAudio] Failed to start: NotSupportedError: Not supported",
+      "[AskZena] Live Mode failed: NotSupportedError: Not supported",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.post (http://localhost:5173/src/utils/apiClient.ts:196:38)\n    at submitQuery (http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:772:34)",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "WebSocket connection to 'ws://localhost:5173/ws?token=dev-token-for-testing' failed: Connection closed before receiving a handshake response",
+      "WebSocket error: Event",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/hooks/useThreadsState.ts:24:34\n    at http://localhost:5173/src/hooks/useThreadsState.ts:39:36\n    at http://localhost:5173/src/hooks/useThreadsState.ts:107:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/hooks/useThreadsState.ts:24:34\n    at http://localhost:5173/src/hooks/useThreadsState.ts:39:36\n    at http://localhost:5173/src/hooks/useThreadsState.ts:107:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load conversations: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "Failed to load conversations: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "WebSocket connection to 'ws://localhost:5173/ws?token=dev-token-for-testing' failed: Connection closed before receiving a handshake response",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "WebSocket error: Event",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.post (http://localhost:5173/src/utils/apiClient.ts:196:38)\n    at submitQuery (http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:772:34)",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_LIVE_before.png",
+    "screenshotAfter": "qa-report/_contacts_LIVE_after.png"
+  },
+  {
+    "label": "Skip to main content",
+    "selector": "a.skip-link:nth-child(1)",
+    "pageRoute": "/ask-zena",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_Skip_to_main_content_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_Skip_to_main_content_after.png"
+  },
+  {
+    "label": "Skip to navigation",
+    "selector": "a.skip-link:nth-child(2)",
+    "pageRoute": "/ask-zena",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_Skip_to_navigation_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_Skip_to_navigation_after.png"
+  },
+  {
+    "label": "+New Chat",
+    "selector": "button.new-chat-btn:nth-child(1)",
+    "pageRoute": "/ask-zena",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_+New_Chat_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_+New_Chat_after.png"
+  },
+  {
+    "label": "🕒Show History",
+    "selector": "button.history-toggle-btn:nth-child(2)",
+    "pageRoute": "/ask-zena",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_🕒Show_History_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_🕒Show_History_after.png"
+  },
+  {
+    "label": "+",
+    "selector": "button.attach-btn:nth-child(3)",
+    "pageRoute": "/ask-zena",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_+_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_+_after.png"
+  },
+  {
+    "label": "Start Zena Live",
+    "selector": "button.prompt-action-btn.voice-mode-btn:nth-child(1)",
+    "pageRoute": "/ask-zena",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "[LiveAudio] Failed to start: NotSupportedError: Not supported",
+      "[AskZena] Live Mode failed: NotSupportedError: Not supported"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_Start_Zena_Live_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_Start_Zena_Live_after.png"
+  },
+  {
+    "label": "➤",
+    "selector": "button.prompt-action-btn.send-btn:nth-child(2)",
+    "pageRoute": "/ask-zena",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_➤_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_➤_after.png"
+  },
+  {
+    "label": "🎯Practice a tough client call",
+    "selector": "button.starter-prompt-btn:nth-child(1)",
+    "pageRoute": "/ask-zena",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_🎯Practice_a_tough_client_call_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_🎯Practice_a_tough_client_call_after.png"
+  },
+  {
+    "label": "📞Who should I call right now?",
+    "selector": "button.starter-prompt-btn:nth-child(2)",
+    "pageRoute": "/ask-zena",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "📊Give me your daily debrief.",
+    "selector": "button.starter-prompt-btn:nth-child(3)",
+    "pageRoute": "/ask-zena",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "🌉Solve a deal roadblock.",
+    "selector": "button.starter-prompt-btn:nth-child(4)",
+    "pageRoute": "/ask-zena",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Home",
+    "selector": "a.bottom-nav-ht__item:nth-child(1)",
+    "pageRoute": "/ask-zena",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.post (http://localhost:5173/src/utils/apiClient.ts:196:38)\n    at submitQuery (http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:772:34)",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "WebSocket connection to 'ws://localhost:5173/ws?token=dev-token-for-testing' failed: Connection closed before receiving a handshake response",
+      "WebSocket error: Event",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/hooks/useThreadsState.ts:24:34\n    at http://localhost:5173/src/hooks/useThreadsState.ts:39:36\n    at http://localhost:5173/src/hooks/useThreadsState.ts:107:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/hooks/useThreadsState.ts:24:34\n    at http://localhost:5173/src/hooks/useThreadsState.ts:39:36\n    at http://localhost:5173/src/hooks/useThreadsState.ts:107:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load conversations: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "Failed to load conversations: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "WebSocket connection to 'ws://localhost:5173/ws?token=dev-token-for-testing' failed: Connection closed before receiving a handshake response",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "WebSocket error: Event",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.post (http://localhost:5173/src/utils/apiClient.ts:196:38)\n    at submitQuery (http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:772:34)",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_Home_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_Home_after.png"
+  },
+  {
+    "label": "Skip to main content",
+    "selector": "a.skip-link:nth-child(1)",
+    "pageRoute": "/",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/__Skip_to_main_content_before.png",
+    "screenshotAfter": "qa-report/__Skip_to_main_content_after.png"
+  },
+  {
+    "label": "Skip to navigation",
+    "selector": "a.skip-link:nth-child(2)",
+    "pageRoute": "/",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/__Skip_to_navigation_before.png",
+    "screenshotAfter": "qa-report/__Skip_to_navigation_after.png"
+  },
+  {
+    "label": "LIVE",
+    "selector": "button.zena-avatar-widget__live-button:nth-child(2)",
+    "pageRoute": "/",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "Failed to start recording: NotSupportedError: Not supported",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/__LIVE_before.png",
+    "screenshotAfter": "qa-report/__LIVE_after.png"
+  },
+  {
+    "label": "Zena AI Avatar - Idle",
+    "selector": "div.holographic-avatar-container.holographic-avatar-container--no-background.holographic-avatar-container--clickable:nth-child(1)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Start Zena Live",
+    "selector": "button.zena-live-button:nth-child(1)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Triage Emails",
+    "selector": "button.intel-btn.intel-btn--emails:nth-child(1)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Morning Brief",
+    "selector": "button.intel-btn.intel-btn--brief:nth-child(2)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Today's Tasks",
+    "selector": "button.intel-btn.intel-btn--tasks:nth-child(3)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "3NEW MESSAGES",
+    "selector": "[data-testid=\"metric-orb-focus\"]",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "2DEAL FLOW",
+    "selector": "[data-testid=\"metric-orb-deals\"]",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "7FOLLOW UP",
+    "selector": "[data-testid=\"metric-orb-waiting\"]",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "0Tasks",
+    "selector": "[data-testid=\"metric-orb-tasks\"]",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Voice Note",
+    "selector": "[data-testid=\"carousel-action-voice-note\"]",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Search",
+    "selector": "[data-testid=\"carousel-action-search\"]",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Calendar",
+    "selector": "[data-testid=\"carousel-action-calendar\"]",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Add Deal",
+    "selector": "[data-testid=\"carousel-action-add-deal\"]",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Schedule Meeting",
+    "selector": "[data-testid=\"carousel-action-schedule-viewing\"]",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "07:36 AMin 44m🏠Property Viewing - Luxury Penthouse📍42 Harbour View(Penthouse)🗺️",
+    "selector": "div.appointment-item.appointment-item--urgent:nth-child(1)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "🗺️",
+    "selector": "button.appointment-action.appointment-action--map:nth-child(1)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "09:51 AMin 2h 59m👥Client Meeting - Sarah Chen📍Zena HQ, Level 12🗺️",
+    "selector": "div.appointment-item.appointment-item--medium:nth-child(2)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "11:51 AMin 4h 59m🏠Open Home - Remuera Estate📍88 Victoria Ave(Estate)🗺️",
+    "selector": "div.appointment-item.appointment-item--low:nth-child(3)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "View all 4 appointments",
+    "selector": "button.calendar-widget__view-all:nth-child(1)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "📧New inquiry from James Wilson about 42 Harbour View penthouse • 42 Harbour View12 min ago",
+    "selector": "div.activity-item.activity-item--clickable:nth-child(1)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "💼Offer accepted! $2.4M for 88 Victoria Ave - Awaiting conditions • 88 Victoria Ave • Victoria Ave Sale45 min ago",
+    "selector": "div.activity-item.activity-item--clickable:nth-child(2)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "🎤Voice note transcribed: \"Follow up with Chen family about...\"2 hours ago",
+    "selector": "div.activity-item.activity-item--clickable:nth-child(3)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "📅Viewing confirmed: Sarah Chen for Ponsonby townhouse tomorrow 2pm • 15 Ponsonby Rd3 hours ago",
+    "selector": "div.activity-item.activity-item--clickable:nth-child(4)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "🏠Price reduced: 23 Mission Bay Rd now listed at $1.85M (-$100K) • 23 Mission Bay Rd5 hours ago",
+    "selector": "div.activity-item.activity-item--clickable:nth-child(5)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Home",
+    "selector": "a.bottom-nav-ht__item.bottom-nav-ht__item--active:nth-child(1)",
+    "pageRoute": "/",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Inbox",
+    "selector": "a.bottom-nav-ht__item:nth-child(2)",
+    "pageRoute": "/",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "WebSocket connection to 'ws://localhost:5173/ws?token=dev-token-for-testing' failed: Connection closed before receiving a handshake response",
+      "WebSocket error: Event",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/hooks/useThreadsState.ts:24:34\n    at http://localhost:5173/src/hooks/useThreadsState.ts:39:36\n    at http://localhost:5173/src/hooks/useThreadsState.ts:107:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/hooks/useThreadsState.ts:24:34\n    at http://localhost:5173/src/hooks/useThreadsState.ts:39:36\n    at http://localhost:5173/src/hooks/useThreadsState.ts:107:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load conversations: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "Failed to load conversations: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "WebSocket connection to 'ws://localhost:5173/ws?token=dev-token-for-testing' failed: Connection closed before receiving a handshake response",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "WebSocket error: Event",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.post (http://localhost:5173/src/utils/apiClient.ts:196:38)\n    at submitQuery (http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:772:34)",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/__Inbox_before.png",
+    "screenshotAfter": "qa-report/__Inbox_after.png"
+  },
+  {
+    "label": "Skip to main content",
+    "selector": "a.skip-link:nth-child(1)",
+    "pageRoute": "/inbox",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_inbox_Skip_to_main_content_before.png",
+    "screenshotAfter": "qa-report/_inbox_Skip_to_main_content_after.png"
+  },
+  {
+    "label": "Skip to navigation",
+    "selector": "a.skip-link:nth-child(2)",
+    "pageRoute": "/inbox",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_inbox_Skip_to_navigation_before.png",
+    "screenshotAfter": "qa-report/_inbox_Skip_to_navigation_after.png"
+  },
+  {
+    "label": "LIVE",
+    "selector": "button.zena-avatar-widget__live-button:nth-child(2)",
+    "pageRoute": "/inbox",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load conversations: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "Failed to load conversations: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:177:34\n    at http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:539:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_inbox_LIVE_before.png",
+    "screenshotAfter": "qa-report/_inbox_LIVE_after.png"
+  },
+  {
+    "label": "New3",
+    "selector": "button.inbox-page__tab.inbox-page__tab--active:nth-child(1)",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Awaiting10",
+    "selector": "button.inbox-page__tab:nth-child(2)",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "All",
+    "selector": "button.inbox-page__tab:nth-child(3)",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Go back to Home",
+    "selector": "[data-testid=\"header-back-btn\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Open search",
+    "selector": "[data-testid=\"search-toggle\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Select",
+    "selector": "[data-testid=\"batch-mode-toggle\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Create new folder",
+    "selector": "[data-testid=\"quick-create-folder\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Refresh threads",
+    "selector": "[data-testid=\"refresh-button\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "More options",
+    "selector": "[data-testid=\"hamburger-menu-trigger\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "All",
+    "selector": "button.filter-chip.filter-chip--active:nth-child(1)",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Buyers3",
+    "selector": "button.filter-chip:nth-child(2)",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Vendors6",
+    "selector": "button.filter-chip:nth-child(3)",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Normal7",
+    "selector": "button.filter-chip:nth-child(4)",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "High Risk3",
+    "selector": "button.filter-chip:nth-child(5)",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Quick Reply",
+    "selector": "[data-testid=\"quick-reply-button\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Archive thread",
+    "selector": "[data-testid=\"archive-button\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Forward thread",
+    "selector": "[data-testid=\"forward-button\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Delete thread",
+    "selector": "[data-testid=\"delete-button\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Destructive action detected by keyword"
+  },
+  {
+    "label": "View Thread",
+    "selector": "[data-testid=\"view-thread-button\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Expand thread details",
+    "selector": "[data-testid=\"dropdown-arrow\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Home",
+    "selector": "a.bottom-nav-ht__item:nth-child(1)",
+    "pageRoute": "/inbox",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_inbox_Home_before.png",
+    "screenshotAfter": "qa-report/_inbox_Home_after.png"
+  },
+  {
+    "label": "Inbox",
+    "selector": "a.bottom-nav-ht__item.bottom-nav-ht__item--active:nth-child(2)",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Go to Deal Flow",
+    "selector": "a.bottom-nav-ht__dealflow-orb:nth-child(3)",
+    "pageRoute": "/inbox",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.post (http://localhost:5173/src/utils/apiClient.ts:196:38)\n    at submitQuery (http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:772:34)",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_inbox_Go_to_Deal_Flow_before.png",
+    "screenshotAfter": "qa-report/_inbox_Go_to_Deal_Flow_after.png"
+  },
+  {
+    "label": "Skip to main content",
+    "selector": "a.skip-link:nth-child(1)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Skip_to_main_content_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Skip_to_main_content_after.png"
+  },
+  {
+    "label": "Skip to navigation",
+    "selector": "a.skip-link:nth-child(2)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Skip_to_navigation_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Skip_to_navigation_after.png"
+  },
+  {
+    "label": "Buyers",
+    "selector": "button.deal-flow__pipeline-tab.deal-flow__pipeline-tab--active:nth-child(1)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Buyers_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Buyers_after.png"
+  },
+  {
+    "label": "Sellers",
+    "selector": "button.deal-flow__pipeline-tab:nth-child(2)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Sellers_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Sellers_after.png"
+  },
+  {
+    "label": "New Deal",
+    "selector": "button.deal-flow__new-deal-btn:nth-child(2)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_New_Deal_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_New_Deal_after.png"
+  },
+  {
+    "label": "Consult1",
+    "selector": "button.sidebar__stage:nth-child(1)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Consult1_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Consult1_after.png"
+  },
+  {
+    "label": "Shortlist1",
+    "selector": "button.sidebar__stage:nth-child(2)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Shortlist1_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Shortlist1_after.png"
+  },
+  {
+    "label": "Offer Made1",
+    "selector": "button.sidebar__stage:nth-child(3)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Offer_Made1_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Offer_Made1_after.png"
+  },
+  {
+    "label": "Conditional2",
+    "selector": "button.sidebar__stage:nth-child(4)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Conditional2_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Conditional2_after.png"
+  },
+  {
+    "label": "Pre-Settlement1",
+    "selector": "button.sidebar__stage:nth-child(5)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Pre-Settlement1_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Pre-Settlement1_after.png"
+  },
+  {
+    "label": "Settled1",
+    "selector": "button.sidebar__stage:nth-child(6)",
+    "pageRoute": "/deal-flow",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "See All Stages▼",
+    "selector": "button.sidebar__toggle-all:nth-child(1)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_See_All_Stages▼_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_See_All_Stages▼_after.png"
+  },
+  {
+    "label": "Finance Status Check",
+    "selector": "button.zena-deal-card__power-move-btn:nth-child(11)",
+    "pageRoute": "/deal-flow",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "🧠NEEDS ZENA PREMIUM",
+    "selector": "button.zena-deal-card__live-indicator:nth-child(12)",
+    "pageRoute": "/deal-flow",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Quick Check-In Call",
+    "selector": "button.zena-deal-card__power-move-btn:nth-child(11)",
+    "pageRoute": "/deal-flow",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Conditional Status Deep-Dive",
+    "selector": "button.zena-deal-card__power-move-btn:nth-child(11)",
+    "pageRoute": "/deal-flow",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "🧠NEEDS ZENA PREMIUM",
+    "selector": "button.zena-deal-card__live-indicator:nth-child(5)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_🧠NEEDS_ZENA_PREMIUM_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_🧠NEEDS_ZENA_PREMIUM_after.png"
+  },
+  {
+    "label": "Start Strategy Session",
+    "selector": "button.zena-avatar-widget__live-button:nth-child(2)",
+    "pageRoute": "/deal-flow",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Home",
+    "selector": "a.bottom-nav-ht__item:nth-child(1)",
+    "pageRoute": "/deal-flow",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Home_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Home_after.png"
+  },
+  {
+    "label": "Inbox",
+    "selector": "a.bottom-nav-ht__item:nth-child(2)",
+    "pageRoute": "/deal-flow",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Inbox_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Inbox_after.png"
+  },
+  {
+    "label": "Go to Deal Flow",
+    "selector": "a.bottom-nav-ht__dealflow-orb.bottom-nav-ht__dealflow-orb--active:nth-child(3)",
+    "pageRoute": "/deal-flow",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Properties",
+    "selector": "a.bottom-nav-ht__item:nth-child(4)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.post (http://localhost:5173/src/utils/apiClient.ts:196:38)\n    at submitQuery (http://localhost:5173/src/pages/AskZenaPage/AskZenaPage.tsx:772:34)",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "Failed to start recording: NotSupportedError: Not supported",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Properties_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Properties_after.png"
+  },
+  {
+    "label": "Skip to main content",
+    "selector": "a.skip-link:nth-child(1)",
+    "pageRoute": "/properties",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_properties_Skip_to_main_content_before.png",
+    "screenshotAfter": "qa-report/_properties_Skip_to_main_content_after.png"
+  },
+  {
+    "label": "Skip to navigation",
+    "selector": "a.skip-link:nth-child(2)",
+    "pageRoute": "/properties",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_properties_Skip_to_navigation_before.png",
+    "screenshotAfter": "qa-report/_properties_Skip_to_navigation_after.png"
+  },
+  {
+    "label": "LIVE",
+    "selector": "button.zena-avatar-widget__live-button:nth-child(2)",
+    "pageRoute": "/properties",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "[RealTimeDataService] Connection failed - not connecting",
+      "[AskZena] Failed to establish WebSocket connection"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_properties_LIVE_before.png",
+    "screenshotAfter": "qa-report/_properties_LIVE_after.png"
+  },
+  {
+    "label": "Selection Mode",
+    "selector": "button.properties-page__toggle-btn:nth-child(1)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Grid View",
+    "selector": "button.properties-page__toggle-btn:nth-child(3)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "List View",
+    "selector": "button.properties-page__toggle-btn.active:nth-child(4)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Add Property",
+    "selector": "button.properties-page__add-btn:nth-child(2)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Sync",
+    "selector": "button.properties-page__refresh-btn:nth-child(3)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Ask Zena",
+    "selector": "button.smart-search-btn:nth-child(3)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "All Properties",
+    "selector": "button.properties-page__filter.properties-page__filter--active:nth-child(1)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Active",
+    "selector": "button.properties-page__filter:nth-child(2)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Under Contract",
+    "selector": "button.properties-page__filter:nth-child(3)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Sold",
+    "selector": "button.properties-page__filter:nth-child(4)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Withdrawn",
+    "selector": "button.properties-page__filter:nth-child(5)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "All Types",
+    "selector": "button.properties-page__type-filter.active:nth-child(1)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Residential",
+    "selector": "button.properties-page__type-filter:nth-child(2)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Commercial",
+    "selector": "button.properties-page__type-filter:nth-child(3)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Land",
+    "selector": "button.properties-page__type-filter:nth-child(4)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Call Vendor",
+    "selector": "button.icon-action-btn:nth-child(1)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Schedule Open Home",
+    "selector": "button.icon-action-btn:nth-child(2)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Home",
+    "selector": "a.bottom-nav-ht__item:nth-child(1)",
+    "pageRoute": "/properties",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "Failed to start recording: NotSupportedError: Not supported",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_properties_Home_before.png",
+    "screenshotAfter": "qa-report/_properties_Home_after.png"
+  },
+  {
+    "label": "Inbox",
+    "selector": "a.bottom-nav-ht__item:nth-child(2)",
+    "pageRoute": "/properties",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_properties_Inbox_before.png",
+    "screenshotAfter": "qa-report/_properties_Inbox_after.png"
+  },
+  {
+    "label": "Go to Deal Flow",
+    "selector": "a.bottom-nav-ht__dealflow-orb:nth-child(3)",
+    "pageRoute": "/properties",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_properties_Go_to_Deal_Flow_before.png",
+    "screenshotAfter": "qa-report/_properties_Go_to_Deal_Flow_after.png"
+  },
+  {
+    "label": "Properties",
+    "selector": "a.bottom-nav-ht__item.bottom-nav-ht__item--active:nth-child(4)",
+    "pageRoute": "/properties",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Contacts",
+    "selector": "a.bottom-nav-ht__item:nth-child(5)",
+    "pageRoute": "/properties",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_properties_Contacts_before.png",
+    "screenshotAfter": "qa-report/_properties_Contacts_after.png"
+  },
+  {
+    "label": "Contacts",
+    "selector": "a.bottom-nav-ht__item:nth-child(5)",
+    "pageRoute": "/deal-flow",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_deal-flow_Contacts_before.png",
+    "screenshotAfter": "qa-report/_deal-flow_Contacts_after.png"
+  },
+  {
+    "label": "Properties",
+    "selector": "a.bottom-nav-ht__item:nth-child(4)",
+    "pageRoute": "/inbox",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_inbox_Properties_before.png",
+    "screenshotAfter": "qa-report/_inbox_Properties_after.png"
+  },
+  {
+    "label": "Contacts",
+    "selector": "a.bottom-nav-ht__item:nth-child(5)",
+    "pageRoute": "/inbox",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_inbox_Contacts_before.png",
+    "screenshotAfter": "qa-report/_inbox_Contacts_after.png"
+  },
+  {
+    "label": "Compose",
+    "selector": "[data-testid=\"compose-fab\"]",
+    "pageRoute": "/inbox",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Go to Deal Flow",
+    "selector": "a.bottom-nav-ht__dealflow-orb:nth-child(3)",
+    "pageRoute": "/",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/__Go_to_Deal_Flow_before.png",
+    "screenshotAfter": "qa-report/__Go_to_Deal_Flow_after.png"
+  },
+  {
+    "label": "Properties",
+    "selector": "a.bottom-nav-ht__item:nth-child(4)",
+    "pageRoute": "/",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/__Properties_before.png",
+    "screenshotAfter": "qa-report/__Properties_after.png"
+  },
+  {
+    "label": "Contacts",
+    "selector": "a.bottom-nav-ht__item:nth-child(5)",
+    "pageRoute": "/",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/__Contacts_before.png",
+    "screenshotAfter": "qa-report/__Contacts_after.png"
+  },
+  {
+    "label": "Inbox",
+    "selector": "a.bottom-nav-ht__item:nth-child(2)",
+    "pageRoute": "/ask-zena",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_Inbox_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_Inbox_after.png"
+  },
+  {
+    "label": "Go to Deal Flow",
+    "selector": "a.bottom-nav-ht__dealflow-orb:nth-child(3)",
+    "pageRoute": "/ask-zena",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_Go_to_Deal_Flow_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_Go_to_Deal_Flow_after.png"
+  },
+  {
+    "label": "Properties",
+    "selector": "a.bottom-nav-ht__item:nth-child(4)",
+    "pageRoute": "/ask-zena",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_Properties_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_Properties_after.png"
+  },
+  {
+    "label": "Contacts",
+    "selector": "a.bottom-nav-ht__item:nth-child(5)",
+    "pageRoute": "/ask-zena",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "[ZenaBrain] Neural network error: Event",
+      "[ZenaBrain] Neural network error: Event"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_ask-zena_Contacts_before.png",
+    "screenshotAfter": "qa-report/_ask-zena_Contacts_after.png"
+  },
+  {
+    "label": "Select",
+    "selector": "[data-testid=\"batch-mode-toggle\"]",
+    "pageRoute": "/contacts",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+      "[API] Request failed: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "Failed to load properties: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load properties: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "Failed to load properties: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load properties: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "Failed to load properties: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18206:19)\n    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18179:17)\n    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18169:15)\n    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18159:11)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19543:11)",
+      "Failed to load properties: TypeError: Failed to fetch\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:84:26)\n    at Object.get (http://localhost:5173/src/utils/apiClient.ts:195:31)\n    at loadProperties (http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:181:34)\n    at http://localhost:5173/src/pages/PropertiesPage/PropertiesPage.tsx:175:5\n    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:16963:34)\n    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:18374:19)\n    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19754:19)\n    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19739:15)\n    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19556:13)\n    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-QFMFQ3UP.js?v=ebe622c4:19500:22)",
+      "WebSocket connection to 'ws://localhost:5173/ws?token=dev-token-for-testing' failed: Connection closed before receiving a handshake response",
+      "WebSocket error: Event"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Select_before.png",
+    "screenshotAfter": "qa-report/_contacts_Select_after.png"
+  },
+  {
+    "label": "Grid View",
+    "selector": "button.contacts-page__toggle-btn:nth-child(1)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Grid_View_before.png",
+    "screenshotAfter": "qa-report/_contacts_Grid_View_after.png"
+  },
+  {
+    "label": "List View",
+    "selector": "button.contacts-page__toggle-btn.active:nth-child(2)",
+    "pageRoute": "/contacts",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Add contact",
+    "selector": "button.contacts-page__add-btn:nth-child(3)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Add_contact_before.png",
+    "screenshotAfter": "qa-report/_contacts_Add_contact_after.png"
+  },
+  {
+    "label": "Sync",
+    "selector": "button.contacts-page__refresh-btn:nth-child(4)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Sync_before.png",
+    "screenshotAfter": "qa-report/_contacts_Sync_after.png"
+  },
+  {
+    "label": "Skip",
+    "selector": "button.hud-skip-btn:nth-child(1)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Skip_before.png",
+    "screenshotAfter": "qa-report/_contacts_Skip_after.png"
+  },
+  {
+    "label": "Ask Zena",
+    "selector": "button.smart-search-btn:nth-child(3)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Ask_Zena_before.png",
+    "screenshotAfter": "qa-report/_contacts_Ask_Zena_after.png"
+  },
+  {
+    "label": "Reset Filters",
+    "selector": "button.reset-filters-btn:nth-child(4)",
+    "pageRoute": "/contacts",
+    "status": "SKIPPED",
+    "reason": "Destructive action detected by keyword"
+  },
+  {
+    "label": "All",
+    "selector": "button.contacts-page__filter.contacts-page__filter--active:nth-child(1)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_All_before.png",
+    "screenshotAfter": "qa-report/_contacts_All_after.png"
+  },
+  {
+    "label": "Buyer",
+    "selector": "button.contacts-page__filter:nth-child(2)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Buyer_before.png",
+    "screenshotAfter": "qa-report/_contacts_Buyer_after.png"
+  },
+  {
+    "label": "Vendor",
+    "selector": "button.contacts-page__filter:nth-child(3)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Vendor_before.png",
+    "screenshotAfter": "qa-report/_contacts_Vendor_after.png"
+  },
+  {
+    "label": "Trades",
+    "selector": "button.contacts-page__filter:nth-child(4)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Trades_before.png",
+    "screenshotAfter": "qa-report/_contacts_Trades_after.png"
+  },
+  {
+    "label": "Agent",
+    "selector": "button.contacts-page__filter:nth-child(5)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Agent_before.png",
+    "screenshotAfter": "qa-report/_contacts_Agent_after.png"
+  },
+  {
+    "label": "Investor",
+    "selector": "button.contacts-page__filter:nth-child(6)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Investor_before.png",
+    "screenshotAfter": "qa-report/_contacts_Investor_after.png"
+  },
+  {
+    "label": "Market",
+    "selector": "button.contacts-page__filter:nth-child(7)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Market_before.png",
+    "screenshotAfter": "qa-report/_contacts_Market_after.png"
+  },
+  {
+    "label": "General",
+    "selector": "button.contacts-page__filter:nth-child(8)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_General_before.png",
+    "screenshotAfter": "qa-report/_contacts_General_after.png"
+  },
+  {
+    "label": "Pulse",
+    "selector": "button.intel-filter.active:nth-child(2)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Pulse_before.png",
+    "screenshotAfter": "qa-report/_contacts_Pulse_after.png"
+  },
+  {
+    "label": "🔥 Hot Leads",
+    "selector": "button.intel-filter.hot:nth-child(3)",
+    "pageRoute": "/contacts",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "[API] Request failed: Error: HTTP 500: Internal Server Error\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:104:13)\n    at async loadContacts (http://localhost:5173/src/pages/ContactsPage/ContactsPage.tsx:420:24)"
+    ],
+    "networkFailures": [
+      "GET http://localhost:3001/api/contacts?role=other&category=hot -> 500"
+    ],
+    "screenshotBefore": "qa-report/_contacts_🔥_Hot_Leads_before.png",
+    "screenshotAfter": "qa-report/_contacts_🔥_Hot_Leads_after.png"
+  },
+  {
+    "label": "❄️ Cold Nurture",
+    "selector": "button.intel-filter.cold:nth-child(4)",
+    "pageRoute": "/contacts",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "[API] Request failed: Error: HTTP 500: Internal Server Error\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:104:13)\n    at async loadContacts (http://localhost:5173/src/pages/ContactsPage/ContactsPage.tsx:420:24)"
+    ],
+    "networkFailures": [
+      "GET http://localhost:3001/api/contacts?role=other&category=cold -> 500"
+    ],
+    "screenshotBefore": "qa-report/_contacts_❄️_Cold_Nurture_before.png",
+    "screenshotAfter": "qa-report/_contacts_❄️_Cold_Nurture_after.png"
+  },
+  {
+    "label": "🎯 High Intent",
+    "selector": "button.intel-filter.intent:nth-child(5)",
+    "pageRoute": "/contacts",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "[API] Request failed: Error: HTTP 500: Internal Server Error\n    at apiRequest (http://localhost:5173/src/utils/apiClient.ts:104:13)\n    at async loadContacts (http://localhost:5173/src/pages/ContactsPage/ContactsPage.tsx:420:24)"
+    ],
+    "networkFailures": [
+      "GET http://localhost:3001/api/contacts?role=other&category=intent -> 500"
+    ],
+    "screenshotBefore": "qa-report/_contacts_🎯_High_Intent_before.png",
+    "screenshotAfter": "qa-report/_contacts_🎯_High_Intent_after.png"
+  },
+  {
+    "label": "What does this score mean?",
+    "selector": "button.intel-help-btn:nth-child(1)",
+    "pageRoute": "/contacts",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Compose Email",
+    "selector": "button.icon-action-btn:nth-child(1)",
+    "pageRoute": "/contacts",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Call",
+    "selector": "button.icon-action-btn:nth-child(2)",
+    "pageRoute": "/contacts",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  },
+  {
+    "label": "Home",
+    "selector": "a.bottom-nav-ht__item:nth-child(1)",
+    "pageRoute": "/contacts",
+    "status": "FAIL",
+    "actualBehaviour": "Action triggered but reported errors",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry",
+      "THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The \"position\" attribute is likely to have NaN values. _BufferGeometry"
+    ],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Home_before.png",
+    "screenshotAfter": "qa-report/_contacts_Home_after.png"
+  },
+  {
+    "label": "Inbox",
+    "selector": "a.bottom-nav-ht__item:nth-child(2)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Inbox_before.png",
+    "screenshotAfter": "qa-report/_contacts_Inbox_after.png"
+  },
+  {
+    "label": "Go to Deal Flow",
+    "selector": "a.bottom-nav-ht__dealflow-orb:nth-child(3)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Go_to_Deal_Flow_before.png",
+    "screenshotAfter": "qa-report/_contacts_Go_to_Deal_Flow_after.png"
+  },
+  {
+    "label": "Properties",
+    "selector": "a.bottom-nav-ht__item:nth-child(4)",
+    "pageRoute": "/contacts",
+    "status": "PASS",
+    "actualBehaviour": "Triggered action successfully",
+    "expectedBehaviour": "Stable UI transition or state change",
+    "consoleErrors": [],
+    "networkFailures": [],
+    "screenshotBefore": "qa-report/_contacts_Properties_before.png",
+    "screenshotAfter": "qa-report/_contacts_Properties_after.png"
+  },
+  {
+    "label": "Contacts",
+    "selector": "a.bottom-nav-ht__item.bottom-nav-ht__item--active:nth-child(5)",
+    "pageRoute": "/contacts",
+    "status": "SKIPPED",
+    "reason": "Element not visible and not a skip link"
+  }
+]

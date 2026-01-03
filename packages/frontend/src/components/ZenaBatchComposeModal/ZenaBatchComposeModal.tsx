@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { Sparkles, X, Shield, RefreshCw, ArrowRight, Send, Users, TrendingUp, Target, FileText } from 'lucide-react';
+import { Sparkles, X, Shield, RefreshCw, ArrowRight, Send, Users, TrendingUp, Target, FileText, Zap } from 'lucide-react';
 import './ZenaBatchComposeModal.css';
 import { api } from '../../utils/apiClient';
 
@@ -21,6 +21,18 @@ interface ZenaBatchComposeModalProps {
     onClose: () => void;
     initialSubject?: string;
     initialMessage?: string;
+    initialActionContext?: {
+        action: string;
+        propertyId?: string;
+        address?: string;
+        status?: string;
+        type?: string;
+        buyerCount?: number;
+        vendorCount?: number;
+        daysOnMarket?: number;
+        listingPrice?: number | null;
+    };
+    oraclePredictions?: Record<string, any>;
 }
 
 // Helper to aggregate role counts
@@ -69,7 +81,9 @@ export const ZenaBatchComposeModal: React.FC<ZenaBatchComposeModalProps> = ({
     selectedContacts,
     onClose,
     initialSubject,
-    initialMessage
+    initialMessage,
+    initialActionContext,
+    oraclePredictions = {}
 }) => {
     const [subject, setSubject] = useState(initialSubject || '');
     const [message, setMessage] = useState(initialMessage || '');
@@ -81,13 +95,19 @@ export const ZenaBatchComposeModal: React.FC<ZenaBatchComposeModalProps> = ({
     const primaryContact = selectedContacts[0];
 
     // Single contact context (for 1 recipient)
-    const singleContactContext = primaryContact ? {
-        name: primaryContact.name.split(' ')[0],
-        role: primaryContact.role,
-        intel: primaryContact.engagementScore || 50,
-        activity: primaryContact.lastActivityDetail || 'recent market activity',
-        snippet: primaryContact.intelligenceSnippet || ''
-    } : null;
+    const singleContactContext = useMemo(() => {
+        if (!primaryContact) return null;
+        const pred = oraclePredictions[primaryContact.id];
+        return {
+            name: primaryContact.name.split(' ')[0],
+            role: primaryContact.role,
+            intel: primaryContact.engagementScore || 50,
+            activity: primaryContact.lastActivityDetail || 'recent market activity',
+            snippet: primaryContact.intelligenceSnippet || '',
+            personality: pred?.personalityType || null,
+            prediction: pred || null
+        };
+    }, [primaryContact, oraclePredictions]);
 
     // Group context (for multiple recipients)
     const groupContext = useMemo(() => {
@@ -100,6 +120,13 @@ export const ZenaBatchComposeModal: React.FC<ZenaBatchComposeModalProps> = ({
         };
     }, [selectedContacts, isGroupEmail]);
 
+    // Auto-Draft on mount if action context provided
+    React.useEffect(() => {
+        if (initialActionContext && !message) {
+            generateAIDraft('quick');
+        }
+    }, [initialActionContext]);
+
     // Generate AI-powered draft via Zena's brain (backend API)
     const generateAIDraft = async (type: 'quick' | 'detailed' = 'quick') => {
         console.log('[ZenaBatchComposeModal] generateAIDraft called via Zena API', { type, isGroupEmail });
@@ -108,7 +135,7 @@ export const ZenaBatchComposeModal: React.FC<ZenaBatchComposeModalProps> = ({
         setDraftType(type);
 
         try {
-            // Call Zena's AI brain endpoint
+            // Call Zena's AI brain endpoint with full property context
             const response = await api.post('/api/ask/compose-email', {
                 contacts: selectedContacts.map(c => ({
                     id: c.id,
@@ -120,7 +147,18 @@ export const ZenaBatchComposeModal: React.FC<ZenaBatchComposeModalProps> = ({
                     lastActivityDetail: c.lastActivityDetail,
                     zenaCategory: c.zenaCategory
                 })),
-                draftType: type
+                draftType: type,
+                actionContext: initialActionContext?.action, // The strategy name
+                propertyContext: initialActionContext?.propertyId ? {
+                    id: initialActionContext.propertyId,
+                    address: initialActionContext.address,
+                    status: initialActionContext.status,
+                    type: initialActionContext.type,
+                    buyerCount: initialActionContext.buyerCount,
+                    vendorCount: initialActionContext.vendorCount,
+                    daysOnMarket: initialActionContext.daysOnMarket,
+                    listingPrice: initialActionContext.listingPrice
+                } : undefined
             });
 
             console.log('[ZenaBatchComposeModal] API response:', response.data);
@@ -193,11 +231,11 @@ Best regards`;
 
     const handleSend = async () => {
         setIsGenerating(true); // Reuse generating state for sending status
-        console.log('Sending email to:', selectedContacts.map(c => c.emails[0]).join(', '));
+        console.log('Sending email to:', selectedContacts.map(c => c.emails?.[0]).join(', '));
 
         try {
             await api.post('/api/communications/send', {
-                recipients: selectedContacts.map(c => c.emails[0]).filter(Boolean),
+                recipients: selectedContacts.map(c => c.emails?.[0]).filter(Boolean) as string[],
                 subject,
                 body: message
             });
@@ -230,7 +268,7 @@ Best regards`;
                             {selectedContacts.map(c => (
                                 <span key={c.id} className="email-pill">
                                     <span className="email-pill__name">{c.name}</span>
-                                    <span className="email-pill__address">{c.emails[0]}</span>
+                                    <span className="email-pill__address">{c.emails?.[0] || 'No email'}</span>
                                 </span>
                             ))}
                         </div>
@@ -282,14 +320,52 @@ Best regards`;
                                 <Shield size={14} />
                                 <span>Zena Intelligence</span>
                             </div>
-                            <p className="zena-context-insight__text">
-                                <strong>{singleContactContext.name}</strong> is a <strong>{singleContactContext.role}</strong> with
-                                <span className={`intel-badge ${singleContactContext.intel > 80 ? 'hot' : singleContactContext.intel > 50 ? 'warm' : 'cold'}`}>
-                                    {Math.round(singleContactContext.intel)}% engagement
-                                </span>.
-                                Recent: "{singleContactContext.activity}".
-                                {singleContactContext.snippet && <em> — {singleContactContext.snippet}</em>}
-                            </p>
+                            <div className="zena-single-intel__content">
+                                <p className="zena-context-insight__text">
+                                    <strong>{singleContactContext.name}</strong> is a <strong>{singleContactContext.role}</strong> with
+                                    <span className={`intel-badge ${singleContactContext.intel > 80 ? 'hot' : singleContactContext.intel > 50 ? 'warm' : 'cold'}`}>
+                                        {Math.round(singleContactContext.intel)}% engagement
+                                    </span>.
+                                    Recent: "{singleContactContext.activity}".
+                                    {singleContactContext.snippet && <em> — {singleContactContext.snippet}</em>}
+                                </p>
+
+                                {singleContactContext.personality && (
+                                    <div className="personality-tip-row">
+                                        <div className={`personality-tag ${singleContactContext.personality}`}>
+                                            DISC: {singleContactContext.personality}
+                                        </div>
+                                        <div className="comm-tip">
+                                            <Sparkles size={12} />
+                                            <span>
+                                                {singleContactContext.personality === 'D' ? 'Keep it direct and results-focused.' :
+                                                    singleContactContext.personality === 'I' ? 'Be enthusiastic and focus on broad vision.' :
+                                                        singleContactContext.personality === 'S' ? 'Be warm, patient, and focus on stability.' :
+                                                            'Provide data, detail, and give them time to analyze.'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Strategy Execution Banner */}
+                    {initialActionContext && (
+                        <div className="zena-strategy-banner" style={{
+                            background: 'rgba(139, 92, 246, 0.1)',
+                            border: '1px solid rgba(139, 92, 246, 0.3)',
+                            padding: '8px 12px',
+                            borderRadius: '8px',
+                            marginBottom: '16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontSize: '13px',
+                            color: '#A78BFA'
+                        }}>
+                            <Zap size={14} fill="#8B5CF6" />
+                            <span>Zena is drafting based on your selected strategy: <strong>{initialActionContext.action}</strong></span>
                         </div>
                     )}
 
@@ -301,7 +377,7 @@ Best regards`;
                                 {!message && (
                                     <>
                                         <button
-                                            className="ai-action-btn ai-action-btn--generate"
+                                            className={`ai-action-btn ai-action-btn--generate ${isGenerating ? 'is-drafting' : ''}`}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -315,7 +391,7 @@ Best regards`;
                                             {isGenerating ? 'Drafting...' : 'AI Draft'}
                                         </button>
                                         <button
-                                            className="ai-action-btn ai-action-btn--detailed"
+                                            className={`ai-action-btn ai-action-btn--detailed ${isGenerating ? 'is-drafting' : ''}`}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -333,7 +409,7 @@ Best regards`;
                                 {message && (
                                     <>
                                         <button
-                                            className="ai-action-btn ai-action-btn--regenerate"
+                                            className={`ai-action-btn ai-action-btn--regenerate ${isGenerating ? 'is-drafting' : ''}`}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
@@ -351,7 +427,7 @@ Best regards`;
                                             {isGenerating ? 'Regenerating...' : 'Regenerate'}
                                         </button>
                                         <button
-                                            className="ai-action-btn ai-action-btn--detailed"
+                                            className={`ai-action-btn ai-action-btn--detailed ${isGenerating ? 'is-drafting' : ''}`}
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();

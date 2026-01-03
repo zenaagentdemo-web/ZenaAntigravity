@@ -7,23 +7,36 @@ interface EngagementUpdate {
     momentum: number;
     dealStage: string | null;
     nextBestAction?: string;
+    engagementReasoning?: string;
 }
 
 interface CategoryUpdate {
     contactId: string;
     zenaCategory: string;
-    confidence: number;
-    reason: string;
+    confidence?: number;
+    reason?: string;
+    intelligenceSnippet?: string;
+    role?: string;
+}
+
+interface DiscoveryUpdate {
+    contactId: string;
+    status: 'started' | 'completed' | 'failed';
+    contactName?: string;
+    message?: string;
+    payload?: any;
 }
 
 export const useContactIntelligence = () => {
     const [lastEngagementUpdate, setLastEngagementUpdate] = useState<EngagementUpdate | null>(null);
     const [lastCategoryUpdate, setLastCategoryUpdate] = useState<CategoryUpdate | null>(null);
+    const [lastBatchUpdate, setLastBatchUpdate] = useState<{ updates: CategoryUpdate[] } | null>(null);
+    const [lastDiscoveryUpdate, setLastDiscoveryUpdate] = useState<DiscoveryUpdate | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [socket, setSocket] = useState<WebSocket | null>(null);
 
     const connect = useCallback(() => {
-        const token = localStorage.getItem('zena_auth_token') || 'dev-token-for-testing'; // Fallback for dev
+        const token = localStorage.getItem('zena_auth_token') || 'demo-token'; // Fallback for dev
         if (!token) {
             console.warn('[ZenaBrain] No auth token found, skipping WebSocket connection');
             return;
@@ -56,6 +69,12 @@ export const useContactIntelligence = () => {
                 } else if (message.type === 'contact.categorized') {
                     console.log('[ZenaBrain] Received categorization signal:', message.payload);
                     setLastCategoryUpdate(message.payload);
+                } else if (message.type === 'batch.contacts.updated') {
+                    console.log('[ZenaBrain] Received bulk synchronization signal:', message.payload);
+                    setLastBatchUpdate(message.payload);
+                } else if (message.type.startsWith('discovery.')) {
+                    console.log(`[ZenaBrain] Received discovery signal (${message.type}):`, message.payload);
+                    setLastDiscoveryUpdate(message.payload);
                 } else if (message.type === 'connection.established') {
                     console.log('[ZenaBrain] Neural link established');
                 }
@@ -89,6 +108,8 @@ export const useContactIntelligence = () => {
     return {
         isConnected,
         lastEngagementUpdate,
-        lastCategoryUpdate
+        lastCategoryUpdate,
+        lastBatchUpdate,
+        lastDiscoveryUpdate
     };
 };

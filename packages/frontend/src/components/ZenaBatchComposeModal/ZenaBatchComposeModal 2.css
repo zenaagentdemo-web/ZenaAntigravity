@@ -1,0 +1,482 @@
+/* --- Batch Compose Modal --- */
+.zena-modal-overlay {
+    position: fixed;
+    inset: 0;
+    /* Ensures full coverage */
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 200000;
+    /* Extremely high z-index */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.batch-compose-modal {
+    position: relative;
+    /* Use clamp for responsive width */
+    width: clamp(300px, 90vw, 600px);
+    max-height: calc(100vh - 4rem);
+    background: rgba(15, 15, 25, 0.98);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 40px var(--neon-cyan-dim);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Ensure no margins interfere with flex centering */
+    margin: 0;
+}
+
+@keyframes modalPop {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.zena-modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to right, rgba(0, 212, 255, 0.05), transparent);
+}
+
+.modal-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.modal-title-group h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #fff 0%, var(--neon-cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.zena-sparkle-icon {
+    color: var(--neon-cyan);
+    filter: drop-shadow(0 0 5px var(--neon-cyan));
+}
+
+.zena-modal-close {
+    background: none;
+    border: none;
+    color: var(--text-tertiary-ht);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.zena-modal-close:hover {
+    color: white;
+}
+
+.zena-modal-content {
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.recipients-track {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.recipients-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-tertiary-ht);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.recipients-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    max-height: 80px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+}
+
+.recipient-pill {
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.compose-area {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.compose-area label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--neon-cyan);
+}
+
+.compose-area textarea {
+    width: 100%;
+    min-height: 200px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1rem;
+    color: white;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.compose-area textarea:focus {
+    outline: none;
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 15px var(--neon-cyan-dim);
+}
+
+.modal-intelligence-insight {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(0, 212, 255, 0.05);
+    border-radius: 12px;
+    border-left: 3px solid var(--neon-cyan);
+    color: var(--text-secondary-ht);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.modal-intelligence-insight p {
+    margin: 0;
+}
+
+.zena-modal-footer {
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.zena-secondary-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.zena-secondary-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: white;
+}
+
+.zena-secondary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.zena-primary-btn {
+    background: var(--neon-cyan);
+    color: black;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.zena-primary-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 0 20px var(--neon-cyan);
+}
+
+.zena-primary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* --- Enhanced Compose Modal Styles --- */
+.compose-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.compose-field__label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-tertiary-ht);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.compose-field__emails {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.email-pill {
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 12px;
+    padding: 0.5rem 0.75rem;
+}
+
+.email-pill__name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+}
+
+.email-pill__address {
+    font-size: 0.75rem;
+    color: var(--neon-cyan);
+}
+
+.compose-field__input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.compose-field__input:focus {
+    outline: none;
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 15px var(--neon-cyan-dim);
+}
+
+.zena-context-insight {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.zena-context-insight__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--neon-cyan);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+}
+
+.zena-context-insight__text {
+    font-size: 0.85rem;
+    color: var(--text-secondary-ht);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.zena-context-insight__text strong {
+    color: white;
+}
+
+.zena-context-insight__text em {
+    color: var(--text-tertiary-ht);
+}
+
+.intel-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin: 0 0.25rem;
+}
+
+.intel-badge.hot {
+    background: rgba(255, 0, 255, 0.2);
+    color: var(--neon-magenta);
+}
+
+.intel-badge.warm {
+    background: rgba(255, 170, 0, 0.2);
+    color: #FFAA00;
+}
+
+.intel-badge.cold {
+    background: rgba(0, 212, 255, 0.2);
+    color: var(--neon-cyan);
+}
+
+.compose-area__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.compose-area__actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.ai-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ai-action-btn--generate {
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+    border: none;
+    color: white;
+}
+
+.ai-action-btn--generate:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px var(--neon-cyan-dim);
+}
+
+.ai-action-btn--regenerate {
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    color: #8B5CF6;
+}
+
+.ai-action-btn--regenerate:hover:not(:disabled) {
+    background: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
+.ai-action-btn--detailed {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    border: none;
+    color: white;
+    font-weight: 600;
+}
+
+.ai-action-btn--detailed:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+}
+
+.ai-action-btn--redo {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-secondary-ht);
+}
+
+.ai-action-btn--redo:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.ai-action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ai-action-btn .spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* --- Group Intelligence Styles --- */
+.zena-context-insight--group {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(139, 92, 246, 0.08));
+    border: 1px solid rgba(0, 212, 255, 0.25);
+}
+
+.zena-context-insight__header .group-count {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--text-tertiary-ht);
+    font-weight: 500;
+}
+
+.zena-group-intel__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.intel-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.intel-stat svg {
+    color: var(--neon-cyan);
+    opacity: 0.7;
+}
+
+.intel-stat__label {
+    color: var(--text-tertiary-ht);
+    min-width: 110px;
+}
+
+.intel-stat__value {
+    color: white;
+    font-weight: 600;
+}
+
+.intel-stat__themes {
+    color: var(--neon-cyan);
+    font-style: italic;
+}

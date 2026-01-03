@@ -55,6 +55,8 @@ const STARTER_PROMPTS: StarterPrompt[] = [
 ];
 
 export const AskZenaPage: React.FC = () => {
+  const componentInstanceId = useRef(Math.random().toString(36).substring(7));
+  const initialUrlContextRef = useRef<string | undefined>(undefined); // Store context before clearing URL
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | undefined>();
@@ -68,11 +70,23 @@ export const AskZenaPage: React.FC = () => {
   const [previewAttachment, setPreviewAttachment] = useState<any | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isConversationMode, setIsConversationMode] = useState(false);
+  // CRITICAL: Session-level stop flag - persists across re-renders and prevents auto-restart
+  // This is set when user MANUALLY stops Zena Live and cleared when they MANUALLY start it
+  const wasManuallyStoppedRef = useRef<boolean>(sessionStorage.getItem('zena_live_manually_stopped') === 'true');
+  const isMountedRef = useRef<boolean>(true); // Track mount status to prevent zombie async updates
   const [searchParams, setSearchParams] = useSearchParams();
   const [pinnedContext, setPinnedContext] = useState<string | null>(null);
   const [avatarMode, setAvatarMode] = useState<'hero' | 'assistant'>('hero');
   const [dissolvePhase, setDissolvePhase] = useState<DissolvePhase>('idle');
   const [userTranscript, setUserTranscript] = useState('');
+
+  // IMMEDIATE CONTEXT CAPTURE: Capture context from URL *before* any effects run or clear it
+  // This persists across re-renders even if searchParams are cleared later
+  const currentContextParam = searchParams.get('context');
+  if (currentContextParam && !initialUrlContextRef.current) {
+    console.log('[AskZena] Captured context from URL (Render Phase):', currentContextParam);
+    initialUrlContextRef.current = currentContextParam;
+  }
   const [liveConnectionStatus, setLiveConnectionStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
   const [isDragging, setIsDragging] = useState(false);
   const hasAutoSubmitted = useRef(false);
@@ -84,6 +98,8 @@ export const AskZenaPage: React.FC = () => {
   const currentUtteranceIdRef = useRef<string | null>(null);
   const strategySessionContextRef = useRef<StrategySessionContext | null>(null);
   const hasStrategySessionStartedRef = useRef(false); // Prevent double-trigger in React Strict Mode
+  const hasHandledUrlParamsRef = useRef(false); // Track if we've already processed URL start params
+
 
   // Sync ref with state
   useEffect(() => {
@@ -135,16 +151,7 @@ export const AskZenaPage: React.FC = () => {
     const hasAction = (term: string, actionId?: string) =>
       text.includes(term) || (actionId && backendActions.includes(actionId));
 
-    if (hasAction('pin', 'pin_address')) {
-      chips.push({
-        label: "Pin Address",
-        icon: "📍",
-        onClick: () => {
-          setPinnedContext("Auckland CBD");
-          console.log("Pinning address...");
-        }
-      });
-    }
+    // Pin Address chip removed per user request
 
     if (hasAction('email', 'draft_email')) {
       chips.push({
@@ -165,20 +172,7 @@ export const AskZenaPage: React.FC = () => {
       });
     }
 
-    if (hasAction('report', 'generate_report')) {
-      chips.push({
-        label: "Market Report",
-        icon: "📊",
-        onClick: async () => {
-          try {
-            await api.post('/api/tools/generate-report', { type: "market-update" });
-            alert("Market report generated!");
-          } catch (err) {
-            console.error("Failed to generate report", err);
-          }
-        }
-      });
-    }
+    // Market Report chip removed as requested
 
     if (hasAction('calendar', 'add_calendar')) {
       chips.push({
@@ -293,10 +287,22 @@ export const AskZenaPage: React.FC = () => {
 
   const liveTranscriptBufferRef = useRef('');
   const userTranscriptBufferRef = useRef('');
+  const pendingSourcesRef = useRef<string>(''); // Store pending sources to append after Zena's message
+  const isWaitingForIdleResponseRef = useRef<boolean>(false);
+  const zenaDrainingRef = useRef<boolean>(false); // Track if Zena is in the final 1000ms drain phase
 
   // STABLE UPDATE HELPER - moved to component level
   const updateActivity = useCallback((isUser: boolean = true, reason: string = 'unknown', shouldResetAsked: boolean = true) => {
     lastActivityRef.current = Date.now();
+
+    // SAFETY RESET: If user starts speaking, ensure Zena speaking flag is reset
+    // This prevents the inactivity timer from being blocked if Zena's stop signal was missed
+    if (isUser && (reason === 'user-speaking' || reason === 'user-transcript')) {
+      if (zenaSpeakingRef.current) {
+        console.log('[AskZena] Safety reset: Zena was marked as speaking but user is active. Resetting flag.');
+        zenaSpeakingRef.current = false;
+      }
+    }
 
     // STICKY STATE FIX: Only reset 'asked' state for "High Confidence" activity
     // Added 'user-speaking' so user speech resets the "Checking..." state immediately
@@ -314,10 +320,33 @@ export const AskZenaPage: React.FC = () => {
   useEffect(() => {
     let unsubscribe: (() => void) | null = null;
     let unsubscribeUser: (() => void) | null = null;
+    let unsubscribeSources: (() => void) | null = null;
+    let isCancelled = false; // Internal cancellation for this effect run
+    const currentInstanceId = componentInstanceId.current;
 
     console.log('[AskZena] Inactivity Effect STARTED');
 
     if (isConversationMode) {
+      // CRITICAL GUARD: If user manually stopped, do NOT auto-start
+      // This prevents unwanted restarts after navigation
+      if (wasManuallyStoppedRef.current) {
+        console.log('[AskZena] Blocked: User manually stopped - not auto-starting');
+        // Reset state to prevent UI inconsistency
+        setIsConversationMode(false);
+        return;
+      }
+
+      // GUARD: Check if liveAudioService is in hard-stopped state
+      // REMOVED: This check was too aggressive and blocked legitimate starts from other pages.
+      // The wasManuallyStoppedRef check above is sufficient to prevent the auto-restart bug.
+      /* 
+      if (liveAudioService.isHardStopped()) {
+        console.log('[AskZena] Blocked: liveAudioService is hard-stopped - not auto-starting');
+        setIsConversationMode(false);
+        return;
+      }
+      */
+
       console.log('[AskZena] Entering Live Mode...');
       setDissolvePhase('vortex'); // Vortex phase during live connection
 
@@ -331,11 +360,27 @@ export const AskZenaPage: React.FC = () => {
         setLiveConnectionStatus('connecting');
         // Ensure WebSocket is connected first
         const connected = await realTimeDataService.ensureConnection();
+
+        // ABORT if cancelled or instance changed
+        if (isCancelled || currentInstanceId !== componentInstanceId.current) {
+          console.log(`[AskZena][${currentInstanceId}] Live mode start aborted (cancelled or instance changed)`);
+          return;
+        }
+
+        // DOUBLE GATE: Only proceed if isConversationMode is STILL true
+        if (!isConversationMode) {
+          console.log(`[AskZena][${currentInstanceId}] Live mode start aborted (isConversationMode is now false)`);
+          return;
+        }
+
         if (!connected) {
           console.error('[AskZena] Failed to establish WebSocket connection');
           setError('Failed to connect to Zena Live. Please refresh and try again.');
           setLiveConnectionStatus('error');
           console.log('[AskZena] Setting isConversationMode to false due to CONNECTION FAILURE');
+          // Clear manual stop flag on error so user can try again
+          sessionStorage.removeItem('zena_live_manually_stopped');
+          wasManuallyStoppedRef.current = false;
           setIsConversationMode(false);
           return;
         }
@@ -375,85 +420,65 @@ export const AskZenaPage: React.FC = () => {
           console.log('[AskZena] Received Zena transcript:', text, 'Final:', isFinal, 'Buffer length:', liveTranscriptBufferRef.current.length);
 
           if (isFinal) {
-            // ... (Logic for final turn remains mostly the same, ensuring timer is cleared) ...
-            if (playbackTimerRef.current) clearTimeout(playbackTimerRef.current);
+            console.log('[AskZena] Zena transcript marked final. Draining response for 1000ms...');
+            zenaDrainingRef.current = true;
+            
+            // DRAIN DELAY: Wait a moment for the actual audio to finish playing
+            // before we clear the buffer and reset the speaking flag.
+            // Increased to 1000ms to ensure "I've listed those sources on your screen" finishes correctly.
+            setTimeout(() => {
+              if (playbackTimerRef.current) {
+                clearTimeout(playbackTimerRef.current);
+                playbackTimerRef.current = null; // CRITICAL: Reset the ref
+              }
+              zenaSpeakingRef.current = false;
+              zenaDrainingRef.current = false; // Drain finished
 
-            // Zena finished speaking - reset timer NOW
-            zenaSpeakingRef.current = false;
-            updateActivity(false, 'zena-transcript', true);
+              const shouldResetAsked = !isWaitingForIdleResponseRef.current;
+              updateActivity(false, 'zena-transcript', shouldResetAsked);
+              isWaitingForIdleResponseRef.current = false;
 
-            const finalContent = decodeHTMLEntities(liveTranscriptBufferRef.current.trim());
-            console.log('[AskZena] Finalizing Zena transcript, content:', finalContent.substring(0, 50), '...');
+              const finalContent = decodeHTMLEntities(liveTranscriptBufferRef.current.trim());
+              console.log('[AskZena] Finalizing Zena transcript after 1000ms drain, content:', finalContent.substring(0, 50), '...');
 
-            if (finalContent) {
-              // FIRST: Add user message if we have buffered user transcript
-              const userText = userTranscriptBufferRef.current.trim();
-              if (userText) {
-                console.log('[AskZena] Adding user message from buffer:', userText.substring(0, 50), '...');
-                const tempId = `user-voice-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+              if (finalContent) {
+                // THEN: Add Zena's response (including any pending sources)
+                const chips = detectIntentAndGenerateChips(finalContent);
+                const pendingSources = pendingSourcesRef.current;
+                const messageContent = pendingSources ? finalContent + pendingSources : finalContent;
 
-                // Add initial message immediately for responsiveness
                 setMessages(prev => [
                   ...prev,
-                  { id: tempId, role: 'user', content: userText, timestamp: new Date() }
+                  { id: `zena-voice-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, role: 'assistant', content: messageContent, chips, timestamp: new Date() }
                 ]);
 
-                // Fire off cleanup request in background
-                console.log('[AskZena] Requesting transcript cleanup for:', userText);
-                api.post<{ text: string }>('/api/ask/cleanup', { text: userText })
-                  .then(res => {
-                    const cleaned = res.data.text;
-                    console.log('[AskZena] Cleanup API response:', cleaned);
-                    if (cleaned && cleaned !== userText) {
+                // Clear pending sources after use
+                if (pendingSources) {
+                  console.log('[AskZena] Appended pending sources to Zena message');
+                  pendingSourcesRef.current = '';
+                }
 
-                      // Update UI with cleaned text using functional update to ensure fresh state
-                      setMessages(currentMessages => {
-                        const updated = currentMessages.map(m =>
-                          m.id === tempId ? { ...m, content: cleaned } : m
-                        );
-                        return updated;
-                      });
+                saveVoiceInteractionFn('assistant', messageContent);
+                liveTranscriptBufferRef.current = '';
+                setStreamingContent('');
+                setUserTranscript('');
+                triggerReform();
 
-                      // Save CLEANED interaction
-                      saveVoiceInteractionFn('user', cleaned);
-                    } else {
-                      saveVoiceInteractionFn('user', userText);
-                    }
-                  })
-                  .catch(err => {
-                    console.error('[AskZena] Cleanup failed:', err);
-                    saveVoiceInteractionFn('user', userText);
-                  });
+                // Mark that Zena has completed at least one response - inactivity timer can now start
+                zenaHasRespondedRef.current = true;
+                console.log('[AskZena] Zena response saved, switching to assistant mode if needed');
 
-                userTranscriptBufferRef.current = ''; // Clear buffer
+                // Force assistant mode after Zena responds
+                // if (avatarMode === 'hero') {
+                //   console.log('[AskZena] Switching from hero to assistant mode');
+                //   setAvatarMode('assistant');
+                // }
+
+                // Reset for next turn
+                userMergerRef.current.reset();
+                currentUtteranceIdRef.current = null;
               }
-
-              // THEN: Add Zena's response
-              const chips = detectIntentAndGenerateChips(finalContent);
-              setMessages(prev => [
-                ...prev,
-                { id: `zena-voice-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, role: 'assistant', content: finalContent, chips, timestamp: new Date() }
-              ]);
-              saveVoiceInteractionFn('assistant', finalContent);
-              liveTranscriptBufferRef.current = '';
-              setStreamingContent('');
-              setUserTranscript('');
-              triggerReform();
-
-              // Mark that Zena has completed at least one response - inactivity timer can now start
-              zenaHasRespondedRef.current = true;
-              console.log('[AskZena] Zena response saved, switching to assistant mode if needed');
-
-              // Force assistant mode after Zena responds
-              // if (avatarMode === 'hero') {
-              //   console.log('[AskZena] Switching from hero to assistant mode');
-              //   setAvatarMode('assistant');
-              // }
-
-              // Reset for next turn
-              userMergerRef.current.reset();
-              currentUtteranceIdRef.current = null;
-            }
+            }, 1000);
           } else {
             // Zena started speaking (interim)
 
@@ -467,18 +492,23 @@ export const AskZenaPage: React.FC = () => {
 
               playbackTimerRef.current = setTimeout(() => {
                 console.log('[AskZena] Silence buffer passed. Allowing Zena to speak.');
+                playbackTimerRef.current = null; // CRITICAL: Timer has fired, reset it
                 zenaSpeakingRef.current = true;
                 updateActivity(false, 'zena-speaking-start', false);
                 liveAudioService.startQueuePlayback();
                 setDissolvePhase('speaking');
 
+                // Clear user shadow text immediately when Zena starts speaking
+                setUserTranscript('');
+
                 // Force assistant mode if Zena starts talking
                 // if (avatarMode === 'hero') setAvatarMode('assistant');
 
                 // Reset asked-state logic matches existing flow
-                if (liveTranscriptBufferRef.current.length < 50) {
-                  zenaAskedRef.current = false;
-                }
+                // REMOVED: This was causing the infinite inactivity prompt loop
+                // if (liveTranscriptBufferRef.current.length < 50) {
+                //   zenaAskedRef.current = false;
+                // }
               }, 100); // 100ms delay
             }
 
@@ -495,18 +525,26 @@ export const AskZenaPage: React.FC = () => {
         });
 
         unsubscribeUser = realTimeDataService.onUserTranscript((text: string, isFinal: boolean) => {
+          // Show immediate feedback in the UI (Shadow Text)
+          setUserTranscript(text);
           console.log('[AskZena] User transcript received:', text, 'Final:', isFinal);
 
           // INTERRUPTION LOGIC:
-          // User spoke! If Zena was buffering, CANCEL HER.
+          // User spoke! 
+          const isSignificantSpeech = text.trim().length > 10;
+          
           if (playbackTimerRef.current) {
             console.log('[AskZena] User interrupted silence buffer! Cancelling Zena response.');
             clearTimeout(playbackTimerRef.current);
             playbackTimerRef.current = null;
             liveAudioService.clearPlayback(); // Discard buffered audio
-            liveTranscriptBufferRef.current = ''; // Discard buffered text
             setStreamingContent('');
-            // We successfully prevented Zena from speaking/interrupting!
+          } else if (zenaDrainingRef.current && isSignificantSpeech) {
+            // If we are in the 1000ms drain phase, ONLY interrupt if the user said something substantial
+            console.log('[AskZena] User interrupted Zena DRAIN phase with significant speech. Clearing.');
+            zenaDrainingRef.current = false;
+            zenaSpeakingRef.current = false;
+            liveAudioService.clearPlayback();
           }
 
           // Also handle normal barge-in (if she was already speaking)
@@ -527,23 +565,103 @@ export const AskZenaPage: React.FC = () => {
           }
 
           // Accumulate user transcript in buffer
-          // CRITICAL: Gemini sends INCREMENTAL transcripts (one word/phrase at a time)
-          // Must APPEND with smart spacing between chunks
           if (text.trim().length > 0) {
-            // Removed manual spacing logic to prevent "He llo" issues.
-            // Gemini typically handles spacing, and our backend cleanup handles the rest.
             const buffer = userTranscriptBufferRef.current;
-            userTranscriptBufferRef.current = buffer + text;
+            // Restore smart spacing
+            const newText = (buffer && !buffer.endsWith(' ') && !text.startsWith(' ')) ? ` ${text}` : text;
+            userTranscriptBufferRef.current = buffer + newText;
             console.log('[AskZena] User buffer APPENDED:', userTranscriptBufferRef.current.substring(0, 100));
           }
 
-          // We don't add to chat here - that happens when Zena finishes (turn_complete)
-          // This ensures proper ordering: user message first, then Zena's response
+          if (isFinal) {
+            // Use full text from backend if available, fallback to buffer
+            // For voice.live.user_turn_complete, text will be the full finalized transcript
+            const finalUserText = (text && text.trim().length > 0) ? text.trim() : userTranscriptBufferRef.current.trim();
+
+            if (finalUserText) {
+              console.log('[AskZena] User turn COMPLETE. Final text:', finalUserText);
+
+              // Dedup: check if this message was already added (could happen if input_transcript and user_turn_complete both fire isFinal)
+              setMessages(prev => {
+                const lastMsg = prev[prev.length - 1];
+                if (lastMsg && lastMsg.role === 'user' && lastMsg.content === finalUserText) {
+                  console.log('[AskZena] Skipping duplicate user message');
+                  return prev;
+                }
+
+                const tempId = `user-voice-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+                return [
+                  ...prev,
+                  { id: tempId, role: 'user', content: finalUserText, timestamp: new Date() }
+                ];
+              });
+
+              // Run cleanup/save after a tiny delay to ensure setMessages state is stable
+              setTimeout(() => {
+                const tempId = `user-voice-${Date.now()}`; // Not perfect but we just need to save it
+                api.post<{ text: string }>('/api/ask/cleanup', { text: finalUserText })
+                  .then(res => {
+                    const cleaned = res.data.text;
+                    saveVoiceInteractionFn('user', cleaned || finalUserText);
+                  })
+                  .catch(err => {
+                    console.error('[AskZena] Cleanup failed:', err);
+                    saveVoiceInteractionFn('user', finalUserText);
+                  });
+              }, 100);
+
+              userTranscriptBufferRef.current = ''; // Clear buffer
+              // Clear shadow text
+              setTimeout(() => setUserTranscript(''), 500);
+            }
+          }
+          // REMOVED Redundant buffer accumulation here. It's handled more robustly in the first block of this function.
         });
 
+        // SOURCES SUBSCRIPTION: Store sources for appending, or append immediately if turn is over
+        unsubscribeSources = realTimeDataService.onLiveSources((formattedText: string, sources: string[]) => {
+          console.log('[AskZena] Received sources:', sources.length, 'Zena Speaking:', zenaSpeakingRef.current);
+
+          if (sources.length > 0) {
+            // If Zena is still speaking or hasn't started, store for later
+            if (zenaSpeakingRef.current || liveTranscriptBufferRef.current.length > 0) {
+              console.log('[AskZena] Zena is active, storing sources in ref');
+              pendingSourcesRef.current = formattedText;
+            } else {
+              // Zena is done, append immediately to last message
+              console.log('[AskZena] Zena is silent, appending sources immediately');
+              setMessages(prev => {
+                const lastIdx = prev.length - 1;
+                if (lastIdx >= 0 && prev[lastIdx].role === 'assistant') {
+                  const updated = [...prev];
+                  const lastMessage = updated[lastIdx];
+                  // Avoid double appending if we already did it in finalContent block
+                  if (!lastMessage.content.includes('**Verified Sources:**')) {
+                    updated[lastIdx] = {
+                      ...lastMessage,
+                      content: lastMessage.content + formattedText
+                    };
+                    return updated;
+                  }
+                }
+                return prev;
+              });
+            }
+          }
+        });
 
         // Start inactivity timer
         inactivityTimeoutRef.current = setInterval(() => {
+          // CRITICAL: If hard stopped, clear interval and exit
+          if (liveAudioService.isHardStopped()) {
+            console.log('[AskZena] Inactivity timer detected HARD STOP - clearing interval');
+            if (inactivityTimeoutRef.current) {
+              clearInterval(inactivityTimeoutRef.current);
+              inactivityTimeoutRef.current = null;
+            }
+            return;
+          }
+
           // Skip inactivity counting while Zena is speaking
           if (zenaSpeakingRef.current) {
             return;
@@ -569,82 +687,108 @@ export const AskZenaPage: React.FC = () => {
             // CRITICAL: Reset timer IMMEDIATELY so the next interval check doesn't immediately deactivate
             lastActivityRef.current = Date.now();
 
-            // FIX: Verbally say the prompt using local TTS
-            const promptText = 'Zena is checking if you need anything else...';
+            // FIX: Verbally say the prompt using Zena's native voice via WebSocket (Live Session)
+            // This ensures consistency with the main voice.
+            const promptText = "Say specifically: 'Is there anything else I can help you with?'";
 
-            (async () => {
-              try {
-                zenaSpeakingRef.current = true; // Block timer while speaking
-                const buffer = await voiceInteractionService.speak(promptText);
-                liveAudioService.setMicMuted(true);
-                await liveAudioService.playBuffer(buffer);
-                console.log('[AskZena] Check-in prompt finished - Stage 2 countdown starting NOW');
-                zenaSpeakingRef.current = false;
-                lastActivityRef.current = Date.now(); // Reset again after speaking finishes
-                liveAudioService.setMicMuted(false);
-              } catch (err) {
-                console.error('[AskZena] Inactivity prompt failed:', err);
-                zenaSpeakingRef.current = false;
-                liveAudioService.setMicMuted(false);
-                lastActivityRef.current = Date.now();
-              }
-            })();
+            // Send prompt to backend to be spoken by Gemini
+            console.log('[AskZena] Sending inactivity prompt to Zena Live:', promptText);
+            isWaitingForIdleResponseRef.current = true;
+            realTimeDataService.sendMessage('voice.live.prompt', { text: promptText });
 
             // Also add a local placeholder so the user sees Zena is trying to help
             setMessages(prev => [
               ...prev,
-              { id: `inactivity-${Date.now()}`, role: 'assistant', content: promptText, timestamp: new Date() }
+              { id: `inactivity-${Date.now()}`, role: 'assistant', content: 'Is there anything else I can help you with?', timestamp: new Date() }
             ]);
           }
           else if (inactiveTime > 10000 && zenaAskedRef.current) {
             console.log('[AskZena] 10s passed after check-in (20s total) - deactivating');
             // 10 seconds after asking - still no response, deactivate
+            // NOTE: This is an auto-timeout, NOT a manual stop - clear the manual stop flag
+            // so user can start Zena Live again later
+            sessionStorage.removeItem('zena_live_manually_stopped');
+            wasManuallyStoppedRef.current = false;
             setIsConversationMode(false);
-            if (inactivityTimeoutRef.current) clearInterval(inactivityTimeoutRef.current);
+            if (inactivityTimeoutRef.current) {
+              clearInterval(inactivityTimeoutRef.current);
+              inactivityTimeoutRef.current = null;
+            }
           }
         }, 1000);
 
-        try {
-          // Attempt to get user location if possible
-          let location: { lat: number, lng: number } | undefined;
-          try {
-            if ('geolocation' in navigator) {
-              const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 });
-              });
-              location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-              console.log('[AskZena] Location captured:', location);
-            }
-          } catch (locErr) {
-            console.warn('[AskZena] Could not capture location:', locErr);
+        const startLiveSession = async () => {
+          // Double check cancellation
+          if (isCancelled || currentInstanceId !== componentInstanceId.current || !isConversationMode) {
+            console.log(`[AskZena][${currentInstanceId}] startLiveSession aborted (pre-flight checks failed)`);
+            return;
           }
 
-          await liveAudioService.start((level, isPlayback) => {
-            setAudioLevel(level);
+          // SAFETY: Don't start if we are not actually on the Ask Zena page (e.g. during navigation away)
+          if (!window.location.pathname.includes('/ask-zena')) {
+            console.warn('[AskZena] Aborting startLiveMode - navigate away detected');
+            return;
+          }
 
-            // IF Zena is speaking (isPlayback), it counts as activity to prevent timeout interruption
-            if (isPlayback && level > 0.05) {
-              // Keep session alive while Zena is speaking, but do NOT reset asked-state
-              updateActivity(false, 'zena-playback', false);
+          try {
+            // Attempt to get user location if possible
+            let location: { lat: number, lng: number } | undefined;
+            try {
+              if ('geolocation' in navigator) {
+                const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+                  navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 });
+                });
+                location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                console.log('[AskZena] Location captured:', location);
+              }
+            } catch (locErr) {
+              console.warn('[AskZena] Could not capture location:', locErr);
             }
-            // NOTE: We do NOT reset inactivity on raw audio level anymore.
-            // Only TRANSCRIBED user speech (via onUserTranscript) resets the timer.
-            // This prevents ambient noise from keeping the session alive forever.
-          }, messages, location); // Pass messages as history context and location
-          setLiveConnectionStatus('connected');
-        } catch (err: any) {
-          console.error('[AskZena] Live Mode failed:', err);
-          setError(`Live Mode failed: ${err.message}`);
-          setLiveConnectionStatus('error');
-          console.log('[AskZena] Setting isConversationMode to false due to LIVE MODE START ERROR');
-          setIsConversationMode(false);
-        }
-      };
 
+            // DOUBLE SAFETY: Check mounted state and mode again after async operations
+            if (isCancelled || currentInstanceId !== componentInstanceId.current || !isConversationMode) {
+              console.log(`[AskZena][${currentInstanceId}] startLiveSession aborted after location (cancelled or mode changed)`);
+              return;
+            }
+            if (!window.location.pathname.includes('/ask-zena')) {
+              console.warn(`[AskZena][${currentInstanceId}] Aborting startLiveMode after async - navigate away detected (${window.location.pathname})`);
+              return;
+            }
+
+            const context = initialUrlContextRef.current || searchParams.get('context') || undefined;
+            await liveAudioService.start((level, isPlayback) => {
+              setAudioLevel(level);
+
+              // IF Zena is speaking (isPlayback), it counts as activity to prevent timeout interruption
+              if (isPlayback && level > 0.05) {
+                // Keep session alive while Zena is speaking, but do NOT reset asked-state
+                updateActivity(false, 'zena-playback', false);
+              }
+            }, messages, location, context);
+            setLiveConnectionStatus('connected');
+          } catch (err: any) {
+            if (isCancelled) return; // Ignore errors if cancelled
+
+            console.error('[AskZena] Live Mode failed:', err);
+            setError(`Live Mode failed: ${err.message}`);
+            setLiveConnectionStatus('error');
+            console.log('[AskZena] Setting isConversationMode to false due to LIVE MODE START ERROR');
+            // Clear manual stop flag on error so user can try again
+            sessionStorage.removeItem('zena_live_manually_stopped');
+            wasManuallyStoppedRef.current = false;
+            setIsConversationMode(false);
+          }
+        };
+
+        startLiveSession();
+      };
       startLiveMode();
     } else {
       console.log('[AskZena] Exiting Live Mode...');
-      if (inactivityTimeoutRef.current) clearInterval(inactivityTimeoutRef.current);
+      if (inactivityTimeoutRef.current) {
+        clearInterval(inactivityTimeoutRef.current);
+        inactivityTimeoutRef.current = null;
+      }
       liveAudioService.stop();
       setLiveConnectionStatus('idle');
       setDissolvePhase('idle');
@@ -659,10 +803,15 @@ export const AskZenaPage: React.FC = () => {
     }
 
     return () => {
-      console.log('[AskZena] Inactivity Effect CLEANUP');
+      console.log(`[AskZena][${currentInstanceId}] Inactivity Effect CLEANUP`);
+      isCancelled = true; // MARK CANCELLED for this run
       if (unsubscribe) unsubscribe();
       if (unsubscribeUser) unsubscribeUser();
-      if (inactivityTimeoutRef.current) clearInterval(inactivityTimeoutRef.current);
+      if (unsubscribeSources) unsubscribeSources();
+      if (inactivityTimeoutRef.current) {
+        clearInterval(inactivityTimeoutRef.current);
+        inactivityTimeoutRef.current = null;
+      }
       liveAudioService.stop();
       liveTranscriptBufferRef.current = '';
       userMergerRef.current.reset();
@@ -689,8 +838,18 @@ export const AskZenaPage: React.FC = () => {
   }, [messages, avatarMode, isLoading, streamingContent, isConversationMode]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, streamingContent]);
+    if (messagesEndRef.current) {
+      // Direct scroll for more reliability in dynamic layouts
+      const container = messagesEndRef.current.parentElement;
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+      // Fallback/Smooth transition
+      if (messagesEndRef.current.scrollIntoView) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    }
+  }, [messages, streamingContent, isConversationMode]);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -699,6 +858,14 @@ export const AskZenaPage: React.FC = () => {
     }
   }, [inputValue, avatarMode]); // Run when value OR mode changes
 
+  // Track mount status
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   // Load conversations and check for auto-prompt on mount
   useEffect(() => {
     loadConversations();
@@ -706,89 +873,121 @@ export const AskZenaPage: React.FC = () => {
     const prompt = searchParams.get('prompt');
     const mode = searchParams.get('mode');
 
-    if (mode === 'handsfree') {
-      setIsConversationMode(true);
-      setShowVoiceRecorder(true);
-    }
+    if (!hasHandledUrlParamsRef.current) {
+      hasHandledUrlParamsRef.current = true;
 
-    // Strategy Session Mode - context-aware Zena Live from Deal Flow
-    if (mode === 'strategy-session' && !hasStrategySessionStartedRef.current) {
-      hasStrategySessionStartedRef.current = true; // Prevent double trigger from React Strict Mode
-      console.log('[AskZena] Strategy session mode DETECTED!');
-      try {
-        const contextJson = sessionStorage.getItem(STRATEGY_SESSION_KEY);
-        console.log('[AskZena] SessionStorage context:', contextJson);
-        if (contextJson) {
-          const context: StrategySessionContext = JSON.parse(contextJson);
-          strategySessionContextRef.current = context;
-          console.log('[AskZena] Parsed strategy context:', context);
+      if (mode === 'handsfree') {
+        const timestamp = searchParams.get('t');
+        const lastProcessed = sessionStorage.getItem('last_live_start_ts');
 
-          // Build conversational opener based on risk type
-          const opener = buildStrategyOpener(context);
-          console.log('[AskZena] Strategy opener:', opener);
-
-          // Add context message to chat first
-          setMessages([{
-            id: `strategy-context-${Date.now()}`,
-            role: 'assistant',
-            content: opener,
-            timestamp: new Date()
-          }]);
-
-          // Pin the deal address as context - this shows at the top!
-          const pinnedText = `${context.address} • ${context.stageLabel} • ${context.healthScore}% health`;
-          console.log('[AskZena] Setting pinned context:', pinnedText);
-          setPinnedContext(pinnedText);
-
-          // Switch to assistant mode so the chat is visible!
-          setAvatarMode('assistant');
-
-          // Start Live Mode (for voice listening after Zena speaks)
-          setIsConversationMode(true);
-
-          // Auto-submit a strategy request so Zena immediately provides advice
-          // The API response will be spoken via the submitQuery flow
-          setTimeout(() => {
-            console.log('[AskZena] Auto-submitting strategy request for immediate advice...');
-            submitQuery('Give me your strategy and action plan for this deal. What should I do first?');
-          }, 500);
-
-          // Clear sessionStorage to prevent re-trigger on refresh
-          sessionStorage.removeItem(STRATEGY_SESSION_KEY);
-
-          // Clear URL params
+        // STALE CHECK: If this exact timestamp was already processed, it's likely a "Back" button navigation
+        // In that case, we should IGNORE it and respect the manual stop state.
+        if (timestamp && timestamp === lastProcessed) {
+          console.log('[AskZena] Stale handsfree start detected (Back Button?) - ignoring to prevent auto-restart');
+          // Still clear params to clean up
           setSearchParams({}, { replace: true });
         } else {
-          // No context found - fallback to normal conversation
-          console.warn('[AskZena] Strategy session mode but no context found - starting normal conversation');
+          // VALID NEW START: User explicitly clicked the button
+          if (timestamp) {
+            sessionStorage.setItem('last_live_start_ts', timestamp);
+          }
+
+          console.log('[AskZena] Explicit Handsfree start detected - overriding stop flags');
+          sessionStorage.removeItem('zena_live_manually_stopped');
+          wasManuallyStoppedRef.current = false;
+
+          setIsConversationMode(true);
+          setShowVoiceRecorder(true);
+          // Clear URL params to prevent re-triggering conversation on remount/refresh
+          setSearchParams({}, { replace: true });
+        }
+      }
+
+      // Strategy Session Mode - context-aware Zena Live from Deal Flow
+      if (mode === 'strategy-session' && !hasStrategySessionStartedRef.current) {
+        hasStrategySessionStartedRef.current = true; // Prevent double trigger from React Strict Mode
+        console.log('[AskZena] Strategy session mode DETECTED!');
+
+        // EXPLICIT START: Strategy session implies user wants to talk
+        console.log('[AskZena] Strategy mode detected - overriding stop flags');
+        sessionStorage.removeItem('zena_live_manually_stopped');
+        wasManuallyStoppedRef.current = false;
+
+        try {
+          const contextJson = sessionStorage.getItem(STRATEGY_SESSION_KEY);
+          console.log('[AskZena] SessionStorage context:', contextJson);
+          if (contextJson) {
+            const context: StrategySessionContext = JSON.parse(contextJson);
+            strategySessionContextRef.current = context;
+            console.log('[AskZena] Parsed strategy context:', context);
+
+            // Build conversational opener based on risk type
+            const opener = buildStrategyOpener(context);
+            console.log('[AskZena] Strategy opener:', opener);
+
+            // Add context message to chat first
+            setMessages([{
+              id: `strategy-context-${Date.now()}`,
+              role: 'assistant',
+              content: opener,
+              timestamp: new Date()
+            }]);
+
+            // Pin the deal address as context - this shows at the top!
+            const pinnedText = `${context.address} • ${context.stageLabel} • ${context.healthScore}% health`;
+            console.log('[AskZena] Setting pinned context:', pinnedText);
+            setPinnedContext(pinnedText);
+
+            // Switch to assistant mode so the chat is visible!
+            setAvatarMode('assistant');
+
+            // Start Live Mode (for voice listening after Zena speaks)
+            setIsConversationMode(true);
+
+            // Auto-submit a strategy request so Zena immediately provides advice
+            // The API response will be spoken via the submitQuery flow
+            setTimeout(() => {
+              console.log('[AskZena] Auto-submitting strategy request for immediate advice...');
+              submitQuery('Give me your strategy and action plan for this deal. What should I do first?');
+            }, 500);
+
+            // Clear sessionStorage to prevent re-trigger on refresh
+            sessionStorage.removeItem(STRATEGY_SESSION_KEY);
+
+            // Clear URL params
+            setSearchParams({}, { replace: true });
+          } else {
+            // No context found - fallback to normal conversation
+            console.warn('[AskZena] Strategy session mode but no context found - starting normal conversation');
+            setMessages([{
+              id: `fallback-${Date.now()}`,
+              role: 'assistant',
+              content: "Hey, it looks like I lost the deal context. What deal would you like to discuss?",
+              timestamp: new Date()
+            }]);
+            setSearchParams({}, { replace: true });
+          }
+        } catch (err) {
+          console.error('[AskZena] Failed to parse strategy session context:', err);
           setMessages([{
-            id: `fallback-${Date.now()}`,
+            id: `error-${Date.now()}`,
             role: 'assistant',
-            content: "Hey, it looks like I lost the deal context. What deal would you like to discuss?",
+            content: "Hey, I had trouble loading the deal details. What deal would you like to discuss?",
             timestamp: new Date()
           }]);
           setSearchParams({}, { replace: true });
         }
-      } catch (err) {
-        console.error('[AskZena] Failed to parse strategy session context:', err);
-        setMessages([{
-          id: `error-${Date.now()}`,
-          role: 'assistant',
-          content: "Hey, I had trouble loading the deal details. What deal would you like to discuss?",
-          timestamp: new Date()
-        }]);
-        setSearchParams({}, { replace: true });
       }
-    }
 
-    if (prompt && !hasAutoSubmitted.current) {
-      hasAutoSubmitted.current = true;
-      // Small delay to ensure everything is mounted
-      setTimeout(() => {
-        submitQuery(prompt);
-        // Clear the params so they don't re-trigger on refresh
-        setSearchParams({}, { replace: true });
-      }, 500);
+      if (prompt && !hasAutoSubmitted.current) {
+        hasAutoSubmitted.current = true;
+        // Small delay to ensure everything is mounted
+        setTimeout(() => {
+          submitQuery(prompt);
+          // Clear the params so they don't re-trigger on refresh
+          setSearchParams({}, { replace: true });
+        }, 500);
+      }
     }
 
     // Set sidebar width for bottom navigation alignment
@@ -946,6 +1145,8 @@ export const AskZenaPage: React.FC = () => {
       });
     }));
 
+    if (!isMountedRef.current) return;
+
     const userAttachments = attachmentData.map(a => ({
       type: a.type as 'image' | 'file',
       name: a.name,
@@ -1009,6 +1210,11 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
         conversationHistory: conversationHistoryWithContext,
         strategyContext: strategyContext || undefined
       });
+
+      if (!isMountedRef.current) {
+        console.log('[AskZena] Component unmounted during API call - aborting response processing');
+        return;
+      }
 
       const fullContent = response.data.response;
       const chips = detectIntentAndGenerateChips(fullContent, response.data.suggestedActions);
@@ -1147,12 +1353,22 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
               type="button"
               onClick={() => {
                 const newMode = !isConversationMode;
+                // CRITICAL: If stopping, call liveAudioService.stop() IMMEDIATELY
+                // Don't wait for React's state update cycle - this ensures instant audio cessation
+                if (!newMode) {
+                  console.log('[AskZena] STOP BUTTON CLICKED - Immediately stopping audio');
+                  liveAudioService.stop();
+                  // CRITICAL: Mark as manually stopped to prevent auto-restart on navigation
+                  sessionStorage.setItem('zena_live_manually_stopped', 'true');
+                  wasManuallyStoppedRef.current = true;
+                  // Clear URL params to prevent context/mode from re-triggering
+                  setSearchParams({}, { replace: true });
+                } else {
+                  // User is explicitly starting - clear the stop flag
+                  sessionStorage.removeItem('zena_live_manually_stopped');
+                  wasManuallyStoppedRef.current = false;
+                }
                 setIsConversationMode(newMode);
-                // REMOVED: Force assistant mode when starting live
-                // This allows Zena to start in Hero mode
-                // if (newMode && avatarMode === 'hero') {
-                //   setAvatarMode('assistant');
-                // }
               }}
               title={isConversationMode ? "Stop Zena Live" : "Start Zena Live"}
             >
@@ -1182,8 +1398,8 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
         {error && <div className="error-toast">{error}</div>}
       </form>
 
-      {/* Starter Prompts - Only show in Hero mode when not typing and not in strategy session */}
-      {!inputValue && avatarMode === 'hero' && !isLoading && !strategySessionContextRef.current && (
+      {/* Starter Prompts - Only show in Hero mode when not typing, not in strategy session AND not in Live mode */}
+      {!inputValue && avatarMode === 'hero' && !isLoading && !isConversationMode && !strategySessionContextRef.current && (
         <div className="starter-prompts-container">
           {STARTER_PROMPTS.map((starter, idx) => (
             <button
@@ -1276,8 +1492,8 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
           </div>
         )}
 
-        {/* Hero mode: Centered Unified Prompt */}
-        {avatarMode === 'hero' && (
+        {/* Hero mode: Centred Unified Prompt - Only show here when NOT in live session */}
+        {avatarMode === 'hero' && !isConversationMode && (
           <div className="hero-controls">
             {renderPrompt()}
           </div>
@@ -1360,8 +1576,8 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Assistant mode: Fixed Unified Prompt at bottom */}
-          {avatarMode === 'assistant' && renderPrompt()}
+          {/* Assistant mode OR Hero mode in Live: Fixed Unified Prompt at bottom */}
+          {(avatarMode === 'assistant' || (avatarMode === 'hero' && isConversationMode)) && renderPrompt()}
         </div>
 
         {showVoiceRecorder && (

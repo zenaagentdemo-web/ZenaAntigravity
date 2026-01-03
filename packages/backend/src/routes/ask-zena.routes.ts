@@ -33,11 +33,24 @@ router.post('/compose-email', askZenaController.composeEmail);
 // This powers the IntelScoreTooltip "Improve Now" feature
 router.post('/improvement-actions', askZenaController.getImprovementActions);
 
+// POST /api/ask/property-improvement-actions - Generate AI-powered improvement actions for properties
+// This powers the PropertyIntelScoreTooltip "Improve Now" feature
+router.post('/property-improvement-actions', askZenaController.getPropertyImprovementActions);
+
 // GET /api/ask/contact-call-intel/:id - Get predictive call intelligence
 router.get('/contact-call-intel/:id', askZenaController.getContactCallIntel);
 
 // POST /api/ask/smart-search - Parse natural language search query
 router.post('/smart-search', askZenaController.parseSearchQuery);
+
+// POST /api/ask/property-search - Parse natural language property search query
+router.post('/property-search', askZenaController.parsePropertySearchQuery);
+
+// POST /api/ask/contact-search - Parse natural language contact search query
+router.post('/contact-search', askZenaController.parseContactSearchQuery);
+
+// Magic Entry
+router.post('/parse-property', askZenaController.parsePropertyDetails);
 
 // POST /api/ask/record-action - Record execution of an AI-suggested action
 router.post('/record-action', askZenaController.recordAction);
@@ -47,5 +60,27 @@ router.post('/discover', askZenaController.discover);
 
 // POST /api/ask/cleanup - Cleanup transcript text
 router.post('/cleanup', askZenaController.cleanupTranscript);
+
+// GET /api/ask/proactive-hud - Get Zena's #1 recommendation
+router.get('/proactive-hud', askZenaController.getProactiveHud);
+
+// POST /api/ask/suggest-batch-tags - AI-powered batch tag suggestions
+router.post('/suggest-batch-tags', askZenaController.suggestBatchTags);
+
+// POST /api/ask/predict-contact-type - Predict contact type from email/name
+router.post('/predict-contact-type', askZenaController.predictContactType);
+
+// POST /api/ask/relationships - Discover contact-to-contact links
+router.post('/relationships', askZenaController.getRelationships);
+
+// PropertyDetailPage Intelligence Gaps
+// POST /api/ask/schedule-suggestions - AI-suggested open home times
+router.post('/schedule-suggestions', askZenaController.getScheduleSuggestions);
+
+// POST /api/ask/milestone-suggestions - AI-suggested milestones
+router.post('/milestone-suggestions', askZenaController.getMilestoneSuggestions);
+
+// POST /api/ask/timeline-summary - AI summary of property activity
+router.post('/timeline-summary', askZenaController.getTimelineSummary);
 
 export default router;

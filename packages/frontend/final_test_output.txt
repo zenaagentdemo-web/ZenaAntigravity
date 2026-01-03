@@ -1,0 +1,205 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend[39m
+
+[90mstdout[2m | src/services/live-audio.service.test.ts[2m > [22m[2mLiveAudioService Session Management[2m > [22m[2mshould abort start if stop is called during initialization
+[22m[39m[LiveAudio] Cleanup started
+[LiveAudio] Fully stopped - all resources released
+
+[90mstdout[2m | src/services/live-audio.service.test.ts[2m > [22m[2mLiveAudioService Session Management[2m > [22m[2mshould abort start if stop is called during initialization
+[22m[39m[LiveAudio] Starting session 1...
+[LiveAudio] Requesting session start with history: [33m0[39m location: [33mfalse[39m context: [90mundefined[39m
+[LiveAudio] Stopping session (Invalidating pending starts, new ID: 2)...
+[LiveAudio] Cleanup started
+[LiveAudio] Fully stopped - all resources released
+
+[90mstderr[2m | src/services/live-audio.service.test.ts[2m > [22m[2mLiveAudioService Session Management[2m > [22m[2mshould abort start if stop is called during initialization
+[22m[39m[LiveAudio][1] Start aborted - session invalidated during initialization (isStopping=true)
+
+[90mstdout[2m | src/services/live-audio.service.test.ts[2m > [22m[2mLiveAudioService Session Management[2m > [22m[2mshould abort start if a second start is called during initialization
+[22m[39m[LiveAudio] Cleanup started
+[LiveAudio] Fully stopped - all resources released
+
+[90mstdout[2m | src/services/live-audio.service.test.ts[2m > [22m[2mLiveAudioService Session Management[2m > [22m[2mshould abort start if a second start is called during initialization
+[22m[39m[LiveAudio] Starting session 3...
+[LiveAudio][3] Old session active/stopping, forcing cleanup before restart...
+[LiveAudio] Cleanup started
+[LiveAudio] Fully stopped - all resources released
+[LiveAudio] Requesting session start with history: [33m0[39m location: [33mfalse[39m context: [90mundefined[39m
+[LiveAudio] Starting session 4...
+[LiveAudio] Requesting session start with history: [33m0[39m location: [33mfalse[39m context: [90mundefined[39m
+
+[90mstdout[2m | src/services/live-audio.service.test.ts[2m > [22m[2mLiveAudioService Session Management[2m > [22m[2mshould abort start if a second start is called during initialization
+[22m[39m[LiveAudio] Session connected AND mic ready, starting audio capture...
+[LiveAudio] AudioContext sampleRate: [33m48000[39m
+[LiveAudio] Started
+
+[90mstderr[2m | src/services/live-audio.service.test.ts[2m > [22m[2mLiveAudioService Session Management[2m > [22m[2mshould abort start if a second start is called during initialization
+[22m[39m[LiveAudio][3] Start aborted - session invalidated during initialization (isStopping=false)
+
+ [32m✓[39m src/services/live-audio.service.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+Error: Not implemented: window.alert
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/Window.js:897:7
+    at startRecording (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/VoiceRecorder/VoiceRecorder.tsx:121:7)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/VoiceRecorder/VoiceRecorder.tsx:54:7
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27078:3) undefined
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould start live mode when mode=handsfree is present
+[22m[39m[AskZena] Inactivity Effect STARTED
+[AskZena] Exiting Live Mode...
+[AskZena][5w375x] Inactivity Effect CLEANUP
+[AskZena] Inactivity Effect STARTED
+[AskZena] Entering Live Mode...
+
+[90mstderr[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould start live mode when mode=handsfree is present
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+Failed to start recording: TypeError: Cannot read properties of undefined (reading 'getUserMedia')
+    at startRecording [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/[39msrc/components/VoiceRecorder/VoiceRecorder.tsx:72:51[90m)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/[39msrc/components/VoiceRecorder/VoiceRecorder.tsx:54:7
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27078:3)
+    at flushPassiveEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27023:14)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26808:9
+
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould start live mode when mode=handsfree is present
+[22m[39m[AskZena] WebSocket connected, starting Live Mode...
+
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould start live mode when mode=handsfree is present
+[22m[39m[AskZena][5w375x] Inactivity Effect CLEANUP
+
+Error: Not implemented: window.alert
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/Window.js:897:7
+    at startRecording (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/VoiceRecorder/VoiceRecorder.tsx:121:7)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/VoiceRecorder/VoiceRecorder.tsx:54:7
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27078:3) undefined
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould NOT start live mode if component is unmounted before connection completes
+[22m[39m[AskZena] Inactivity Effect STARTED
+[AskZena] Exiting Live Mode...
+[AskZena][38g7os] Inactivity Effect CLEANUP
+[AskZena] Inactivity Effect STARTED
+[AskZena] Entering Live Mode...
+[AskZena][38g7os] Inactivity Effect CLEANUP
+
+[90mstderr[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould NOT start live mode if component is unmounted before connection completes
+[22m[39mFailed to start recording: TypeError: Cannot read properties of undefined (reading 'getUserMedia')
+    at startRecording [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/[39msrc/components/VoiceRecorder/VoiceRecorder.tsx:72:51[90m)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/[39msrc/components/VoiceRecorder/VoiceRecorder.tsx:54:7
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27078:3)
+    at flushPassiveEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27023:14)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26808:9
+
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould NOT start live mode if component is unmounted before connection completes
+[22m[39m[AskZena][38g7os] Live mode start aborted (cancelled or instance changed)
+
+Error: Not implemented: window.alert
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/Window.js:897:7
+    at startRecording (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/VoiceRecorder/VoiceRecorder.tsx:121:7)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/VoiceRecorder/VoiceRecorder.tsx:54:7
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27078:3) undefined
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould NOT start live mode if isConversationMode becomes false before connection completes
+[22m[39m[AskZena] Inactivity Effect STARTED
+[AskZena] Exiting Live Mode...
+[AskZena][57z9bp] Inactivity Effect CLEANUP
+[AskZena] Inactivity Effect STARTED
+[AskZena] Entering Live Mode...
+
+[90mstderr[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould NOT start live mode if isConversationMode becomes false before connection completes
+[22m[39mFailed to start recording: TypeError: Cannot read properties of undefined (reading 'getUserMedia')
+    at startRecording [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/[39msrc/components/VoiceRecorder/VoiceRecorder.tsx:72:51[90m)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/[39msrc/components/VoiceRecorder/VoiceRecorder.tsx:54:7
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27078:3)
+    at flushPassiveEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:27023:14)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4mreact-dom[24m/cjs/react-dom.development.js:26808:9
+
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould NOT start live mode if isConversationMode becomes false before connection completes
+[22m[39m[AskZena] WebSocket connected, starting Live Mode...
+
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould NOT start live mode if isConversationMode becomes false before connection completes
+[22m[39m[AskZena][57z9bp] Inactivity Effect CLEANUP
+
+ [31m❯[39m src/pages/AskZenaPage/AskZenaRestart.test.tsx [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 48[2mms[22m[39m
+     [32m✓[39m should start live mode when mode=handsfree is present[32m 26[2mms[22m[39m
+     [32m✓[39m should NOT start live mode if component is unmounted before connection completes[32m 5[2mms[22m[39m
+[31m     [31m×[31m should NOT start live mode if isConversationMode becomes false before connection completes[39m[32m 16[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/AskZenaPage/AskZena.properties.test.tsx[2m [ src/pages/AskZenaPage/AskZena.properties.test.tsx ][22m
+[31m[1mReferenceError[22m: Cannot access '__vi_import_1__' before initialization[39m
+[36m [2m❯[22m src/pages/AskZenaPage/AskZena.properties.test.tsx:[2m23:16[22m[39m
+    [90m 21| [39m}))[33m;[39m
+    [90m 22| [39m
+    [90m 23| [39mvi[33m.[39m[34mmock[39m([32m'../../hooks/useAvatarAnimationState'[39m[33m,[39m () [33m=>[39m ({
+    [90m   | [39m               [31m^[39m
+    [90m 24| [39m    useAvatarAnimationState[33m:[39m vi[33m.[39m[34mfn[39m()[33m.[39m[34mmockReturnValue[39m({
+    [90m 25| [39m        animationState[33m:[39m [32m'idle'[39m[33m,[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22mAskZenaPage Restart Prevention[2m > [22mshould NOT start live mode if isConversationMode becomes false before connection completes
+[31m[1mAssertionError[22m: expected "vi.fn()" to not be called at all, but actually been called 1 times[90m
+
+Received: 
+
+[1m  1st vi.fn() call:
+
+[22m    Array [
+      [Function anonymous],
+      Array [],
+      undefined,
+      undefined,
+    ]
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[36m [2m❯[22m src/pages/AskZenaPage/AskZenaRestart.test.tsx:[2m155:44[22m[39m
+    [90m153| [39m
+    [90m154| [39m        [90m// Should NOT have started[39m
+    [90m155| [39m        [34mexpect[39m(liveAudioService[33m.[39mstart)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m   | [39m                                           [31m^[39m
+    [90m156| [39m    })[33m;[39m
+    [90m157| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 16:49:59
+[2m   Duration [22m 656ms[2m (transform 229ms, setup 204ms, import 283ms, tests 52ms, environment 614ms)[22m
+

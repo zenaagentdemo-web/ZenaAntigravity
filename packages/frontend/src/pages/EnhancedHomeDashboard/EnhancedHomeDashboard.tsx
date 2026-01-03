@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../../hooks/useTheme';
 import { useGestureHandling } from '../../hooks/useGestureHandling';
 import { usePullToRefresh } from '../../hooks/usePullToRefresh';
@@ -35,11 +35,12 @@ export interface EnhancedHomeDashboardProps {
 export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ testData }) => {
   const { effectiveTheme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const dashboardRef = useRef<HTMLDivElement>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [realTimeConnected, setRealTimeConnected] = useState(false);
   const [lastError, setLastError] = useState<string | null>(null);
-  
+
   // Personalization hooks
   const {
     trackUsage,
@@ -50,8 +51,8 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
   } = usePersonalization();
 
   // Real-time updates hook (keeping for backward compatibility)
-  const { 
-    isConnected: isRealTimeConnected, 
+  const {
+    isConnected: isRealTimeConnected,
     refresh: refreshRealTimeData
   } = useRealTimeUpdates({
     updateInterval: 30000, // 30 seconds
@@ -125,10 +126,10 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
       time: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
       title: 'Property Viewing - Luxury Condo',
       location: 'Downtown Office',
-      property: { 
-        id: '1', 
-        address: '123 Main St, Suite 1205', 
-        type: 'Luxury Condo' 
+      property: {
+        id: '1',
+        address: '123 Main St, Suite 1205',
+        type: 'Luxury Condo'
       },
       type: 'viewing',
       urgency: 'high'
@@ -138,10 +139,10 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
       time: new Date(Date.now() + 4 * 60 * 60 * 1000), // 4 hours from now
       title: 'Client Meeting - First Time Buyers',
       location: 'Coffee Shop on Oak Ave',
-      property: { 
-        id: '2', 
-        address: '456 Oak Ave', 
-        type: 'Single Family Home' 
+      property: {
+        id: '2',
+        address: '456 Oak Ave',
+        type: 'Single Family Home'
       },
       type: 'meeting',
       urgency: 'medium'
@@ -157,10 +158,10 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
       id: '4',
       time: new Date(Date.now() + 8 * 60 * 60 * 1000), // 8 hours from now
       title: 'Property Inspection Follow-up',
-      property: { 
-        id: '4', 
-        address: '789 Pine Street', 
-        type: 'Townhouse' 
+      property: {
+        id: '4',
+        address: '789 Pine Street',
+        type: 'Townhouse'
       },
       type: 'other',
       urgency: 'medium'
@@ -176,7 +177,7 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
 
   const [notifications, setNotifications] = useState<Notification[]>(() => {
     const notificationList: Notification[] = [];
-    
+
     // Generate notifications based on dashboard data
     if (dashboardData.focusThreadsCount > 0) {
       notificationList.push({
@@ -299,11 +300,11 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
     const unsubscribeData = realTimeDataService.onDataUpdate((update) => {
       try {
         console.log('Real-time data update received:', update);
-        
+
         // Update dashboard data
         setDashboardData(prevData => {
           const newData = { ...prevData };
-          
+
           if (update.focusThreadsCount !== undefined) {
             newData.focusThreadsCount = update.focusThreadsCount;
           }
@@ -316,14 +317,14 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
           if (update.upcomingAppointments) {
             newData.upcomingAppointments = update.upcomingAppointments;
           }
-          
+
           // Recalculate urgency level
           newData.urgencyLevel = calculateUrgencyLevel({
             focusThreadsCount: newData.focusThreadsCount,
             waitingThreadsCount: newData.waitingThreadsCount,
             atRiskDealsCount: newData.atRiskDealsCount
           });
-          
+
           return newData;
         });
 
@@ -340,7 +341,7 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
           setNotifications(prevNotifications => {
             const newNotifications = [...update.notifications, ...prevNotifications];
             // Remove duplicates and sort by priority
-            const uniqueNotifications = newNotifications.filter((notification, index, arr) => 
+            const uniqueNotifications = newNotifications.filter((notification, index, arr) =>
               arr.findIndex(n => n.id === notification.id) === index
             );
             return uniqueNotifications.sort((a, b) => b.priority - a.priority);
@@ -387,7 +388,7 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
     const simulateActivity = () => {
       const activityTypes = ['email', 'voice_note', 'deal_update', 'appointment', 'contact_update'] as const;
       const randomType = activityTypes[Math.floor(Math.random() * activityTypes.length)];
-      
+
       const newActivity: ActivityItem = {
         id: `activity-${Date.now()}`,
         type: randomType,
@@ -395,17 +396,17 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
         timestamp: new Date(),
         propertyAddress: Math.random() > 0.5 ? '123 Example St' : undefined,
         relatedId: `${randomType}-${Date.now()}`,
-        relatedType: randomType === 'email' ? 'thread' : 
-                    randomType === 'deal_update' ? 'deal' : 
-                    randomType === 'appointment' ? 'appointment' : 'contact'
+        relatedType: randomType === 'email' ? 'thread' :
+          randomType === 'deal_update' ? 'deal' :
+            randomType === 'appointment' ? 'appointment' : 'contact'
       };
-      
+
       addNewActivity(newActivity);
     };
 
     // Simulate new activity every 2 minutes (for demo purposes)
     const interval = setInterval(simulateActivity, 120000);
-    
+
     return () => clearInterval(interval);
   }, [addNewActivity, realTimeConnected]);
 
@@ -467,29 +468,29 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
       },
       workloadMetrics
     );
-    
+
     setWidgetLayout(newLayout);
   }, [usagePatterns, preferences, dashboardData.urgencyLevel, calendarAppointments.length]);
 
   const handleNotificationDismiss = (notificationId: string) => {
     console.log('Dismissing notification:', notificationId);
-    
+
     // Update notification state to mark as dismissed
-    setNotifications(prevNotifications => 
-      prevNotifications.map(notification => 
-        notification.id === notificationId 
+    setNotifications(prevNotifications =>
+      prevNotifications.map(notification =>
+        notification.id === notificationId
           ? { ...notification, dismissed: true }
           : notification
       )
     );
-    
+
     // In a real app, this would also send the dismissal to the backend
     // to persist the state across sessions
   };
 
   const handleNotificationAction = (notificationId: string, action: string) => {
     console.log('Notification action:', notificationId, action);
-    
+
     // Handle notification actions with proper navigation
     switch (action) {
       case 'view-focus':
@@ -514,7 +515,7 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
 
   const handleQuickActionTrigger = (actionId: string) => {
     console.log('Quick action triggered:', actionId);
-    
+
     // Track usage for personalization
     trackUsage(actionId, {
       urgencyLevel: dashboardData.urgencyLevel,
@@ -524,13 +525,13 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
 
   const handleActivityClick = (activity: ActivityItem) => {
     console.log('Activity clicked:', activity);
-    
+
     // Track usage for personalization
     trackUsage('recent-activity', {
       urgencyLevel: dashboardData.urgencyLevel,
       dealTypes: activity.dealName ? ['deal'] : [],
     });
-    
+
     // Navigate to the relevant detail view based on activity type and related data
     if (activity.relatedType && activity.relatedId) {
       switch (activity.relatedType) {
@@ -544,7 +545,7 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
           navigate(`/properties/${activity.relatedId}`);
           break;
         case 'contact':
-          navigate(`/contacts/${activity.relatedId}`);
+          navigate(`/contacts/${activity.relatedId}`, { state: { from: location.pathname, label: 'Dashboard' } });
           break;
         case 'appointment':
           // Navigate to calendar or appointment detail
@@ -582,20 +583,20 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
 
   const handleAppointmentClick = (appointment: CalendarAppointment) => {
     console.log('Appointment clicked:', appointment);
-    
+
     // Track usage for personalization
     trackUsage('calendar-appointment', {
       urgencyLevel: dashboardData.urgencyLevel,
       dealTypes: appointment.property ? ['property'] : [],
     });
-    
+
     // Navigate to appointment detail or calendar view
     navigate(`/calendar?appointment=${appointment.id}`);
   };
 
   const handleConflictResolve = (appointmentId: string, action: 'reschedule' | 'cancel' | 'ignore') => {
     console.log('Conflict resolution:', appointmentId, action);
-    
+
     // In a real app, this would update the appointment in the backend
     switch (action) {
       case 'reschedule':
@@ -616,23 +617,23 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     console.log('Refreshing dashboard data...');
-    
+
     try {
       // Refresh real-time data service
       realTimeDataService.refresh();
-      
+
       // Also refresh the legacy hook for backward compatibility
       await refreshRealTimeData();
-      
+
       // Add a small delay for better UX
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       setLastError(null); // Clear any previous errors
     } catch (error) {
       console.error('Error refreshing dashboard:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to refresh dashboard';
       setLastError(errorMessage);
-      
+
       errorHandlingService.reportError(error as Error, {
         component: 'EnhancedHomeDashboard',
         props: { action: 'refresh' }
@@ -647,9 +648,9 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
   const handleSwipeLeft = useCallback((element: HTMLElement) => {
     console.log('Swipe left detected on:', element.className);
     // Show quick action options for widgets
-    if (element.classList.contains('smart-summary-widget') || 
-        element.classList.contains('contextual-insights-widget') ||
-        element.classList.contains('recent-activity-stream')) {
+    if (element.classList.contains('smart-summary-widget') ||
+      element.classList.contains('contextual-insights-widget') ||
+      element.classList.contains('recent-activity-stream')) {
       // In a real implementation, this would show contextual actions
       console.log('Showing quick actions for widget');
     }
@@ -687,13 +688,13 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
   });
 
   // Set up pull-to-refresh
-  const { 
-    attachPullToRefresh, 
-    detachPullToRefresh, 
+  const {
+    attachPullToRefresh,
+    detachPullToRefresh,
     getPullContainerStyle,
     getPullIndicatorStyle,
     isPulling,
-    pullDistance 
+    pullDistance
   } = usePullToRefresh({
     onRefresh: handleRefresh,
     threshold: 80,
@@ -711,7 +712,7 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
     enableArrowNavigation: true,
     onVoiceCommand: (command: string) => {
       console.log('Voice command received:', command);
-      
+
       // Handle voice commands
       switch (command) {
         case 'voice-note':
@@ -745,7 +746,7 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
     if (dashboardRef.current) {
       attachGestureHandlers(dashboardRef.current);
       attachPullToRefresh(dashboardRef.current);
-      
+
       // Set up keyboard navigation container
       if (keyboardContainerRef) {
         keyboardContainerRef.current = dashboardRef.current;
@@ -785,11 +786,11 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
 
     // Determine additional classes based on usage patterns
     const additionalClasses = [];
-    const recentUsage = usagePatterns.filter(p => 
-      p.actionId === widgetId && 
+    const recentUsage = usagePatterns.filter(p =>
+      p.actionId === widgetId &&
       p.timestamp >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     ).length;
-    
+
     if (recentUsage > 5) {
       additionalClasses.push('frequently-used');
     }
@@ -810,14 +811,14 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
     switch (widgetId) {
       case 'smart-summary':
         return (
-          <section 
-            key={widgetId} 
+          <section
+            key={widgetId}
             className={sectionClasses}
             onClick={() => handleWidgetInteraction(widgetId)}
             style={{ display: visible ? 'block' : 'none' }}
           >
-            <WidgetErrorBoundary 
-              widgetName="Smart Summary" 
+            <WidgetErrorBoundary
+              widgetName="Smart Summary"
               onError={handleWidgetError}
             >
               <SmartSummaryWidget
@@ -830,17 +831,17 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
             </WidgetErrorBoundary>
           </section>
         );
-      
+
       case 'priority-notifications':
         return (
-          <section 
-            key={widgetId} 
+          <section
+            key={widgetId}
             className={sectionClasses}
             onClick={() => handleWidgetInteraction(widgetId)}
             style={{ display: visible ? 'block' : 'none' }}
           >
-            <WidgetErrorBoundary 
-              widgetName="Priority Notifications" 
+            <WidgetErrorBoundary
+              widgetName="Priority Notifications"
               onError={handleWidgetError}
             >
               <PriorityNotificationsPanel
@@ -851,16 +852,16 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
             </WidgetErrorBoundary>
           </section>
         );
-      
+
       case 'quick-actions':
         return (
-          <section 
-            key={widgetId} 
+          <section
+            key={widgetId}
             className={sectionClasses}
             style={{ display: visible ? 'block' : 'none' }}
           >
-            <WidgetErrorBoundary 
-              widgetName="Quick Actions" 
+            <WidgetErrorBoundary
+              widgetName="Quick Actions"
               onError={handleWidgetError}
             >
               <QuickActionsPanel
@@ -870,17 +871,17 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
             </WidgetErrorBoundary>
           </section>
         );
-      
+
       case 'contextual-insights':
         return (
-          <section 
-            key={widgetId} 
+          <section
+            key={widgetId}
             className={sectionClasses}
             onClick={() => handleWidgetInteraction(widgetId)}
             style={{ display: visible ? 'block' : 'none' }}
           >
-            <WidgetErrorBoundary 
-              widgetName="Contextual Insights" 
+            <WidgetErrorBoundary
+              widgetName="Contextual Insights"
               onError={handleWidgetError}
             >
               <div className="contextual-insights-widget">
@@ -907,16 +908,16 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
             </WidgetErrorBoundary>
           </section>
         );
-      
+
       case 'recent-activity':
         return (
-          <section 
-            key={widgetId} 
+          <section
+            key={widgetId}
             className={sectionClasses}
             style={{ display: visible ? 'block' : 'none' }}
           >
-            <WidgetErrorBoundary 
-              widgetName="Recent Activity" 
+            <WidgetErrorBoundary
+              widgetName="Recent Activity"
               onError={handleWidgetError}
             >
               <RecentActivityStream
@@ -927,16 +928,16 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
             </WidgetErrorBoundary>
           </section>
         );
-      
+
       case 'calendar':
         return (
-          <section 
-            key={widgetId} 
+          <section
+            key={widgetId}
             className={sectionClasses}
             style={{ display: visible ? 'block' : 'none' }}
           >
-            <WidgetErrorBoundary 
-              widgetName="Calendar" 
+            <WidgetErrorBoundary
+              widgetName="Calendar"
               onError={handleWidgetError}
             >
               <CalendarWidget
@@ -949,7 +950,7 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
             </WidgetErrorBoundary>
           </section>
         );
-      
+
       default:
         return null;
     }
@@ -978,25 +979,25 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        
-        <ThemeToggle 
+
+        <ThemeToggle
           currentTheme={effectiveTheme}
           onToggle={toggleTheme}
           position="top-right"
         />
-        
-        <SyncStatusIndicator 
+
+        <SyncStatusIndicator
           position="bottom-right"
           showDetails={false}
         />
-        
+
         {/* Error feedback banner */}
         {lastError && (
           <div className="error-banner" role="alert" aria-live="assertive">
             <div className="error-banner__content">
               <span className="error-banner__icon" aria-hidden="true">⚠️</span>
               <span className="error-banner__message">{lastError}</span>
-              <button 
+              <button
                 className="error-banner__dismiss"
                 onClick={() => setLastError(null)}
                 aria-label="Dismiss error"
@@ -1006,7 +1007,7 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
             </div>
           </div>
         )}
-        
+
         {/* Pull-to-refresh indicator */}
         <div className="pull-to-refresh-indicator" style={getPullIndicatorStyle()}>
           <div className="pull-to-refresh-icon">
@@ -1016,10 +1017,10 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
             {isRefreshing ? 'Refreshing...' : isPulling && pullDistance > 60 ? 'Release to refresh' : 'Pull to refresh'}
           </span>
         </div>
-        
+
         <div className="enhanced-dashboard__container" style={getPullContainerStyle()} id="main-content">
           {/* Real-time connection status indicator */}
-          <div 
+          <div
             className={`real-time-status ${getConnectionStatus()}`}
             role="status"
             aria-live="polite"
@@ -1033,11 +1034,11 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
 
           {/* Dashboard Header */}
           <header className="enhanced-dashboard__header" role="banner">
-            <WidgetErrorBoundary 
-              widgetName="Dashboard Header" 
+            <WidgetErrorBoundary
+              widgetName="Dashboard Header"
               onError={handleWidgetError}
             >
-              <DashboardHeader 
+              <DashboardHeader
                 agentName="Agent"
                 notificationCount={dashboardData.notifications?.length || 0}
               />

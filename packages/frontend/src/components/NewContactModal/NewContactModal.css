@@ -350,3 +350,44 @@
     letter-spacing: 0.05em;
     margin-left: auto;
 }
+/* ====================================
+   AI Prediction Hint Styles
+   ==================================== */
+
+.ncm-loading-icon {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a78bfa;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to { transform: translateY(-50%) rotate(360deg); }
+}
+
+.ncm-ai-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(16, 185, 129, 0.08));
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.4;
+}
+
+.ncm-ai-hint svg {
+    color: #a78bfa;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.ncm-ai-intel {
+    color: rgba(255, 255, 255, 0.5);
+}

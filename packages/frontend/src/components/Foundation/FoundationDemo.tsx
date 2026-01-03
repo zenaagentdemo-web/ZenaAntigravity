@@ -15,11 +15,11 @@ export const FoundationDemo: React.FC = () => {
             Professional Design System Foundation
           </Typography>
           <Typography variant="body1" color="secondary" className="mb-6">
-            This demo showcases our comprehensive design token system with professional 
-            color palette, typography, and spacing that creates a sophisticated, 
+            This demo showcases our comprehensive design token system with professional
+            color palette, typography, and spacing that creates a sophisticated,
             modern interface suitable for business applications.
           </Typography>
-          
+
           <Grid cols={3} gap="md" responsive>
             <div>
               <Typography variant="h6" color="primary">Headings</Typography>
@@ -34,7 +34,7 @@ export const FoundationDemo: React.FC = () => {
               <Typography variant="caption" color="muted">Caption text</Typography>
             </div>
             <div>
-              <Typography variant="h6" color="primary">Semantic Colors</Typography>
+              <Typography variant="h6" color="primary">Semantic Colours</Typography>
               <Typography variant="body2" color="success">Success message</Typography>
               <Typography variant="body2" color="warning">Warning message</Typography>
               <Typography variant="body2" color="error">Error message</Typography>
@@ -63,25 +63,25 @@ export const FoundationDemo: React.FC = () => {
             Input Components
           </Typography>
           <Grid cols={2} gap="lg" responsive>
-            <Input 
-              label="Default Input" 
+            <Input
+              label="Default Input"
               placeholder="Enter text here..."
               size="md"
             />
-            <Input 
-              label="Required Field" 
+            <Input
+              label="Required Field"
               placeholder="This field is required"
               required
               variant="outlined"
             />
-            <Input 
-              label="Error State" 
+            <Input
+              label="Error State"
               placeholder="Invalid input"
               error
               helperText="This field has an error"
             />
-            <Input 
-              label="Success State" 
+            <Input
+              label="Success State"
               placeholder="Valid input"
               helperText="This looks good!"
             />
@@ -96,7 +96,7 @@ export const FoundationDemo: React.FC = () => {
           <Typography variant="body2" color="secondary" className="mb-4">
             Responsive grid system with professional spacing
           </Typography>
-          
+
           <Grid cols={4} gap="md" responsive>
             {Array.from({ length: 8 }, (_, i) => (
               <Card key={i} variant="elevated" padding="md">
@@ -116,10 +116,10 @@ export const FoundationDemo: React.FC = () => {
           <Typography variant="body2" color="secondary" className="mb-4">
             All components use CSS custom properties for maintainable theming
           </Typography>
-          
+
           <Flex direction="column" gap="md">
-            <div style={{ 
-              padding: 'var(--spacing-4)', 
+            <div style={{
+              padding: 'var(--spacing-4)',
               backgroundColor: 'var(--color-primary-50)',
               border: '1px solid var(--color-primary-200)',
               borderRadius: 'var(--radius-md)',
@@ -129,9 +129,9 @@ export const FoundationDemo: React.FC = () => {
                 This uses design tokens: --color-primary-50, --spacing-4, --radius-md
               </Typography>
             </div>
-            
-            <div style={{ 
-              padding: 'var(--spacing-6)', 
+
+            <div style={{
+              padding: 'var(--spacing-6)',
               backgroundColor: 'var(--color-success-50)',
               border: '1px solid var(--color-success-200)',
               borderRadius: 'var(--radius-lg)',

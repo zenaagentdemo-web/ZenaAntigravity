@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import type { ThreadClassification, ThreadCategory, ActionOwner } from '../models/types.js';
 import { websocketService } from './websocket.service.js';
 import { contactCategorizationService } from './contact-categorization.service.js';
+import { askZenaService } from './ask-zena.service.js';
 
 const prisma = new PrismaClient();
 
@@ -1380,7 +1381,7 @@ Respond with ONLY the draft email body text (no subject line, no JSON, just the 
         });
 
         // Broadcast update via websocket
-        websocketService.broadcastToUser(contact.userId, 'contact.updated', {
+        websocketService.broadcastToUser((contact as any).userId, 'contact.updated', {
           contactId,
           intelligenceSnippet: result.intelligenceSnippet,
           zenaIntelligence: result.zenaIntelligence
@@ -1388,9 +1389,10 @@ Respond with ONLY the draft email body text (no subject line, no JSON, just the 
 
         console.log(`Updated intelligence for contact ${contact.name}`);
 
-        // Trigger category re-evaluation after intelligence update
-        await contactCategorizationService.categorizeContact(contactId).catch(err =>
-          console.error(`Failed to categorize contact ${contactId}:`, err)
+        // Trigger DEEP DISCOVERY after intelligence update
+        // This implements "Active Intel Digestion" - Zena re-analyzes every contact in a thread
+        await askZenaService.runDiscovery((contact as any).userId, contactId).catch(err =>
+          console.error(`[Active Intel] Failed to run discovery for contact ${contactId}:`, err)
         );
       } catch (parseError) {
         console.error('Error parsing contact intelligence response:', parseError);

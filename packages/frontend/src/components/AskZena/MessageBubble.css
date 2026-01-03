@@ -115,3 +115,32 @@
     background: #e1e4e8;
     color: #c7254e;
 }
+
+/* Clickable source links */
+.message-content a,
+.message-content .zena-source-link {
+    color: #00e5ff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.message-content a:hover,
+.message-content .zena-source-link:hover {
+    color: #00f3ff;
+    border-bottom-color: #00f3ff;
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+}
+
+[data-theme='day'] .message-content a,
+[data-theme='day'] .message-content .zena-source-link {
+    color: #0066cc;
+    border-bottom-color: rgba(0, 102, 204, 0.3);
+}
+
+[data-theme='day'] .message-content a:hover,
+[data-theme='day'] .message-content .zena-source-link:hover {
+    color: #0055aa;
+    border-bottom-color: #0055aa;
+}

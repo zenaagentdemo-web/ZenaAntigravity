@@ -1,0 +1,27 @@
+/* ZenaBatchPropertyTagModal - Reuses styles from ZenaBatchTagModal */
+
+/* Inherit all base modal styles from ZenaBatchTagModal */
+@import '../ZenaBatchTagModal/ZenaBatchTagModal.css';
+
+/* Additional property-specific styles */
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.zbt-role-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.zbt-role-card svg {
+    flex-shrink: 0;
+    opacity: 0.8;
+}
+
+.zbt-role-card.active svg {
+    opacity: 1;
+}

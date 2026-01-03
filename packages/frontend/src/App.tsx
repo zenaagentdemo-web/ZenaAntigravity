@@ -29,7 +29,7 @@ const DealDetailPage = lazy(() => import('./pages/DealDetailPage/DealDetailPage'
 const ThreadDetailPage = lazy(() => import('./pages/ThreadDetailPage/ThreadDetailPage').then(m => ({ default: m.ThreadDetailPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage/SettingsPage').then(m => ({ default: m.SettingsPage })));
 const SearchPage = lazy(() => import('./pages/SearchPage/SearchPage').then(m => ({ default: m.SearchPage })));
-const AvatarDemoPage = lazy(() => import('./pages/AvatarDemoPage/AvatarDemoPage').then(m => ({ default: m.AvatarDemoPage })));
+
 const AskZenaPage = lazy(() => import('./pages/AskZenaPage/AskZenaPage').then(m => ({ default: m.AskZenaPage })));
 const AskZenaImmersive = lazy(() => import('./pages/AskZenaPage/AskZenaImmersive').then(m => ({ default: m.AskZenaImmersive })));
 const DealFlowPage = lazy(() => import('./pages/DealFlowPage/DealFlowPage').then(m => ({ default: m.DealFlowPage })));
@@ -62,7 +62,14 @@ const GlobalFloatingZena: React.FC = () => {
 
   if (shouldHide) return null;
 
-  return <ZenaAvatarWidget variant="floating" />;
+  // Determine context based on the current path
+  let context = 'app';
+  if (location.pathname.includes('/contacts')) context = 'contacts';
+  if (location.pathname.includes('/properties')) context = 'properties';
+  if (location.pathname.includes('/inbox')) context = 'inbox';
+  if (location.pathname === '/') context = 'dashboard';
+
+  return <ZenaAvatarWidget variant="floating" context={context} />;
 };
 
 function App() {
@@ -106,7 +113,7 @@ function App() {
             <Suspense fallback={<LoadingSkeleton />}>
               <Routes>
                 {/* Public routes */}
-                <Route path="/avatar-demo" element={<AvatarDemoPage />} />
+
                 <Route path="/ask-zena-immersive" element={<AskZenaImmersive />} />
                 <Route path="/pixel-demo" element={<PixelExplosionDemo />} />
                 <Route path="/zena-demo" element={<ZenaAskPageDemo />} />

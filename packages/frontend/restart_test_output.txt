@@ -1,0 +1,681 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend[39m
+
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Uncaught [Error: Error creating WebGL context.]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at reportUncaughtErrorInDEV (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:22877:5)
+    at captureCommitPhaseError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27165:5) Error: Error creating WebGL context.
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28672:13)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27078:3)
+    at flushPassiveEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27023:14)
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Uncaught [Error: Error creating WebGL context.]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at reportUncaughtErrorInDEV (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:22877:5)
+    at captureCommitPhaseError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27165:5) Error: Error creating WebGL context.
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28672:13)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27078:3)
+    at flushPassiveEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27023:14)
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Uncaught [Error: Error creating WebGL context.]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at reportUncaughtErrorInDEV (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:22877:5)
+    at captureCommitPhaseError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27165:5) Error: Error creating WebGL context.
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28672:13)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27078:3)
+    at flushPassiveEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27023:14)
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould start live mode when mode=handsfree is present
+[22m[39m[AskZena] Inactivity Effect STARTED
+[AskZena] Exiting Live Mode...
+
+[90mstderr[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould start live mode when mode=handsfree is present
+[22m[39mTHREE.WebGLRenderer: Error creating WebGL context.
+THREE.WebGLRenderer: Error creating WebGL context.
+THREE.WebGLRenderer: Error creating WebGL context.
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+The above error occurred in the <FluidParticleOverlay> component:
+
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:116:3
+    at div
+    at div
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:85:3
+    at div
+    at div
+    at main
+    at div
+    at AskZenaPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaPage.tsx:59:63)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at Wrapper (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaRestart.test.tsx:46:20)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+The above error occurred in the <FluidParticleOverlay> component:
+
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:116:3
+    at div
+    at div
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:85:3
+    at div
+    at div
+    at main
+    at div
+    at AskZenaPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaPage.tsx:59:63)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at Wrapper (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaRestart.test.tsx:46:20)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+The above error occurred in the <ZenaHighTechAvatar> component:
+
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:85:3
+    at div
+    at div
+    at main
+    at div
+    at AskZenaPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaPage.tsx:59:63)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at Wrapper (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaRestart.test.tsx:46:20)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould start live mode when mode=handsfree is present
+[22m[39m[AskZena][mhuige] Inactivity Effect CLEANUP
+
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Uncaught [Error: Error creating WebGL context.]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at reportUncaughtErrorInDEV (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:22877:5)
+    at captureCommitPhaseError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27165:5) Error: Error creating WebGL context.
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28672:13)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27078:3)
+    at flushPassiveEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27023:14)
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Uncaught [Error: Error creating WebGL context.]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at reportUncaughtErrorInDEV (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:22877:5)
+    at captureCommitPhaseError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27165:5) Error: Error creating WebGL context.
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28672:13)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:236:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:439:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27078:3)
+    at flushPassiveEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27023:14)
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28662:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Not implemented: HTMLCanvasElement.prototype.getContext (without installing the canvas npm package)
+    at module.exports (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/browser/not-implemented.js:9:17)
+    at HTMLCanvasElementImpl.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/nodes/HTMLCanvasElement-impl.js:42:5)
+    at HTMLCanvasElement.getContext (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/HTMLCanvasElement.js:131:58)
+    at getContext (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28622:28)
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28666:11)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9) undefined
+Error: Uncaught [Error: Error creating WebGL context.]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at reportUncaughtErrorInDEV (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:22877:5)
+    at captureCommitPhaseError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27165:5) Error: Error creating WebGL context.
+    at new WebGLRenderer (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/three/build/three.module.js:28672:13)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:204:26
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:331:9
+    at commitHookEffectListMount (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:24905:3)
+    at flushPassiveEffectsImpl (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27078:3)
+    at flushPassiveEffects (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27023:14)
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould NOT start live mode if session is stopped before connection completes
+[22m[39m[AskZena] Inactivity Effect STARTED
+[AskZena] Exiting Live Mode...
+
+[90mstderr[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould NOT start live mode if session is stopped before connection completes
+[22m[39mTHREE.WebGLRenderer: Error creating WebGL context.
+THREE.WebGLRenderer: Error creating WebGL context.
+THREE.WebGLRenderer: Error creating WebGL context.
+The above error occurred in the <FluidParticleOverlay> component:
+
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:116:3
+    at div
+    at div
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:85:3
+    at div
+    at div
+    at main
+    at div
+    at AskZenaPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaPage.tsx:59:63)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at Wrapper (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaRestart.test.tsx:46:20)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+The above error occurred in the <FluidParticleOverlay> component:
+
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:116:3
+    at div
+    at div
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:85:3
+    at div
+    at div
+    at main
+    at div
+    at AskZenaPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaPage.tsx:59:63)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at Wrapper (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaRestart.test.tsx:46:20)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+The above error occurred in the <ZenaHighTechAvatar> component:
+
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx:85:3
+    at div
+    at div
+    at main
+    at div
+    at AskZenaPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaPage.tsx:59:63)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at BrowserRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router-dom/dist/umd/react-router-dom.development.js:695:7)
+    at Wrapper (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AskZenaPage/AskZenaRestart.test.tsx:46:20)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+[90mstdout[2m | src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22m[2mAskZenaPage Restart Prevention[2m > [22m[2mshould NOT start live mode if session is stopped before connection completes
+[22m[39m[AskZena][6vuw7h] Inactivity Effect CLEANUP
+
+ [31m❯[39m src/pages/AskZenaPage/AskZenaRestart.test.tsx [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 44[2mms[22m[39m
+[31m     [31m×[31m should start live mode when mode=handsfree is present[39m[32m 32[2mms[22m[39m
+[31m     [31m×[31m should NOT start live mode if session is stopped before connection completes[39m[32m 11[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22mAskZenaPage Restart Prevention[2m > [22mshould start live mode when mode=handsfree is present
+[41m[1m FAIL [22m[49m src/pages/AskZenaPage/AskZenaRestart.test.tsx[2m > [22mAskZenaPage Restart Prevention[2m > [22mshould NOT start live mode if session is stopped before connection completes
+[31m[1mError[22m: Error creating WebGL context.[39m
+[90m [2m❯[22m new WebGLRenderer ../../node_modules/three/build/three.module.js:[2m28672:13[22m[39m
+[36m [2m❯[22m src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:[2m236:26[22m[39m
+    [90m234| [39m        cameraRef[33m.[39mcurrent [33m=[39m camera[33m;[39m
+    [90m235| [39m
+    [90m236| [39m        [35mconst[39m renderer [33m=[39m [35mnew[39m [33mTHREE[39m[33m.[39m[33mWebGLRenderer[39m({
+    [90m   | [39m                         [31m^[39m
+    [90m237| [39m            canvas[33m:[39m canvasRef[33m.[39mcurrent[33m,[39m
+    [90m238| [39m            alpha[33m:[39m [35mtrue[39m[33m,[39m
+[90m [2m❯[22m src/components/FluidParticleOverlay/FluidParticleOverlay.tsx:[2m439:9[22m[39m
+[90m [2m❯[22m commitHookEffectListMount ../../node_modules/react-dom/cjs/react-dom.development.js:[2m23189:26[22m[39m
+[90m [2m❯[22m commitPassiveMountOnFiber ../../node_modules/react-dom/cjs/react-dom.development.js:[2m24970:11[22m[39m
+[90m [2m❯[22m commitPassiveMountEffects_complete ../../node_modules/react-dom/cjs/react-dom.development.js:[2m24930:9[22m[39m
+[90m [2m❯[22m commitPassiveMountEffects_begin ../../node_modules/react-dom/cjs/react-dom.development.js:[2m24917:7[22m[39m
+[90m [2m❯[22m commitPassiveMountEffects ../../node_modules/react-dom/cjs/react-dom.development.js:[2m24905:3[22m[39m
+[90m [2m❯[22m flushPassiveEffectsImpl ../../node_modules/react-dom/cjs/react-dom.development.js:[2m27078:3[22m[39m
+[90m [2m❯[22m flushPassiveEffects ../../node_modules/react-dom/cjs/react-dom.development.js:[2m27023:14[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m   Start at [22m 16:46:53
+[2m   Duration [22m 616ms[2m (transform 150ms, setup 44ms, import 276ms, tests 44ms, environment 150ms)[22m
+

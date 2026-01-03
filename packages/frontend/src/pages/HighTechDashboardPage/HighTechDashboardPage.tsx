@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { HighTechDashboard } from '../../components/HighTechDashboard/HighTechDashboard';
 import { CalendarAppointment } from '../../components/CalendarWidget/CalendarWidget';
 import { ActivityItem } from '../../components/RecentActivityStream/RecentActivityStream';
@@ -110,6 +110,7 @@ const generateMockActivities = (): ActivityItem[] => {
 
 export const HighTechDashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [activeTasksCount, setActiveTasksCount] = useState(0);
 
@@ -187,7 +188,7 @@ export const HighTechDashboardPage: React.FC = () => {
         case 'thread': navigate(`/threads/${activity.relatedId}`); break;
         case 'deal': navigate(`/deals/${activity.relatedId}`); break;
         case 'property': navigate(`/properties/${activity.relatedId}`); break;
-        case 'contact': navigate(`/contacts/${activity.relatedId}`); break;
+        case 'contact': navigate(`/contacts/${activity.relatedId}`, { state: { from: location.pathname, label: 'High-Tech Dashboard' } }); break;
         case 'appointment': navigate('/calendar'); break;
       }
     }

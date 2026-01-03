@@ -716,3 +716,54 @@ export async function fetchImprovementActions(
         return []; // Caller should fall back to static actions
     }
 }
+
+/**
+ * Fetch dynamic AI-generated improvement actions for a property
+ */
+export async function fetchPropertyImprovementActions(
+    propertyId: string
+): Promise<ImprovementAction[]> {
+    try {
+        const response = await api.post<{
+            tips: string[];
+            bestAction: {
+                type: 'email' | 'call' | 'task';
+                description: string;
+                emailDraft?: { subject: string; body: string };
+            };
+            explanation: string;
+        }>('/api/ask/property-improvement-actions', { propertyId });
+
+        if (response.data && Array.isArray(response.data.tips)) {
+            const mappedActions: ImprovementAction[] = response.data.tips.map((tip, i) => ({
+                id: `dynamic_property_${i}`,
+                tip,
+                category: 'engagement',
+                priority: i === 0 ? 'high' : 'medium',
+                actionType: 'task'
+            }));
+
+            const best = response.data.bestAction;
+            if (best && best.type === 'email' && best.emailDraft) {
+                mappedActions.unshift({
+                    id: 'dynamic_property_best',
+                    tip: best.description,
+                    category: 'communication',
+                    priority: 'high',
+                    actionType: 'email',
+                    emailTemplate: {
+                        subject: best.emailDraft.subject,
+                        body: best.emailDraft.body,
+                        tone: 'professional'
+                    }
+                });
+            }
+
+            return mappedActions;
+        }
+        return [];
+    } catch (error) {
+        console.error('[ImprovementActions] Failed to fetch property AI actions:', error);
+        return [];
+    }
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { PipelineType, PipelineResponse, Deal, NewDealModal, DealQuickActions, ZenaMomentumFlow, StrategySessionContext, STRATEGY_SESSION_KEY } from '../../components/DealFlow';
 import { DealDetailPanel } from '../../components/DealFlow/DealDetailPanel';
 import '../../components/DealFlow/DealFlow.css';
@@ -200,6 +200,7 @@ async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Re
 
 export const DealFlowPage: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [pipelineType, setPipelineType] = useState<PipelineType>('buyer');
     const [pipelineData, setPipelineData] = useState<PipelineResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -280,7 +281,7 @@ export const DealFlowPage: React.FC = () => {
 
     // Handle navigate to contact
     const handleNavigateToContact = (contactId: string) => {
-        navigate(`/contacts/${contactId}`);
+        navigate(`/contacts/${contactId}`, { state: { from: location.pathname, label: 'Deal Flow' } });
     };
 
     // Handle new deal button click

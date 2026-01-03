@@ -1,0 +1,347 @@
+/* ZenaActionsModal.css */
+
+.zena-actions-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 15, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.zena-actions-modal {
+    width: 100%;
+    max-width: 600px;
+    background: #13131F;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(139, 92, 246, 0.1);
+    overflow: hidden;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.zena-actions-modal__header {
+    padding: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
+}
+
+.zena-actions-modal__title-group {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.zena-actions-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
+}
+
+.zena-actions-modal__header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.zena-actions-modal__subtitle {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+}
+
+.zena-actions-modal__close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.zena-actions-modal__close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.zena-actions-modal__content {
+    padding: 24px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.zena-actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.zena-action-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 0;
+    transition: all 0.2s;
+    overflow: hidden;
+}
+
+.zena-action-card:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-color: rgba(139, 92, 246, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.zena-action-card__header {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.zena-action-impact-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.impact-high {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.impact-medium {
+    background: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.impact-low {
+    background: rgba(52, 211, 153, 0.1);
+    color: #34D399;
+    border: 1px solid rgba(52, 211, 153, 0.2);
+}
+
+.zena-action-card__badge {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #FFD700;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.zena-action-card__badge::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    background: #FFD700;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #FFD700;
+}
+
+.zena-action-card__content {
+    padding: 16px;
+}
+
+.zena-action-card__title {
+    margin: 0;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.zena-action-card__reasoning-container {
+    background: rgba(139, 92, 246, 0.03);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.zena-action-card__reasoning-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #8B5CF6;
+    letter-spacing: 0.5px;
+}
+
+.zena-action-card__reasoning {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.zena-action-card__actions {
+    display: flex;
+    gap: 8px;
+}
+
+.zena-action-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(139, 92, 246, 0.05);
+    border-top: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.zena-action-impact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.impact-label {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.impact-value {
+    color: #34D399;
+    font-weight: 600;
+}
+
+.zena-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.zena-action-btn--primary {
+    background: rgba(139, 92, 246, 0.15);
+    color: #8B5CF6;
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.zena-action-btn--primary:hover {
+    background: #8B5CF6;
+    color: white;
+}
+
+.zena-action-btn--secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.zena-action-btn--secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.zena-actions-modal__footer {
+    padding: 12px 24px;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
+
+.zena-actions-modal__footer p {
+    margin: 0;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.3);
+    font-weight: 600;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    .zena-actions-thinking {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .zena-zap-pulse {
+        color: #FFD700;
+        margin-bottom: 20px;
+        animation: zapPulse 1.5s infinite ease-in-out;
+    }
+
+    .zena-actions-thinking p {
+        color: white;
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+    }
+
+    .zena-actions-thinking span {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 13px;
+    }
+
+    @keyframes zapPulse {
+        0% {
+            transform: scale(1);
+            filter: drop-shadow(0 0 0px #FFD700);
+        }
+
+        50% {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 15px #FFD700);
+        }
+
+        100% {
+            transform: scale(1);
+            filter: drop-shadow(0 0 0px #FFD700);
+        }
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

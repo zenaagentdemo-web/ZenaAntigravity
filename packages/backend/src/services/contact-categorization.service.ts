@@ -1,7 +1,8 @@
 /**
  * Contact Categorization Service
  * 
- * AI-powered service that assigns contacts to one of 4 Zena Intelligence categories:
+ * BRAIN-FIRST: AI-powered service that assigns contacts to one of 4 Zena Intelligence categories
+ * using LLM analysis instead of simple threshold heuristics:
  * - PULSE: Default for active contacts in normal engagement
  * - HOT_LEAD: High engagement, recent activity, strong buying/selling signals
  * - COLD_NURTURE: Low engagement 30+ days, needs re-engagement
@@ -10,8 +11,11 @@
 
 import { PrismaClient, ZenaCategory } from '@prisma/client';
 import { websocketService } from './websocket.service.js';
+import { askZenaService } from './ask-zena.service.js';
 
 const prisma = new PrismaClient();
+
+// LLM API configuration
 
 // Intent keywords that indicate HIGH_INTENT category
 const HIGH_INTENT_KEYWORDS = [
@@ -132,6 +136,7 @@ class ContactCategorizationService {
 
     /**
      * Categorize a single contact based on their activity and signals
+     * BRAIN-FIRST: Uses LLM for intelligent categorization with heuristic fallback
      */
     async categorizeContact(contactId: string): Promise<CategorizationResult> {
         try {
@@ -151,8 +156,16 @@ class ContactCategorizationService {
             // Calculate signals from contact data
             const signals = await this.calculateSignals(contact);
 
-            // Get category from signals
-            const result = this.getCategoryFromSignals(signals);
+            // BRAIN-FIRST: Try LLM categorization first
+            let result: CategorizationResult;
+            try {
+                result = await this.categorizeWithLLM(contact, signals);
+                console.log(`[Categorization] LLM categorized ${contact.name}: ${result.category}`);
+            } catch (llmError) {
+                console.warn('[Categorization] LLM categorization failed, using heuristic fallback:', llmError);
+                // Fallback to heuristic-based categorization
+                result = this.getCategoryFromSignals(signals);
+            }
 
             // Update contact with new category
             await prisma.contact.update({
@@ -333,6 +346,74 @@ class ContactCategorizationService {
         console.log(`  HOT_LEAD: ${categories.HOT_LEAD}, HIGH_INTENT: ${categories.HIGH_INTENT}, COLD_NURTURE: ${categories.COLD_NURTURE}, PULSE: ${categories.PULSE}`);
 
         return { updated: contacts.length, categories };
+    }
+
+    /**
+     * BRAIN-FIRST: LLM-based contact categorization
+     * Uses Gemini to analyze the full context and determine the best category
+     */
+    private async categorizeWithLLM(contact: any, signals: CategorizationSignals): Promise<CategorizationResult> {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            throw new Error('GEMINI_API_KEY not configured');
+        }
+
+        const dealStagesText = signals.dealStages.length > 0
+            ? signals.dealStages.join(', ')
+            : 'No active deals';
+
+        const prompt = `You are a real estate CRM intelligence system. Analyze this contact and categorize them into exactly one of these 4 categories:
+
+CATEGORIES:
+- HIGH_INTENT: Contact is actively buying/selling NOW. Has explicit intent signals like pre-approval, active viewings, submitted offers, or settlement dates.
+- HOT_LEAD: High engagement contact who is very likely to transact soon. Strong activity in the last 7 days, high engagement scores, or positive momentum.
+- COLD_NURTURE: Dormant contact who needs re-engagement. No activity in 30+ days, low engagement, or showing signs of disengagement.
+- PULSE: Active contact in normal engagement cycle. Neither hot nor cold, just regular relationship maintenance.
+
+CONTACT DATA:
+- Name: ${contact.name}
+- Role: ${contact.role}
+- Intelligence Summary: ${contact.intelligenceSnippet || 'No intelligence available'}
+- Active Deals: ${dealStagesText}
+- Engagement Score: ${signals.engagementScore}%
+- Momentum: ${signals.momentum >= 0 ? '+' : ''}${signals.momentum}%
+- Activities in last 7 days: ${signals.activityCount7d}
+- Days since last activity: ${signals.daysSinceActivity}
+
+Return a JSON object with exactly this structure:
+{
+    "category": "HIGH_INTENT" | "HOT_LEAD" | "COLD_NURTURE" | "PULSE",
+    "confidence": 0.0-1.0,
+    "reason": "Brief explanation of why this category was chosen"
+}
+
+Be accurate and conservative - only use HIGH_INTENT or HOT_LEAD if there's clear evidence.`;
+
+        const text = await askZenaService.askBrain(prompt, {
+            temperature: 0.2,
+            jsonMode: true,
+            systemPrompt: 'You are an intelligent contact categorization engine for a Real Estate CRM. Your job is to analyze contact behavior and assign precise categories based on engagement signals.'
+        });
+
+        // Parse JSON from response
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+            throw new Error('Failed to parse LLM response as JSON');
+        }
+
+        const result = JSON.parse(jsonMatch[0]);
+
+        // Validate and map category
+        const validCategories = ['HIGH_INTENT', 'HOT_LEAD', 'COLD_NURTURE', 'PULSE'];
+        const category = validCategories.includes(result.category)
+            ? result.category as ZenaCategory
+            : ZenaCategory.PULSE;
+
+        return {
+            category,
+            confidence: Math.min(1, Math.max(0, result.confidence || 0.7)),
+            reason: result.reason || 'LLM-analyzed categorization'
+        };
     }
 }
 

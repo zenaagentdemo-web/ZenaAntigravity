@@ -10,27 +10,62 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     padding: 0;
-    border: none;
+    border: 1px solid rgba(139, 92, 246, 0.4);
     border-radius: 50%;
-    background: rgba(0, 212, 255, 0.15);
-    color: #00D4FF;
+    background: rgba(139, 92, 246, 0.15);
+    color: #8B5CF6;
     cursor: pointer;
     transition: all 0.2s ease;
     margin-left: 6px;
+    animation: logIntelPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes logIntelPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.6);
+        transform: scale(1);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(139, 92, 246, 0);
+        transform: scale(1.1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+        transform: scale(1);
+    }
 }
 
 .log-intel-help-btn:hover {
-    background: rgba(0, 212, 255, 0.3);
-    transform: scale(1.1);
+    background: rgba(139, 92, 246, 0.25);
+    border-color: #8B5CF6;
+    color: #8B5CF6;
+    transform: scale(1.15);
+    animation: none;
+}
+
+.log-intel-tooltip-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .log-intel-tooltip {
-    position: absolute;
-    z-index: 1000;
-    width: 340px;
+    position: relative;
+    z-index: 10000;
+    width: 100%;
+    max-width: 400px;
+    max-height: calc(100vh - 40px);
     background: linear-gradient(135deg, rgba(20, 25, 35, 0.98) 0%, rgba(15, 18, 28, 0.98) 100%);
     border: 1px solid rgba(0, 212, 255, 0.3);
     border-radius: 12px;
@@ -39,18 +74,8 @@
         0 0 30px rgba(0, 212, 255, 0.1);
     backdrop-filter: blur(12px);
     overflow: hidden;
-}
-
-.log-intel-tooltip--bottom {
-    top: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.log-intel-tooltip--top {
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
 }
 
 .log-intel-tooltip__header {
@@ -94,6 +119,8 @@
 
 .log-intel-tooltip__content {
     padding: 16px;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .log-intel-tooltip__intro {

@@ -5,6 +5,10 @@ export interface UserSession {
     userWs: WebSocket;
     userTranscriptBuffer: string[];
     currentInterimTranscript: string;
+    isStopping: boolean;
+    groundingSources: string[]; // Store verified source links to append to transcript
+    lastTurnSourcesCount: number; // Track sources sent in current turn
+    hasLoggedMessageStructure?: boolean; // Diagnostic flag for logging
 }
 
 // Shared map to prevent instance fragmentation

@@ -1,0 +1,18 @@
+vite v7.3.0 building client environment for production...
+transforming...
+✓ 113 modules transformed.
+✗ Build failed in 264ms
+error during build:
+[vite-plugin-pwa:build] [plugin vite-plugin-pwa:build] src/pages/AvatarDemoPage/AvatarDemoPage.tsx: There was an error during the build:
+  Could not resolve "../../components/ZenaAnimated2D" from "src/pages/AvatarDemoPage/AvatarDemoPage.tsx"
+Additionally, handling the error in the 'buildEnd' hook caused the following error:
+  Could not resolve "../../components/ZenaAnimated2D" from "src/pages/AvatarDemoPage/AvatarDemoPage.tsx"
+file: /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/AvatarDemoPage/AvatarDemoPage.tsx
+    at getRollupError (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/rollup/dist/es/shared/node-entry.js:23418:39
+    at async catchUnfinishedHookActions (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/rollup/dist/es/shared/node-entry.js:22876:16)
+    at async rollupInternal (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/rollup/dist/es/shared/node-entry.js:23401:5)
+    at async buildEnvironment (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/node_modules/vite/dist/node/chunks/config.js:33540:12)
+    at async Object.build (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/node_modules/vite/dist/node/chunks/config.js:33899:19)
+    at async Object.buildApp (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/node_modules/vite/dist/node/chunks/config.js:33896:153)
+    at async CAC.<anonymous> (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/node_modules/vite/dist/node/cli.js:629:3)

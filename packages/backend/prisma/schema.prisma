@@ -36,6 +36,7 @@ model User {
   commissionFormulas CommissionFormula[]
   zenaActions       ZenaAction[]
   nurtureSequences  NurtureSequence[]
+  autonomousActions AutonomousAction[]
 
   @@index([email])
 }
@@ -167,6 +168,7 @@ model Contact {
   // Intelligence fields
   intelligenceSnippet  String?  @db.Text  // AI-generated insight about contact
   zenaIntelligence     Json?              // Flexible field for contact intelligence (budget, location, etc.)
+  engagementReasoning  String?  @db.Text  // AI-generated reasoning for the current engagement score
   lastActivityDetail   String?  @db.Text  // Last significant activity
   lastActivityAt       DateTime?          // When last activity occurred
   
@@ -184,6 +186,8 @@ model Contact {
   vendorProperties Property[] @relation("VendorContacts")
   buyerProperties  Property[] @relation("BuyerContacts")
   nurtureSequences NurtureSequence[]
+  prediction       ContactPrediction?
+  autonomousActions AutonomousAction[]
 
   @@index([userId])
   @@index([emails])
@@ -198,6 +202,10 @@ model Property {
   type       String   @default("residential") // 'residential' | 'commercial' | 'land'
   status     String   @default("active")      // 'active' | 'under_contract' | 'sold' | 'withdrawn'
   listingPrice Decimal? @db.Decimal(12, 2)
+  listingDate  DateTime?
+  rateableValue Int?
+  viewingCount Int      @default(0)
+  inquiryCount Int      @default(0)
   bedrooms   Int?
   bathrooms  Int?
   landSize   String?
@@ -212,6 +220,8 @@ model Property {
   buyers   Contact[] @relation("BuyerContacts")
   threads  Thread[]
   deals    Deal[]
+  prediction PropertyPrediction?
+  autonomousActions AutonomousAction[]
 
   @@index([userId])
   @@index([address])
@@ -510,5 +520,141 @@ model NurtureSequence {
   @@index([userId, status])
   @@index([nextTouchDate])
   @@index([dealId])
+}
+
+// Oracle: Contact Personality & Propensity Predictions
+model ContactPrediction {
+  id              String   @id @default(uuid())
+  contactId       String   @unique
+  userId          String
+  
+  // Data Maturity (0=Learning, 1=Observing, 2=Profiling, 3=Predicting)
+  maturityLevel   Int      @default(0)
+  emailsAnalyzed  Int      @default(0)
+  eventsCount     Int      @default(0)
+  oldestDataAt    DateTime?
+  
+  // Personality (DISC)
+  personalityType       String?  // 'D' | 'I' | 'S' | 'C' | null (unknown)
+  personalityConfidence Float?   // 0-1
+  detectedMarkers       Json?    // Array of detected linguistic markers
+  communicationTips     Json?    // Array of tips for this personality type
+  
+  // Propensity Predictions (null = no data, don't guess)
+  sellProbability       Float?   // 0-1
+  sellConfidence        Float?   // 0-1
+  sellSignals           Json?    // Array of detected signals
+  buyProbability        Float?   // 0-1
+  buyConfidence         Float?   // 0-1
+  buySignals            Json?    // Array of detected signals
+  
+  // Churn Risk (can be calculated earlier from trends)
+  churnRisk             Float?   // 0-1
+  
+  lastAnalyzedAt  DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([maturityLevel])
+  @@index([personalityType])
+}
+
+// Godmode: Autonomous Action Queue
+model AutonomousAction {
+  id          String   @id @default(uuid())
+  userId      String
+  contactId   String?
+  propertyId  String?  // NEW: Support property-level actions
+  
+  // Action Details
+  actionType  String   // 'send_email' | 'send_sms' | 'schedule_followup' | 'archive_contact' | 'update_category' | 'vendor_update' | 'price_review' | 'buyer_match_intro'
+  priority    Int      @default(5) // 1-10 (10 = most urgent)
+  title       String   // Human-readable: "Send nurture email to John Smith"
+  description String?  @db.Text
+  
+  // Generated Content (for email/sms actions)
+  draftSubject String?
+  draftBody    String?  @db.Text
+  
+  // Status & Execution
+  status      String   @default("pending") // 'pending' | 'approved' | 'executing' | 'completed' | 'failed' | 'dismissed'
+  mode        String   // 'demi_god' | 'full_god'
+  
+  // Timing
+  scheduledFor DateTime? // When to execute (for time-windowed Full God)
+  createdAt    DateTime @default(now())
+  approvedAt   DateTime?
+  executedAt   DateTime?
+  dismissedAt  DateTime?
+  
+  // Result
+  executionResult Json?
+  errorMessage    String?
+  
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact  Contact?  @relation(fields: [contactId], references: [id])
+  property Property? @relation(fields: [propertyId], references: [id])
+  
+  @@index([userId, status])
+  @@index([propertyId])
+  @@index([scheduledFor])
+  @@index([priority])
+  @@index([actionType])
+}
+
+// Property Intelligence: Momentum & Predictions
+model PropertyPrediction {
+  id                  String   @id @default(uuid())
+  propertyId          String   @unique
+  
+  // Intelligence Scores
+  momentumScore       Int      @default(0) // 0-100
+  buyerInterestLevel  String   @default("Medium") // 'Low' | 'Medium' | 'High' | 'Hot'
+  reasoning           String?  @db.Text
+  
+  // Future Predictions
+  predictedSaleDate   DateTime?
+  marketValueEstimate Decimal? @db.Decimal(12, 2)
+  confidenceScore     Float?   // 0-1
+  
+  // Actionable Intel
+  suggestedActions    Json?    // Array of strings/objects
+  milestoneForecasts  Json?    // Array of { type: string, date: string, confidence: number }
+  
+  lastAnalyzedAt      DateTime @default(now())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  @@index([propertyId])
+  @@index([buyerInterestLevel])
+}
+
+// AI Usage Logging for Token Tracking
+model AIUsageLog {
+  id            String   @id @default(uuid())
+  userId        String?
+  
+  // Source tracking
+  source        String   // 'ask-zena' | 'godmode' | 'property-intelligence' | 'contact-categorization' | etc.
+  endpoint      String?  // API endpoint if applicable
+  
+  // Token metrics
+  model         String   // 'gemini-3-flash-preview' etc.
+  inputTokens   Int      // Estimated from prompt length
+  outputTokens  Int?     // From response
+  
+  // Timing
+  durationMs    Int?     // How long the call took
+  createdAt     DateTime @default(now())
+  
+  @@index([userId])
+  @@index([source])
+  @@index([createdAt])
 }
 

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Chart, DealPipelineChart, ResponseTimeTrendChart } from './index';
-import { 
-  selectAppropriateChartType, 
+import {
+  selectAppropriateChartType,
   analyzeDataCharacteristics,
   ChartDataPoint,
   DealStage,
-  ResponseTimeData 
+  ResponseTimeData
 } from './index';
 
 /**
@@ -123,17 +123,17 @@ export const DataVisualizationDemo: React.FC = () => {
   return (
     <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
       <h1>Data Visualization Components Demo</h1>
-      
+
       {selectedMetric && (
-        <div style={{ 
-          background: '#f0f9ff', 
-          border: '1px solid #0ea5e9', 
-          borderRadius: '8px', 
-          padding: '12px', 
-          marginBottom: '24px' 
+        <div style={{
+          background: '#f0f9ff',
+          border: '1px solid #0ea5e9',
+          borderRadius: '8px',
+          padding: '12px',
+          marginBottom: '24px'
         }}>
           <strong>Selected for drill-down:</strong> {selectedMetric}
-          <button 
+          <button
             onClick={() => setSelectedMetric(null)}
             style={{ marginLeft: '12px', padding: '4px 8px', fontSize: '12px' }}
           >
@@ -145,7 +145,7 @@ export const DataVisualizationDemo: React.FC = () => {
       <div style={{ marginBottom: '32px' }}>
         <h2>Business Metrics Overview</h2>
         <p>
-          <strong>Recommended chart type:</strong> {recommendation.type} 
+          <strong>Recommended chart type:</strong> {recommendation.type}
           (confidence: {Math.round(recommendation.confidence * 100)}%)
           <br />
           <strong>Reason:</strong> {recommendation.reason}
@@ -223,7 +223,7 @@ export const DataVisualizationDemo: React.FC = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
           <div>
             <h3>Loading State</h3>
-            <button 
+            <button
               onClick={() => {
                 setIsLoading(true);
                 setTimeout(() => setIsLoading(false), 2000);
@@ -241,10 +241,10 @@ export const DataVisualizationDemo: React.FC = () => {
               loading={isLoading}
             />
           </div>
-          
+
           <div>
             <h3>Error State</h3>
-            <button 
+            <button
               onClick={() => setHasError(!hasError)}
               style={{ marginBottom: '16px', padding: '8px 16px' }}
             >
@@ -259,7 +259,7 @@ export const DataVisualizationDemo: React.FC = () => {
               error={hasError ? "Failed to load chart data" : null}
             />
           </div>
-          
+
           <div>
             <h3>Empty State</h3>
             <Chart
@@ -275,7 +275,7 @@ export const DataVisualizationDemo: React.FC = () => {
       </div>
 
       <div style={{ marginBottom: '32px' }}>
-        <h2>Color Scheme Variations</h2>
+        <h2>Colour Scheme Variations</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
           {(['default', 'success', 'warning', 'danger', 'info'] as const).map(scheme => (
             <Chart

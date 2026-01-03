@@ -43,4 +43,7 @@ router.get('/:id/engagement', (req, res) => contactsController.getContactEngagem
 // POST /api/contacts/batch-engagement - Get engagement data for multiple contacts
 router.post('/batch-engagement', (req, res) => contactsController.getBatchEngagement(req, res));
 
+// POST /api/contacts/:id/discovery - Trigger manual discovery pulse for relationship intel
+router.post('/:id/discovery', (req, res) => contactsController.runDiscovery(req, res));
+
 export default router;

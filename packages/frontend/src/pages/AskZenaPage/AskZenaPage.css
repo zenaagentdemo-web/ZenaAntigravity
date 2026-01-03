@@ -67,6 +67,8 @@
   overflow-y: auto;
   padding-right: 1rem;
   padding-top: 4rem;
+  padding-bottom: 2rem;
+  /* Add some breath at the bottom */
   display: flex;
   flex-direction: column;
 }
@@ -99,12 +101,13 @@
   margin-top: 2rem;
 }
 
-.assistant-mode .unified-prompt-container {
+.assistant-mode .unified-prompt-container,
+.hero-mode.live-active .unified-prompt-container {
   position: sticky;
   bottom: 0;
   background: transparent;
-  padding-bottom: 90px;
-  /* Increased to clear the bottom navbar completely */
+  padding-bottom: 120px;
+  /* Increased to clear the bottom navbar completely and give space */
 }
 
 .unified-prompt-card {

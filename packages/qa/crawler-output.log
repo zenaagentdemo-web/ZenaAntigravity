@@ -1,0 +1,277 @@
+
+Running 1 test using 1 worker
+
+
+--- Crawling Route: /contacts ---
+Found 91 clickable elements on /contacts
+Testing: Skip to main content (a.skip-link:nth-child(1))
+Click failed for Skip to main content: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(1)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#main-content">Skip to main content</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: Skip to navigation (a.skip-link:nth-child(2))
+Click failed for Skip to navigation: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(2)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#bottom-navigation">Skip to navigation</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: LIVE (button.zena-avatar-widget__live-button:nth-child(2))
+
+--- Crawling Route: /ask-zena ---
+Found 16 clickable elements on /ask-zena
+Testing: Skip to main content (a.skip-link:nth-child(1))
+Click failed for Skip to main content: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(1)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#main-content">Skip to main content</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: Skip to navigation (a.skip-link:nth-child(2))
+Click failed for Skip to navigation: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(2)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#bottom-navigation">Skip to navigation</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: +New Chat (button.new-chat-btn:nth-child(1))
+Testing: 🕒Show History (button.history-toggle-btn:nth-child(2))
+Testing: + (button.attach-btn:nth-child(3))
+Testing: Start Zena Live (button.prompt-action-btn.voice-mode-btn:nth-child(1))
+Testing: ➤ (button.prompt-action-btn.send-btn:nth-child(2))
+Testing: 🎯Practice a tough client call (button.starter-prompt-btn:nth-child(1))
+Testing: 📞Who should I call right now? (button.starter-prompt-btn:nth-child(2))
+Testing: 📊Give me your daily debrief. (button.starter-prompt-btn:nth-child(3))
+Testing: 🌉Solve a deal roadblock. (button.starter-prompt-btn:nth-child(4))
+Testing: Home (a.bottom-nav-ht__item:nth-child(1))
+
+--- Crawling Route: / ---
+Found 34 clickable elements on /
+Testing: Skip to main content (a.skip-link:nth-child(1))
+Click failed for Skip to main content: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(1)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#main-content">Skip to main content</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: Skip to navigation (a.skip-link:nth-child(2))
+Click failed for Skip to navigation: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(2)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#bottom-navigation">Skip to navigation</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: LIVE (button.zena-avatar-widget__live-button:nth-child(2))
+Testing: Zena AI Avatar - Idle (div.holographic-avatar-container.holographic-avatar-container--no-background.holographic-avatar-container--clickable:nth-child(1))
+Testing: Start Zena Live (button.zena-live-button:nth-child(1))
+Testing: Triage Emails (button.intel-btn.intel-btn--emails:nth-child(1))
+Testing: Morning Brief (button.intel-btn.intel-btn--brief:nth-child(2))
+Testing: Today's Tasks (button.intel-btn.intel-btn--tasks:nth-child(3))
+Testing: 3NEW MESSAGES ([data-testid="metric-orb-focus"])
+Testing: 2DEAL FLOW ([data-testid="metric-orb-deals"])
+Testing: 7FOLLOW UP ([data-testid="metric-orb-waiting"])
+Testing: 0Tasks ([data-testid="metric-orb-tasks"])
+Testing: Voice Note ([data-testid="carousel-action-voice-note"])
+Testing: Search ([data-testid="carousel-action-search"])
+Testing: Calendar ([data-testid="carousel-action-calendar"])
+Testing: Add Deal ([data-testid="carousel-action-add-deal"])
+Testing: Schedule Meeting ([data-testid="carousel-action-schedule-viewing"])
+Testing: 07:36 AMin 44m🏠Property Viewing - Luxury Penthouse📍42 Harbour View(Penthouse)🗺️ (div.appointment-item.appointment-item--urgent:nth-child(1))
+Testing: 🗺️ (button.appointment-action.appointment-action--map:nth-child(1))
+Testing: 09:51 AMin 2h 59m👥Client Meeting - Sarah Chen📍Zena HQ, Level 12🗺️ (div.appointment-item.appointment-item--medium:nth-child(2))
+Testing: 11:51 AMin 4h 59m🏠Open Home - Remuera Estate📍88 Victoria Ave(Estate)🗺️ (div.appointment-item.appointment-item--low:nth-child(3))
+Testing: View all 4 appointments (button.calendar-widget__view-all:nth-child(1))
+Testing: 📧New inquiry from James Wilson about 42 Harbour View penthouse • 42 Harbour View12 min ago (div.activity-item.activity-item--clickable:nth-child(1))
+Testing: 💼Offer accepted! $2.4M for 88 Victoria Ave - Awaiting conditions • 88 Victoria Ave • Victoria Ave Sale45 min ago (div.activity-item.activity-item--clickable:nth-child(2))
+Testing: 🎤Voice note transcribed: "Follow up with Chen family about..."2 hours ago (div.activity-item.activity-item--clickable:nth-child(3))
+Testing: 📅Viewing confirmed: Sarah Chen for Ponsonby townhouse tomorrow 2pm • 15 Ponsonby Rd3 hours ago (div.activity-item.activity-item--clickable:nth-child(4))
+Testing: 🏠Price reduced: 23 Mission Bay Rd now listed at $1.85M (-$100K) • 23 Mission Bay Rd5 hours ago (div.activity-item.activity-item--clickable:nth-child(5))
+Testing: Home (a.bottom-nav-ht__item.bottom-nav-ht__item--active:nth-child(1))
+Testing: Inbox (a.bottom-nav-ht__item:nth-child(2))
+
+--- Crawling Route: /inbox ---
+Found 83 clickable elements on /inbox
+Testing: Skip to main content (a.skip-link:nth-child(1))
+Click failed for Skip to main content: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(1)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#main-content">Skip to main content</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: Skip to navigation (a.skip-link:nth-child(2))
+Click failed for Skip to navigation: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(2)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#bottom-navigation">Skip to navigation</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: LIVE (button.zena-avatar-widget__live-button:nth-child(2))
+Testing: New3 (button.inbox-page__tab.inbox-page__tab--active:nth-child(1))
+Testing: Awaiting10 (button.inbox-page__tab:nth-child(2))
+Testing: All (button.inbox-page__tab:nth-child(3))
+Testing: Go back to Home ([data-testid="header-back-btn"])
+Testing: Open search ([data-testid="search-toggle"])
+Testing: Select ([data-testid="batch-mode-toggle"])
+Testing: Create new folder ([data-testid="quick-create-folder"])
+Testing: Refresh threads ([data-testid="refresh-button"])
+Testing: More options ([data-testid="hamburger-menu-trigger"])
+Testing: All (button.filter-chip.filter-chip--active:nth-child(1))
+Testing: Buyers3 (button.filter-chip:nth-child(2))
+Testing: Vendors6 (button.filter-chip:nth-child(3))
+Testing: Normal7 (button.filter-chip:nth-child(4))
+Testing: High Risk3 (button.filter-chip:nth-child(5))
+Testing: Quick Reply ([data-testid="quick-reply-button"])
+Testing: Archive thread ([data-testid="archive-button"])
+Testing: Forward thread ([data-testid="forward-button"])
+Skipping destructive: Delete thread
+Testing: View Thread ([data-testid="view-thread-button"])
+Testing: Expand thread details ([data-testid="dropdown-arrow"])
+Testing: Home (a.bottom-nav-ht__item:nth-child(1))
+Testing: Inbox (a.bottom-nav-ht__item.bottom-nav-ht__item--active:nth-child(2))
+Testing: Go to Deal Flow (a.bottom-nav-ht__dealflow-orb:nth-child(3))
+
+--- Crawling Route: /deal-flow ---
+Found 25 clickable elements on /deal-flow
+Testing: Skip to main content (a.skip-link:nth-child(1))
+Click failed for Skip to main content: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(1)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#main-content">Skip to main content</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: Skip to navigation (a.skip-link:nth-child(2))
+Click failed for Skip to navigation: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(2)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#bottom-navigation">Skip to navigation</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: Buyers (button.deal-flow__pipeline-tab.deal-flow__pipeline-tab--active:nth-child(1))
+Testing: Sellers (button.deal-flow__pipeline-tab:nth-child(2))
+Testing: New Deal (button.deal-flow__new-deal-btn:nth-child(2))
+Testing: Consult1 (button.sidebar__stage:nth-child(1))
+Testing: Shortlist1 (button.sidebar__stage:nth-child(2))
+Testing: Offer Made1 (button.sidebar__stage:nth-child(3))
+Testing: Conditional2 (button.sidebar__stage:nth-child(4))
+Testing: Pre-Settlement1 (button.sidebar__stage:nth-child(5))
+Testing: Settled1 (button.sidebar__stage:nth-child(6))
+Testing: See All Stages▼ (button.sidebar__toggle-all:nth-child(1))
+Testing: Finance Status Check (button.zena-deal-card__power-move-btn:nth-child(11))
+Testing: 🧠NEEDS ZENA PREMIUM (button.zena-deal-card__live-indicator:nth-child(12))
+Testing: Quick Check-In Call (button.zena-deal-card__power-move-btn:nth-child(11))
+Testing: Conditional Status Deep-Dive (button.zena-deal-card__power-move-btn:nth-child(11))
+Testing: 🧠NEEDS ZENA PREMIUM (button.zena-deal-card__live-indicator:nth-child(5))
+Testing: Start Strategy Session (button.zena-avatar-widget__live-button:nth-child(2))
+Testing: Home (a.bottom-nav-ht__item:nth-child(1))
+Testing: Inbox (a.bottom-nav-ht__item:nth-child(2))
+Testing: Go to Deal Flow (a.bottom-nav-ht__dealflow-orb.bottom-nav-ht__dealflow-orb--active:nth-child(3))
+Testing: Properties (a.bottom-nav-ht__item:nth-child(4))
+
+--- Crawling Route: /properties ---
+Found 43 clickable elements on /properties
+Testing: Skip to main content (a.skip-link:nth-child(1))
+Click failed for Skip to main content: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(1)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#main-content">Skip to main content</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: Skip to navigation (a.skip-link:nth-child(2))
+Click failed for Skip to navigation: locator.click: Element is outside of the viewport
+Call log:
+[2m  - waiting for locator('a.skip-link:nth-child(2)').first()[22m
+[2m    - locator resolved to <a class="skip-link" href="#bottom-navigation">Skip to navigation</a>[22m
+[2m  - attempting click action[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+
+Testing: LIVE (button.zena-avatar-widget__live-button:nth-child(2))
+Testing: Selection Mode (button.properties-page__toggle-btn:nth-child(1))
+Testing: Grid View (button.properties-page__toggle-btn:nth-child(3))
+Testing: List View (button.properties-page__toggle-btn.active:nth-child(4))
+Testing: Add Property (button.properties-page__add-btn:nth-child(2))
+Testing: Sync (button.properties-page__refresh-btn:nth-child(3))
+Testing: Ask Zena (button.smart-search-btn:nth-child(3))
+Testing: All Properties (button.properties-page__filter.properties-page__filter--active:nth-child(1))
+Testing: Active (button.properties-page__filter:nth-child(2))
+Testing: Under Contract (button.properties-page__filter:nth-child(3))
+Testing: Sold (button.properties-page__filter:nth-child(4))
+Testing: Withdrawn (button.properties-page__filter:nth-child(5))
+Testing: All Types (button.properties-page__type-filter.active:nth-child(1))
+Testing: Residential (button.properties-page__type-filter:nth-child(2))
+Testing: Commercial (button.properties-page__type-filter:nth-child(3))
+Testing: Land (button.properties-page__type-filter:nth-child(4))
+Testing: Call Vendor (button.icon-action-btn:nth-child(1))
+Testing: Schedule Open Home (button.icon-action-btn:nth-child(2))
+Testing: Home (a.bottom-nav-ht__item:nth-child(1))
+Testing: Inbox (a.bottom-nav-ht__item:nth-child(2))
+Testing: Go to Deal Flow (a.bottom-nav-ht__dealflow-orb:nth-child(3))
+Testing: Properties (a.bottom-nav-ht__item.bottom-nav-ht__item--active:nth-child(4))
+Testing: Contacts (a.bottom-nav-ht__item:nth-child(5))
+Testing: Contacts (a.bottom-nav-ht__item:nth-child(5))
+Testing: Properties (a.bottom-nav-ht__item:nth-child(4))
+Testing: Contacts (a.bottom-nav-ht__item:nth-child(5))
+Testing: Compose ([data-testid="compose-fab"])
+Testing: Go to Deal Flow (a.bottom-nav-ht__dealflow-orb:nth-child(3))
+Testing: Properties (a.bottom-nav-ht__item:nth-child(4))
+Testing: Contacts (a.bottom-nav-ht__item:nth-child(5))
+Testing: Inbox (a.bottom-nav-ht__item:nth-child(2))
+Testing: Go to Deal Flow (a.bottom-nav-ht__dealflow-orb:nth-child(3))
+Testing: Properties (a.bottom-nav-ht__item:nth-child(4))
+Testing: Contacts (a.bottom-nav-ht__item:nth-child(5))
+Testing: Select ([data-testid="batch-mode-toggle"])
+Testing: Grid View (button.contacts-page__toggle-btn:nth-child(1))
+Testing: List View (button.contacts-page__toggle-btn.active:nth-child(2))
+Testing: Add contact (button.contacts-page__add-btn:nth-child(3))
+Testing: Sync (button.contacts-page__refresh-btn:nth-child(4))
+Testing: Skip (button.hud-skip-btn:nth-child(1))
+Testing: Ask Zena (button.smart-search-btn:nth-child(3))
+Skipping destructive: Reset Filters
+Testing: All (button.contacts-page__filter.contacts-page__filter--active:nth-child(1))
+Testing: Buyer (button.contacts-page__filter:nth-child(2))
+Testing: Vendor (button.contacts-page__filter:nth-child(3))
+Testing: Trades (button.contacts-page__filter:nth-child(4))
+Testing: Agent (button.contacts-page__filter:nth-child(5))
+Testing: Investor (button.contacts-page__filter:nth-child(6))
+Testing: Market (button.contacts-page__filter:nth-child(7))
+Testing: General (button.contacts-page__filter:nth-child(8))
+Testing: Pulse (button.intel-filter.active:nth-child(2))
+Testing: 🔥 Hot Leads (button.intel-filter.hot:nth-child(3))
+Testing: ❄️ Cold Nurture (button.intel-filter.cold:nth-child(4))
+Testing: 🎯 High Intent (button.intel-filter.intent:nth-child(5))
+Testing: What does this score mean? (button.intel-help-btn:nth-child(1))
+Testing: Compose Email (button.icon-action-btn:nth-child(1))
+Testing: Call (button.icon-action-btn:nth-child(2))
+Testing: Home (a.bottom-nav-ht__item:nth-child(1))
+Testing: Inbox (a.bottom-nav-ht__item:nth-child(2))
+Testing: Go to Deal Flow (a.bottom-nav-ht__dealflow-orb:nth-child(3))
+Testing: Properties (a.bottom-nav-ht__item:nth-child(4))
+Testing: Contacts (a.bottom-nav-ht__item.bottom-nav-ht__item--active:nth-child(5))
+QA Report generated at: qa-report/report.md
+  ✓  1 [chromium] › tests/crawler.test.ts:36:9 › Recursive Headless UI Crawler › Crawl and test all clickable elements (1.2m)
+
+  1 passed (1.2m)

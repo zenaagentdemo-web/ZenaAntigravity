@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { askZenaService, type ConversationMessage } from '../services/ask-zena.service.js';
+import { relationshipService } from '../services/relationship.service.js';
 import { voiceService } from '../services/voice.service.js';
 
 /**
@@ -174,7 +175,7 @@ export async function composeEmail(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const { contacts, draftType = 'quick' } = req.body;
+    const { contacts, draftType = 'quick', actionContext, propertyContext } = req.body;
 
     if (!contacts || !Array.isArray(contacts) || contacts.length === 0) {
       res.status(400).json({ error: 'contacts array is required and must not be empty' });
@@ -187,10 +188,10 @@ export async function composeEmail(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    console.log(`[Ask Zena] Generating ${draftType} email for ${contacts.length} contact(s)`);
+    console.log(`[Ask Zena] Generating ${draftType} email for ${contacts.length} contact(s)${actionContext ? ` with context: ${actionContext}` : ''}${propertyContext ? ` for property: ${propertyContext.address}` : ''}`);
 
-    // Generate AI email draft
-    const result = await askZenaService.generateContactEmail(userId, contacts, draftType);
+    // Generate AI email draft with full property context for grounding
+    const result = await askZenaService.generateContactEmail(userId, contacts, draftType, actionContext, propertyContext);
 
     res.status(200).json({
       subject: result.subject,
@@ -236,6 +237,39 @@ export async function getImprovementActions(req: Request, res: Response): Promis
     console.error('Error in getImprovementActions:', error);
     res.status(500).json({
       error: 'Failed to generate improvement actions',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/ask/property-improvement-actions
+ * Generate AI-powered improvement actions for a property
+ */
+export async function getPropertyImprovementActions(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { propertyId } = req.body;
+
+    if (!propertyId) {
+      res.status(400).json({ error: 'propertyId is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Generating improvement actions for property ${propertyId}`);
+
+    const result = await askZenaService.generatePropertyImprovementActions(userId, propertyId);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in getPropertyImprovementActions:', error);
+    res.status(500).json({
+      error: 'Failed to generate property improvement actions',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
@@ -302,6 +336,69 @@ export async function parseSearchQuery(req: Request, res: Response): Promise<voi
     console.error('Error in parseSearchQuery:', error);
     res.status(500).json({
       error: 'Failed to parse search query',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/ask/property-search
+ * Parse natural language property search query into structured filters
+ */
+export async function parsePropertySearchQuery(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { query } = req.body;
+    if (!query) {
+      res.status(400).json({ error: 'Search query is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Parsing property smart search query: "${query}"`);
+
+    const result = await askZenaService.parsePropertySearchQuery(userId, query);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in parsePropertySearchQuery:', error);
+    res.status(500).json({
+      error: 'Failed to parse property search query',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/ask/contact-search
+ * Parse natural language contact search queries and return rich AI responses
+ */
+export async function parseContactSearchQuery(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { query } = req.body;
+    if (!query) {
+      res.status(400).json({ error: 'Query is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Parsing contact smart search query: "${query}"`);
+    const result = await askZenaService.parseContactSearchQuery(userId, query);
+    res.status(200).json(result);
+
+  } catch (error) {
+    console.error('Error in parseContactSearchQuery:', error);
+    res.status(500).json({
+      error: 'Failed to parse contact search query',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
@@ -443,5 +540,262 @@ export async function cleanupTranscript(req: Request, res: Response): Promise<vo
   } catch (error) {
     console.error('Error in cleanupTranscript:', error);
     res.status(500).json({ error: 'Failed to cleanup transcript' });
+  }
+}
+
+/**
+ * GET /api/ask/proactive-hud
+ * Get Zena's #1 recommendation across the whole database
+ */
+export async function getProactiveHud(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id || 'demo-user-id';
+
+    const recommendation = await askZenaService.getProactiveRecommendation(userId);
+    res.status(200).json(recommendation);
+  } catch (error) {
+    console.error('Error in getProactiveHud:', error);
+    res.status(500).json({ error: 'Failed to get recommendation' });
+  }
+}
+/**
+ * POST /api/ask/suggest-batch-tags
+ * Get AI-powered suggestions for batch tagging contacts
+ * Analyzes selected contacts and recommends roles/categories
+ */
+export async function suggestBatchTags(req: Request, res: Response): Promise<void> {
+  try {
+    const { contactIds } = req.body;
+
+    if (!contactIds || !Array.isArray(contactIds) || contactIds.length === 0) {
+      res.status(400).json({ error: 'contactIds array is required' });
+      return;
+    }
+
+    const suggestions = await askZenaService.suggestBatchTags(contactIds);
+    res.status(200).json(suggestions);
+  } catch (error) {
+    console.error('Error in suggestBatchTags:', error);
+    res.status(500).json({ error: 'Failed to generate tag suggestions' });
+  }
+}
+
+/**
+ * POST /api/ask/predict-contact-type
+ * Predict contact type/role based on email domain and name patterns
+ */
+export async function predictContactType(req: Request, res: Response): Promise<void> {
+  try {
+    const { email, name } = req.body;
+
+    if (!email && !name) {
+      res.status(400).json({ error: 'email or name is required' });
+      return;
+    }
+
+    const prediction = await askZenaService.predictContactType(email, name);
+    res.status(200).json(prediction);
+  } catch (error) {
+    console.error('Error in predictContactType:', error);
+    res.status(500).json({ error: 'Failed to predict contact type' });
+  }
+}
+
+/**
+ * POST /api/ask/relationships
+ * Get discovered links between contacts
+ */
+export async function getRelationships(req: Request, res: Response): Promise<void> {
+  try {
+    const contactIds = req.body.ids;
+    if (!Array.isArray(contactIds)) {
+      res.status(400).json({ error: 'Contact IDs must be an array' });
+      return;
+    }
+
+    const results = await relationshipService.batchDiscoverLinks(contactIds);
+    res.status(200).json(results);
+  } catch (error) {
+    console.error('Error in getRelationships:', error);
+    res.status(500).json({ error: 'Failed to discover relationships' });
+  }
+}
+
+/**
+ * POST /api/ask/parse-property
+ * Parse raw text into property details
+ */
+export async function parsePropertyDetails(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { text } = req.body;
+    if (!text) {
+      res.status(400).json({ error: 'Text is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Parsing property details from text length ${text.length}`);
+    const result = await askZenaService.parsePropertyDetails(userId, text);
+    res.status(200).json(result);
+
+  } catch (error) {
+    console.error('Error in parsePropertyDetails:', error);
+    res.status(500).json({ error: 'Failed' });
+  }
+}
+
+/**
+ * POST /api/ask/schedule-suggestions
+ * Generate AI-suggested open home times based on buyer activity
+ */
+export async function getScheduleSuggestions(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { propertyId, address, type, daysOnMarket, buyerInterest } = req.body;
+
+    console.log(`[Ask Zena] Generating schedule suggestions for property ${propertyId}`);
+
+    // Use LLM to generate suggestions based on property context
+    const prompt = `You are Zena, an AI real estate assistant. Suggest 3 optimal open home times for this property.
+
+PROPERTY:
+- Address: ${address}
+- Type: ${type || 'residential'}
+- Days on Market: ${daysOnMarket}
+- Buyer Interest Level: ${buyerInterest}
+
+Consider:
+- Weekend mornings are typically best for families
+- After-work times for professionals
+- If high interest, suggest multiple times
+- If low interest, suggest prime weekend slots only
+
+Return a JSON array of 3 suggestions with reasoning, e.g.:
+["Saturday 11:00 AM - 12:00 PM (Peak buyer browsing time)", "Sunday 2:00 PM - 3:00 PM (Family-friendly)", "Thursday 5:30 PM - 6:30 PM (After-work professionals)"]`;
+
+    try {
+      const response = await askZenaService.askBrain(prompt, { jsonMode: true });
+      const parsed = JSON.parse(response);
+      res.status(200).json({ suggestions: Array.isArray(parsed) ? parsed : parsed.suggestions || [] });
+    } catch {
+      // Fallback
+      res.status(200).json({
+        suggestions: [
+          'Saturday 11:00 AM - 12:00 PM (Peak buyer activity)',
+          'Sunday 1:00 PM - 2:00 PM (Family-friendly time)',
+          'Wednesday 5:30 PM - 6:30 PM (After-work viewings)'
+        ]
+      });
+    }
+  } catch (error) {
+    console.error('Error in getScheduleSuggestions:', error);
+    res.status(500).json({ error: 'Failed to generate schedule suggestions' });
+  }
+}
+
+/**
+ * POST /api/ask/milestone-suggestions
+ * Generate AI-suggested milestones based on property status
+ */
+export async function getMilestoneSuggestions(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { propertyId, status, daysOnMarket, existingMilestones } = req.body;
+
+    console.log(`[Ask Zena] Generating milestone suggestions for property ${propertyId}`);
+
+    const prompt = `You are Zena, an AI real estate assistant. Suggest 3 appropriate next milestones for this property campaign.
+
+PROPERTY STATUS: ${status || 'active'}
+DAYS ON MARKET: ${daysOnMarket}
+EXISTING MILESTONES: ${existingMilestones?.join(', ') || 'None yet'}
+
+Based on the property's stage:
+- Active listings: Open homes, marketing reviews, price discussions
+- Under contract: Finance approval, building inspection, LIM report, settlement prep
+- Sold: Settlement, key handover, referral request
+
+Return a JSON array of 3 short milestone suggestions, e.g.:
+["First Open Home", "Monthly Vendor Review", "Marketing Performance Check"]`;
+
+    try {
+      const response = await askZenaService.askBrain(prompt, { jsonMode: true });
+      const parsed = JSON.parse(response);
+      res.status(200).json({ suggestions: Array.isArray(parsed) ? parsed : parsed.suggestions || [] });
+    } catch {
+      // Fallback based on status
+      const fallback = status === 'active'
+        ? ['First Open Home', 'Marketing Review', 'Price Strategy Meeting']
+        : status === 'under_contract'
+          ? ['Finance Approval', 'LIM Report', 'Pre-Settlement Inspection']
+          : ['Settlement Complete', 'Key Handover', 'Request Referral'];
+      res.status(200).json({ suggestions: fallback });
+    }
+  } catch (error) {
+    console.error('Error in getMilestoneSuggestions:', error);
+    res.status(500).json({ error: 'Failed to generate milestone suggestions' });
+  }
+}
+
+/**
+ * POST /api/ask/timeline-summary
+ * Generate AI summary of property timeline activity
+ */
+export async function getTimelineSummary(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { propertyId, events } = req.body;
+
+    console.log(`[Ask Zena] Generating timeline summary for property ${propertyId}`);
+
+    if (!events || events.length === 0) {
+      res.status(200).json({ summary: 'No activity recorded yet for this property.' });
+      return;
+    }
+
+    const eventList = events.slice(0, 10).map((e: any) => `[${e.type}] ${e.summary}`).join('\n');
+
+    const prompt = `You are Zena, an AI real estate assistant. Summarize this property's recent activity in 1-2 sentences.
+
+RECENT EVENTS:
+${eventList}
+
+Focus on:
+- Key milestones or interactions
+- Communication patterns
+- Any concerns or highlights
+
+Keep it concise, professional, and actionable.`;
+
+    try {
+      const summary = await askZenaService.askBrain(prompt);
+      res.status(200).json({ summary: summary.trim() });
+    } catch {
+      const count = events.length;
+      res.status(200).json({ summary: `${count} activities recorded. Most recent: ${events[0]?.summary || 'Unknown'}.` });
+    }
+  } catch (error) {
+    console.error('Error in getTimelineSummary:', error);
+    res.status(500).json({ error: 'Failed to generate timeline summary' });
   }
 }

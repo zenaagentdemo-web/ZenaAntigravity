@@ -2,10 +2,16 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { threadLinkingService } from '../services/thread-linking.service.js';
+import { propertyIntelligenceService } from '../services/property-intelligence.service.js';
 
 const prisma = new PrismaClient();
 
 export class PropertiesController {
+  /**
+   * GET /api/properties
+   * List properties
+   */
+
   /**
    * GET /api/properties
    * List properties
@@ -76,13 +82,57 @@ export class PropertiesController {
               summary: true,
             },
           },
+          prediction: {
+            select: {
+              id: true,
+              momentumScore: true,
+              buyerInterestLevel: true,
+              reasoning: true,
+              suggestedActions: true,
+              predictedSaleDate: true,
+              confidenceScore: true,
+            },
+          },
         },
       });
 
       const total = await prisma.property.count({ where });
 
+      // Get most recent activity for each property
+      const timelineEvents = await prisma.timelineEvent.findMany({
+        where: {
+          userId: req.user.userId,
+          entityType: 'property',
+          entityId: { in: properties.map(p => p.id) }
+        },
+        orderBy: {
+          timestamp: 'desc'
+        }
+      });
+
+      // Enrich properties with server-side intelligence
+      const enrichedProperties = properties.map(p => {
+        const heat = propertyIntelligenceService.computeHeat(p);
+        const lastActivity = timelineEvents.find(e => e.entityId === p.id);
+
+        return {
+          ...p,
+          heatLevel: heat.level,
+          momentumScore: p.prediction?.momentumScore || heat.score,
+          heatReasoning: p.prediction?.reasoning || heat.reasoning,
+          suggestedActions: p.prediction?.suggestedActions || [],
+          buyerInterestLevel: p.prediction?.buyerInterestLevel,
+          predictedSaleDate: p.prediction?.predictedSaleDate,
+          lastActivityDetail: lastActivity ? lastActivity.summary : 'Awaiting Zena activity scan...'
+        };
+      });
+
+      // Get Global Market Pulse
+      const marketPulse = await propertyIntelligenceService.getMarketPulse(req.user.userId);
+
       res.status(200).json({
-        properties,
+        properties: enrichedProperties,
+        marketPulse,
         total,
         displayed: properties.length,
         pagination: {
@@ -101,6 +151,49 @@ export class PropertiesController {
           retryable: true,
         },
       });
+    }
+  }
+
+  /**
+   * GET /api/properties/:id/smart-matches
+   * Get smart matches for a property
+   */
+  async getSmartMatches(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      const matches = await propertyIntelligenceService.findSmartMatches(id);
+
+      res.status(200).json({
+        matches
+      });
+    } catch (error) {
+      console.error('Get smart matches error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to find matches',
+          retryable: true
+        }
+      });
+    }
+  }
+
+  /**
+   * GET /api/properties/smart-matches
+   * Get smart matches across portfolio
+   */
+  async getAllSmartMatches(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+      const matches = await propertyIntelligenceService.findAllSmartMatches(req.user.userId);
+      res.status(200).json({ matches });
+    } catch (error) {
+      console.error('Get all smart matches error:', error);
+      res.status(500).json({ error: 'Failed' });
     }
   }
 
@@ -129,6 +222,11 @@ export class PropertiesController {
         bedrooms,
         bathrooms,
         landSize,
+        listingDate,
+        rateableValue,
+        viewingCount,
+        inquiryCount,
+        vendor, // New: { firstName, lastName, email, phone }
         vendorContactIds = [],
         buyerContactIds = []
       } = req.body;
@@ -145,6 +243,25 @@ export class PropertiesController {
         return;
       }
 
+      // Handle vendor contact creation if vendor object is provided
+      let vendorIdsToConnect = [...vendorContactIds];
+
+      if (vendor && vendor.firstName && vendor.lastName && vendor.email && vendor.phone) {
+        // Create a new vendor contact
+        const vendorContact = await prisma.contact.create({
+          data: {
+            userId: req.user.userId,
+            name: `${vendor.firstName} ${vendor.lastName}`.trim(),
+            emails: [vendor.email],
+            phones: [vendor.phone],
+            role: 'vendor',
+            intelligenceSnippet: `Vendor for ${address.trim()}`,
+            relationshipNotes: [],
+          },
+        });
+        vendorIdsToConnect.push(vendorContact.id);
+      }
+
       // Create property
       const property = await prisma.property.create({
         data: {
@@ -152,13 +269,17 @@ export class PropertiesController {
           address: address.trim(),
           type,
           status,
-          listingPrice: listingPrice ? parseFloat(listingPrice) : null,
-          bedrooms: bedrooms ? parseInt(bedrooms) : null,
-          bathrooms: bathrooms ? parseInt(bathrooms) : null,
-          landSize,
+          listingPrice: listingPrice != null ? (typeof listingPrice === 'number' ? listingPrice : parseFloat(listingPrice)) : null,
+          bedrooms: bedrooms != null ? (typeof bedrooms === 'number' ? bedrooms : parseInt(bedrooms)) : null,
+          bathrooms: bathrooms != null ? (typeof bathrooms === 'number' ? bathrooms : parseInt(bathrooms)) : null,
+          landSize: landSize != null ? String(landSize) : null,
+          listingDate: listingDate ? new Date(listingDate) : null,
+          rateableValue: rateableValue != null ? parseInt(rateableValue) : null,
+          viewingCount: viewingCount != null ? parseInt(viewingCount) : 0,
+          inquiryCount: inquiryCount != null ? parseInt(inquiryCount) : 0,
           milestones: [],
           vendors: {
-            connect: vendorContactIds.map((id: string) => ({ id })),
+            connect: vendorIdsToConnect.map((id: string) => ({ id })),
           },
           buyers: {
             connect: buyerContactIds.map((id: string) => ({ id })),
@@ -334,6 +455,10 @@ export class PropertiesController {
         bedrooms,
         bathrooms,
         landSize,
+        listingDate,
+        rateableValue,
+        viewingCount,
+        inquiryCount,
         vendorContactIds,
         buyerContactIds,
         riskOverview
@@ -388,10 +513,14 @@ export class PropertiesController {
 
       if (type !== undefined) updateData.type = type;
       if (status !== undefined) updateData.status = status;
-      if (listingPrice !== undefined) updateData.listingPrice = listingPrice ? parseFloat(listingPrice) : null;
-      if (bedrooms !== undefined) updateData.bedrooms = bedrooms ? parseInt(bedrooms) : null;
-      if (bathrooms !== undefined) updateData.bathrooms = bathrooms ? parseInt(bathrooms) : null;
-      if (landSize !== undefined) updateData.landSize = landSize;
+      if (listingPrice !== undefined) updateData.listingPrice = listingPrice != null ? parseFloat(listingPrice) : null;
+      if (bedrooms !== undefined) updateData.bedrooms = bedrooms != null ? parseInt(bedrooms) : null;
+      if (bathrooms !== undefined) updateData.bathrooms = bathrooms != null ? parseInt(bathrooms) : null;
+      if (landSize !== undefined) updateData.landSize = landSize != null ? String(landSize) : null;
+      if (listingDate !== undefined) updateData.listingDate = listingDate ? new Date(listingDate) : null;
+      if (rateableValue !== undefined) updateData.rateableValue = rateableValue != null ? parseInt(rateableValue) : null;
+      if (viewingCount !== undefined) updateData.viewingCount = viewingCount != null ? parseInt(viewingCount) : 0;
+      if (inquiryCount !== undefined) updateData.inquiryCount = inquiryCount != null ? parseInt(inquiryCount) : 0;
 
       if (riskOverview !== undefined) {
         updateData.riskOverview = riskOverview;
@@ -482,6 +611,64 @@ export class PropertiesController {
   }
 
   /**
+   * DELETE /api/properties/:id
+   * Delete property
+   */
+  async deleteProperty(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Verify property belongs to user
+      const property = await prisma.property.findFirst({
+        where: {
+          id,
+          userId: req.user.userId,
+        },
+      });
+
+      if (!property) {
+        res.status(404).json({
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Property not found',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Delete property
+      await prisma.property.delete({
+        where: { id },
+      });
+
+      res.status(200).json({
+        message: 'Property deleted successfully',
+      });
+    } catch (error) {
+      console.error('Delete property error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to delete property',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
    * POST /api/properties/:id/milestones
    * Add campaign milestone to property
    */
@@ -525,7 +712,7 @@ export class PropertiesController {
       }
 
       // Validate milestone type
-      const validTypes = ['listing', 'first_open', 'offer_received', 'conditional', 'unconditional', 'settled'];
+      const validTypes = ['listing', 'first_open', 'open_home', 'viewing', 'auction', 'offer_received', 'conditional', 'unconditional', 'settled'];
       if (!validTypes.includes(type)) {
         res.status(400).json({
           error: {
@@ -631,6 +818,259 @@ export class PropertiesController {
           retryable: true,
         },
       });
+    }
+  }
+
+  /**
+   * POST /api/properties/bulk-delete
+   * Bulk delete properties
+   */
+  async bulkDeleteProperties(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const { ids } = req.body;
+
+      if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'ids must be a non-empty array',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Delete only properties belonging to the user
+      const deleteResult = await prisma.property.deleteMany({
+        where: {
+          id: { in: ids },
+          userId: req.user.userId,
+        },
+      });
+
+      res.status(200).json({
+        success: true,
+        count: deleteResult.count,
+        message: `Successfully deleted ${deleteResult.count} properties`,
+      });
+    } catch (error) {
+      console.error('Bulk delete properties error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to delete properties',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * PATCH /api/properties/bulk
+   * Bulk update properties (status, type)
+   */
+  async bulkUpdateProperties(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const { ids, data } = req.body;
+
+      if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'ids must be a non-empty array',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Verify all properties belong to user
+      const propertiesCount = await prisma.property.count({
+        where: {
+          id: { in: ids },
+          userId: req.user.userId,
+        },
+      });
+
+      if (propertiesCount !== ids.length) {
+        res.status(403).json({
+          error: {
+            code: 'FORBIDDEN',
+            message: 'One or more properties not found or access denied',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const updateData: any = {};
+
+      // Validate and apply status update
+      if (data.status) {
+        const validStatuses = ['active', 'under_contract', 'sold', 'withdrawn'];
+        if (!validStatuses.includes(data.status)) {
+          res.status(400).json({
+            error: {
+              code: 'VALIDATION_FAILED',
+              message: `status must be one of: ${validStatuses.join(', ')}`,
+              retryable: false,
+            },
+          });
+          return;
+        }
+        updateData.status = data.status;
+      }
+
+      // Validate and apply type update
+      if (data.type) {
+        const validTypes = ['residential', 'commercial', 'land'];
+        if (!validTypes.includes(data.type)) {
+          res.status(400).json({
+            error: {
+              code: 'VALIDATION_FAILED',
+              message: `type must be one of: ${validTypes.join(', ')}`,
+              retryable: false,
+            },
+          });
+          return;
+        }
+        updateData.type = data.type;
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'No valid update data provided',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Bulk update properties
+      await prisma.property.updateMany({
+        where: {
+          id: { in: ids },
+          userId: req.user.userId,
+        },
+        data: updateData,
+      });
+
+      res.status(200).json({
+        success: true,
+        count: ids.length,
+        message: `Successfully updated ${ids.length} properties`,
+      });
+    } catch (error) {
+      console.error('Bulk update properties error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to update properties',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * POST /api/properties/:id/intelligence/refresh
+   * Manual trigger to refresh Zena Intelligence for a property
+   */
+  async refreshIntelligence(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!req.user) {
+        res.status(401).json({ error: { code: 'AUTH_REQUIRED', message: 'Authentication required' } });
+        return;
+      }
+
+      // Verify ownership
+      const property = await prisma.property.findFirst({
+        where: { id, userId: req.user.userId }
+      });
+
+      if (!property) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Property not found' } });
+        return;
+      }
+
+      // Import dynamically to avoid circular dependencies if any
+      const { propertyIntelligenceService } = await import('../services/property-intelligence.service.js');
+      const forceReview = req.body && req.body.force === true;
+      const prediction = await propertyIntelligenceService.refreshIntelligence(id, req.user.userId, forceReview);
+
+      res.status(200).json({ success: true, prediction });
+
+    } catch (error) {
+      console.error('Refresh intelligence error:', error);
+      res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to refresh intelligence' } });
+    }
+  }
+
+  /**
+   * GET /api/properties/:id/intelligence
+   * Get cached Zena Intelligence
+   */
+  async getIntelligence(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!req.user) {
+        res.status(401).json({ error: { code: 'AUTH_REQUIRED', message: 'Authentication required' } });
+        return;
+      }
+
+      const prediction = await prisma.propertyPrediction.findUnique({
+        where: { propertyId: id }
+      });
+
+      if (!prediction) {
+        // If no prediction exists, trigger a refresh automatically
+        const property = await prisma.property.findFirst({
+          where: { id, userId: req.user.userId }
+        });
+
+        if (property) {
+          const { propertyIntelligenceService } = await import('../services/property-intelligence.service.js');
+          const newPrediction = await propertyIntelligenceService.refreshIntelligence(id, req.user.userId);
+          res.status(200).json({ prediction: newPrediction });
+          return;
+        }
+
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Property not found' } });
+        return;
+      }
+
+      res.status(200).json({ prediction });
+
+    } catch (error) {
+      console.error('Get intelligence error:', error);
+      res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get intelligence' } });
     }
   }
 }

@@ -22,6 +22,7 @@ export type ConnectionStatusCallback = (connected: boolean) => void;
 export type ErrorCallback = (error: Error) => void;
 export type LiveTranscriptCallback = (text: string, isFinal: boolean) => void;
 export type UserTranscriptCallback = (text: string, isFinal: boolean) => void;
+export type LiveSourcesCallback = (formattedText: string, sources: string[]) => void;
 
 class RealTimeDataService {
   private ws: WebSocket | null = null;
@@ -38,6 +39,7 @@ class RealTimeDataService {
   private errorCallbacks: Set<ErrorCallback> = new Set();
   private liveTranscriptCallbacks: Set<LiveTranscriptCallback> = new Set();
   private userTranscriptCallbacks: Set<UserTranscriptCallback> = new Set();
+  private liveSourcesCallbacks: Set<LiveSourcesCallback> = new Set();
 
   private currentData: DashboardData | null = null;
   private isConnected = false;
@@ -71,7 +73,7 @@ class RealTimeDataService {
       // In development, if no token exists, use a fallback for testing
       if (!token && import.meta.env.DEV) {
         console.warn('[RealTimeDataService] No auth token found, using development fallback');
-        token = 'dev-token-for-testing';
+        token = 'demo-token';
       }
 
       if (!token) {
@@ -301,6 +303,13 @@ class RealTimeDataService {
           if (message.payload?.text) {
             // Send the finalized, complete user transcript
             this.notifyUserTranscript(message.payload.text, true);
+          }
+          break;
+
+        case 'voice.live.sources':
+          console.log('[RealTime] Received voice.live.sources:', message.payload?.sources?.length);
+          if (message.payload?.formattedText) {
+            this.notifyLiveSources(message.payload.formattedText, message.payload.sources || []);
           }
           break;
 
@@ -653,6 +662,18 @@ class RealTimeDataService {
 
   private notifyUserTranscript(text: string, isFinal: boolean): void {
     this.userTranscriptCallbacks.forEach(cb => cb(text, isFinal));
+  }
+
+  /**
+   * Subscribe to live sources (sources from Zena Live)
+   */
+  onLiveSources(callback: LiveSourcesCallback): () => void {
+    this.liveSourcesCallbacks.add(callback);
+    return () => this.liveSourcesCallbacks.delete(callback);
+  }
+
+  private notifyLiveSources(formattedText: string, sources: string[]): void {
+    this.liveSourcesCallbacks.forEach(cb => cb(formattedText, sources));
   }
 
   /**

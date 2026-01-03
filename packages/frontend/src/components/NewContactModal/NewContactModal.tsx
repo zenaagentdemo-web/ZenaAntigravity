@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import {
     X,
@@ -12,8 +12,11 @@ import {
     Clock,
     Sparkles,
     Minus,
-    Plus
+    Plus,
+    Brain,
+    Loader2
 } from 'lucide-react';
+import { api } from '../../utils/apiClient';
 import './NewContactModal.css';
 
 interface NewContactModalProps {
@@ -69,6 +72,57 @@ export const NewContactModal: React.FC<NewContactModalProps> = ({
         location: '',
         timeline: '3 months'
     });
+
+    // AI Contact Type Prediction
+    const [aiPrediction, setAiPrediction] = useState<{
+        suggestedRole: string;
+        suggestedCategory: string;
+        confidence: number;
+        reason: string;
+        intelligenceHint?: string;
+    } | null>(null);
+    const [isLoadingPrediction, setIsLoadingPrediction] = useState(false);
+
+    // Debounced AI prediction when email changes
+    const predictContactType = useCallback(async (email: string, name: string) => {
+        if (!email && !name) {
+            setAiPrediction(null);
+            return;
+        }
+
+        // Only call API if email has @ symbol (valid email format)
+        if (email && !email.includes('@')) return;
+
+        setIsLoadingPrediction(true);
+        try {
+            const response = await api.post<{
+                suggestedRole: string;
+                suggestedCategory: string;
+                confidence: number;
+                reason: string;
+                intelligenceHint?: string;
+            }>('/api/ask/predict-contact-type', { email, name });
+
+            if (response.data) {
+                setAiPrediction(response.data);
+
+                // Auto-apply high-confidence predictions
+                if (response.data.confidence >= 0.8) {
+                    setFormData(prev => ({ ...prev, role: response.data.suggestedRole as Role }));
+                }
+            }
+        } catch (error) {
+            console.warn('[NewContactModal] AI prediction failed:', error);
+        } finally {
+            setIsLoadingPrediction(false);
+        }
+    }, []);
+
+    // Trigger prediction on email blur
+    const handleEmailBlur = () => {
+        const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+        predictContactType(formData.email, fullName);
+    };
 
     const handleRolesSelect = (role: Role) => {
         setFormData(prev => ({ ...prev, role }));
@@ -154,8 +208,22 @@ export const NewContactModal: React.FC<NewContactModalProps> = ({
                                             placeholder="sarah.miller@example.com"
                                             value={formData.email}
                                             onChange={e => setFormData({ ...formData, email: e.target.value })}
+                                            onBlur={handleEmailBlur}
                                         />
+                                        {isLoadingPrediction && (
+                                            <Loader2 size={14} className="ncm-loading-icon" />
+                                        )}
                                     </div>
+                                    {/* AI Prediction Hint */}
+                                    {aiPrediction && aiPrediction.confidence >= 0.5 && (
+                                        <div className="ncm-ai-hint">
+                                            <Brain size={12} />
+                                            <span>{aiPrediction.reason}</span>
+                                            {aiPrediction.intelligenceHint && (
+                                                <span className="ncm-ai-intel"> • {aiPrediction.intelligenceHint}</span>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="ncm-field-group">
                                     <label className="ncm-label">Phone Number</label>

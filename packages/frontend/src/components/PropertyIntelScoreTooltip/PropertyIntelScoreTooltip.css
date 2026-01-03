@@ -1,0 +1,392 @@
+/* Property Intelligence Tooltip Styles */
+.property-intel-tooltip-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.property-intel-help-btn {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #8B5CF6 !important;
+    background: rgba(139, 92, 246, 0.15) !important;
+    border: 1px solid rgba(139, 92, 246, 0.4) !important;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    padding: 0;
+    margin-left: 0.35rem;
+    animation: propertyIntelPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes propertyIntelPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.6);
+        transform: scale(1);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(139, 92, 246, 0);
+        transform: scale(1.1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+        transform: scale(1);
+    }
+}
+
+.property-intel-help-btn:hover {
+    background: rgba(139, 92, 246, 0.25);
+    border-color: #8B5CF6;
+    color: #8B5CF6;
+    transform: scale(1.15);
+    animation: none;
+}
+
+.property-intel-help-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.3);
+}
+
+.property-intel-tooltip-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: propOverlayFadeIn 0.3s ease-out;
+}
+
+.property-intel-tooltip {
+    position: relative;
+    width: 320px;
+    background: rgba(15, 15, 25, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 212, 255, 0.1);
+    animation: propTooltipCenterIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes propOverlayFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes propTooltipCenterIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.property-intel-tooltip__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(to right, rgba(0, 212, 255, 0.08), transparent);
+    border-radius: 16px 16px 0 0;
+}
+
+.property-intel-tooltip__header h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #00D4FF;
+    letter-spacing: 0.02em;
+}
+
+.property-intel-tooltip__close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.property-intel-tooltip__close:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.property-intel-tooltip__content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.property-intel-tooltip__section {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.property-intel-tooltip__metric {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+
+.property-intel-tooltip__label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.property-intel-tooltip__value {
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.property-intel-tooltip__value[data-status="good"] {
+    color: #00D4FF;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.property-intel-tooltip__value[data-status="needs-attention"] {
+    color: #FF6B35;
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}
+
+.property-intel-tooltip__target {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.property-intel-tooltip__momentum {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+}
+
+.property-intel-tooltip__momentum.positive {
+    color: #00FF88;
+    background: rgba(0, 255, 136, 0.1);
+}
+
+.property-intel-tooltip__momentum.negative {
+    color: #FF6B35;
+    background: rgba(255, 107, 53, 0.1);
+}
+
+.property-intel-tooltip__momentum.neutral {
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.property-intel-tooltip__explanation {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+.property-intel-tooltip__context {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border-left: 2px solid #00D4FF;
+}
+
+.property-intel-tooltip__stage-label {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 600;
+}
+
+.property-intel-tooltip__stage-text {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.property-intel-tooltip__tips {
+    background: rgba(139, 92, 246, 0.08);
+    border-radius: 10px;
+    padding: 0.75rem;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.property-intel-tooltip__tips-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #8B5CF6;
+    margin-bottom: 0.5rem;
+}
+
+.property-intel-tips-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.property-intel-tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.property-intel-tip-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.property-intel-checkbox {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    border-radius: 4px;
+    border: 1.5px solid rgba(139, 92, 246, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    transition: all 0.2s ease;
+    background: rgba(0, 0, 0, 0.2);
+    margin-top: 1px;
+}
+
+.property-intel-checkbox.checked {
+    background: #8B5CF6;
+    border-color: #8B5CF6;
+    color: white;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+
+.intel-tooltip__improve-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #444;
+    box-shadow: none;
+}
+
+.property-intel-tooltip__footer-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    font-size: 0.7rem;
+    color: rgba(139, 92, 246, 0.8);
+    font-style: italic;
+}
+
+.intel-loading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    color: #8B5CF6;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.intel-tooltip__improve-btn {
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.65rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+    border: none;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.intel-tooltip__improve-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
+    background: linear-gradient(135deg, #9D72F8 0%, #8B5CF6 100%);
+}
+
+.intel-tooltip__improve-btn svg:last-child {
+    margin-left: auto;
+    opacity: 0.7;
+}
+
+.property-intel-tooltip__why {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.4;
+}
+
+.property-intel-tooltip__why strong {
+    display: block;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.25rem;
+}
+
+.property-intel-tooltip__why p {
+    margin: 0;
+}
+
+@media (max-width: 480px) {
+    .property-intel-tooltip {
+        width: calc(100% - 32px);
+        margin: 16px;
+    }
+}

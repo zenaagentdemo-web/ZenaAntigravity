@@ -34,7 +34,13 @@ async function refreshAccessToken(): Promise<boolean> {
       return false;
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (e) {
+      console.error('[API] Failed to parse refresh token response', e);
+      return false;
+    }
 
     if (data.accessToken) {
       localStorage.setItem('authToken', data.accessToken);
@@ -56,7 +62,7 @@ async function refreshAccessToken(): Promise<boolean> {
 }
 
 export interface ApiRequestOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   body?: any;
   headers?: Record<string, string>;
   cache?: boolean; // Whether to cache the response
@@ -155,11 +161,28 @@ export async function apiRequest<T = any>(
       }
     }
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    let data;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      try {
+        data = await response.json();
+      } catch (parseErr) {
+        console.error('[API] Failed to parse JSON response', parseErr);
+        throw new Error('Invalid response format from server');
+      }
+    } else {
+      const text = await response.text();
+      throw new Error(text || `HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    if (!response.ok) {
+      // If it's a validation error or something with a message, throw that
+      const message = data?.error?.message || data?.message || `HTTP ${response.status}: ${response.statusText}`;
+      const error: any = new Error(message);
+      error.status = response.status;
+      error.data = data;
+      throw error;
+    }
 
     // Cache GET responses
     if (method === 'GET' && cache) {
@@ -274,4 +297,7 @@ export const api = {
 
   delete: <T = any>(endpoint: string, options?: Omit<ApiRequestOptions, 'method'>) =>
     apiRequest<T>(endpoint, { ...options, method: 'DELETE' }),
+
+  patch: <T = any>(endpoint: string, body?: any, options?: Omit<ApiRequestOptions, 'method' | 'body'>) =>
+    apiRequest<T>(endpoint, { ...options, method: 'PATCH', body }),
 };

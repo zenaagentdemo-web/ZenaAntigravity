@@ -11,9 +11,15 @@ class LiveAudioService {
     private scriptProcessor: ScriptProcessorNode | null = null;
     private sourceNode: MediaStreamAudioSourceNode | null = null;
     private isActive = false;
+    private isStopping = false; // Prevents race conditions during shutdown
+    private currentSessionId = 0; // Tracks unique start attempts to prevent zombie sessions
     private lastInterruptionTime = 0;
     private onAudioLevelCallback: ((level: number, isPlayback: boolean) => void) | null = null;
     private isMicMuted = false;
+
+    // CRITICAL: Hard stop flag - once set, absolutely NO audio processing until explicitly reset
+    private hardStopped = false;
+    private lastStopTime = 0;
 
     // Audio playback
     private playbackQueue: Float32Array[] = [];
@@ -21,20 +27,37 @@ class LiveAudioService {
     private currentSource: AudioBufferSourceNode | null = null;
 
     /**
-     * Start live audio session
+    * Start live audio session
+    */
+    /**
+     * Check if the service is currently hard-stopped (kill switch active)
      */
-    async start(onAudioLevel?: (level: number, isPlayback: boolean) => void, history?: any[], location?: { lat: number, lng: number }): Promise<void> {
-        if (this.isActive) {
-            console.log('[LiveAudio] Already active');
-            return;
+    isHardStopped(): boolean {
+        return this.hardStopped;
+    }
+
+    async start(onAudioLevel?: (level: number, isPlayback: boolean) => void, history?: any[], location?: { lat: number, lng: number }, context?: string): Promise<void> {
+        // Generate a unique session ID for this start attempt
+        const sessionId = ++this.currentSessionId;
+        console.log(`[LiveAudio] Starting session ${sessionId}...`);
+
+        // CRITICAL: Reset the hard stop flag ONLY when explicitly starting a new session
+        this.hardStopped = false;
+
+        // Ensure any previous session is fully cleaned up before starting a new one
+        if (this.isActive || this.isStopping) {
+            console.log(`[LiveAudio][${sessionId}] Old session active/stopping, forcing cleanup before restart...`);
+            this.cleanup();
         }
 
+        // Reset stopping flag for new session
+        this.isStopping = false;
         this.onAudioLevelCallback = onAudioLevel || null;
 
         try {
             // PARALLEL INITIALIZATION: Start mic and backend connection simultaneously
-            console.log('[LiveAudio] Requesting session start with history:', history?.length || 0, 'location:', !!location);
-            realTimeDataService.sendMessage('voice.live.start', { history, location });
+            console.log('[LiveAudio] Requesting session start with history:', history?.length || 0, 'location:', !!location, 'context:', context);
+            realTimeDataService.sendMessage('voice.live.start', { history, location, context });
 
             // Start mic acquisition immediately (don't wait for backend)
             const micPromise = navigator.mediaDevices.getUserMedia({
@@ -50,6 +73,18 @@ class LiveAudioService {
                 this.waitForConnection(10000),
                 micPromise
             ]);
+
+            // RACE CONDITION CHECK: If stop() was called or a NEW start() was initiated while we were waiting, abort!
+            if (this.isStopping || sessionId !== this.currentSessionId) {
+                console.warn(`[LiveAudio][${sessionId}] Start aborted - session invalidated during initialization (isStopping=${this.isStopping})`);
+
+                // Critical cleanup: if we got a media stream, but the session was cancelled, stop its tracks immediately
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(t => t.stop());
+                }
+                return;
+            }
+
             this.mediaStream = mediaStream;
             console.log('[LiveAudio] Session connected AND mic ready, starting audio capture...');
 
@@ -65,7 +100,8 @@ class LiveAudioService {
 
             // Process audio chunks
             this.scriptProcessor.onaudioprocess = (event) => {
-                if (!this.isActive || this.isMicMuted) return;
+                // STOP CHECK: Immediately exit if stopping, muted, or HARD STOPPED
+                if (!this.isActive || this.isMicMuted || this.isStopping || this.hardStopped) return;
 
                 const inputData = event.inputBuffer.getChannelData(0);
 
@@ -109,7 +145,12 @@ class LiveAudioService {
      * Stop live audio session
      */
     stop(): void {
-        console.log('[LiveAudio] Stopping...');
+        // CRITICAL: Set HARD STOP first - this is the absolute kill switch
+        this.hardStopped = true;
+        this.lastStopTime = Date.now();
+        this.isStopping = true;
+        this.currentSessionId++; // Invalidate any pending starts
+        console.log(`[LiveAudio] HARD STOPPING session (ID: ${this.currentSessionId}, time: ${this.lastStopTime})...`);
         realTimeDataService.sendMessage('voice.live.stop');
         this.cleanup();
     }
@@ -256,6 +297,12 @@ class LiveAudioService {
      * Handle incoming audio from Gemini
      */
     handleIncomingAudio(base64Data: string): void {
+        // CRITICAL: Block ALL audio processing if hard stopped
+        if (this.hardStopped) {
+            // Silently drop the packet - don't even log to avoid spam
+            return;
+        }
+
         if (!this.audioContext) {
             console.warn('[LiveAudio] No AudioContext for playback');
             return;
@@ -313,8 +360,24 @@ class LiveAudioService {
     private cleanup(): void {
         this.isActive = false;
         this.isMicMuted = false;
+        // DO NOT reset isStopping here - wait until next start() to ensure no stray chunks are processed
 
+        console.log('[LiveAudio] Cleanup started');
+
+        // CRITICAL: Stop media tracks FIRST - this tells the browser we're done recording
+        // The browser's recording indicator won't clear until tracks are stopped
+        if (this.mediaStream) {
+            this.mediaStream.getTracks().forEach(track => {
+                track.enabled = false; // Disable first (faster indicator removal)
+                track.stop(); // Then fully stop
+                console.log('[LiveAudio] Track stopped:', track.kind, track.readyState);
+            });
+            this.mediaStream = null;
+        }
+
+        // Then disconnect audio nodes
         if (this.scriptProcessor) {
+            this.scriptProcessor.onaudioprocess = null; // CRITICAL: Stop the handler!
             this.scriptProcessor.disconnect();
             this.scriptProcessor = null;
         }
@@ -322,18 +385,16 @@ class LiveAudioService {
             this.sourceNode.disconnect();
             this.sourceNode = null;
         }
-        if (this.mediaStream) {
-            this.mediaStream.getTracks().forEach(track => track.stop());
-            this.mediaStream = null;
-        }
+
+        // Finally close AudioContext
         if (this.audioContext) {
-            this.audioContext.close();
+            this.audioContext.close().catch(err => console.error('[LiveAudio] Error closing AudioContext:', err));
             this.audioContext = null;
         }
 
         this.playbackQueue = [];
         this.isPlaying = false;
-        console.log('[LiveAudio] Stopped');
+        console.log('[LiveAudio] Fully stopped - all resources released');
     }
 
     private async playNextChunk(): Promise<void> {
