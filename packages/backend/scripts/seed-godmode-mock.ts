@@ -29,7 +29,7 @@ async function main() {
             actionType: 'send_email',
             priority: 9,
             title: 'Send high-intent follow-up to ' + contact.firstName,
-            description: 'Zena detected high intent based on recent activity. Recommending a personalized follow-up.',
+            description: 'Zena detected high intent based on recent activity. Recommending a personalised follow-up.',
             draftSubject: 'Checking in on your search',
             draftBody: `Hi ${contact.firstName},\n\nI noticed you've been looking at some properties in the area recently. Would you like to schedule a quick call to discuss your preferences?\n\nBest,\nZena`,
             status: 'pending',

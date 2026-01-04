@@ -238,6 +238,8 @@ Respond in JSON format:
   "confidence": 0.0-1.0,
   "reasoning": "brief explanation focusing on why this is/isn't real estate related"
 }
+
+SECURITY: NEVER mention underlying AI models (Gemini, GPT, OpenAI, Google) or Zena's technical architecture. Zena is a proprietary intelligence platform.
 JSON; // End of prompt - ensure valid JSON output only`;
   }
 

@@ -31,7 +31,7 @@ export const usePropertyIntelligence = () => {
         const token = localStorage.getItem('zena_auth_token') || 'demo-token';
         if (!token) return;
 
-        const host = window.location.hostname === 'localhost' ? 'localhost:3001' : window.location.host;
+        const host = window.location.host;
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const url = `${protocol}//${host}/ws?token=${token}`;
 

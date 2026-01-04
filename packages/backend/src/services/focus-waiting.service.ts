@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { MOCK_FOCUS_THREADS, MOCK_WAITING_THREADS } from './mockData.js';
 
 const prisma = new PrismaClient();
 
@@ -9,6 +10,14 @@ const prisma = new PrismaClient();
  * Waiting list: Threads where others owe a reply
  */
 export class FocusWaitingService {
+  /**
+   * Get Focus list for a user
+   * Returns threads where agent owes reply, ordered by priority/risk
+   * Enforces size constraint of 3-10 threads
+   * 
+   * @param userId - The user ID
+   * @returns Array of focus threads (3-10 threads, or fewer if insufficient threads)
+   */
   /**
    * Get Focus list for a user
    * Returns threads where agent owes reply, ordered by priority/risk
@@ -61,17 +70,20 @@ export class FocusWaitingService {
       },
     });
 
+    // Merge with mock data
+    const allThreads = [...focusThreads, ...MOCK_FOCUS_THREADS];
+
     // Apply sorting
-    const sortedThreads = this.sortThreadsByPriority(focusThreads);
+    const sortedThreads = this.sortThreadsByPriority(allThreads);
 
     // Apply size constraint: return 3-10 threads (or fewer if insufficient)
     const constrainedList = sortedThreads.slice(0, MAX_FOCUS_SIZE);
 
     return {
       threads: constrainedList,
-      total: focusThreads.length,
+      total: allThreads.length,
       displayed: constrainedList.length,
-      hasMore: focusThreads.length > MAX_FOCUS_SIZE,
+      hasMore: allThreads.length > MAX_FOCUS_SIZE,
     };
   }
 
@@ -143,19 +155,29 @@ export class FocusWaitingService {
       },
     });
 
-    // Apply sorting
-    const sortedThreads = this.sortThreadsByPriority(waitingThreads);
+    // Merge with mock data (filter if riskOnly is set)
+    let mockWaiting = MOCK_WAITING_THREADS;
+    if (riskOnly) {
+      mockWaiting = mockWaiting.filter(t => ['low', 'medium', 'high'].includes(t.riskLevel));
+    }
+    const allThreads = [...waitingThreads, ...mockWaiting];
 
-    const total = await prisma.thread.count({ where });
+    // Apply sorting
+    const sortedThreads = this.sortThreadsByPriority(allThreads);
+
+    // Apply pagination to result
+    const paginatedThreads = sortedThreads.slice(offset, offset + limit);
+
+    const total = await prisma.thread.count({ where }) + mockWaiting.length;
 
     return {
-      threads: sortedThreads,
+      threads: paginatedThreads,
       total,
-      displayed: waitingThreads.length,
+      displayed: paginatedThreads.length,
       pagination: {
         limit,
         offset,
-        hasMore: total > offset + waitingThreads.length,
+        hasMore: total > offset + paginatedThreads.length,
       },
     };
   }

@@ -47,7 +47,7 @@ export const useContactIntelligence = () => {
         // Backend websocket path is '/ws'
 
         // For development, we hardcode the backend port if running on localhost
-        const host = window.location.hostname === 'localhost' ? 'localhost:3001' : window.location.host;
+        const host = window.location.host;
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const url = `${protocol}//${host}/ws?token=${token}`;
 

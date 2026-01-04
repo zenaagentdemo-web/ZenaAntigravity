@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createPortal } from 'react-dom';
@@ -42,6 +42,8 @@ import { SmartMatchModal } from '../../components/SmartMatchModal/SmartMatchModa
 import { ScheduleOpenHomeModal } from '../../components/ScheduleOpenHomeModal/ScheduleOpenHomeModal';
 import { PropertyIntelligenceModal, StrategicAction } from '../../components/PropertyIntelligenceModal/PropertyIntelligenceModal';
 import { GodmodeToggle } from '../../components/GodmodeToggle/GodmodeToggle';
+import { ActionApprovalQueue } from '../../components/ActionApprovalQueue/ActionApprovalQueue';
+import { ComparableReportModal } from '../../components/ComparableReportModal/ComparableReportModal';
 import { usePropertyIntelligence, SuggestedAction } from '../../hooks/usePropertyIntelligence';
 import { useGodmode } from '../../hooks/useGodmode';
 // PropertyIntelScoreTooltip replaced by unified PropertyIntelligenceModal
@@ -80,7 +82,6 @@ interface Property {
   buyerMatchCount?: number;
   listingDate?: string;
   rateableValue?: number;
-  viewingCount?: number;
   viewingCount?: number;
   inquiryCount?: number;
   suggestedActions?: RecommendedAction[];
@@ -129,6 +130,7 @@ let cachedMarketPulse: any = null;
 
 export const PropertiesPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToast } = useThreadActions();
   // Helper for lazy state initialization
   const getPersistedState = (key: string, defaultValue: any) => {
@@ -143,6 +145,14 @@ export const PropertiesPage: React.FC = () => {
     }
     return defaultValue;
   };
+
+  // Handle openQueue query param
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('openQueue') === 'true') {
+      setIsActionQueueOpen(true);
+    }
+  }, [location.search]);
 
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [properties, setProperties] = useState<Property[]>(cachedProperties || []);
@@ -184,6 +194,16 @@ export const PropertiesPage: React.FC = () => {
   const [selectedPropertyForActions, setSelectedPropertyForActions] = useState<Property | null>(null);
   const [isLoadingActions, setIsLoadingActions] = useState(false);
   const [freshActions, setFreshActions] = useState<SuggestedAction[] | null>(null);
+
+  // Oracle & Godmode State
+  const [isActionQueueOpen, setIsActionQueueOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportModalData, setReportModalData] = useState<{ address: string; bedrooms?: number } | null>(null);
+  const { settings: godmodeSettings, pendingActions, pendingCount, fetchPendingActions } = useGodmode();
+
+  const pendingActionPropertyIds = useMemo(() => {
+    return new Set(pendingActions?.filter(a => a.propertyId).map(a => a.propertyId!) || []);
+  }, [pendingActions]);
 
   const handleOpenActions = async (property: Property, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -308,7 +328,6 @@ export const PropertiesPage: React.FC = () => {
 
   // Zena Intelligence Hooks
   const { lastPropertyUpdate, getIntelligence, refreshIntelligence } = usePropertyIntelligence();
-  const { settings: godmodeSettings } = useGodmode();
 
   // Listen for real-time property intelligence updates
 
@@ -335,7 +354,11 @@ export const PropertiesPage: React.FC = () => {
 
   useEffect(() => {
     loadProperties();
-  }, []);
+    // Trigger throttled Godmode heartbeat on page mount
+    api.post('/api/godmode/heartbeat').catch(err =>
+      console.warn('[PropertiesPage] Heartbeat failed', err)
+    );
+  }, [filterStatus]);
 
   const loadProperties = async () => {
     try {
@@ -506,22 +529,42 @@ export const PropertiesPage: React.FC = () => {
     });
 
 
+    const isTodayOpenHome = (p: Property) => {
+      const today = new Date();
+      return p.milestones?.some(m => {
+        const d = new Date(m.date);
+        const isSameDay = d.getDate() === today.getDate() &&
+          d.getMonth() === today.getMonth() &&
+          d.getFullYear() === today.getFullYear();
+        const type = m.type?.toLowerCase() || '';
+        const title = m.title?.toLowerCase() || '';
+        const isOpening = type.includes('open') || title.includes('open') || type.includes('viewing');
+        return isOpening && isSameDay;
+      });
+    };
+
     return [...filtered].sort((a, b) => {
-      const statusOrder: Record<string, number> = {
-        active: 0,
-        under_contract: 1,
-        sold: 2,
-        withdrawn: 3
+      // 1. Identify "Status" rank or special "Open Home" rank
+      // User requested: Active > Under Contract > Sold > Withdrawn > Open Homes
+      const getRank = (p: Property) => {
+        if (isTodayOpenHome(p)) return 4; // Open Homes last
+        const statusOrder: Record<string, number> = {
+          active: 0,
+          under_contract: 1,
+          sold: 2,
+          withdrawn: 3
+        };
+        return statusOrder[p.status || 'active'] ?? 3;
       };
 
-      const statusA = statusOrder[a.status || 'active'] ?? 4;
-      const statusB = statusOrder[b.status || 'active'] ?? 4;
+      const rankA = getRank(a);
+      const rankB = getRank(b);
 
-      if (statusA !== statusB) {
-        return statusA - statusB;
+      if (rankA !== rankB) {
+        return rankA - rankB;
       }
 
-      // Within same status
+      // Within same status/rank, sort by date/activity
       if (a.status === 'active' || a.status === 'under_contract') {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
@@ -594,6 +637,26 @@ export const PropertiesPage: React.FC = () => {
     } finally {
       setIsAnalyzingQuery(false);
     }
+  };
+
+  const handleGenerateReport = async (e: React.MouseEvent, propertyId: string) => {
+    e.stopPropagation();
+
+    // Find property details
+    const property = properties.find(p => p.id === propertyId);
+    if (!property) {
+      addToast('error', 'Property details not found');
+      return;
+    }
+
+    console.log(`[PropertiesPage] handleGenerateReport triggered for property: ${property.address}`);
+
+    // Open the modal and pass the property data
+    setReportModalData({
+      address: property.address,
+      bedrooms: property.bedrooms
+    });
+    setIsReportModalOpen(true);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -735,13 +798,37 @@ export const PropertiesPage: React.FC = () => {
                 </span>
               </div>
             </div>
-            <div className="godmode-pulse-indicator" style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: godmodeSettings.mode === 'full_god' ? '#FFD700' : '#8B5CF6',
-              boxShadow: `0 0 10px ${godmodeSettings.mode === 'full_god' ? '#FFD700' : '#8B5CF6'}`
-            }} />
+            <div className="godmode-banner-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('zena-show-godmode-history'))}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  padding: '6px 14px',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)')}
+              >
+                <Clock size={14} />
+                View God Mode Activity
+              </button>
+              <div className="godmode-pulse-indicator" style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: godmodeSettings.mode === 'full_god' ? '#FFD700' : '#8B5CF6',
+                boxShadow: `0 0 10px ${godmodeSettings.mode === 'full_god' ? '#FFD700' : '#8B5CF6'}`
+              }} />
+            </div>
           </div>
         )}
 
@@ -786,8 +873,9 @@ export const PropertiesPage: React.FC = () => {
               <Plus size={18} />
               <span>Add Property</span>
             </button>
+
             <button
-              className={`properties-page__refresh-btn ${isRefreshing ? 'spinning' : ''}`}
+              className="properties-page__refresh-btn"
               onClick={handleRefresh}
               disabled={isRefreshing}
             >
@@ -795,9 +883,51 @@ export const PropertiesPage: React.FC = () => {
               <span>{isRefreshing ? 'Syncing...' : 'Sync'}</span>
             </button>
 
+            <button
+              className="properties-page__report-btn"
+              onClick={() => {
+                setReportModalData(null);
+                setIsReportModalOpen(true);
+              }}
+              style={{
+                background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
+                border: '1px solid rgba(0, 212, 255, 0.4)',
+                color: '#fff',
+                padding: '10px 20px',
+                borderRadius: '10px',
+                fontSize: '14px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                boxShadow: '0 0 15px rgba(0, 212, 255, 0.2)'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
+                e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 212, 255, 0.4)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 212, 255, 0.2)';
+              }}
+            >
+              <TrendingUp size={18} />
+              <span>Comparable Analysis Report</span>
+            </button>
+
             {/* God Mode Controls */}
             <div className="properties-page__godmode-controls">
               <GodmodeToggle compact />
+              {pendingCount > 0 && (
+                <button
+                  className="properties-page__pending-actions-btn"
+                  onClick={() => setIsActionQueueOpen(true)}
+                >
+                  ⚡ {pendingCount} Pending Actions
+                </button>
+              )}
             </div>
           </div>
         </header>
@@ -805,6 +935,7 @@ export const PropertiesPage: React.FC = () => {
         {/* Quick Stats - Clickable Filter Orbs */}
         <section className="properties-page__stats">
           <div
+            className={`stats-orb stats-orb--all ${filterStatus === 'all' && !showOnlyOpenHomes ? 'selected' : ''}`}
             onClick={() => {
               setFilterStatus('all');
               setShowOnlyOpenHomes(false);
@@ -900,15 +1031,7 @@ export const PropertiesPage: React.FC = () => {
             </button>
           </div>
 
-          {smartSearchInsight && (
-            <div className="smart-search-badge">
-              <Sparkles size={14} />
-              <span>{smartSearchInsight}</span>
-              <button onClick={handleResetFilters}>
-                <X size={14} />
-              </button>
-            </div>
-          )}
+
 
 
 
@@ -989,7 +1112,7 @@ export const PropertiesPage: React.FC = () => {
             </div>
             <div className="ai-spotlight__footer">
               <div className="ai-spotlight__pulse" />
-              <span>Real-time analysis powered by gemini-3-flash-preview</span>
+              <span>Real-time analysis by Zena Intelligence</span>
             </div>
           </section>
         )}
@@ -1035,7 +1158,7 @@ export const PropertiesPage: React.FC = () => {
                   )}
                   <div className="properties-list-header__status">Status</div>
                   <div className="properties-list-header__address">Address</div>
-                  <div className="properties-list-header__price">Value</div>
+                  <div className="properties-list-header__price">Asking Price</div>
                   <div className="properties-list-header__activity">Intelligence / Activity</div>
                   <div className="properties-list-header__dom">DOM</div>
                   <div className="properties-list-header__vendor">Vendor</div>
@@ -1096,20 +1219,6 @@ export const PropertiesPage: React.FC = () => {
                         <div className="property-list-item__price">
                           <div className="price-main">
                             {property.listingPrice ? formatPrice(property.listingPrice) : '-'}
-                            {property.status === 'active' && property.listingPrice && (
-                              <span
-                                className={`price-intel-chip price-intel-chip--${(property.momentumScore || 50) >= 70 ? 'competitive' :
-                                  (property.momentumScore || 50) >= 50 ? 'fair' : 'high'
-                                  }`}
-                                title={
-                                  (property.momentumScore || 50) >= 70 ? 'Price is attracting buyers' :
-                                    (property.momentumScore || 50) >= 50 ? 'Price is fair market value' : 'Consider price adjustment'
-                                }
-                              >
-                                {(property.momentumScore || 50) >= 70 ? '✓' :
-                                  (property.momentumScore || 50) >= 50 ? '~' : '↑'}
-                              </span>
-                            )}
                           </div>
                           {property.rateableValue && (
                             <div className="price-rv" title="Rateable Value">
@@ -1121,15 +1230,7 @@ export const PropertiesPage: React.FC = () => {
                         <div className="property-list-item__activity">
                           <div className="activity-pulse-dot" />
                           <span className="activity-text">{property.lastActivityDetail || 'Awaiting Zena activity scan...'}</span>
-                          {property.suggestedActions && property.suggestedActions.length > 0 && (
-                            <button
-                              className="property-actions-pill"
-                              onClick={(e) => handleOpenActions(property, e)}
-                            >
-                              <Zap size={12} fill={godmodeSettings.mode === 'full_god' ? '#FFD700' : (godmodeSettings.mode === 'off' ? 'none' : 'currentColor')} />
-                              <span>{property.suggestedActions.length} Actions</span>
-                            </button>
-                          )}
+
                           <div className="intelligence-preview">
                             <Shield size={12} />
                             <div className="intelligence-summary">
@@ -1170,18 +1271,49 @@ export const PropertiesPage: React.FC = () => {
                           />
                         </div>
                         <div className="property-list-item__actions" onClick={e => e.stopPropagation()}>
-                          <ZenaCallTooltip
-                            contactId={property.vendors && property.vendors.length > 0 ? property.vendors[0].id : ''}
-                            phones={property.vendors && property.vendors.length > 0 ? property.vendors[0].phones : []}
-                            contactName={property.vendors && property.vendors.length > 0 ? property.vendors[0].name : (property.vendorName || 'Vendor')}
-                          >
-                            <button className="icon-action-btn" onClick={handleCallVendor} title="Call Vendor">
-                              <Phone size={16} />
+                          {pendingActionPropertyIds.has(property.id) && (
+                            <button
+                              className="pending-approval-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsActionQueueOpen(true);
+                              }}
+                              title="Review Demi-God drafted action"
+                            >
+                              <Zap size={12} fill="currentColor" />
+                              <span>Pending Approval</span>
                             </button>
-                          </ZenaCallTooltip>
-                          <button className="icon-action-btn" onClick={(e) => handleScheduleOpenHome(e, property)} title="Schedule Open Home">
-                            <Calendar size={16} />
-                          </button>
+                          )}
+                          {property.suggestedActions && property.suggestedActions.length > 0 && (
+                            <button
+                              className="improvements-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenActions(property, e);
+                              }}
+                              title="Open Intelligence Hub"
+                            >
+                              <Zap size={12} />
+                              <span>{property.suggestedActions.length} Improvements</span>
+                            </button>
+                          )}
+                          <div className="action-icons-row">
+                            <ZenaCallTooltip
+                              contactId={property.vendors && property.vendors.length > 0 ? property.vendors[0].id : ''}
+                              phones={property.vendors && property.vendors.length > 0 ? property.vendors[0].phones : []}
+                              contactName={property.vendors && property.vendors.length > 0 ? property.vendors[0].name : (property.vendorName || 'Vendor')}
+                            >
+                              <button className="icon-action-btn" onClick={handleCallVendor} title="Call Vendor">
+                                <Phone size={16} />
+                              </button>
+                            </ZenaCallTooltip>
+                            <button className="icon-action-btn" onClick={(e) => handleScheduleOpenHome(e, property)} title="Schedule Open Home">
+                              <Calendar size={16} />
+                            </button>
+                            <button className="icon-action-btn" onClick={(e) => handleGenerateReport(e, property.id)} title="Generate Comparable Sales Report">
+                              <TrendingUp size={16} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -1224,14 +1356,10 @@ export const PropertiesPage: React.FC = () => {
                           {statusConfig.label}
                         </span>
                         <div className="property-card__header-right">
-                          {property.suggestedActions && property.suggestedActions.length > 0 && godmodeSettings.mode !== 'off' && (
-                            <button
-                              className="property-actions-pill property-actions-pill--grid"
-                              onClick={(e) => handleOpenActions(property, e)}
-                            >
-                              <Zap size={12} fill={godmodeSettings.mode === 'full_god' ? '#FFD700' : 'currentColor'} />
-                              <span>{property.suggestedActions.length} Actions</span>
-                            </button>
+                          {property.suggestedActions && property.suggestedActions.length > 0 && (
+                            <span className="property-card__improvements-count">
+                              {property.suggestedActions.length} improvements
+                            </span>
                           )}
                         </div>
                       </div>
@@ -1294,6 +1422,27 @@ export const PropertiesPage: React.FC = () => {
                       </div>
 
                       <div className="property-card__actions" onClick={e => e.stopPropagation()}>
+                        {pendingActionPropertyIds.has(property.id) && (
+                          <button
+                            className="property-card__action-btn property-card__action-btn--pending"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsActionQueueOpen(true);
+                            }}
+                          >
+                            <Zap size={14} fill="currentColor" />
+                            Pending
+                          </button>
+                        )}
+                        {property.suggestedActions && property.suggestedActions.length > 0 && (
+                          <button
+                            className="property-card__action-btn property-card__action-btn--improvements"
+                            onClick={(e) => handleOpenActions(property, e)}
+                          >
+                            <Zap size={14} />
+                            {property.suggestedActions.length} Improve
+                          </button>
+                        )}
                         <ZenaCallTooltip
                           contactId={property.vendors && property.vendors.length > 0 ? property.vendors[0].id : ''}
                           phones={property.vendors && property.vendors.length > 0 ? property.vendors[0].phones : []}
@@ -1313,6 +1462,14 @@ export const PropertiesPage: React.FC = () => {
                         >
                           <Calendar size={14} />
                           Open Home
+                        </button>
+                        <button
+                          className="property-card__action-btn"
+                          onClick={(e) => handleGenerateReport(e, property.id)}
+                          title="Generate Comparable Sales Report"
+                        >
+                          <TrendingUp size={14} />
+                          Report
                         </button>
                       </div>
                     </div>
@@ -1402,6 +1559,20 @@ export const PropertiesPage: React.FC = () => {
           loadProperties(); // Refresh to update orbit counts and filters
         }}
         allProperties={properties}
+      />
+      <ActionApprovalQueue
+        isOpen={isActionQueueOpen}
+        onClose={() => setIsActionQueueOpen(false)}
+        onActionTaken={fetchPendingActions}
+      />
+      <ComparableReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => {
+          setIsReportModalOpen(false);
+          setReportModalData(null);
+        }}
+        initialAddress={reportModalData?.address}
+        initialBedrooms={reportModalData?.bedrooms}
       />
     </div>
   );

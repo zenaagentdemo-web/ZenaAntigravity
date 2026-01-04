@@ -665,8 +665,30 @@ export async function getScheduleSuggestions(req: Request, res: Response): Promi
 
     console.log(`[Ask Zena] Generating schedule suggestions for property ${propertyId}`);
 
-    // Use LLM to generate suggestions based on property context
-    const prompt = `You are Zena, an AI real estate assistant. Suggest 3 optimal open home times for this property.
+    // Calculate upcoming dates for suggestions
+    const now = new Date();
+    const getNextDayOfWeek = (dayIndex: number): Date => {
+      const result = new Date(now);
+      const currentDay = now.getDay();
+      let daysToAdd = dayIndex - currentDay;
+      if (daysToAdd <= 0) daysToAdd += 7;
+      result.setDate(now.getDate() + daysToAdd);
+      return result;
+    };
+
+    const formatDate = (date: Date): string => {
+      const day = date.getDate();
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      return `${dayNames[date.getDay()]} ${day} ${months[date.getMonth()]} ${date.getFullYear()}`;
+    };
+
+    const nextSaturday = formatDate(getNextDayOfWeek(6)); // Saturday
+    const nextThursday = formatDate(getNextDayOfWeek(4)); // Thursday
+    const nextSunday = formatDate(getNextDayOfWeek(0)); // Sunday
+
+    // Use LLM to generate suggestions based on property context - NZ market focus
+    const prompt = `You are Zena, an AI real estate assistant for the New Zealand market. Suggest 3 optimal open home times for this property with compelling marketing-style descriptions.
 
 PROPERTY:
 - Address: ${address}
@@ -674,26 +696,33 @@ PROPERTY:
 - Days on Market: ${daysOnMarket}
 - Buyer Interest Level: ${buyerInterest}
 
-Consider:
-- Weekend mornings are typically best for families
-- After-work times for professionals
-- If high interest, suggest multiple times
-- If low interest, suggest prime weekend slots only
+AVAILABLE DATES:
+- Next Saturday: ${nextSaturday}
+- Next Thursday: ${nextThursday}
+- Next Sunday: ${nextSunday}
 
-Return a JSON array of 3 suggestions with reasoning, e.g.:
-["Saturday 11:00 AM - 12:00 PM (Peak buyer browsing time)", "Sunday 2:00 PM - 3:00 PM (Family-friendly)", "Thursday 5:30 PM - 6:30 PM (After-work professionals)"]`;
+NEW ZEALAND MARKET INSIGHTS:
+- Saturday 10:00-11:00 AM is the 'Alpha Slot' - captures high-intent families at the start of their weekend property run
+- Thursday 5:15-5:45 PM is the 'Professional Pivot' - targets 30-39 professional cohort commuting home from CBD
+- Saturday 1:00-1:30 PM is the 'FOMO Accelerator' - creates a second Saturday slot for afternoon crowd and competitive atmosphere
+- Sunday 11:00-11:30 AM catches the brunch crowd and relaxed browsers
+
+IMPORTANT: Include the FULL DATE (day, date, month, year) in each suggestion.
+
+Return a JSON array of 3 suggestions with full dates, e.g.:
+["${nextSaturday} 10:00 AM - 10:30 AM (The 'Alpha' Slot: Captures high-intent families at the start of their weekend run.)", "${nextThursday} 5:15 PM - 5:45 PM (The 'Professional Pivot': Strategically timed for professionals commuting from the CBD.)", "${nextSaturday} 1:00 PM - 1:30 PM (The 'FOMO Accelerator': A second Saturday window to create competitive bidding.)"]`;
 
     try {
       const response = await askZenaService.askBrain(prompt, { jsonMode: true });
       const parsed = JSON.parse(response);
       res.status(200).json({ suggestions: Array.isArray(parsed) ? parsed : parsed.suggestions || [] });
     } catch {
-      // Fallback
+      // NZ-relevant fallback suggestions with actual dates
       res.status(200).json({
         suggestions: [
-          'Saturday 11:00 AM - 12:00 PM (Peak buyer activity)',
-          'Sunday 1:00 PM - 2:00 PM (Family-friendly time)',
-          'Wednesday 5:30 PM - 6:30 PM (After-work viewings)'
+          `${nextSaturday} 10:00 AM - 10:30 AM (The 'Alpha' Slot: Captures high-intent families and serious buyers at the start of their weekend run while they're still fresh and decisive.)`,
+          `${nextThursday} 5:15 PM - 5:45 PM (The 'Professional Pivot': Strategically timed for the 30-39 professional cohort to stop in on their commute home from the CBD.)`,
+          `${nextSaturday} 1:00 PM - 1:30 PM (The 'FOMO Accelerator': A second Saturday window to funnel the afternoon crowd and create a high-density 'crowd effect' that triggers competitive bidding.)`
         ]
       });
     }

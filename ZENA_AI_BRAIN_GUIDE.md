@@ -106,8 +106,8 @@ npm run reclassify
 # Test AI on sample emails
 npx tsx scripts/test-improved-classification.ts
 
-# Check GPT-4o Mini connection
-npx tsx scripts/test-openai-gpt4o-mini.ts
+# Check intelligence connection
+npx tsx scripts/test-advanced-intelligence.ts
 ```
 
 ## 🔍 Troubleshooting
@@ -122,7 +122,7 @@ npx tsx scripts/test-openai-gpt4o-mini.ts
 **Solution:** Check that email sync is working and AI processing runs after sync
 
 ### **Problem: All emails marked as noise**
-**Solution:** Check OpenAI API connection with test script
+**Solution:** Check Zena Intelligence connection with test script
 
 ## 💡 How the AI Classification Works
 
@@ -159,4 +159,4 @@ The AI aggressively filters out:
 
 ---
 
-**🚀 Zena's AI brain is now powered by GPT-4o Mini and optimized for real estate agents!**
+**🚀 Zena's AI brain is now optimized for real estate agents!**

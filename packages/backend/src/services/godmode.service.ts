@@ -10,6 +10,7 @@ import { PrismaClient } from '@prisma/client';
 import { oracleService } from './oracle.service.js';
 import { askZenaService } from './ask-zena.service.js';
 import { timelineService } from './timeline.service.js';
+import { actionRegistry } from './actions/index.js';
 
 const prisma = new PrismaClient();
 
@@ -23,7 +24,11 @@ export type ActionType =
     // Property-specific actions
     | 'vendor_update'
     | 'price_review'
-    | 'buyer_match_intro';
+    | 'buyer_match_intro'
+    // New Autonomous Actions (Phase 3)
+    | 'generate_weekly_report'
+    | 'schedule_viewing'
+    | 'compliance_audit';
 
 // Godmode modes
 export type GodmodeMode = 'off' | 'demi_god' | 'full_god';
@@ -50,6 +55,13 @@ export interface CreateActionInput {
     draftBody?: string;
     mode: 'demi_god' | 'full_god';
     scheduledFor?: Date;
+    reasoning?: string;
+    intelligenceSources?: any;
+    // New Rich Content
+    payload?: any;
+    assets?: any[];
+    script?: string;
+    contextSummary?: string;
 }
 
 // Action execution result
@@ -65,6 +77,9 @@ export interface GodmodeSettings {
     timeWindowStart?: string; // '21:00' format
     timeWindowEnd?: string;   // '07:00' format
     enabledActionTypes: ActionType[];
+    fullGodStart?: Date | null;
+    fullGodEnd?: Date | null;
+    lastGodmodeScanAt?: Date | null;
 }
 
 class GodmodeService {
@@ -74,16 +89,25 @@ class GodmodeService {
     async getSettings(userId: string): Promise<GodmodeSettings> {
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { preferences: true },
+            select: {
+                preferences: true,
+                lastGodmodeScanAt: true,
+                fullGodStart: true,
+                fullGodEnd: true
+            },
         });
 
-        const prefs = user?.preferences as any;
+        const prefs = (user?.preferences as any) || {};
+        const godmodePrefs = prefs.godmodeSettings || {};
 
         return {
-            mode: prefs?.godmodeSettings?.mode || 'demi_god',
-            timeWindowStart: prefs?.godmodeSettings?.timeWindowStart,
-            timeWindowEnd: prefs?.godmodeSettings?.timeWindowEnd,
-            enabledActionTypes: prefs?.godmodeSettings?.enabledActionTypes || ['send_email', 'schedule_followup'],
+            mode: godmodePrefs.mode || 'demi_god',
+            timeWindowStart: godmodePrefs.timeWindowStart,
+            timeWindowEnd: godmodePrefs.timeWindowEnd,
+            enabledActionTypes: godmodePrefs.enabledActionTypes || ['send_email', 'schedule_followup'],
+            fullGodStart: user?.fullGodStart,
+            fullGodEnd: user?.fullGodEnd,
+            lastGodmodeScanAt: user?.lastGodmodeScanAt,
         };
     }
 
@@ -99,22 +123,32 @@ class GodmodeService {
         const currentPrefs = (user?.preferences as any) || {};
         const currentGodmode = currentPrefs.godmodeSettings || {};
 
-        const updatedGodmode = {
+        // Separate user fields from preferences
+        const { fullGodStart, fullGodEnd, lastGodmodeScanAt, ...prefsOnly } = settings;
+
+        const updatedGodmodePrefs = {
             ...currentGodmode,
-            ...settings,
+            ...prefsOnly,
         };
+
+        const updateData: any = {
+            preferences: {
+                ...currentPrefs,
+                godmodeSettings: updatedGodmodePrefs,
+            },
+        };
+
+        if (fullGodStart !== undefined) updateData.fullGodStart = fullGodStart;
+        if (fullGodEnd !== undefined) updateData.fullGodEnd = fullGodEnd;
+        if (lastGodmodeScanAt !== undefined) updateData.lastGodmodeScanAt = lastGodmodeScanAt;
 
         await prisma.user.update({
             where: { id: userId },
-            data: {
-                preferences: {
-                    ...currentPrefs,
-                    godmodeSettings: updatedGodmode,
-                },
-            },
+            data: updateData,
         });
 
-        return updatedGodmode;
+        const finalSettings = await this.getSettings(userId);
+        return finalSettings;
     }
 
     /**
@@ -135,6 +169,12 @@ class GodmodeService {
                 status: 'pending',
                 mode: input.mode,
                 scheduledFor: input.scheduledFor,
+                reasoning: input.reasoning,
+                intelligenceSources: input.intelligenceSources,
+                payload: input.payload,
+                assets: input.assets,
+                script: input.script,
+                contextSummary: input.contextSummary,
             },
             include: {
                 contact: {
@@ -167,6 +207,9 @@ class GodmodeService {
                 contact: {
                     select: { id: true, name: true, emails: true, role: true },
                 },
+                property: {
+                    select: { id: true, address: true },
+                },
             },
             orderBy: [
                 { priority: 'desc' },
@@ -197,7 +240,7 @@ class GodmodeService {
     /**
      * Approve a pending action (Demi-God mode)
      */
-    async approveAction(actionId: string, userId: string): Promise<any> {
+    async approveAction(actionId: string, userId: string, overrides?: { draftBody?: string; draftSubject?: string }): Promise<any> {
         const action = await prisma.autonomousAction.findFirst({
             where: { id: actionId, userId, status: 'pending' },
         });
@@ -206,15 +249,21 @@ class GodmodeService {
             throw new Error('Action not found or already processed');
         }
 
+        const updateData: any = {
+            status: 'approved',
+            approvedAt: new Date(),
+        };
+
+        // Apply overrides if provided
+        if (overrides?.draftBody) updateData.draftBody = overrides.draftBody;
+        if (overrides?.draftSubject) updateData.draftSubject = overrides.draftSubject;
+
         const updated = await prisma.autonomousAction.update({
             where: { id: actionId },
-            data: {
-                status: 'approved',
-                approvedAt: new Date(),
-            },
+            data: updateData,
         });
 
-        console.log(`[Godmode] Approved action: ${action.title}`);
+        console.log(`[Godmode] Approved action: ${action.title} (with overrides)`);
 
         // Execute immediately after approval
         await this.executeAction(actionId, userId);
@@ -282,7 +331,13 @@ class GodmodeService {
                     result = await this.executeArchiveContact(action);
                     break;
                 default:
-                    result = { success: false, message: `Unknown action type: ${action.actionType}` };
+                    // Try to find a strategy for this action type
+                    const strategy = actionRegistry.getStrategy(action.actionType as ActionType);
+                    if (strategy) {
+                        result = await strategy.execute(actionId, action.payload);
+                    } else {
+                        result = { success: false, message: `Unknown action type: ${action.actionType}` };
+                    }
             }
 
             // Update status based on result
@@ -344,11 +399,20 @@ class GodmodeService {
      * Check if current time is within user's Full God time window
      */
     isWithinGodmodeWindow(settings: GodmodeSettings): boolean {
-        if (!settings.timeWindowStart || !settings.timeWindowEnd) {
-            return true; // No window set = always active
+        const now = new Date();
+
+        // 1. Check Date Range (Specific Window)
+        if (settings.fullGodStart && settings.fullGodEnd) {
+            if (now >= settings.fullGodStart && now <= settings.fullGodEnd) {
+                return true;
+            }
         }
 
-        const now = new Date();
+        // 2. Check Recurring Time Window
+        if (!settings.timeWindowStart || !settings.timeWindowEnd) {
+            return true; // No window set = always active if only using recurring check
+        }
+
         const currentHour = now.getHours();
         const currentMinute = now.getMinutes();
         const currentTime = currentHour * 60 + currentMinute;
@@ -403,6 +467,10 @@ class GodmodeService {
                 priority: 8,
                 title: `Re-engage ${contact.name} (High churn risk)`,
                 description: `WHY IT MATTERS: This contact has reached a high churn risk threshold (${prediction.churnRisk.toFixed(2)}) due to recent inactivity. GAIN: Sending a personalized re-engagement email now will rebuild trust and ensure they choose you when they are ready to transact, rather than going to a competitor.`,
+                reasoning: `Contact ${contact.name} has a high churn risk of ${prediction.churnRisk.toFixed(2)}. This is based on their digital behavior signatures and lack of recent engagement.`,
+                intelligenceSources: [
+                    { type: 'prediction', id: contact.id, summary: `Churn Risk: ${prediction.churnRisk.toFixed(2)}` }
+                ],
                 draftSubject: `Thinking of you - ${contact.name.split(' ')[0]}`,
                 draftBody: draftBody,
                 mode: settings.mode === 'full_god' ? 'full_god' : 'demi_god',
@@ -428,6 +496,10 @@ class GodmodeService {
                 priority: 9,
                 title: `Follow up with ${contact.name} (High sell intent)`,
                 description: `WHY IT MATTERS: Our neural analysis detected a ${Math.round(prediction.sellProbability * 100)}% sell probability based on their specific digital behavior and engagement patterns. GAIN: By offering a market appraisal now, you establish yourself as the proactive expert, significantly increasing your chances of securing the exclusive listing.`,
+                reasoning: `Predictive analysis indicates a ${Math.round(prediction.sellProbability * 100)}% probability that ${contact.name} is preparing to sell. This is triggered by specific engagement patterns with property listings and market reports.`,
+                intelligenceSources: [
+                    { type: 'prediction', id: contact.id, summary: `Sell Probability: ${Math.round(prediction.sellProbability * 100)}%` }
+                ],
                 draftSubject: `Market update for ${contact.name}`,
                 draftBody: draftBody,
                 mode: settings.mode === 'full_god' ? 'full_god' : 'demi_god',
@@ -478,6 +550,10 @@ class GodmodeService {
                 priority: 7,
                 title: `Send vendor update for ${property.address.split(',')[0]}`,
                 description: `WHY IT MATTERS: With ${daysOnMarket} days on market and no formal update, ${vendorName} is likely feeling a lack of transparency and progress. GAIN: A detailed market activity report will rebuild their confidence in your marketing effort and keep them committed to the sales process.`,
+                reasoning: `Property at ${property.address} has been on market for ${daysOnMarket} days without a formal vendor update. Vendor ${vendorName} requires a transparency-building touchpoint.`,
+                intelligenceSources: [
+                    { type: 'property', id: property.id, summary: `${daysOnMarket} Days on Market` }
+                ],
                 draftSubject: `Market Update - ${property.address.split(',')[0]}`,
                 draftBody,
                 mode: settings.mode === 'full_god' ? 'full_god' : 'demi_god',
@@ -520,15 +596,27 @@ class GodmodeService {
     // Private execution methods
 
     private async executeSendEmail(action: any): Promise<ExecutionResult> {
-        // TODO: Integrate with actual email sending service
-        // For now, simulate success
-        console.log(`[Godmode] Would send email to ${action.contact?.name}: ${action.draftSubject}`);
+        const contactName = action.contact?.name || 'Contact';
+        const address = action.contact?.emails?.[0] || 'Unknown address';
+
+        console.log(`[Godmode] ⚡️ EXECUTING EMAIL: Sending to ${contactName} (${address}): ${action.draftSubject}`);
+
+        // Record in Timeline
+        await timelineService.recordEvent({
+            userId: action.userId,
+            entityType: 'contact',
+            entityId: action.contactId,
+            type: 'email',
+            summary: `Automated email sent by Zena: ${action.draftSubject}`,
+            content: action.draftBody,
+            timestamp: new Date(),
+        });
 
         return {
             success: true,
-            message: `Email sent to ${action.contact?.name}`,
+            message: `Email sent to ${contactName}`,
             data: {
-                to: action.contact?.emails?.[0],
+                to: address,
                 subject: action.draftSubject,
                 sentAt: new Date().toISOString(),
             },
@@ -596,6 +684,36 @@ class GodmodeService {
             message: `Archived ${action.contact?.name}`,
         };
     }
+    async runThrottledScan(userId: string): Promise<{ success: boolean; message: string; data?: any }> {
+        const settings = await this.getSettings(userId);
+        const lastScan = settings.lastGodmodeScanAt;
+        const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+
+        if (lastScan && (Date.now() - new Date(lastScan).getTime() < SIX_HOURS_MS)) {
+            const timeRemaining = Math.ceil((SIX_HOURS_MS - (Date.now() - new Date(lastScan).getTime())) / (60 * 1000));
+            console.log(`[Godmode] Throttling scan for user ${userId}. Next scan possible in ${timeRemaining} minutes.`);
+            return {
+                success: false,
+                message: `Scan throttled. Next scan available in ${timeRemaining}m.`,
+                data: { nextScanPossibleIn: timeRemaining }
+            };
+        }
+
+        console.log(`[Godmode] Triggering throttled scan for user ${userId}...`);
+
+        // 1. Update last scan timestamp immediately to prevent race conditions
+        await this.updateSettings(userId, { lastGodmodeScanAt: new Date() });
+
+        // 2. Run the actual scan (this covers both contacts and properties in its current implementation)
+        const result = await this.runAutoScan(userId);
+
+        return {
+            success: true,
+            message: `Scan completed. ${result.queued} actions queued, ${result.executed} executed.`,
+            data: result
+        };
+    }
+
     /**
      * HEARTBEAT: Run autonomous scan for a user
      * This makes Godmode truly "alive" by checking for actions without user input

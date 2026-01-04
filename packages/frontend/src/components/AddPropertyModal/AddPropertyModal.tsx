@@ -63,7 +63,8 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                 vendorEmail: vendor?.emails?.[0] || '',
                 vendorPhone: vendor?.phones?.[0] || '',
                 inquiryCount: initialData.inquiryCount ? String(initialData.inquiryCount) : '0',
-                viewingCount: initialData.viewingCount ? String(initialData.viewingCount) : '0'
+                viewingCount: initialData.viewingCount ? String(initialData.viewingCount) : '0',
+                rateableValue: initialData.rateableValue ? String(initialData.rateableValue) : ''
             };
         }
         return {
@@ -81,7 +82,8 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
             vendorEmail: '',
             vendorPhone: '',
             inquiryCount: '0',
-            viewingCount: '0'
+            viewingCount: '0',
+            rateableValue: ''
         };
     });
 
@@ -102,11 +104,11 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                 description: formData.description,
                 inquiryCount: formData.inquiryCount ? parseInt(formData.inquiryCount) : 0,
                 viewingCount: formData.viewingCount ? parseInt(formData.viewingCount) : 0,
+                rateableValue: formData.rateableValue ? parseInt(formData.rateableValue) : null,
             };
 
-            // Only include vendor if it's a new property or if we want to update it
-            // For updates, we might just want to update property fields
-            if (!initialData) {
+            // Include vendor data for both new properties and updates
+            if (formData.vendorFirstName || formData.vendorLastName || formData.vendorEmail || formData.vendorPhone) {
                 payload.vendor = {
                     firstName: formData.vendorFirstName,
                     lastName: formData.vendorLastName,
@@ -162,7 +164,8 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                 vendorFirstName: data.vendor?.firstName || prev.vendorFirstName,
                 vendorLastName: data.vendor?.lastName || prev.vendorLastName,
                 vendorEmail: data.vendor?.email || prev.vendorEmail,
-                vendorPhone: data.vendor?.phone || prev.vendorPhone
+                vendorPhone: data.vendor?.phone || prev.vendorPhone,
+                rateableValue: data.rateableValue ? String(data.rateableValue) : prev.rateableValue
             }));
 
             setShowMagicInput(false);
@@ -313,6 +316,22 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                                             placeholder="e.g. 650"
                                             value={formData.landSize}
                                             onChange={e => setFormData({ ...formData, landSize: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="apm-grid-2">
+                                <div className="apm-field-group">
+                                    <label className="apm-label">Rateable Value (RV)</label>
+                                    <div className="apm-input-wrapper">
+                                        <DollarSign size={16} className="apm-input-icon" />
+                                        <input
+                                            type="number"
+                                            className="apm-input"
+                                            placeholder="e.g. 1000000"
+                                            value={formData.rateableValue}
+                                            onChange={e => setFormData({ ...formData, rateableValue: e.target.value })}
                                         />
                                     </div>
                                 </div>

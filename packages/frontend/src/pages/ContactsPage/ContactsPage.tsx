@@ -21,6 +21,7 @@ import {
   CheckSquare,
   DollarSign,
   Zap,
+  Clock,
   Loader2
 } from 'lucide-react';
 import { api } from '../../utils/apiClient';
@@ -520,6 +521,10 @@ export const ContactsPage: React.FC = () => {
 
   useEffect(() => {
     loadContacts();
+    // Trigger throttled Godmode heartbeat on page mount
+    api.post('/api/godmode/heartbeat').catch(err =>
+      console.warn('[ContactsPage] Heartbeat failed', err)
+    );
   }, [filterRole, filterDealStage]); // Reload when filters change
 
   const loadContacts = async () => {
@@ -552,20 +557,10 @@ export const ContactsPage: React.FC = () => {
           if (engagementResponse.data?.engagementData) {
             console.log('[ContactsPage] Received real engagement data for', Object.keys(engagementResponse.data.engagementData).length, 'contacts');
 
-            // Identify contacts with missing intelligence to trigger discovery
+            // Identify contacts with missing intelligence (Optional: can still highlight in UI, but discovery is now throttled)
             const contactsRequiringDiscovery = contactsData.filter((c: Contact) =>
               !c.intelligenceSnippet || c.intelligenceSnippet.includes('analyzing')
             );
-
-            if (contactsRequiringDiscovery.length > 0) {
-              console.log(`[ContactsPage] Triggering discovery for ${contactsRequiringDiscovery.length} contacts...`);
-              // Run discovery in the background for each contact (limited to avoid overwhelming)
-              contactsRequiringDiscovery.slice(0, 5).forEach((c: Contact) => {
-                api.post('/api/ask/discover', { contactId: c.id }).catch(err =>
-                  console.warn(`Discovery failed for ${c.id}`, err)
-                );
-              });
-            }
 
             // Merge real engagement scores with contacts
             enrichedContacts = contactsData.map((contact: Contact) => {
@@ -791,13 +786,37 @@ export const ContactsPage: React.FC = () => {
               </span>
             </div>
           </div>
-          <div className="godmode-pulse-indicator" />
+          <div className="godmode-banner-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('zena-show-godmode-history'))}
+              className="godmode-banner-btn"
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                padding: '6px 14px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)')}
+            >
+              <Clock size={14} />
+              View God Mode Activity
+            </button>
+            <div className="godmode-pulse-indicator" />
+          </div>
         </div>
 
         <header className="contacts-page__header">
           <div className="contacts-page__title-group">
             <h1 className="contacts-page__title">Contacts</h1>
-            <span className="contacts-page__stat-badge">{filteredContacts.length} Records</span>
           </div>
 
           <div className="contacts-page__header-actions">
@@ -1106,12 +1125,7 @@ export const ContactsPage: React.FC = () => {
                         <div className="name-with-score">
                           <span>{contact.name}</span>
                           <div className="score-velocity-row">
-                            {pendingActionContactIds.has(contact.id) && (
-                              <span className="godmode-active-badge" title="Godmode Active: Zena has drafted an autonomous action for this contact">
-                                <Zap size={10} />
-                                <span>Action Ready</span>
-                              </span>
-                            )}
+
                             {discoveryStates[contact.id] === 'started' && (
                               <span className="discovery-status-badge" title="Zena is researching this contact in the background">
                                 <Loader2 size={10} className="spinning" />
@@ -1153,26 +1167,39 @@ export const ContactsPage: React.FC = () => {
                         </div>
                       </div>
                       <div className="contact-list-item__actions" onClick={e => e.stopPropagation()}>
-                        <button
-                          className="zena-actions-btn"
+                        {pendingActionContactIds.has(contact.id) && (
+                          <button
+                            className="pending-approval-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsActionQueueOpen(true);
+                            }}
+                            title="Review Demi-God drafted action"
+                          >
+                            <Zap size={12} fill="currentColor" />
+                            <span>Pending Approval</span>
+                          </button>
+                        )}
+                        <button className="improvements-btn"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleOpenContactIntel(contact);
                           }}
                           title="Open Intelligence Hub"
-                          style={{ margin: 0, fontSize: '0.75rem', padding: '6px 12px' }}
                         >
-                          <Zap size={12} fill="currentColor" />
-                          <span>3 Actions</span>
+                          <Zap size={12} />
+                          <span>3 Improvements</span>
                         </button>
-                        <button className="icon-action-btn" onClick={() => handleOpenCompose(contact)} title="Compose Email">
-                          <Mail size={16} />
-                        </button>
-                        <ZenaCallTooltip contactId={contact.id} phones={contact.phones} contactName={contact.name}>
-                          <button className="icon-action-btn" title="Call">
-                            <Phone size={16} />
+                        <div className="action-icons-row">
+                          <button className="icon-action-btn" onClick={() => handleOpenCompose(contact)} title="Compose Email">
+                            <Mail size={16} />
                           </button>
-                        </ZenaCallTooltip>
+                          <ZenaCallTooltip contactId={contact.id} phones={contact.phones} contactName={contact.name}>
+                            <button className="icon-action-btn" title="Call">
+                              <Phone size={16} />
+                            </button>
+                          </ZenaCallTooltip>
+                        </div>
                       </div>
                     </div>
                   );
@@ -1237,18 +1264,18 @@ export const ContactsPage: React.FC = () => {
                                 {CATEGORY_BADGE_CONFIG[contact.zenaCategory]?.emoji}
                               </span>
                             )}
-                            {pendingActionContactIds.has(contact.id) && (
-                              <span className="godmode-active-badge tiny" title="Zena has drafted an autonomous action">
-                                <Zap size={8} />
-                                <span>Action Ready</span>
-                              </span>
-                            )}
+
                           </div>
                         </div>
                       </div>
                       <div className="contact-card__quick-actions" onClick={e => e.stopPropagation()}>
-                        <button className="icon-action-btn shimmer-btn" onClick={() => handleOpenContactIntel(contact)} title="Open Intelligence Hub">
-                          <Zap size={16} fill="currentColor" />
+                        {pendingActionContactIds.has(contact.id) && (
+                          <button className="icon-action-btn pending-approval-icon" onClick={() => setIsActionQueueOpen(true)} title="Review Demi-God drafted action">
+                            <Zap size={16} fill="currentColor" />
+                          </button>
+                        )}
+                        <button className="icon-action-btn improvements-icon" onClick={() => handleOpenContactIntel(contact)} title="Open Intelligence Hub">
+                          <Zap size={16} />
                         </button>
                         <button className="icon-action-btn" onClick={() => handleOpenCompose(contact)} title="Compose Email">
                           <Mail size={16} />

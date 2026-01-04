@@ -9,7 +9,7 @@ import { decodeHTMLEntities } from '../../utils/text-utils';
 import './ZenaAskPage.css';
 
 // API base URL
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 /**
  * ZenaAskPage - High-tech AI assistant interface

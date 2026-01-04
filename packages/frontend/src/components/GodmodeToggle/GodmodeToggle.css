@@ -183,57 +183,319 @@
 }
 
 .godmode-toggle__time-display {
-    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
     font-weight: 600;
     color: #FEF3C7;
-    text-align: center;
+    margin: 4px 0;
+}
+
+.time-display-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.time-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.6;
 }
 
 .godmode-toggle__time-editor {
     margin-top: 10px;
-    padding-top: 10px;
+    padding-top: 12px;
     border-top: 1px solid rgba(252, 211, 77, 0.2);
-}
-
-.godmode-toggle__time-inputs {
     display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.godmode-toggle__time-inputs label {
+.godmode-toggle__time-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #FCD34D;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.godmode-toggle__time-inputs,
+.godmode-toggle__date-inputs {
+    display: flex;
+    gap: 8px;
+}
+
+.godmode-toggle__time-inputs label,
+.godmode-toggle__date-inputs label {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    font-size: 11px;
+    font-size: 10px;
     color: #9ca3af;
 }
 
-.godmode-toggle__time-inputs input {
-    padding: 6px 8px;
-    border: 1px solid rgba(252, 211, 77, 0.3);
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.2);
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-with-icon svg {
+    position: absolute;
+    left: 10px;
+    color: #FCD34D;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.input-with-icon input {
+    padding-left: 32px !important;
+    width: 100%;
+}
+
+.godmode-toggle__time-inputs input,
+.godmode-toggle__date-inputs input {
+    padding: 10px 12px;
+    border: 1px solid rgba(252, 211, 77, 0.2);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.4);
     color: #FDE68A;
     font-size: 13px;
-}
-
-.godmode-toggle__save-btn {
+    outline: none;
+    transition: all 0.2s;
     width: 100%;
-    padding: 8px;
-    border: none;
-    border-radius: 6px;
-    background: #FCD34D;
-    color: #000;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
 }
 
-.godmode-toggle__save-btn:hover {
+.godmode-toggle__time-inputs input:focus,
+.godmode-toggle__date-inputs input:focus {
+    border-color: #FCD34D;
+    background: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 10px rgba(252, 211, 77, 0.1);
+}
+
+.godmode-toggle__history-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    font-size: 11px;
+    padding: 4px;
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: underline;
+    opacity: 0.7;
+}
+
+.godmode-toggle__history-link:hover {
+    color: #a78bfa;
+    opacity: 1;
+}
+
+/* Warning Modal */
+.godmode-warning-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+    /* Ensure it's above everything including nav */
+    padding: 24px;
+    animation: fadeIn 0.3s ease;
+}
+
+.godmode-warning-modal {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 440px;
+    width: 100%;
+    max-height: 90vh;
+    /* Viewport safety */
+    overflow-y: auto;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(252, 211, 77, 0.1);
+    animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+}
+
+.godmode-warning-modal::-webkit-scrollbar {
+    width: 6px;
+}
+
+.godmode-warning-modal::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+.godmode-warning-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(252, 211, 77, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: #FCD34D;
+    box-shadow: 0 0 20px rgba(252, 211, 77, 0.2);
+}
+
+.godmode-warning-modal h3 {
+    font-size: 24px;
+    margin-bottom: 16px;
+    color: white;
+}
+
+.godmode-warning-modal p {
+    color: #9ca3af;
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.godmode-warning-modal ul {
+    text-align: left;
+    margin: 0 auto 24px;
+    display: inline-block;
+    color: #d1d5db;
+}
+
+.godmode-warning-modal li {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.warning-footer {
+    font-weight: 700;
+    color: #FCD34D !important;
+}
+
+.godmode-warning-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.godmode-warning-actions button {
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary {
+    background: #222;
+    border: 1px solid #333;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #333;
+}
+
+.btn-normal {
+    background: rgba(107, 114, 128, 0.1) !important;
+    border: 1px solid rgba(107, 114, 128, 0.3) !important;
+    color: #9ca3af !important;
+}
+
+.btn-demi {
+    background: rgba(167, 139, 250, 0.1) !important;
+    border: 1px solid rgba(167, 139, 250, 0.3) !important;
+    color: #A78BFA !important;
+}
+
+.btn-demi:hover {
+    background: rgba(167, 139, 250, 0.2) !important;
+    color: #ddd6fe !important;
+}
+
+.btn-warning {
+    background: #FCD34D;
+    border: none;
+    color: black;
+    grid-column: span 2;
+    /* Main action spans full width */
+    margin-top: 4px;
+}
+
+.btn-warning:hover {
     background: #FBBF24;
+    transform: scale(1.02);
+}
+
+.godmode-warning-scheduling {
+    background: rgba(252, 211, 77, 0.05);
+    border: 1px solid rgba(252, 211, 77, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    animation: slideDown 0.3s ease;
+}
+
+.godmode-warning-scheduling .godmode-toggle__time-section {
+    padding: 0;
+    border: none;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 @keyframes spin {

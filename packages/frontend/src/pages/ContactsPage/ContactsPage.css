@@ -827,18 +827,14 @@
 
 /* --- List View Styles --- */
 .contacts-page__content--list {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-  backdrop-filter: blur(20px);
+  /* Removed outer container box to match properties page styling */
+  overflow: visible;
 }
 
 .contacts-list-header {
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr 3fr 120px;
+  grid-template-columns: 2fr 1fr 2fr 2.5fr 160px;
   padding: 1.25rem 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   color: #00D4AA !important;
   font-size: 0.85rem;
   font-weight: 700;
@@ -851,22 +847,35 @@
 }
 
 .contacts-list-header.batch-mode {
-  grid-template-columns: 40px 2fr 1fr 2fr 3fr 120px;
+  grid-template-columns: 40px 2fr 1fr 2fr 2.5fr 160px;
 }
 
 .contact-list-item {
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr 3fr 120px;
-  padding: 1rem 2rem;
+  grid-template-columns: 2fr 1fr 2fr 2.5fr 160px;
+  padding: 1.5rem 2rem;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  margin-bottom: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  overflow: hidden;
+}
+
+.contact-list-item:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(0, 212, 255, 0.2);
 }
 
 .contact-list-item.batch-mode {
-  grid-template-columns: 40px 2fr 1fr 2fr 3fr 120px;
+  grid-template-columns: 40px 2fr 1fr 2fr 2.5fr 160px;
 }
 
 .contact-list-item::after {
@@ -987,6 +996,8 @@
   gap: 0.35rem;
   position: relative;
   padding-left: 1.2rem;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .activity-pulse-dot {
@@ -1022,6 +1033,9 @@
   color: white;
   font-size: 0.9rem;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .intelligence-preview {
@@ -1035,6 +1049,9 @@
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   border-left: 2px solid var(--neon-cyan-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* --- Batch Actions HUD --- */
@@ -1122,6 +1139,13 @@
 
 .contact-list-item__actions {
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.contact-list-item__actions .action-icons-row {
+  display: flex;
   gap: 0.5rem;
 }
 
@@ -1131,16 +1155,42 @@
 }
 
 /* Responsive Overrides */
+@media (max-width: 1200px) {
+
+  .contacts-list-header,
+  .contact-list-item {
+    grid-template-columns: 2fr 1fr 2fr 2fr 150px;
+  }
+
+  .pending-approval-btn,
+  .improvements-btn {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+}
+
 @media (max-width: 1024px) {
 
   .contacts-list-header,
   .contact-list-item {
-    grid-template-columns: 2fr 1fr 1.5fr 100px;
+    grid-template-columns: 2fr 1fr 2fr 140px;
   }
 
   .contacts-list-header__email,
   .contact-list-item__email {
     display: none;
+  }
+
+  .pending-approval-btn span,
+  .improvements-btn span {
+    display: none;
+  }
+
+  .pending-approval-btn,
+  .improvements-btn {
+    padding: 8px;
+    min-width: 32px;
+    justify-content: center;
   }
 }
 
@@ -1371,12 +1421,14 @@
   0%,
   100% {
     border-color: rgba(245, 158, 11, 0.4);
-    box-shadow: 0 0 10px rgba(245, 158, 11, 0.1);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.2), 0 0 0px rgba(245, 158, 11, 0.1);
+    transform: scale(1);
   }
 
   50% {
     border-color: #f59e0b;
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.6), 0 0 15px rgba(245, 158, 11, 0.3);
+    transform: scale(1.05);
   }
 }
 
@@ -1849,4 +1901,91 @@
 
 .shimmer-btn:hover::after {
   opacity: 0.3;
+}
+
+/* ============================================
+   Action Buttons - Pending Approval & Improvements
+   ============================================ */
+
+/* Pending Approval Button - Purple (Demi-God) */
+.pending-approval-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 8px;
+  color: #A78BFA;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pending-approval-btn:hover {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: #A78BFA;
+  color: #C4B5FD;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.pending-approval-btn svg {
+  filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.5));
+}
+
+/* Improvements Button - Cyan/Teal */
+.improvements-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 8px;
+  color: #00D4FF;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.improvements-btn:hover {
+  background: rgba(0, 212, 255, 0.25);
+  border-color: #00D4FF;
+  color: #66E7FF;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.improvements-btn svg {
+  filter: drop-shadow(0 0 4px rgba(0, 212, 255, 0.5));
+}
+
+/* Grid view icon button variants */
+.pending-approval-icon {
+  color: #A78BFA !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
+  background: rgba(139, 92, 246, 0.1) !important;
+}
+
+.pending-approval-icon:hover {
+  background: rgba(139, 92, 246, 0.2) !important;
+  border-color: #A78BFA !important;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+}
+
+.improvements-icon {
+  color: #00D4FF !important;
+  border-color: rgba(0, 212, 255, 0.3) !important;
+  background: rgba(0, 212, 255, 0.1) !important;
+}
+
+.improvements-icon:hover {
+  background: rgba(0, 212, 255, 0.2) !important;
+  border-color: #00D4FF !important;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
 }

@@ -73,7 +73,7 @@ export const LogIntelTooltip: React.FC<LogIntelTooltipProps> = ({ className = ''
                 ref={buttonRef}
                 className="log-intel-help-btn"
                 onClick={toggleTooltip}
-                aria-label="Learn about Log Intel"
+                aria-label="Learn about notes"
                 aria-expanded={isOpen}
             >
                 <HelpCircle size={18} />
@@ -90,7 +90,7 @@ export const LogIntelTooltip: React.FC<LogIntelTooltipProps> = ({ className = ''
                         aria-labelledby="log-intel-title"
                     >
                         <div className="log-intel-tooltip__header">
-                            <h4 id="log-intel-title"><Lightbulb size={16} /> What is Log Intel?</h4>
+                            <h4 id="log-intel-title"><Lightbulb size={16} /> What is Note Intel?</h4>
                             <button className="log-intel-tooltip__close" onClick={toggleTooltip}>
                                 <X size={14} />
                             </button>

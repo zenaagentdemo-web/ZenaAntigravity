@@ -1,0 +1,203 @@
+.zena-timepicker-container {
+    position: relative;
+    width: 100%;
+}
+
+.zena-timepicker-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #ffffff;
+}
+
+.zena-timepicker-trigger:hover,
+.zena-timepicker-trigger.open {
+    border-color: #00D4FF;
+    background: rgba(0, 212, 255, 0.05);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
+}
+
+.zena-timepicker-icon {
+    color: #00D4FF;
+    opacity: 0.8;
+}
+
+.zena-timepicker-value {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* God-Mode variant (yellow) */
+.zena-timepicker-container.variant-godmode .zena-timepicker-trigger {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(252, 211, 77, 0.2);
+    color: #FDE68A;
+}
+
+.zena-timepicker-container.variant-godmode .zena-timepicker-trigger:hover,
+.zena-timepicker-container.variant-godmode .zena-timepicker-trigger.open {
+    border-color: #FCD34D;
+    background: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 15px rgba(252, 211, 77, 0.1);
+}
+
+.zena-timepicker-container.variant-godmode .zena-timepicker-icon {
+    color: #FCD34D;
+}
+
+.zena-timepicker-dropdown {
+    position: absolute;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    z-index: 100001;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 180px;
+    animation: dropdownPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.zena-timepicker-selectors {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.zena-time-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.zena-time-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: white;
+    font-family: 'Inter', monospace;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 8px;
+    border-radius: 10px;
+    min-width: 50px;
+    text-align: center;
+}
+
+.unit-label {
+    font-size: 9px;
+    color: #6b7280;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+.zena-time-separator {
+    font-size: 24px;
+    font-weight: 800;
+    color: #4b5563;
+    padding-bottom: 20px;
+}
+
+.zena-time-nav {
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.zena-time-nav:hover {
+    color: #00D4FF;
+    background: rgba(0, 212, 255, 0.1);
+}
+
+.zena-timepicker-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.zena-timepicker-btn {
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.zena-timepicker-btn.cancel {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #333;
+    color: #9ca3af;
+    flex: 0 0 40px;
+}
+
+.zena-timepicker-btn.confirm {
+    background: #00D4FF;
+    border: none;
+    color: #0a1628;
+    flex: 1;
+}
+
+.zena-timepicker-btn:hover {
+    transform: translateY(-1px);
+}
+
+.zena-timepicker-btn.confirm:hover {
+    background: #00b8e6;
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
+}
+
+.zena-time-ampm-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: center;
+    padding-left: 10px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ampm-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #333;
+    color: #9ca3af;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ampm-btn.active {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: #00D4FF;
+    color: #00D4FF;
+}
+
+@keyframes dropdownPop {
+    from {
+        transform: scale(0.9) translateY(-10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}

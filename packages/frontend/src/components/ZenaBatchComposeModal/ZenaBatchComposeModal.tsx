@@ -315,6 +315,9 @@ Best regards`;
                             </div>
                         </div>
                     ) : singleContactContext && (
+                        // User Request 04/01/26: Hide Intelligence Box in simple compose view
+                        null
+                        /* 
                         <div className="zena-context-insight">
                             <div className="zena-context-insight__header">
                                 <Shield size={14} />
@@ -322,7 +325,7 @@ Best regards`;
                             </div>
                             <div className="zena-single-intel__content">
                                 <p className="zena-context-insight__text">
-                                    <strong>{singleContactContext.name}</strong> is a <strong>{singleContactContext.role}</strong> with
+                                    <strong>{singleContactContext.name}</strong> is a <strong>{singleContactContext.role}</strong> with 
                                     <span className={`intel-badge ${singleContactContext.intel > 80 ? 'hot' : singleContactContext.intel > 50 ? 'warm' : 'cold'}`}>
                                         {Math.round(singleContactContext.intel)}% engagement
                                     </span>.
@@ -339,15 +342,16 @@ Best regards`;
                                             <Sparkles size={12} />
                                             <span>
                                                 {singleContactContext.personality === 'D' ? 'Keep it direct and results-focused.' :
-                                                    singleContactContext.personality === 'I' ? 'Be enthusiastic and focus on broad vision.' :
-                                                        singleContactContext.personality === 'S' ? 'Be warm, patient, and focus on stability.' :
-                                                            'Provide data, detail, and give them time to analyze.'}
+                                                singleContactContext.personality === 'I' ? 'Be enthusiastic and focus on broad vision.' :
+                                                singleContactContext.personality === 'S' ? 'Be warm, patient, and focus on stability.' :
+                                                'Provide data, detail, and give them time to analyze.'}
                                             </span>
                                         </div>
                                     </div>
                                 )}
                             </div>
                         </div>
+                        */
                     )}
 
                     {/* Strategy Execution Banner */}

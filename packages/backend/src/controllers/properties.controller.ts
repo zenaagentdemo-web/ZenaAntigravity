@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { threadLinkingService } from '../services/thread-linking.service.js';
 import { propertyIntelligenceService } from '../services/property-intelligence.service.js';
+import { marketScraperService } from '../services/market-scraper.service.js';
 
 const prisma = new PrismaClient();
 
@@ -461,7 +462,8 @@ export class PropertiesController {
         inquiryCount,
         vendorContactIds,
         buyerContactIds,
-        riskOverview
+        riskOverview,
+        vendor // New: { firstName, lastName, email, phone }
       } = req.body;
 
       if (!req.user) {
@@ -526,7 +528,47 @@ export class PropertiesController {
         updateData.riskOverview = riskOverview;
       }
 
-      // Handle vendor contacts update
+      // Handle vendor object - create or update vendor contact
+      if (vendor && (vendor.firstName || vendor.lastName || vendor.email || vendor.phone)) {
+        const vendorName = `${vendor.firstName || ''} ${vendor.lastName || ''}`.trim();
+
+        // Check if property already has a vendor we should update
+        const existingProperty = await prisma.property.findUnique({
+          where: { id },
+          include: { vendors: true }
+        });
+
+        if (existingProperty?.vendors && existingProperty.vendors.length > 0) {
+          // Update existing vendor
+          const existingVendor = existingProperty.vendors[0];
+          await prisma.contact.update({
+            where: { id: existingVendor.id },
+            data: {
+              name: vendorName || existingVendor.name,
+              emails: vendor.email ? [vendor.email] : existingVendor.emails,
+              phones: vendor.phone ? [vendor.phone] : existingVendor.phones,
+            }
+          });
+        } else {
+          // Create new vendor contact and link to property
+          const newVendor = await prisma.contact.create({
+            data: {
+              userId: req.user.userId,
+              name: vendorName,
+              emails: vendor.email ? [vendor.email] : [],
+              phones: vendor.phone ? [vendor.phone] : [],
+              role: 'vendor',
+              intelligenceSnippet: `Vendor for ${property.address}`,
+              relationshipNotes: [],
+            }
+          });
+          updateData.vendors = {
+            connect: [{ id: newVendor.id }]
+          };
+        }
+      }
+
+      // Handle vendor contacts update (by IDs)
       if (vendorContactIds !== undefined) {
         if (!Array.isArray(vendorContactIds)) {
           res.status(400).json({
@@ -700,11 +742,11 @@ export class PropertiesController {
         return;
       }
 
-      if (!date) {
+      if (!date || isNaN(new Date(date).getTime())) {
         res.status(400).json({
           error: {
             code: 'VALIDATION_FAILED',
-            message: 'date is required',
+            message: 'date is required and must be a valid date string',
             retryable: false,
           },
         });
@@ -712,7 +754,10 @@ export class PropertiesController {
       }
 
       // Validate milestone type
-      const validTypes = ['listing', 'first_open', 'open_home', 'viewing', 'auction', 'offer_received', 'conditional', 'unconditional', 'settled'];
+      const validTypes = [
+        'listing', 'first_open', 'open_home', 'viewing', 'auction', 'offer_received', 'conditional', 'unconditional', 'settled',
+        'listed', 'first_viewing', 'contract_signed', 'settlement', 'custom'
+      ];
       if (!validTypes.includes(type)) {
         res.status(400).json({
           error: {
@@ -746,7 +791,8 @@ export class PropertiesController {
       // Create new milestone
       const newMilestone = {
         id: randomUUID(),
-        type,
+        type: type as string,
+        title: req.body.title || type,
         date: new Date(date).toISOString(),
         notes: notes || undefined,
       };
@@ -792,15 +838,27 @@ export class PropertiesController {
       });
 
       // Create timeline event for the milestone
+      // Note: timestamp uses current time (when logged), not the milestone's scheduled date
+      // The scheduled date is included in the summary so users can see when the event is planned
+      const scheduledDate = new Date(date);
+      const formattedScheduledDate = scheduledDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+
       await prisma.timelineEvent.create({
         data: {
           userId: req.user.userId,
           type: 'note',
           entityType: 'property',
           entityId: id,
-          summary: `Milestone added: ${type}`,
+          summary: `Milestone added: ${type} — Scheduled for ${formattedScheduledDate}`,
           content: notes || undefined,
-          timestamp: new Date(date),
+          timestamp: new Date(),
         },
       });
 
@@ -1071,6 +1129,129 @@ export class PropertiesController {
     } catch (error) {
       console.error('Get intelligence error:', error);
       res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to get intelligence' } });
+    }
+  }
+
+  /**
+   * PUT /api/properties/:id/milestones/:milestoneId
+   * Update campaign milestone
+   */
+  async updateMilestone(req: Request, res: Response): Promise<void> {
+    try {
+      const { id, milestoneId } = req.params;
+      const { title, date, notes, type } = req.body;
+
+      if (!req.user) {
+        res.status(401).json({ error: { code: 'AUTH_TOKEN_MISSING', message: 'Authentication required' } });
+        return;
+      }
+
+      const property = await prisma.property.findFirst({
+        where: { id, userId: req.user.userId }
+      });
+
+      if (!property) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Property not found' } });
+        return;
+      }
+
+      const milestones = property.milestones as any[];
+      const milestoneIndex = milestones.findIndex(m => m.id === milestoneId);
+
+      if (milestoneIndex === -1) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Milestone not found' } });
+        return;
+      }
+
+      // Validate date if provided
+      if (date && isNaN(new Date(date).getTime())) {
+        res.status(400).json({ error: { code: 'VALIDATION_FAILED', message: 'Invalid date format' } });
+        return;
+      }
+
+      // Update milestone
+      milestones[milestoneIndex] = {
+        ...milestones[milestoneIndex],
+        title: title || milestones[milestoneIndex].title,
+        type: type || milestones[milestoneIndex].type,
+        date: date ? new Date(date).toISOString() : milestones[milestoneIndex].date,
+        notes: notes !== undefined ? notes : milestones[milestoneIndex].notes
+      };
+
+      const updatedProperty = await prisma.property.update({
+        where: { id },
+        data: { milestones }
+      });
+
+      res.status(200).json({ property: updatedProperty, milestone: milestones[milestoneIndex] });
+    } catch (error) {
+      console.error('Update milestone error:', error);
+      res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update milestone' } });
+    }
+  }
+
+  /**
+   * DELETE /api/properties/:id/milestones/:milestoneId
+   * Delete campaign milestone
+   */
+  async deleteMilestone(req: Request, res: Response): Promise<void> {
+    try {
+      const { id, milestoneId } = req.params;
+
+      if (!req.user) {
+        res.status(401).json({ error: { code: 'AUTH_TOKEN_MISSING', message: 'Authentication required' } });
+        return;
+      }
+
+      const property = await prisma.property.findFirst({
+        where: { id, userId: req.user.userId }
+      });
+
+      if (!property) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Property not found' } });
+        return;
+      }
+
+      const existingMilestones = property.milestones as any[];
+      const updatedMilestones = existingMilestones.filter(m => m.id !== milestoneId);
+
+      const updatedProperty = await prisma.property.update({
+        where: { id },
+        data: { milestones: updatedMilestones }
+      });
+
+      res.status(200).json({ property: updatedProperty, success: true });
+    } catch (error) {
+      console.error('Delete milestone error:', error);
+      res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to delete milestone' } });
+    }
+  }
+
+  /**
+   * POST /api/properties/:id/comparables
+   * Run market scraper for property
+   */
+  async generateComparables(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      // Fetch property to get address/bedrooms
+      const property = await prisma.property.findUnique({ where: { id } });
+      if (!property) {
+        res.status(404).json({ error: 'Property not found' });
+        return;
+      }
+
+      const suburb = property.address.split(',').pop()?.trim() || 'Auckland';
+      const bedrooms = property.bedrooms || 3;
+
+      console.log(`[PropertiesController] Generating comparables for ${property.address} (${suburb})`);
+      const comparables = await marketScraperService.findComparableSales(suburb, bedrooms);
+
+      res.status(200).json({ comparables });
+    } catch (error) {
+      console.error('Generate Comparables error:', error);
+      res.status(500).json({ error: 'Failed to generate report' });
     }
   }
 }

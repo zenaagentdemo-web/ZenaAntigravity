@@ -19,14 +19,15 @@ export class GodmodeSchedulerService {
         console.log('[GodmodeScheduler] Starting autonomous pulse (6-hour interval, Full God only)...');
         this.isRunning = true;
 
-        // Run initial scan after 30 seconds
-        setTimeout(() => {
-            this.runScan().catch(console.error);
-        }, 30 * 1000);
+        // Run initial scan after 30 seconds (Optional: keep as a small cold-start)
+        // setTimeout(() => {
+        //     this.runScan().catch(console.error);
+        // }, 30 * 1000);
 
-        this.scanIntervalId = setInterval(() => {
-            this.runScan().catch(console.error);
-        }, SCAN_INTERVAL_MS);
+        // DISABLED: Periodic background scans are now replaced by throttled page-visit heartbeats.
+        // this.scanIntervalId = setInterval(() => {
+        //     this.runScan().catch(console.error);
+        // }, SCAN_INTERVAL_MS);
     }
 
     stop(): void {
@@ -49,13 +50,13 @@ export class GodmodeSchedulerService {
                 // Only run scan if user has Full Godmode enabled
                 const settings = await godmodeService.getSettings(user.id);
 
-                if (settings.mode !== 'full_god') {
-                    console.log(`[GodmodeScheduler] Skipping user ${user.id} - Godmode mode: ${settings.mode} (not full_god)`);
+                if (settings.mode === 'off') {
+                    console.log(`[GodmodeScheduler] Skipping user ${user.id} - Godmode mode: ${settings.mode}`);
                     skippedCount++;
                     continue;
                 }
 
-                console.log(`[GodmodeScheduler] Running scan for user ${user.id} (Full God mode active)`);
+                console.log(`[GodmodeScheduler] Running scan for user ${user.id} (${settings.mode} mode active)`);
                 await godmodeService.runAutoScan(user.id);
                 scannedCount++;
             }

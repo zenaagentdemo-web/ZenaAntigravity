@@ -18,6 +18,9 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   preferences  Json?    // UserPreferences as JSON
+  lastGodmodeScanAt DateTime?
+  fullGodStart    DateTime?
+  fullGodEnd      DateTime?
 
   // Relations
   emailAccounts    EmailAccount[]
@@ -574,10 +577,18 @@ model AutonomousAction {
   priority    Int      @default(5) // 1-10 (10 = most urgent)
   title       String   // Human-readable: "Send nurture email to John Smith"
   description String?  @db.Text
+  reasoning   String?  @db.Text  // The "Why" behind the action
+  intelligenceSources Json?    // Verifiable evidence: Array of { type, id, summary }
   
   // Generated Content (for email/sms actions)
   draftSubject String?
   draftBody    String?  @db.Text
+  
+  // New Rich Content Fields (Phase 3)
+  payload      Json?    // Structured data specific to the action (charts, etc.)
+  assets       Json?    // Array of generated assets { type, url, previewComponent }
+  script       String?  @db.Text // Call script or talking points
+  contextSummary String? @db.Text // "Why this, Why now" reasoning with citations
   
   // Status & Execution
   status      String   @default("pending") // 'pending' | 'approved' | 'executing' | 'completed' | 'failed' | 'dismissed'

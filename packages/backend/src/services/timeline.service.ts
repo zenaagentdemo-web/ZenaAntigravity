@@ -136,11 +136,12 @@ export class TimelineService {
     entityType: 'thread' | 'contact' | 'property' | 'deal',
     entityId: string,
     summary: string,
-    content?: string
+    content?: string,
+    type: 'note' | 'voice_note' = 'note'
   ) {
     return await this.createEvent({
       userId,
-      type: 'note',
+      type,
       entityType,
       entityId,
       summary,

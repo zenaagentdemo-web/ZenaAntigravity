@@ -11,6 +11,7 @@ import { useAuth } from './hooks/useAuth';
 import { realTimeDataService } from './services/realTimeDataService';
 import { errorHandlingService } from './services/errorHandlingService';
 import { ZenaAvatarWidget } from './components/ZenaAvatarWidget/ZenaAvatarWidget';
+import { GodmodeProvider } from './components/GodmodeProvider/GodmodeProvider';
 import './App.css';
 
 // Lazy load pages for code splitting
@@ -135,7 +136,7 @@ function App() {
                   path="/*"
                   element={
                     <PrivateRoute isAuthenticated={isAuthenticated} isLoading={isLoading}>
-                      <>
+                      <GodmodeProvider>
                         <OfflineIndicator />
 
                         <main
@@ -179,7 +180,7 @@ function App() {
                         <nav id="bottom-navigation" aria-label="Main navigation">
                           <BottomNavigation />
                         </nav>
-                      </>
+                      </GodmodeProvider>
                     </PrivateRoute>
                   }
                 />

@@ -1,24 +1,39 @@
-.schedule-modal {
-    width: 90%;
-    max-width: 500px;
-    background: rgba(10, 10, 20, 0.95);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 255, 136, 0.1);
-    overflow: hidden;
-    animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
 }
 
-@keyframes modalSlideIn {
+.schedule-modal {
+    width: 100%;
+    max-width: 520px;
+    background: linear-gradient(135deg, #0a1628, #0a1b30);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 212, 255, 0.1);
+    overflow: hidden;
+    position: relative;
+    animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
     from {
         opacity: 0;
-        transform: translateY(20px) scale(0.95);
+        transform: scale(0.9) translateY(20px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: scale(1) translateY(0);
     }
 }
 
@@ -26,28 +41,27 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
+    padding: 24px 28px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     background: rgba(255, 255, 255, 0.02);
 }
 
 .modal-title {
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.2rem;
+    font-weight: 700;
     color: #fff;
-    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin: 0;
-    background: linear-gradient(135deg, #fff, #aaa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .close-btn {
-    background: transparent;
+    background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.4);
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 8px;
     border-radius: 50%;
     transition: all 0.2s ease;
     display: flex;
@@ -56,26 +70,27 @@
 }
 
 .close-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: #fff;
+    transform: rotate(90deg);
 }
 
 .modal-content {
-    padding: 1.5rem;
+    padding: 28px;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 20px;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 8px;
 }
 
 .form-row {
     display: flex;
-    gap: 1rem;
+    gap: 16px;
 }
 
 .form-row .form-group {
@@ -85,58 +100,62 @@
 .input-label {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.875rem;
-    font-weight: 500;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .high-tech-input {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #fff;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    font-size: 0.95rem;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
     outline: none;
-    transition: all 0.2s ease;
-    width: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .high-tech-input:focus {
-    border-color: rgba(0, 255, 136, 0.5);
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: #00d4ff;
+    background: rgba(0, 212, 255, 0.05);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
 }
 
 .readonly-value {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.8);
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    font-size: 0.95rem;
+    color: #00d4ff;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
 .type-selector {
-    display: flex;
-    gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.03);
-    padding: 0.25rem;
-    border-radius: 8px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
 }
 
 .type-btn {
-    flex: 1;
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.6);
-    padding: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    border-radius: 10px;
+    transition: all 0.3s ease;
 }
 
 .type-btn:hover {
@@ -145,73 +164,95 @@
 }
 
 .type-btn.active {
-    background: rgba(0, 255, 136, 0.15);
-    color: #00ff88;
-    box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
+    background: rgba(0, 212, 255, 0.1);
+    color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
 }
 
 .modal-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding-top: 1.5rem;
+    gap: 12px;
+    margin-top: 10px;
+    padding-top: 24px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .cancel-btn {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.7);
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 500;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .cancel-btn:hover {
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
     color: #fff;
-    background: rgba(255, 255, 255, 0.05);
 }
 
 .submit-btn {
-    background: #00ff88;
+    background: linear-gradient(135deg, #00d4ff, #00ff88);
     border: none;
-    color: #000;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
+    color: #0a1628;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
 }
 
 .submit-btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
-    background: #33ff9e;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
 }
 
 .submit-btn:disabled {
-    opacity: 0.7;
+    opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
+    filter: grayscale(1);
 }
 
 .error-message {
-    color: #ff4444;
-    background: rgba(255, 68, 68, 0.1);
-    border-radius: 8px;
-    padding: 0.75rem;
-    font-size: 0.875rem;
-    border: 1px solid rgba(255, 68, 68, 0.2);
+    color: #ff4d4d;
+    background: rgba(255, 77, 77, 0.1);
+    border: 1px solid rgba(255, 77, 77, 0.2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    animation: fadeIn 0.3s ease;
+    gap: 10px;
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
 }

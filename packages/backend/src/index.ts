@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+dotenv.config();
 import { createServer } from 'http';
 import prisma from './config/database.js';
 import authRoutes from './routes/auth.routes.js';
@@ -23,6 +24,7 @@ import dataDeletionRoutes from './routes/data-deletion.routes.js';
 import historyRoutes from './routes/history.routes.js';
 import actionsRoutes from './routes/actions.routes.js';
 import zenaActionsRoutes from './routes/zena-actions.routes.js';
+import marketDataRoutes from './routes/market-data.routes.js';
 import { syncEngineService } from './services/sync-engine.service.js';
 import { calendarSyncEngineService } from './services/calendar-sync-engine.service.js';
 import { websocketService } from './services/websocket.service.js';
@@ -141,6 +143,9 @@ app.use('/api/actions', actionsRoutes);
 
 // Zena Actions routes (AI-powered deal actions)
 app.use('/api/zena-actions', zenaActionsRoutes);
+
+// Market Data routes (Standalone Scraper)
+app.use('/api/market-data', marketDataRoutes);
 
 // Communications routes
 import communicationsRoutes from './routes/communications.routes.js';

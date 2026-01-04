@@ -1,0 +1,116 @@
+.mini-picker-container {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.mini-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.current-month {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mini-nav {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.mini-nav button {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.mini-nav button:hover {
+    background: rgba(0, 242, 255, 0.1);
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+}
+
+.mini-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.mini-weekday {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: center;
+    padding: 8px 0;
+}
+
+.mini-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.mini-day:hover:not(.empty) {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.mini-day.selected {
+    background: var(--neon-cyan);
+    color: #000;
+    font-weight: 700;
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+}
+
+.mini-day.selected .event-indicator {
+    background: #000;
+}
+
+.mini-day.today {
+    color: var(--neon-cyan);
+    font-weight: 800;
+    position: relative;
+}
+
+.mini-day.has-events {
+    font-weight: 600;
+}
+
+.event-indicator {
+    position: absolute;
+    bottom: 4px;
+    width: 4px;
+    height: 4px;
+    background: var(--neon-cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--neon-cyan);
+}
+
+.mini-day.today .event-indicator {
+    bottom: 2px;
+}
+
+.mini-day.empty {
+    cursor: default;
+}

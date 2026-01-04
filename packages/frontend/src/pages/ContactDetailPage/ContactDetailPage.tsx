@@ -692,7 +692,7 @@ export const ContactDetailPage: React.FC = () => {
               className={`contact-detail-page__action-button ${showNoteForm ? 'active' : ''}`}
               onClick={() => setShowNoteForm(!showNoteForm)}
             >
-              <Plus size={18} /> Log Intel
+              <Plus size={18} /> Add note
               <LogIntelTooltip />
             </button>
           </div>
@@ -731,7 +731,7 @@ export const ContactDetailPage: React.FC = () => {
                   Cancel
                 </button>
                 <button className="contact-detail-page__note-save" onClick={handleAddNote} disabled={!noteContent.trim() || addingNote}>
-                  {addingNote ? 'Saving...' : 'Save Intel'}
+                  {addingNote ? 'Saving...' : 'Save note'}
                 </button>
               </div>
             </div>
@@ -807,7 +807,7 @@ export const ContactDetailPage: React.FC = () => {
                 </div>
                 <div className="contact-detail-page__timeline-content">
                   <div className="contact-detail-page__timeline-header">
-                    <span className="contact-detail-page__timeline-type">{event.type}</span>
+                    <span className="contact-detail-page__timeline-type">{event.type.replace(/_/g, ' ').toUpperCase()}</span>
                     <div className="contact-detail-page__timeline-actions">
                       <span className="contact-detail-page__timeline-date">{formatDate(event.timestamp)}</span>
                       {editingEventId !== event.id && (

@@ -1,22 +1,16 @@
-/**
- * useGodmode Hook
- * 
- * React hook for managing Godmode settings and pending actions.
- */
-
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { api } from '../utils/apiClient';
 
-type GodmodeMode = 'off' | 'demi_god' | 'full_god';
+export type GodmodeMode = 'off' | 'demi_god' | 'full_god';
 
-interface GodmodeSettings {
+export interface GodmodeSettings {
     mode: GodmodeMode;
     timeWindowStart?: string;
     timeWindowEnd?: string;
     enabledActionTypes: string[];
 }
 
-interface AutonomousAction {
+export interface AutonomousAction {
     id: string;
     actionType: string;
     priority: number;
@@ -30,10 +24,15 @@ interface AutonomousAction {
     contact?: {
         id: string;
         name: string;
+        emails?: string[];
+    };
+    property?: {
+        id: string;
+        address: string;
     };
 }
 
-interface UseGodmodeReturn {
+export interface GodmodeContextType {
     settings: GodmodeSettings;
     pendingActions: AutonomousAction[];
     pendingCount: number;
@@ -42,11 +41,21 @@ interface UseGodmodeReturn {
     fetchSettings: () => Promise<void>;
     updateMode: (mode: GodmodeMode) => Promise<void>;
     fetchPendingActions: () => Promise<void>;
-    approveAction: (actionId: string) => Promise<boolean>;
+    approveAction: (actionId: string, overrides?: { finalBody?: string; finalSubject?: string }) => Promise<boolean>;
     dismissAction: (actionId: string) => Promise<boolean>;
 }
 
-export const useGodmode = (): UseGodmodeReturn => {
+export const GodmodeContext = createContext<GodmodeContextType | undefined>(undefined);
+
+export const useGodmode = (): GodmodeContextType => {
+    const context = useContext(GodmodeContext);
+    if (!context) {
+        throw new Error('useGodmode must be used within a GodmodeProvider');
+    }
+    return context;
+};
+
+export const useGodmodeLogic = (): GodmodeContextType => {
     const [settings, setSettings] = useState<GodmodeSettings>({
         mode: 'demi_god',
         enabledActionTypes: []
@@ -70,7 +79,7 @@ export const useGodmode = (): UseGodmodeReturn => {
         try {
             await api.put('/api/godmode/settings', { mode });
             setSettings(prev => ({ ...prev, mode }));
-            // Notify other instances of the hook
+            // Notify other instances if any (though Provider should handle it)
             window.dispatchEvent(new CustomEvent('zena-godmode-updated'));
         } catch (error) {
             console.error('Failed to update Godmode mode:', error);
@@ -92,22 +101,9 @@ export const useGodmode = (): UseGodmodeReturn => {
         }
     }, []);
 
-    // Fetch settings on mount and listen for updates
-    useEffect(() => {
-        fetchSettings();
-        fetchPendingActions();
-
-        const handleUpdate = () => {
-            fetchSettings();
-        };
-
-        window.addEventListener('zena-godmode-updated', handleUpdate);
-        return () => window.removeEventListener('zena-godmode-updated', handleUpdate);
-    }, [fetchSettings, fetchPendingActions]);
-
-    const approveAction = useCallback(async (actionId: string): Promise<boolean> => {
+    const approveAction = useCallback(async (actionId: string, overrides?: { finalBody?: string; finalSubject?: string }): Promise<boolean> => {
         try {
-            await api.post(`/api/godmode/actions/${actionId}/approve`);
+            await api.post(`/api/godmode/actions/${actionId}/approve`, overrides);
             setPendingActions(prev => prev.filter(a => a.id !== actionId));
             return true;
         } catch (error) {
@@ -126,6 +122,12 @@ export const useGodmode = (): UseGodmodeReturn => {
             return false;
         }
     }, []);
+
+    // Initial fetch in useGodmodeLogic
+    useEffect(() => {
+        fetchSettings();
+        fetchPendingActions();
+    }, [fetchSettings, fetchPendingActions]);
 
     return {
         settings,

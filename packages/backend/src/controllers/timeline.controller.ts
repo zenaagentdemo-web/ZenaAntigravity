@@ -93,7 +93,7 @@ export async function createManualNote(req: Request, res: Response) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { entityType, entityId, summary, content } = req.body;
+    const { entityType, entityId, summary, content, type } = req.body;
 
     // Validate required fields
     if (!entityType || !entityId || !summary) {
@@ -111,6 +111,10 @@ export async function createManualNote(req: Request, res: Response) {
         validTypes: validEntityTypes,
       });
     }
+
+    // Validate type if provided
+    const validTypes = ['note', 'voice_note'];
+    const noteType = type && validTypes.includes(type) ? type : 'note';
 
     // Verify entity exists and belongs to user
     let entityExists = false;
@@ -155,7 +159,8 @@ export async function createManualNote(req: Request, res: Response) {
       entityType,
       entityId,
       summary,
-      content
+      content,
+      noteType
     );
 
     res.status(201).json({

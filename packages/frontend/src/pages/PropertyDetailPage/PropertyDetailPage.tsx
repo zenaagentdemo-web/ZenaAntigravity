@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -37,6 +38,7 @@ import { LogIntelTooltip } from '../../components/LogIntelTooltip/LogIntelToolti
 import { ZenaBatchComposeModal } from '../../components/ZenaBatchComposeModal/ZenaBatchComposeModal';
 import { ZenaCallTooltip } from '../../components/ZenaCallTooltip/ZenaCallTooltip';
 import { AddPropertyModal } from '../../components/AddPropertyModal/AddPropertyModal';
+import { ZenaDatePicker } from '../../components/ZenaDatePicker/ZenaDatePicker';
 import './PropertyDetailPage.css';
 
 interface Contact {
@@ -148,6 +150,7 @@ export const PropertyDetailPage: React.FC = () => {
   const [noteContent, setNoteContent] = useState('');
   const [addingNote, setAddingNote] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [usedVoiceRecording, setUsedVoiceRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -163,6 +166,8 @@ export const PropertyDetailPage: React.FC = () => {
   const [milestoneDate, setMilestoneDate] = useState('');
   const [milestoneNotes, setMilestoneNotes] = useState('');
   const [addingMilestone, setAddingMilestone] = useState(false);
+  const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(null);
+  const [milestoneType, setMilestoneType] = useState<string>('custom');
 
   // Intelligence Hook
   const { getIntelligence, refreshIntelligence, lastPropertyUpdate, isConnected } = usePropertyIntelligence();
@@ -179,6 +184,8 @@ export const PropertyDetailPage: React.FC = () => {
   const [timelineSummary, setTimelineSummary] = useState<string | null>(null);
   const [isLoadingTimelineSummary, setIsLoadingTimelineSummary] = useState(false);
   const [showPulseHelp, setShowPulseHelp] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [isConfirmingSlot, setIsConfirmingSlot] = useState(false);
 
   // Throttle state for Neural Pulse (5 minute cooldown)
   const [lastPulseTime, setLastPulseTime] = useState<number | null>(null);
@@ -257,9 +264,11 @@ export const PropertyDetailPage: React.FC = () => {
       await api.post(`/api/timeline/notes`, {
         entityType: 'property',
         entityId: id,
-        summary: noteContent
+        summary: noteContent,
+        type: usedVoiceRecording ? 'voice_note' : 'note'
       });
       await loadPropertyData();
+      setUsedVoiceRecording(false);
       setNoteContent('');
       setShowNoteForm(false);
 
@@ -277,24 +286,58 @@ export const PropertyDetailPage: React.FC = () => {
 
     try {
       setAddingMilestone(true);
-      await api.post(`/api/properties/${id}/milestones`, {
-        type: 'custom',
-        title: milestoneTitle,
-        date: milestoneDate,
-        notes: milestoneNotes || undefined,
-      });
+      if (editingMilestoneId) {
+        // UPDATE existing milestone
+        await api.put(`/api/properties/${id}/milestones/${editingMilestoneId}`, {
+          type: milestoneType,
+          title: milestoneTitle,
+          date: milestoneDate,
+          notes: milestoneNotes || undefined,
+        });
+      } else {
+        // CREATE new milestone
+        await api.post(`/api/properties/${id}/milestones`, {
+          type: milestoneType || 'custom',
+          title: milestoneTitle,
+          date: milestoneDate,
+          notes: milestoneNotes || undefined,
+        });
+      }
 
       await loadPropertyData();
       setMilestoneTitle('');
       setMilestoneDate('');
       setMilestoneNotes('');
+      setMilestoneType('custom');
+      setEditingMilestoneId(null);
       setShowMilestoneForm(false);
 
       // IMMEDIATE FEEDBACK LOOP: Trigger AI re-analysis
       handleRefreshIntelligence();
     } catch (err) {
-      console.error('Failed to add milestone:', err);
-      alert('Failed to add milestone. Please try again.');
+      console.error('Failed to save milestone:', err);
+      alert('Failed to save milestone. Please try again.');
+    } finally {
+      setAddingMilestone(false);
+    }
+  };
+
+  const handleDeleteMilestone = async (milestoneId: string) => {
+    if (!id || !window.confirm('Are you sure you want to delete this milestone?')) return;
+
+    try {
+      setAddingMilestone(true);
+      await api.delete(`/api/properties/${id}/milestones/${milestoneId}`);
+      await loadPropertyData();
+      setShowMilestoneForm(false);
+      setMilestoneTitle('');
+      setMilestoneDate('');
+      setMilestoneNotes('');
+      setEditingMilestoneId(null);
+      handleRefreshIntelligence();
+    } catch (err) {
+      console.error('Failed to delete milestone:', err);
+      alert('Failed to delete milestone.');
     } finally {
       setAddingMilestone(false);
     }
@@ -459,6 +502,7 @@ export const PropertyDetailPage: React.FC = () => {
 
   const startRecording = async () => {
     try {
+      setUsedVoiceRecording(true);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
@@ -820,7 +864,7 @@ export const PropertyDetailPage: React.FC = () => {
               className={`property-detail-page__action-button ${showNoteForm ? 'active' : ''}`}
               onClick={() => setShowNoteForm(!showNoteForm)}
             >
-              <Plus size={18} /> Log Intel
+              <Plus size={18} /> Add note
               <LogIntelTooltip />
             </button>
             <button
@@ -830,7 +874,7 @@ export const PropertyDetailPage: React.FC = () => {
                 fetchScheduleSuggestions();
               }}
             >
-              <Calendar size={18} /> Schedule
+              <Calendar size={18} /> Schedule Open Home
               <Sparkles size={12} style={{ marginLeft: '4px', color: '#00D4FF' }} />
             </button>
           </div>
@@ -1023,8 +1067,11 @@ export const PropertyDetailPage: React.FC = () => {
 
           {showMilestoneForm && (
             <div className="property-detail-page__milestone-form">
+              <h3 style={{ color: 'white', fontSize: '16px', marginBottom: '16px' }}>
+                {editingMilestoneId ? 'Edit Milestone' : 'Add Milestone'}
+              </h3>
               {/* AI Milestone Suggestions */}
-              {milestoneSuggestions.length === 0 && !isLoadingMilestones && (
+              {!editingMilestoneId && milestoneSuggestions.length === 0 && !isLoadingMilestones && (
                 <button
                   className="property-detail-page__ai-suggest-btn"
                   onClick={fetchMilestoneSuggestions}
@@ -1033,8 +1080,8 @@ export const PropertyDetailPage: React.FC = () => {
                   <Sparkles size={14} /> Get AI Suggestions
                 </button>
               )}
-              {isLoadingMilestones && <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginBottom: '12px' }}>Loading AI suggestions...</div>}
-              {milestoneSuggestions.length > 0 && (
+              {!editingMilestoneId && isLoadingMilestones && <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginBottom: '12px' }}>Loading AI suggestions...</div>}
+              {!editingMilestoneId && milestoneSuggestions.length > 0 && (
                 <div style={{ marginBottom: '12px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                   {milestoneSuggestions.map((s, i) => (
                     <button
@@ -1054,12 +1101,17 @@ export const PropertyDetailPage: React.FC = () => {
                 value={milestoneTitle}
                 onChange={(e) => setMilestoneTitle(e.target.value)}
               />
-              <input
-                type="date"
-                className="property-detail-page__milestone-input"
-                value={milestoneDate}
-                onChange={(e) => setMilestoneDate(e.target.value)}
-              />
+              <div style={{ marginBottom: '16px' }}>
+                <ZenaDatePicker
+                  value={milestoneDate}
+                  onChange={(val) => setMilestoneDate(val)}
+                  placeholder="Select milestone date & time"
+                  appointments={[
+                    ...timeline.map(e => ({ id: e.id, time: new Date(e.timestamp), title: e.summary })),
+                    ...(property.milestones?.filter(m => m.id !== editingMilestoneId).map(m => ({ id: m.id, time: new Date(m.date), title: m.title })) || [])
+                  ]}
+                />
+              </div>
               <textarea
                 className="property-detail-page__milestone-textarea"
                 placeholder="Notes (optional)"
@@ -1068,6 +1120,16 @@ export const PropertyDetailPage: React.FC = () => {
                 rows={3}
               />
               <div className="property-detail-page__milestone-actions">
+                {editingMilestoneId && (
+                  <button
+                    className="property-detail-page__delete-btn"
+                    onClick={() => handleDeleteMilestone(editingMilestoneId)}
+                    disabled={addingMilestone}
+                    style={{ marginRight: 'auto', background: 'rgba(255, 107, 107, 0.1)', color: '#FF6B6B', border: '1px solid rgba(255, 107, 107, 0.2)', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <Trash2 size={14} /> Delete
+                  </button>
+                )}
                 <button
                   className="property-detail-page__note-cancel"
                   onClick={() => {
@@ -1075,6 +1137,8 @@ export const PropertyDetailPage: React.FC = () => {
                     setMilestoneTitle('');
                     setMilestoneDate('');
                     setMilestoneNotes('');
+                    setMilestoneType('custom');
+                    setEditingMilestoneId(null);
                   }}
                   disabled={addingMilestone}
                 >
@@ -1085,7 +1149,7 @@ export const PropertyDetailPage: React.FC = () => {
                   onClick={handleAddMilestone}
                   disabled={!milestoneTitle.trim() || !milestoneDate || addingMilestone}
                 >
-                  {addingMilestone ? 'Saving...' : 'Save Milestone'}
+                  {addingMilestone ? 'Saving...' : editingMilestoneId ? 'Update Milestone' : 'Save Milestone'}
                 </button>
               </div>
             </div>
@@ -1123,7 +1187,19 @@ export const PropertyDetailPage: React.FC = () => {
           {property.milestones && property.milestones.length > 0 ? (
             <div className="property-detail-page__milestones">
               {property.milestones.map((milestone) => (
-                <div key={milestone.id} className="property-detail-page__milestone">
+                <div
+                  key={milestone.id}
+                  className={`property-detail-page__milestone ${editingMilestoneId === milestone.id ? 'editing' : ''}`}
+                  onClick={() => {
+                    setEditingMilestoneId(milestone.id);
+                    setMilestoneTitle(milestone.title);
+                    setMilestoneDate(milestone.date);
+                    setMilestoneNotes(milestone.notes || '');
+                    setMilestoneType(milestone.type);
+                    setShowMilestoneForm(true);
+                  }}
+                  style={{ cursor: 'pointer', transition: 'all 0.2s', border: editingMilestoneId === milestone.id ? '1px solid #00D4FF' : '1px solid transparent' }}
+                >
                   <div className="property-detail-page__milestone-header">
                     <span className="property-detail-page__milestone-title">
                       {milestone.title}
@@ -1183,7 +1259,7 @@ export const PropertyDetailPage: React.FC = () => {
                 </div>
                 <div className="property-detail-page__timeline-content">
                   <div className="property-detail-page__timeline-header">
-                    <span className="property-detail-page__timeline-type">{event.type}</span>
+                    <span className="property-detail-page__timeline-type">{event.type.replace(/_/g, ' ').toUpperCase()}</span>
                     <div className="property-detail-page__timeline-actions">
                       <span className="property-detail-page__timeline-date">{formatDate(event.timestamp)}</span>
                       {editingEventId !== event.id && (
@@ -1267,16 +1343,16 @@ export const PropertyDetailPage: React.FC = () => {
         </div>
       )}
 
-      {/* Schedule Modal with AI Suggestions */}
-      {showScheduleModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
-          <div style={{ background: 'linear-gradient(135deg, #0a1628, #0d1f35)', padding: '24px', borderRadius: '16px', maxWidth: '480px', width: '90%', border: '1px solid rgba(0, 212, 255, 0.2)' }}>
+      {/* Schedule Modal with AI Suggestions - using Portal for proper centering */}
+      {showScheduleModal && createPortal(
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '20px', boxSizing: 'border-box' }}>
+          <div style={{ background: 'linear-gradient(135deg, #0a1628, #0d1f35)', padding: '24px', borderRadius: '16px', maxWidth: '520px', width: '100%', border: '1px solid rgba(0, 212, 255, 0.2)', maxHeight: '80vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ color: 'white', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ color: 'white', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
                 <Sparkles size={20} style={{ color: '#00D4FF' }} />
-                AI-Suggested Open Home Times
+                {isConfirmingSlot ? 'Confirm Open Home' : 'AI-Suggested Open Home Times'}
               </h3>
-              <button onClick={() => setShowScheduleModal(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontSize: '20px' }}>×</button>
+              <button onClick={() => { setShowScheduleModal(false); setSelectedSlot(null); setIsConfirmingSlot(false); }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontSize: '20px' }}>×</button>
             </div>
 
             {isLoadingSchedule ? (
@@ -1284,14 +1360,111 @@ export const PropertyDetailPage: React.FC = () => {
                 <RefreshCw size={24} style={{ animation: 'spin 1s linear infinite' }} />
                 <p style={{ marginTop: '12px' }}>Analyzing buyer activity patterns...</p>
               </div>
+            ) : isConfirmingSlot && selectedSlot ? (
+              /* Confirmation View */
+              <>
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ padding: '16px', background: 'rgba(0, 255, 136, 0.1)', border: '2px solid rgba(0, 255, 136, 0.4)', borderRadius: '12px', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                      <CheckCircle2 size={20} style={{ color: '#00FF88' }} />
+                      <span style={{ color: '#00FF88', fontWeight: 600, fontSize: '14px' }}>Selected Time</span>
+                    </div>
+                    <p style={{ color: 'white', fontSize: '15px', margin: 0 }}>{selectedSlot}</p>
+                  </div>
+
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginBottom: '12px' }}>Other suggested times:</p>
+                  {scheduleSuggestions.filter(s => s !== selectedSlot).map((suggestion, i) => (
+                    <div
+                      key={i}
+                      onClick={() => setSelectedSlot(suggestion)}
+                      style={{
+                        padding: '12px 14px',
+                        background: 'rgba(0, 212, 255, 0.05)',
+                        border: '1px solid rgba(0, 212, 255, 0.1)',
+                        borderRadius: '8px',
+                        marginBottom: '8px',
+                        cursor: 'pointer',
+                        color: 'rgba(255,255,255,0.7)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        fontSize: '13px',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <Calendar size={16} style={{ color: '#00D4FF' }} />
+                      <span>{suggestion}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button
+                    onClick={() => setIsConfirmingSlot(false)}
+                    style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: 'rgba(255,255,255,0.7)', cursor: 'pointer' }}
+                  >
+                    ← Back
+                  </button>
+                  <button
+                    onClick={async () => {
+                      if (!property || !selectedSlot) return;
+                      try {
+                        // Parse the slot to extract date/time info - now includes full date
+                        const dateMatch = selectedSlot.match(/(\d{1,2})\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})/i);
+                        const timeMatch = selectedSlot.match(/(\d{1,2}:\d{2}\s*(?:AM|PM))/i);
+
+                        let targetDate = new Date();
+                        if (dateMatch) {
+                          const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+                          const day = parseInt(dateMatch[1]);
+                          const month = months.indexOf(dateMatch[2].toLowerCase());
+                          const year = parseInt(dateMatch[3]);
+                          targetDate = new Date(year, month, day);
+                        }
+
+                        if (timeMatch) {
+                          const [time, period] = timeMatch[1].split(/\s+/);
+                          const [hours, minutes] = time.split(':').map(Number);
+                          let adjustedHours = hours;
+                          if (period.toUpperCase() === 'PM' && hours !== 12) adjustedHours += 12;
+                          if (period.toUpperCase() === 'AM' && hours === 12) adjustedHours = 0;
+                          targetDate.setHours(adjustedHours, minutes, 0, 0);
+                        }
+
+                        await api.post(`/api/properties/${property.id}/milestones`, {
+                          type: 'open_home',
+                          title: `Open Home - ${property.address}`,
+                          date: targetDate.toISOString(),
+                          notes: selectedSlot
+                        });
+
+                        // Refresh property data
+                        loadPropertyData();
+                        setShowScheduleModal(false);
+                        setSelectedSlot(null);
+                        setIsConfirmingSlot(false);
+                      } catch (err) {
+                        console.error('Failed to create open home:', err);
+                      }
+                    }}
+                    style={{ flex: 2, padding: '12px', background: 'linear-gradient(135deg, #00FF88, #00D4FF)', border: 'none', borderRadius: '8px', color: '#0a1628', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  >
+                    <CheckCircle2 size={18} />
+                    Confirm Open Home
+                  </button>
+                </div>
+              </>
             ) : (
+              /* Slot Selection View */
               <>
                 <div style={{ marginBottom: '20px' }}>
                   {scheduleSuggestions.map((suggestion, i) => (
                     <div
                       key={i}
                       onClick={() => {
-                        navigate(`/calendar?date=${new Date().toISOString()}&title=Open Home - ${property?.address}`);
+                        // Navigate to calendar with this slot selected and all suggestions
+                        const suggestionsParam = encodeURIComponent(JSON.stringify(scheduleSuggestions));
+                        navigate(`/calendar?property=${encodeURIComponent(property?.address || '')}&propertyId=${property?.id || ''}&suggestions=${suggestionsParam}&selected=${encodeURIComponent(suggestion)}`);
                         setShowScheduleModal(false);
                       }}
                       style={{
@@ -1308,7 +1481,7 @@ export const PropertyDetailPage: React.FC = () => {
                         transition: 'all 0.2s'
                       }}
                     >
-                      <Calendar size={18} style={{ color: '#00D4FF' }} />
+                      <Calendar size={18} style={{ color: '#00D4FF', flexShrink: 0 }} />
                       <span>{suggestion}</span>
                     </div>
                   ))}
@@ -1317,7 +1490,9 @@ export const PropertyDetailPage: React.FC = () => {
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <button
                     onClick={() => {
-                      navigate(`/calendar?search=${encodeURIComponent(property?.address || '')}`);
+                      // Navigate to calendar with all suggestions
+                      const suggestionsParam = encodeURIComponent(JSON.stringify(scheduleSuggestions));
+                      navigate(`/calendar?property=${encodeURIComponent(property?.address || '')}&propertyId=${property?.id || ''}&suggestions=${suggestionsParam}`);
                       setShowScheduleModal(false);
                     }}
                     style={{ flex: 1, padding: '12px', background: 'rgba(0, 212, 255, 0.2)', border: '1px solid rgba(0, 212, 255, 0.3)', borderRadius: '8px', color: '#00D4FF', cursor: 'pointer', fontWeight: 500 }}
@@ -1334,7 +1509,8 @@ export const PropertyDetailPage: React.FC = () => {
               </>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {isEditingProperty && property && (

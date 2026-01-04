@@ -13,6 +13,7 @@ import {
     dismissAction,
     bulkApprove,
     suggestActions,
+    triggerHeartbeat,
 } from '../controllers/godmode.controller.js';
 
 const router = Router();
@@ -23,6 +24,9 @@ router.use(authMiddleware);
 // Settings
 router.get('/settings', getSettings);
 router.put('/settings', updateSettings);
+
+// Heartbeat (Throttled Scan)
+router.post('/heartbeat', triggerHeartbeat);
 
 // Actions
 router.get('/actions', getPendingActions);

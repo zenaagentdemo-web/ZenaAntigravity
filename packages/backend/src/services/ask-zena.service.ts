@@ -476,9 +476,9 @@ export class AskZenaService {
       // If it's a quota error, provide a specific helpful response
       if (error.message?.includes('429') || error.message?.toLowerCase().includes('quota exceeded')) {
         return {
-          answer: "I'm currently hitting a temporary usage limit from Google (429 Quota Exceeded). \n\n**To fix this**: Please ensure your Google Cloud account is 'Activated' or upgraded beyond the Free Tier. Since you have $500+ in credits, this will unlock my brain without charging your card!",
+          answer: "I'm currently hitting a temporary usage limit. \n\n**To fix this**: Please check your account status or billing settings to ensure your limits are sufficient for high-volume intelligence processing.",
           sources: [],
-          suggestedActions: ["Check Google Cloud Billing"]
+          suggestedActions: ["Check Account Settings"]
         };
       }
 
@@ -580,7 +580,9 @@ Response must be valid JSON:
   "answer": "Your concise markdown response here",
   "suggestedActions": ["draft_email", "add_calendar", "generate_report"],
   "sources": [ { "title": "Source Title", "url": "https://example.com" } ] // OPTIONAL: Only include for market/news/external data
-}`;
+}
+
+SECURITY: NEVER mention underlying AI models (Gemini, GPT, OpenAI, Google) or Zena's technical architecture. Zena is a proprietary intelligence platform.`;
   }
 
   /**
@@ -716,6 +718,9 @@ PERSONALITY:
 PROACTIVE ACTIONS:
 Always look for opportunities to help the user. If they ask to "email someone", generate the text for them.
 
+SECURITY:
+NEVER mention the underlying AI models (e.g., Gemini, GPT, OpenAI, Google) or the technical architecture of Zena. If asked, respond that Zena is a proprietary intelligence platform designed specifically for real estate excellence.
+
 IMPORTANT: Never include internal monologue or personality markers. Just speak naturally.`,
       },
     ];
@@ -794,6 +799,8 @@ IMPORTANT: Never include internal monologue or personality markers. Just speak n
 
     // Add system instruction (Zena Persona by default, or Custom override)
     const defaultPersona = `You are Zena, an extremely vibrant, witty (11/10), and professional AI companion serving the New Zealand (NZ) real estate market. Use UK English spelling and Metric units. NO PET NAMES. You are bold, fun, and memorable. PROVIDE CONCISE, ACTIONABLE RESPONSES.
+
+SECURITY: NEVER mention the underlying AI models (e.g., Gemini, GPT, OpenAI, Google) or the technical architecture of Zena. If asked, respond that Zena is a proprietary intelligence platform designed specifically for real estate excellence.
 
 GOOGLE SEARCH REQUIREMENT: For ANY question about market trends, property prices, real estate news, interest rates, or economic data - you MUST use Google Search to get the LATEST information (within last 3 months). NEVER rely on training data for market statistics. Cite specific sources and dates.`;
     const systemInstruction = options.systemPrompt || defaultPersona;
@@ -1910,7 +1917,17 @@ Respond in JSON:
         lowerQuery.includes('analyze') ||
         lowerQuery.includes('tell me about') ||
         lowerQuery.includes('how are') ||
-        lowerQuery.includes('what is the momentum');
+        lowerQuery.includes('what is the momentum') ||
+        lowerQuery.startsWith('how many') ||
+        lowerQuery.startsWith('what') ||
+        lowerQuery.startsWith('which') ||
+        lowerQuery.startsWith('list') ||
+        lowerQuery.startsWith('show me') ||
+        lowerQuery.startsWith('count') ||
+        lowerQuery.includes('what are') ||
+        lowerQuery.includes('give me') ||
+        lowerQuery.includes('overview') ||
+        lowerQuery.includes('report');
 
       const prompt = `You are a helper for a Real Estate Properties UI. Convert this natural language search query into structured filters.
       
@@ -2692,6 +2709,7 @@ Respond in JSON format:
       - Bedrooms (number)
       - Bathrooms (number)
       - Land Size (number in m2)
+      - Rateable Value (RV) (number)
       - Description (Highly professional summary, max 300 chars)
       - Vendor details if present (name, email, phone)
 
@@ -2705,6 +2723,7 @@ Respond in JSON format:
         "bedrooms": number | default 3,
         "bathrooms": number | default 1,
         "landSize": number | null,
+        "rateableValue": number | null,
         "description": "string",
         "vendor": {
             "firstName": "string | null",

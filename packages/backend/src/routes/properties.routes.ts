@@ -39,6 +39,12 @@ router.get('/:id/smart-matches', propertiesController.getSmartMatches.bind(prope
 // POST /api/properties/:id/milestones - Add campaign milestone
 router.post('/:id/milestones', propertiesController.addMilestone.bind(propertiesController));
 
+// PUT /api/properties/:id/milestones/:milestoneId - Update campaign milestone
+router.put('/:id/milestones/:milestoneId', propertiesController.updateMilestone.bind(propertiesController));
+
+// DELETE /api/properties/:id/milestones/:milestoneId - Delete campaign milestone
+router.delete('/:id/milestones/:milestoneId', propertiesController.deleteMilestone.bind(propertiesController));
+
 // POST /api/properties/:id/vendor-update - Generate vendor update
 router.post('/:id/vendor-update', generateVendorUpdate);
 
@@ -47,5 +53,8 @@ router.post('/:id/intelligence/refresh', (req, res) => propertiesController.refr
 
 // GET /api/properties/:id/intelligence - Get Zena Intelligence
 router.get('/:id/intelligence', (req, res) => propertiesController.getIntelligence(req, res));
+
+// POST /api/properties/:id/comparables - Generate Comparable Sales Report (Market Scraper)
+router.post('/:id/comparables', (req, res) => propertiesController.generateComparables(req, res));
 
 export default router;

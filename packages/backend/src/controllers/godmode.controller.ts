@@ -35,13 +35,15 @@ export async function updateSettings(req: Request, res: Response): Promise<void>
             return;
         }
 
-        const { mode, timeWindowStart, timeWindowEnd, enabledActionTypes } = req.body;
+        const { mode, timeWindowStart, timeWindowEnd, enabledActionTypes, fullGodStart, fullGodEnd } = req.body;
 
         const settings = await godmodeService.updateSettings(req.user.userId, {
             mode,
             timeWindowStart,
             timeWindowEnd,
             enabledActionTypes,
+            fullGodStart: fullGodStart ? new Date(fullGodStart) : undefined,
+            fullGodEnd: fullGodEnd ? new Date(fullGodEnd) : undefined,
         });
 
         res.status(200).json({
@@ -52,6 +54,25 @@ export async function updateSettings(req: Request, res: Response): Promise<void>
     } catch (error) {
         console.error('Error updating Godmode settings:', error);
         res.status(500).json({ error: 'Failed to update settings' });
+    }
+}
+
+/**
+ * POST /api/godmode/heartbeat
+ * Trigger a throttled autonomous scan
+ */
+export async function triggerHeartbeat(req: Request, res: Response): Promise<void> {
+    try {
+        if (!req.user) {
+            res.status(401).json({ error: 'Authentication required' });
+            return;
+        }
+
+        const result = await godmodeService.runThrottledScan(req.user.userId);
+        res.status(result.success ? 200 : 202).json(result); // 202 if throttled
+    } catch (error) {
+        console.error('Error in Godmode heartbeat:', error);
+        res.status(500).json({ error: 'Failed' });
     }
 }
 
@@ -121,7 +142,13 @@ export async function approveAction(req: Request, res: Response): Promise<void> 
         }
 
         const { id: actionId } = req.params;
-        const action = await godmodeService.approveAction(actionId, req.user.userId);
+        const { finalBody, finalSubject } = req.body;
+
+        const action = await godmodeService.approveAction(
+            actionId,
+            req.user.userId,
+            { draftBody: finalBody, draftSubject: finalSubject }
+        );
 
         res.status(200).json({
             success: true,

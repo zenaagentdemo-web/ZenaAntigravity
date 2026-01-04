@@ -1,36 +1,24 @@
 /**
- * ActionApprovalQueue Component
+ * ActionApprovalQueue Component (Command Center)
  * 
- * Slide-out panel displaying pending autonomous actions for Demi-God mode.
- * Users can approve or dismiss actions individually or in bulk.
+ * Enhanced split-view interface for approving autonomous actions.
+ * Left Panel: Queue of pending actions
+ * Right Panel: Detailed preview and context
  */
 
 import React, { useState, useEffect } from 'react';
 import {
     X, Check, Trash2, Mail, Calendar, Tag, Archive,
-    ChevronRight, Clock, User, Loader2, CheckCheck, XCircle
+    CheckCheck, Home, TrendingUp, TrendingDown, Presentation,
+    FileText, MessageSquare, Phone, Copy, Quote, Eye,
+    Loader2, ChevronRight, Clock, User, Paperclip
 } from 'lucide-react';
+import ReactDOM from 'react-dom';
 import { api } from '../../utils/apiClient';
+import { AttachmentChip } from '../AttachmentChip/AttachmentChip';
+import { useGodmode, AutonomousAction } from '../../hooks/useGodmode';
 import './ActionApprovalQueue.css';
 
-interface AutonomousAction {
-    id: string;
-    actionType: string;
-    priority: number;
-    title: string;
-    description?: string;
-    draftSubject?: string;
-    draftBody?: string;
-    status: string;
-    mode: string;
-    createdAt: string;
-    contact?: {
-        id: string;
-        name: string;
-        emails?: string[];
-        role?: string;
-    };
-}
 
 interface ActionApprovalQueueProps {
     isOpen: boolean;
@@ -42,7 +30,13 @@ const ACTION_ICONS: Record<string, React.ReactNode> = {
     send_email: <Mail size={16} />,
     schedule_followup: <Calendar size={16} />,
     update_category: <Tag size={16} />,
-    archive_contact: <Archive size={16} />
+    archive_contact: <Archive size={16} />,
+    vendor_update: <Presentation size={16} />,
+    price_review: <TrendingUp size={16} />,
+    price_reduction: <TrendingDown size={16} />,
+    buyer_match_intro: <Mail size={16} />,
+    generate_weekly_report: <FileText size={16} />,
+    schedule_viewing: <Calendar size={16} />,
 };
 
 const getPriorityColor = (priority: number): string => {
@@ -56,58 +50,143 @@ export const ActionApprovalQueue: React.FC<ActionApprovalQueueProps> = ({
     onClose,
     onActionTaken
 }) => {
-    const [actions, setActions] = useState<AutonomousAction[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const {
+        pendingActions: actions,
+        isLoading,
+        approveAction,
+        dismissAction,
+        settings: godmodeSettings
+    } = useGodmode();
+
     const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
-    const [expandedId, setExpandedId] = useState<string | null>(null);
-    const [godmodeMode, setGodmodeMode] = useState<string>('off');
+    const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
 
+    // Edit State
+    const [editedBody, setEditedBody] = useState<string>('');
+    const [editedSubject, setEditedSubject] = useState<string>('');
+    const [editedTo, setEditedTo] = useState<string>('');
+    const [attachments, setAttachments] = useState<File[]>([]);
+    const [isRegenerating, setIsRegenerating] = useState(false);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const selectedAction = actions.find(a => a.id === selectedActionId);
+
+    // Initial selected action
     useEffect(() => {
-        if (isOpen) {
-            fetchActions();
+        if (actions.length > 0 && !selectedActionId) {
+            setSelectedActionId(actions[0].id);
         }
-    }, [isOpen]);
+    }, [actions.length, selectedActionId]);
 
-    const fetchActions = async () => {
-        setIsLoading(true);
-        try {
-            const response = await api.get('/api/godmode/actions');
-            if (response.data) {
-                setActions(response.data.actions || []);
-                setGodmodeMode(response.data.mode || 'off');
-            }
-        } catch (error) {
-            console.error('Failed to fetch actions:', error);
-        } finally {
-            setIsLoading(false);
+    // Sync edited body when selectedAction changes
+    useEffect(() => {
+        console.log('[ActionApprovalQueue] selectedAction changed', selectedAction?.id);
+        if (selectedAction) {
+            setEditedBody(selectedAction.draftBody || '');
+            setEditedSubject(selectedAction.draftSubject || '');
+            // Parse recipient safely
+            const recipientEmail = selectedAction.contact?.emails?.[0] || 'email@example.com';
+            const recipientName = selectedAction.contact?.name || 'Recipient';
+            setEditedTo(`${recipientName} <${recipientEmail}>`);
+            setAttachments([]); // Reset attachments
+        } else {
+            setEditedBody('');
+            setEditedSubject('');
+            setEditedTo('');
+            setAttachments([]);
+        }
+    }, [selectedAction?.id]);
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFiles = e.target.files;
+        console.log('[ActionApprovalQueue] handleFileSelect', selectedFiles);
+
+        if (selectedFiles && selectedFiles.length > 0) {
+            const filesArray = Array.from(selectedFiles);
+            setAttachments(prev => {
+                const updated = [...prev, ...filesArray];
+                console.log('[ActionApprovalQueue] New attachments state:', updated);
+                return updated;
+            });
+        }
+
+        // Reset input to allow selecting the same file again
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
     };
 
-    const handleApprove = async (actionId: string) => {
-        setProcessingIds(prev => new Set(prev).add(actionId));
+    const removeAttachment = (index: number) => {
+        setAttachments(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handlePreview = (file: File) => {
+        const url = URL.createObjectURL(file);
+        window.open(url, '_blank');
+        // Note: We should revoke this URL eventually, but for a simple open-in-new-tab, browser handles garbage collection mostly fine on navigation.
+        // For a robust app, we should track these object URLs.
+    };
+
+    const handleRegenerate = async (type: 'quick' | 'detailed') => {
+        if (!selectedAction) return;
+        setIsRegenerating(true);
+        // Mock regeneration for now - in real app, call API
+        console.log(`Regenerating ${type} draft for action ${selectedAction.id}`);
+
         try {
-            await api.post(`/api/godmode/actions/${actionId}/approve`);
-            setActions(prev => prev.filter(a => a.id !== actionId));
-            onActionTaken?.();
-        } catch (error) {
-            console.error('Failed to approve action:', error);
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            if (type === 'detailed') {
+                setEditedBody(`[DETAILED DRAFT GENERATED]\n\nHi ${selectedAction.contact?.name || 'there'},\n\nI hope you're having a great week.\n\nRegarding ${selectedAction.property?.address || 'the property'}, I've done a deep dive into the recent market activity and I believe we have a unique opportunity here.\n\nThe engagement metrics are showing strong signals...\n\nLet's discuss this further when you have a moment.\n\nBest,\nHamish`);
+            } else {
+                setEditedBody(`[REGENERATED DRAFT]\n\nHi ${selectedAction.contact?.name || 'there'},\n\nJust checking in on ${selectedAction.property?.address}. I have some new updates that align perfectly with what we discussed.\n\nFree for a chat?\n\nBest,\nHamish`);
+            }
+        } finally {
+            setIsRegenerating(false);
+        }
+    };
+
+    const handleApproveWithEdits = async () => {
+        if (!selectedAction) return;
+        console.log('[ActionApprovalQueue] handleApproveWithEdits clicked', selectedAction.id);
+        setProcessingIds(prev => new Set(prev).add(selectedAction.id));
+        try {
+            const success = await approveAction(selectedAction.id, {
+                finalBody: editedBody,
+                finalSubject: editedSubject
+            });
+
+            if (success) {
+                if (selectedActionId === selectedAction.id) {
+                    const remaining = actions.filter(a => a.id !== selectedAction.id);
+                    setSelectedActionId(remaining.length > 0 ? remaining[0].id : null);
+                }
+                onActionTaken?.();
+            }
         } finally {
             setProcessingIds(prev => {
                 const next = new Set(prev);
-                next.delete(actionId);
+                next.delete(selectedAction.id);
                 return next;
             });
         }
     };
+
+    // Global fetch logic removed - now handled by GodmodeProvider
 
     const handleDismiss = async (actionId: string) => {
+        console.log('[ActionApprovalQueue] handleDismiss clicked', actionId);
         setProcessingIds(prev => new Set(prev).add(actionId));
         try {
-            await api.post(`/api/godmode/actions/${actionId}/dismiss`);
-            setActions(prev => prev.filter(a => a.id !== actionId));
-            onActionTaken?.();
-        } catch (error) {
-            console.error('Failed to dismiss action:', error);
+            const success = await dismissAction(actionId);
+            if (success) {
+                if (selectedActionId === actionId) {
+                    const remaining = actions.filter(a => a.id !== actionId);
+                    setSelectedActionId(remaining.length > 0 ? remaining[0].id : null);
+                }
+                onActionTaken?.();
+            }
         } finally {
             setProcessingIds(prev => {
                 const next = new Set(prev);
@@ -117,46 +196,24 @@ export const ActionApprovalQueue: React.FC<ActionApprovalQueueProps> = ({
         }
     };
 
-    const handleBulkApprove = async () => {
-        const actionIds = actions.map(a => a.id);
-        setProcessingIds(new Set(actionIds));
-        try {
-            await api.post('/api/godmode/bulk-approve', { actionIds });
-            setActions([]);
-            onActionTaken?.();
-        } catch (error) {
-            console.error('Failed to bulk approve:', error);
-        } finally {
-            setProcessingIds(new Set());
-        }
-    };
-
-    const formatTimeAgo = (dateString: string): string => {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffMs = now.getTime() - date.getTime();
-        const diffMins = Math.floor(diffMs / (1000 * 60));
-        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-        return `${Math.floor(diffHours / 24)}d ago`;
+    const handleCopy = (text: string) => {
+        navigator.clipboard.writeText(text);
+        // Could add toast here
     };
 
     if (!isOpen) return null;
 
-    return (
-        <>
-            {/* Backdrop */}
-            <div className="action-queue__backdrop" onClick={onClose} />
+    if (!isOpen) return null;
 
-            {/* Panel */}
+    return ReactDOM.createPortal(
+        <>
+            <div className="action-queue__backdrop" onClick={onClose} />
             <div className="action-queue">
                 {/* Header */}
                 <div className="action-queue__header">
                     <div className="action-queue__title">
                         <span className="action-queue__title-icon">⚡</span>
-                        <h2>Pending Actions</h2>
+                        <h2>Command Centre</h2>
                         {actions.length > 0 && (
                             <span className="action-queue__count">{actions.length}</span>
                         )}
@@ -166,134 +223,274 @@ export const ActionApprovalQueue: React.FC<ActionApprovalQueueProps> = ({
                     </button>
                 </div>
 
-                {/* Mode Banner */}
-                {godmodeMode !== 'off' && (
-                    <div className={`action-queue__mode-banner action-queue__mode-banner--${godmodeMode}`}>
-                        {godmodeMode === 'demi_god' ? '🔶 Demi-God Mode' : '🟢 Full God Mode'}
-                    </div>
-                )}
-
-                {/* Content */}
                 <div className="action-queue__content">
-                    {isLoading ? (
-                        <div className="action-queue__loading">
-                            <Loader2 className="animate-spin" size={24} />
-                            <span>Loading actions...</span>
-                        </div>
-                    ) : actions.length === 0 ? (
-                        <div className="action-queue__empty">
-                            <CheckCheck size={40} />
-                            <h3>All caught up!</h3>
-                            <p>No pending actions to review.</p>
-                        </div>
-                    ) : (
-                        <>
-                            {/* Bulk Actions */}
-                            <div className="action-queue__bulk">
-                                <button
-                                    className="action-queue__bulk-btn action-queue__bulk-btn--approve"
-                                    onClick={handleBulkApprove}
-                                    disabled={processingIds.size > 0}
-                                >
-                                    <CheckCheck size={14} />
-                                    Approve All ({actions.length})
-                                </button>
+                    {/* LEFT PANEL: QUEUE LIST */}
+                    <div className="action-queue__left-panel">
+                        {isLoading && actions.length === 0 ? (
+                            <div className="action-queue__loading">
+                                <Loader2 className="animate-spin" size={24} />
+                                <span>Loading actions...</span>
                             </div>
-
-                            {/* Action List */}
+                        ) : actions.length === 0 ? (
+                            <div className="action-queue__empty">
+                                <CheckCheck size={40} />
+                                <h3>All caught up!</h3>
+                                <p>No pending actions to review.</p>
+                            </div>
+                        ) : (
                             <div className="action-queue__list">
                                 {actions.map(action => (
                                     <div
                                         key={action.id}
-                                        className={`action-queue__item ${expandedId === action.id ? 'action-queue__item--expanded' : ''}`}
+                                        className={`action-queue__item ${selectedActionId === action.id ? 'selected' : ''}`}
+                                        onClick={() => setSelectedActionId(action.id)}
                                     >
-                                        {/* Item Header */}
-                                        <div
-                                            className="action-queue__item-header"
-                                            onClick={() => setExpandedId(expandedId === action.id ? null : action.id)}
-                                        >
+                                        <div className="action-queue__item-header">
                                             <div
                                                 className="action-queue__item-icon"
                                                 style={{ '--priority-color': getPriorityColor(action.priority) } as React.CSSProperties}
                                             >
                                                 {ACTION_ICONS[action.actionType] || <Mail size={16} />}
                                             </div>
-
                                             <div className="action-queue__item-info">
                                                 <div className="action-queue__item-title">{action.title}</div>
-                                                {action.contact && (
-                                                    <div className="action-queue__item-contact">
-                                                        <User size={12} />
-                                                        <span>{action.contact.name}</span>
-                                                    </div>
-                                                )}
+                                                <div className="action-queue__item-meta">
+                                                    <span className="action-queue__item-time">
+                                                        <Clock size={12} />
+                                                        {new Date(action.createdAt).toLocaleDateString()}
+                                                    </span>
+                                                </div>
                                             </div>
-
-                                            <div className="action-queue__item-meta">
-                                                <span className="action-queue__item-time">
-                                                    <Clock size={12} />
-                                                    {formatTimeAgo(action.createdAt)}
-                                                </span>
-                                                <ChevronRight
-                                                    size={16}
-                                                    className={`action-queue__item-chevron ${expandedId === action.id ? 'action-queue__item-chevron--open' : ''}`}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Expanded Content */}
-                                        {expandedId === action.id && (
-                                            <div className="action-queue__item-details">
-                                                {action.description && (
-                                                    <p className="action-queue__item-description">{action.description}</p>
-                                                )}
-
-                                                {action.draftSubject && (
-                                                    <div className="action-queue__draft-preview">
-                                                        <strong>Subject:</strong> {action.draftSubject}
-                                                    </div>
-                                                )}
-
-                                                {action.draftBody && (
-                                                    <div className="action-queue__draft-body">
-                                                        {action.draftBody.slice(0, 200)}
-                                                        {action.draftBody.length > 200 && '...'}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-
-                                        {/* Action Buttons */}
-                                        <div className="action-queue__item-actions">
-                                            <button
-                                                className="action-queue__action-btn action-queue__action-btn--approve"
-                                                onClick={(e) => { e.stopPropagation(); handleApprove(action.id); }}
-                                                disabled={processingIds.has(action.id)}
-                                            >
-                                                {processingIds.has(action.id) ? (
-                                                    <Loader2 className="animate-spin" size={14} />
-                                                ) : (
-                                                    <Check size={14} />
-                                                )}
-                                                Approve
-                                            </button>
-                                            <button
-                                                className="action-queue__action-btn action-queue__action-btn--dismiss"
-                                                onClick={(e) => { e.stopPropagation(); handleDismiss(action.id); }}
-                                                disabled={processingIds.has(action.id)}
-                                            >
-                                                <Trash2 size={14} />
-                                                Dismiss
-                                            </button>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                        </>
-                    )}
+                        )}
+                    </div>
+
+                    {/* RIGHT PANEL: DETAIL VIEW */}
+                    <div className="action-queue__right-panel">
+                        {selectedAction ? (
+                            <>
+                                <div className="detail-view__content">
+                                    {/* Reasoning / Context Summary */}
+                                    {(selectedAction.contextSummary || selectedAction.reasoning) && (
+                                        <div className="detail-view__reasoning">
+                                            <h4><TrendingUp size={12} /> Why Zena Recommended This</h4>
+                                            <p>{selectedAction.contextSummary || selectedAction.reasoning}</p>
+                                        </div>
+                                    )}
+
+                                    {/* Script / Talking Points - High Fidelity Copy Card */}
+                                    {selectedAction.script && (
+                                        <div className="preview-card" style={{ borderColor: '#8B5CF6', boxShadow: '0 4px 12px rgba(139, 92, 246, 0.1)' }}>
+                                            <div className="preview-card__header" style={{ background: 'rgba(139, 92, 246, 0.15)', borderColor: 'rgba(139, 92, 246, 0.2)' }}>
+                                                <span style={{ color: '#DDD6FE', fontWeight: 600 }}>CALL SCRIPT</span>
+                                                <button
+                                                    onClick={() => handleCopy(selectedAction.script || '')}
+                                                    className="action-link-btn"
+                                                    style={{ fontSize: '11px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                                >
+                                                    <Copy size={12} /> Copy
+                                                </button>
+                                            </div>
+                                            <div className="preview-card__body email-preview">
+                                                <div className="email-preview__body" style={{ fontSize: '15px', lineHeight: '1.7', color: '#eef2ff', whiteSpace: 'pre-wrap', fontStyle: 'italic' }}>
+                                                    {selectedAction.script}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* SMS Preview */}
+                                    {selectedAction.payload?.smsDraft && (
+                                        <div className="preview-card" style={{ borderLeft: '2px solid #FCD34D' }}>
+                                            <div className="preview-card__header">
+                                                <span>SMS / TEXT DRAFT</span>
+                                                <MessageSquare size={14} />
+                                            </div>
+                                            <div className="preview-card__body">
+                                                <div style={{ background: '#333', padding: '12px', borderRadius: '8px', color: '#fff', marginBottom: '12px', whiteSpace: 'pre-wrap' }}>
+                                                    {selectedAction.payload.smsDraft}
+                                                </div>
+                                                <button
+                                                    className="btn-secondary"
+                                                    style={{ width: '100%', justifyContent: 'center', fontSize: '12px', padding: '8px' }}
+                                                    onClick={() => handleCopy(selectedAction.payload.smsDraft)}
+                                                >
+                                                    <Copy size={12} /> Copy to Clipboard
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* ASSET PREVIEW AREA (Command Center 3.0) */}
+                                    <div className="preview-card" style={{ border: 'none', background: 'transparent' }}>
+
+                                        {/* 1. PDF REPORT PREVIEW (For Vendor Reports & Price Reductions) */}
+                                        {(selectedAction.actionType === 'generate_weekly_report' || selectedAction.actionType === 'price_reduction') && (
+                                            <div className="pdf-card" onClick={() => window.open('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', '_blank')}>
+                                                <div className="pdf-icon">PDF</div>
+                                                <div className="pdf-info">
+                                                    <h4>{selectedAction.actionType === 'price_reduction'
+                                                        ? 'Comparable Sales Analysis (Evidence)'
+                                                        : selectedAction.title.replace('Overdue Vendor Report:', 'Weekly Campaign Report')}</h4>
+                                                    <p>Generated {new Date().toLocaleDateString()}</p>
+                                                </div>
+                                                <div style={{ marginLeft: 'auto' }}>
+                                                    <button className="btn-secondary" style={{ fontSize: '12px', padding: '6px 12px' }}>
+                                                        <Eye size={14} /> Preview PDF
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* 2. SMS PREVIEW (For Buyer Matches) */}
+                                        {selectedAction.actionType === 'buyer_match_intro' && selectedAction.payload?.smsDraft && (
+                                            <div className="sms-preview-container">
+                                                <div className="sms-meta">Message Preview</div>
+                                                <div className="sms-bubble">
+                                                    {selectedAction.payload.smsDraft}
+                                                </div>
+                                                <div style={{ fontSize: '10px', color: '#666', marginTop: '4px', textAlign: 'right' }}>
+                                                    Sent from Zena
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* 3. EMAIL EDITOR (Standard for all types) */}
+                                        <div className="preview-card" style={{ marginTop: '0' }}>
+                                            <div className="preview-card__header">
+                                                <span>EMAIL DRAFT</span>
+                                                <div style={{ display: 'flex', gap: '8px' }}>
+                                                    <input
+                                                        type="file"
+                                                        ref={fileInputRef}
+                                                        onChange={handleFileSelect}
+                                                        multiple
+                                                        style={{ display: 'none' }}
+                                                    />
+                                                    <button
+                                                        onClick={() => fileInputRef.current?.click()}
+                                                        className="action-link-btn"
+                                                        style={{ fontSize: '11px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                                    >
+                                                        <Paperclip size={10} />
+                                                        Attach
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleRegenerate('quick')}
+                                                        className="action-link-btn"
+                                                        disabled={isRegenerating}
+                                                        style={{ fontSize: '11px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                                    >
+                                                        <Loader2 size={10} className={isRegenerating ? "animate-spin" : ""} style={{ display: isRegenerating ? 'block' : 'none' }} />
+                                                        Regenerate
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleRegenerate('detailed')}
+                                                        className="action-link-btn"
+                                                        disabled={isRegenerating}
+                                                        style={{ fontSize: '11px', background: '#8B5CF6', border: 'none', color: '#fff', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                                    >
+                                                        <FileText size={10} />
+                                                        Draft Detailed
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="preview-card__body email-preview">
+                                                <div style={{ marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                                                        <span style={{ width: '60px', color: '#666', fontSize: '13px', fontWeight: 500 }}>To:</span>
+                                                        <input
+                                                            type="text"
+                                                            value={editedTo}
+                                                            onChange={(e) => setEditedTo(e.target.value)}
+                                                            style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '13px', flex: 1, outline: 'none' }}
+                                                        />
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                        <span style={{ width: '60px', color: '#666', fontSize: '13px', fontWeight: 500 }}>Subject:</span>
+                                                        <input
+                                                            type="text"
+                                                            value={editedSubject}
+                                                            onChange={(e) => setEditedSubject(e.target.value)}
+                                                            style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '13px', flex: 1, outline: 'none', fontWeight: 600 }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                {console.log('[ActionApprovalQueue] Rendering attachments:', attachments.length)}
+                                                {attachments.length > 0 && (
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+                                                        {attachments.map((file, i) => (
+                                                            <AttachmentChip
+                                                                key={i}
+                                                                file={file}
+                                                                onRemove={() => removeAttachment(i)}
+                                                                onPreview={() => handlePreview(file)}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                <textarea
+                                                    className="email-editor-textarea"
+                                                    value={editedBody}
+                                                    onChange={(e) => setEditedBody(e.target.value)}
+                                                    placeholder={isRegenerating ? "Zena is writing..." : "No draft generated yet. Click 'Draft Detailed' to generate one."}
+                                                    style={{
+                                                        width: '100%',
+                                                        minHeight: '200px',
+                                                        background: 'transparent',
+                                                        border: 'none',
+                                                        color: '#d1d5db',
+                                                        fontSize: '14px',
+                                                        lineHeight: '1.6',
+                                                        resize: 'none',
+                                                        fontFamily: 'inherit',
+                                                        outline: 'none'
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Legacy JSON Preview Removed in favor of High-Fidelity Cards */}
+                                </div>
+
+                                {/* Footer Actions */}
+                                <div className="detail-view__footer">
+                                    <button
+                                        className="btn-large btn-danger"
+                                        onClick={() => handleDismiss(selectedAction.id)}
+                                        disabled={processingIds.has(selectedAction.id)}
+                                    >
+                                        <Trash2 size={16} />
+                                        Dismiss
+                                    </button>
+                                    <button
+                                        className="btn-large btn-primary"
+                                        onClick={handleApproveWithEdits}
+                                        disabled={processingIds.has(selectedAction.id)}
+                                    >
+                                        {processingIds.has(selectedAction.id) ? (
+                                            <Loader2 className="animate-spin" size={16} />
+                                        ) : (
+                                            <Check size={16} />
+                                        )}
+                                        Approve & Send
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="detail-view__empty">
+                                <span style={{ opacity: 0.5 }}>Select an action to review details</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-        </>
+        </>,
+        document.body
     );
 };
 

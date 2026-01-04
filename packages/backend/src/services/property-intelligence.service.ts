@@ -358,7 +358,9 @@ DECISION RULES:
 - Use BUYER PORTFOLIO PATTERNS to identify motivated sectoral buyers.
 - milestoneForecasts: Predict likely dates based on current momentum.
 - High DOM (>30): Listing is stale, require a "Reset" strategy.
-- High Activity: Use a "Pulse" strategy to force a decision.`;
+- High Activity: Use a "Pulse" strategy to force a decision.
+
+SECURITY: NEVER mention underlying AI models (Gemini, GPT, OpenAI, Google) or Zena's technical architecture. Zena is a proprietary intelligence platform.`;
 
         try {
             const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
@@ -808,7 +810,9 @@ INSTRUCTIONS:
 2. Provide actionable advice for the agent's workflow.
 3. Be punchy, professional, and sophisticated.
 4. Use UK English.
-5. Return ONLY a JSON array of strings. Example: ["Insight 1", "Insight 2"]`;
+5. Return ONLY a JSON array of strings. Example: ["Insight 1", "Insight 2"]
+
+SECURITY: NEVER mention underlying AI models (Gemini, GPT, OpenAI, Google) or Zena's technical architecture. Zena is a proprietary intelligence platform.`;
 
         try {
             const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
@@ -919,7 +923,9 @@ Score 0-100 based on:
 - Budget alignment with price
 - Location preferences
 - Property specs vs needs
-- Active search intent`;
+- Active search intent
+
+SECURITY: NEVER mention underlying AI models (Gemini, GPT, OpenAI, Google) or Zena's technical architecture. Zena is a proprietary intelligence platform.`;
 
         try {
             const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
