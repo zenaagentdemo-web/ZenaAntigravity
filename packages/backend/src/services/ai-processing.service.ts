@@ -291,7 +291,7 @@ JSON; // End of prompt - ensure valid JSON output only`;
    * Call Google Gemini API
    */
   private async callGemini(prompt: string, apiKey: string): Promise<string> {
-    const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
+    let model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const body = JSON.stringify({

@@ -201,7 +201,7 @@ export type ThreadAction = 'view' | 'snooze' | 'send_draft' | 'archive' | 'mark_
 /**
  * Batch actions for multiple items (threads, contacts, etc.)
  */
-export type BatchAction = 'snooze_all' | 'archive_all' | 'mark_read' | 'delete_all' | 'compose' | 'tag';
+export type BatchAction = 'delete' | 'mark_read' | 'mark_unread' | 'tag_intel' | 'export_crm' | 'email_crm' | 'add_to_deal';
 
 /**
  * Snooze duration options

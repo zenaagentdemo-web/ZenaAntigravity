@@ -11,7 +11,7 @@ import {
     X, Check, Trash2, Mail, Calendar, Tag, Archive,
     CheckCheck, Home, TrendingUp, TrendingDown, Presentation,
     FileText, MessageSquare, Phone, Copy, Quote, Eye,
-    Loader2, ChevronRight, Clock, User, Paperclip
+    Loader2, ChevronRight, Clock, User, Paperclip, Database
 } from 'lucide-react';
 import ReactDOM from 'react-dom';
 import { api } from '../../utils/apiClient';
@@ -37,6 +37,7 @@ const ACTION_ICONS: Record<string, React.ReactNode> = {
     buyer_match_intro: <Mail size={16} />,
     generate_weekly_report: <FileText size={16} />,
     schedule_viewing: <Calendar size={16} />,
+    crm_sync: <Database size={16} />,
 };
 
 const getPriorityColor = (priority: number): string => {
@@ -281,6 +282,41 @@ export const ActionApprovalQueue: React.FC<ActionApprovalQueueProps> = ({
                                         </div>
                                     )}
 
+                                    {/* CRM SYNC SPECIALIZED VIEW */}
+                                    {selectedAction.actionType === 'crm_sync' && (
+                                        <div className="preview-card crm-sync-preview" style={{ borderLeft: '3px solid #00D4FF', background: 'rgba(0, 212, 255, 0.03)' }}>
+                                            <div className="preview-card__header" style={{ background: 'rgba(0, 212, 255, 0.1)', borderColor: 'rgba(0, 212, 255, 0.2)' }}>
+                                                <span style={{ color: '#00D4FF', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <Database size={14} /> CRM DATA CONGRUENCE
+                                                </span>
+                                            </div>
+                                            <div className="preview-card__body">
+                                                <div className="sync-stats-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                                                    <div className="sync-stat-item" style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '24px', fontWeight: 800, color: '#00D4FF' }}>{selectedAction.payload?.contacts || 0}</div>
+                                                        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Contacts</div>
+                                                    </div>
+                                                    <div className="sync-stat-item" style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '24px', fontWeight: 800, color: '#A78BFA' }}>{selectedAction.payload?.properties || 0}</div>
+                                                        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Properties</div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="sync-samples">
+                                                    <h5 style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginBottom: '10px' }}>UPDATED RECORDS:</h5>
+                                                    <div className="sync-sample-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                        {selectedAction.payload?.samples?.map((s: any, i: number) => (
+                                                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.2)', padding: '8px 12px', borderRadius: '8px', fontSize: '13px' }}>
+                                                                <span style={{ color: 'white' }}>{s.name}</span>
+                                                                <span style={{ fontSize: '11px', color: s.type === 'contact' ? '#00D4FF' : '#A78BFA', fontWeight: 600 }}>{s.type.toUpperCase()}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     {/* Script / Talking Points - High Fidelity Copy Card */}
                                     {selectedAction.script && (
                                         <div className="preview-card" style={{ borderColor: '#8B5CF6', boxShadow: '0 4px 12px rgba(139, 92, 246, 0.1)' }}>
@@ -472,12 +508,20 @@ export const ActionApprovalQueue: React.FC<ActionApprovalQueueProps> = ({
                                         onClick={handleApproveWithEdits}
                                         disabled={processingIds.has(selectedAction.id)}
                                     >
-                                        {processingIds.has(selectedAction.id) ? (
-                                            <Loader2 className="animate-spin" size={16} />
+                                        {selectedAction.actionType === 'crm_sync' ? (
+                                            processingIds.has(selectedAction.id) ? (
+                                                <Loader2 className="animate-spin" size={16} />
+                                            ) : (
+                                                <Database size={16} />
+                                            )
                                         ) : (
-                                            <Check size={16} />
+                                            processingIds.has(selectedAction.id) ? (
+                                                <Loader2 className="animate-spin" size={16} />
+                                            ) : (
+                                                <Check size={16} />
+                                            )
                                         )}
-                                        Approve & Send
+                                        {selectedAction.actionType === 'crm_sync' ? 'Synchronize All Now' : 'Approve & Send'}
                                     </button>
                                 </div>
                             </>

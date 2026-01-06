@@ -1,0 +1,49 @@
+
+> @zena/backend@1.0.0 dev
+> tsx watch src/index.ts
+
+8:31:13 PM [tsx] rerunning
+c[NavigationPlanner] Initialized with Gemini model: gemini-1.5-flash
+[AskZenaService] Initializing...
+[AskZenaService] OPENAI_API_KEY set: false
+[AskZenaService] GEMINI_API_KEY set: true
+[AskZenaService] GEMINI_MODEL: gemini-1.5-flash
+[AIProcessingService] Using Gemini for processing: gemini-1.5-flash
+[CloudRobot] Session stored for aistudio.google.com
+[IntelligentNavigator] Session stored for aistudio.google.com
+[CloudRobot] Session stored for trademe.co.nz
+[IntelligentNavigator] Session stored for trademe.co.nz
+[CloudRobot] Session stored for oneroof.co.nz
+[IntelligentNavigator] Session stored for oneroof.co.nz
+[CloudRobot] Session stored for homes.co.nz
+[IntelligentNavigator] Session stored for homes.co.nz
+[CloudRobot] Session stored for realestate.co.nz
+[IntelligentNavigator] Session stored for realestate.co.nz
+[CloudRobot] Session stored for chatgpt.com
+[IntelligentNavigator] Session stored for chatgpt.com
+[SessionPersistence] Restored 6 sessions from disk
+[ActionRegistry] Registered strategy for generate_weekly_report
+[ActionRegistry] Registered strategy for buyer_match_intro
+[ActionRegistry] Registered strategy for schedule_viewing
+WebSocket server initialized
+Starting sync engine...
+Sync engine started (interval: 60s)
+Starting calendar sync engine...
+Calendar sync engine started (interval: 600s)
+[DealScheduler] Starting scheduler...
+[DealScheduler] Scheduler started
+[GodmodeScheduler] Starting autonomous pulse (6-hour interval, Full God only)...
+{"timestamp":"2026-01-05T07:31:14.635Z","level":"info","message":"Server started","context":{"port":"3001","environment":"development","nodeVersion":"v25.2.1","databaseConfigured":true}}
+{"timestamp":"2026-01-05T07:31:14.645Z","level":"info","message":"WebSocket server initialized","context":{"endpoint":"ws://localhost:3001/ws"}}
+Found 1 accounts to sync
+Starting sync for account 31280b65-8baf-4ec2-8094-e6f6c564ab77 (gmail)
+Found 0 calendar accounts to sync
+[Encryption] Invalid encrypted token format (missing parts)
+[Encryption] Decryption failed: Invalid encrypted token format
+Sync error for account 31280b65-8baf-4ec2-8094-e6f6c564ab77: Error: Invalid encrypted token format
+    at decryptToken (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/utils/encryption.ts:57:13)
+    at EmailAccountService.getEmailAccountById (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/email-account.service.ts:98:20)
+    at EmailAccountService.getValidAccessToken (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/email-account.service.ts:169:21)
+    at SyncEngineService.syncAccount (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/sync-engine.service.ts:180:27)
+    at async Promise.allSettled (index 0)
+    at SyncEngineService.syncAllAccounts (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/sync-engine.service.ts:121:23)

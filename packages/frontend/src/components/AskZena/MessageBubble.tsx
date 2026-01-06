@@ -11,14 +11,16 @@ export interface Message {
     attachments?: any[];
     timestamp?: Date;
     chips?: ActionChip[];
+    isError?: boolean;
 }
 
 interface MessageBubbleProps {
     message: Message;
     onPreviewAttachment?: (attachment: any) => void;
+    onRetry?: (messageId: string) => void;
 }
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onPreviewAttachment }) => {
+export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onPreviewAttachment, onRetry }) => {
     const isAssistant = message.role === 'assistant';
 
     return (
@@ -62,6 +64,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onPreview
                 </div>
                 {isAssistant && message.chips && message.chips.length > 0 && (
                     <ActionChips chips={message.chips} />
+                )}
+                {isAssistant && message.isError && onRetry && (
+                    <div className="message-error-actions">
+                        <button
+                            className="retry-btn"
+                            onClick={() => onRetry(message.id)}
+                        >
+                            <span className="retry-icon">🔄</span>
+                            Retry Request
+                        </button>
+                    </div>
                 )}
             </div>
         </div>

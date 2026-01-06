@@ -67,7 +67,9 @@ export interface ApiRequestOptions {
   headers?: Record<string, string>;
   cache?: boolean; // Whether to cache the response
   offlineQueue?: boolean; // Whether to queue when offline
+  responseType?: 'json' | 'blob' | 'text';
 }
+
 
 export interface ApiResponse<T = any> {
   data: T;
@@ -88,7 +90,9 @@ export async function apiRequest<T = any>(
     headers = {},
     cache = true,
     offlineQueue = true,
+    responseType = 'json',
   } = options;
+
 
   const url = `${API_BASE_URL}${endpoint}`;
 
@@ -162,18 +166,25 @@ export async function apiRequest<T = any>(
     }
 
     let data;
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
-      try {
-        data = await response.json();
-      } catch (parseErr) {
-        console.error('[API] Failed to parse JSON response', parseErr);
-        throw new Error('Invalid response format from server');
-      }
+    // Handle based on expected response type
+    if (responseType === 'blob') {
+      data = await response.blob();
+    } else if (responseType === 'text') {
+      data = await response.text();
     } else {
-      const text = await response.text();
-      throw new Error(text || `HTTP ${response.status}: ${response.statusText}`);
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          data = await response.json();
+        } catch (parseErr) {
+          console.error('[API] Failed to parse JSON response', parseErr);
+          throw new Error('Invalid response format from server');
+        }
+      } else {
+        data = await response.text();
+      }
     }
+
 
     if (!response.ok) {
       // If it's a validation error or something with a message, throw that

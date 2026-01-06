@@ -107,6 +107,29 @@
 }
 
 /* ============================================
+   Metrics
+   ============================================ */
+
+.high-tech-dashboard__metrics {
+  position: relative;
+  z-index: 15;
+  margin-top: -20px;
+}
+
+/* ============================================
+   Neural Bridges
+   ============================================ */
+
+.high-tech-dashboard__neural-bridges {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 0 var(--spacing-2);
+  display: flex;
+  justify-content: center;
+}
+
+/* ============================================
    Header Bar
    ============================================ */
 

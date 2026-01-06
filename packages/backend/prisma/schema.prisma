@@ -21,6 +21,8 @@ model User {
   lastGodmodeScanAt DateTime?
   fullGodStart    DateTime?
   fullGodEnd      DateTime?
+  crmEmails       Json?     // Array of {email: string, type: 'rex'|'vault'|'generic', label?: string}
+  crmType         String?   // Default CRM type (legacy, kept for backwards compat)
 
   // Relations
   emailAccounts    EmailAccount[]
@@ -40,6 +42,7 @@ model User {
   zenaActions       ZenaAction[]
   nurtureSequences  NurtureSequence[]
   autonomousActions AutonomousAction[]
+  crmSyncHistory    CrmSyncLedger[]
 
   @@index([email])
 }
@@ -182,6 +185,7 @@ model Contact {
   
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  lastCrmExportAt  DateTime? // When this contact was last exported/synced to a CRM
 
   // Relations
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -216,6 +220,7 @@ model Property {
   riskOverview String? @db.Text
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  lastCrmExportAt DateTime?
 
   // Relations
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -377,6 +382,7 @@ model Export {
   userId      String
   type        String    // 'contacts' | 'properties' | 'deals'
   format      String    // 'csv' | 'xlsx' | 'vcard'
+  content     String?   @db.Text
   fileUrl     String
   recordCount Int
   status      String    @default("pending") // 'pending' | 'processing' | 'completed' | 'failed'
@@ -669,3 +675,100 @@ model AIUsageLog {
   @@index([createdAt])
 }
 
+// ============================================
+// SITE DISCOVERY & LEARNING SYSTEM (Hive Mind)
+// ============================================
+
+// Site Knowledge: Stores learned UI information about connected sites
+model SiteKnowledge {
+  id                String   @id @default(uuid())
+  domain            String   @unique  // "trademe.co.nz", "corelogic.co.nz"
+  displayName       String?            // "Trade Me Property"
+  category          String   @default("portal") // 'portal' | 'crm' | 'data_provider' | 'other'
+  
+  // Discovery Status
+  discoveryStatus   String   @default("pending") // 'pending' | 'discovering' | 'completed' | 'failed'
+  discoveryProgress Int      @default(0)  // 0-100 percentage
+  lastDiscoveredAt  DateTime?
+  discoveryError    String?  @db.Text
+  
+  // Learned UI Map (from vision analysis)
+  uiMap             Json?    // Complete UI structure: { pages: [], navigation: [], forms: [] }
+  screenshotRefs    String[] // S3/storage paths to screenshots
+  
+  // Site Metadata
+  loginUrl          String?
+  mainUrl           String?
+  requiresAuth      Boolean  @default(true)
+  
+  // Usage Tracking
+  queryCount        Int      @default(0)
+  successRate       Float    @default(0)
+  lastUsedAt        DateTime?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  actionPaths       LearnedActionPath[]
+  
+  @@index([domain])
+  @@index([discoveryStatus])
+  @@index([category])
+}
+
+// Learned Action Path: Cached navigation sequences for specific tasks
+model LearnedActionPath {
+  id              String   @id @default(uuid())
+  siteKnowledgeId String
+  
+  // Task Identification
+  taskType        String   // 'search_properties' | 'count_results' | 'get_details' | 'apply_filter' | 'login' | etc.
+  taskDescription String   // "Search for properties by location"
+  intentPattern   String?  // Regex/keywords to match user queries to this path
+  
+  // The Learned Sequence
+  steps           Json     // Array of NavigationStep: [{ action, target, value?, screenshot? }]
+  extractionRules Json?    // How to extract data after navigation
+  
+  // Quality Metrics
+  successCount    Int      @default(0)
+  failureCount    Int      @default(0)
+  averageDuration Int?     // milliseconds
+  lastSuccessAt   DateTime?
+  lastFailedAt    DateTime?
+  
+  // Version Control (for when sites change)
+  version         Int      @default(1)
+  isActive        Boolean  @default(true)
+  deprecatedAt    DateTime?
+  deprecationReason String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  siteKnowledge   SiteKnowledge @relation(fields: [siteKnowledgeId], references: [id], onDelete: Cascade)
+  
+  @@unique([siteKnowledgeId, taskType, version])
+  @@index([siteKnowledgeId])
+  @@index([taskType])
+  @@index([isActive])
+}
+
+model CrmSyncLedger {
+  id            String   @id @default(uuid())
+  userId        String
+  entityType    String   // 'contact' | 'property' | 'deal'
+  entityId      String
+  crmTarget     String   // 'rex' | 'vault' | 'generic'
+  syncMethod    String   // 'email' | 'csv' | 'manual'
+  syncedAt      DateTime @default(now())
+  syncStatus    String   // 'sent' | 'confirmed' | 'failed'
+  emailMessageId String? // For email tracking
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, entityType])
+  @@index([userId, syncedAt])
+}

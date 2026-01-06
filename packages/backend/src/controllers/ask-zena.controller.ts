@@ -13,6 +13,7 @@ import { voiceService } from '../services/voice.service.js';
  * Submit a natural language query
  */
 export async function submitQuery(req: Request, res: Response): Promise<void> {
+  console.log('[AskZenaController] 📥 RECEIVED REQUEST TO /api/ask');
   try {
     const userId = (req as any).user?.id;
     if (!userId) {
@@ -826,5 +827,43 @@ Keep it concise, professional, and actionable.`;
   } catch (error) {
     console.error('Error in getTimelineSummary:', error);
     res.status(500).json({ error: 'Failed to generate timeline summary' });
+  }
+}
+/**
+ * POST /api/ask/generate-pdf
+ * Generate PDF from report content
+ */
+export async function generateReportPdf(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { content, title = 'Market Report' } = req.body;
+
+    if (!content) {
+      res.status(400).json({ error: 'Content is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Generating PDF report for user ${userId}, title: "${title}"`);
+
+    const pdfBuffer = await askZenaService.generatePdf(content, title);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf"`,
+      'Content-Length': pdfBuffer.length
+    });
+
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error('Error in generateReportPdf:', error);
+    res.status(500).json({
+      error: 'Failed to generate PDF',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 }

@@ -83,4 +83,8 @@ router.post('/milestone-suggestions', askZenaController.getMilestoneSuggestions)
 // POST /api/ask/timeline-summary - AI summary of property activity
 router.post('/timeline-summary', askZenaController.getTimelineSummary);
 
+// POST /api/ask/generate-pdf - Generate PDF from report content
+router.post('/generate-pdf', askZenaController.generateReportPdf);
+
 export default router;
+

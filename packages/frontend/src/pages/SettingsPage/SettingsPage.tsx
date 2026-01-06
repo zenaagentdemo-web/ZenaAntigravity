@@ -63,14 +63,14 @@ export const SettingsPage: React.FC = () => {
 
   useEffect(() => {
     loadSettings();
-    
+
     // Check for OAuth callback parameters
     const urlParams = new URLSearchParams(window.location.search);
     const oauthStatus = urlParams.get('oauth');
     const provider = urlParams.get('provider');
     const email = urlParams.get('email');
     const errorMessage = urlParams.get('message');
-    
+
     if (oauthStatus === 'success' && provider && email) {
       alert(`Successfully connected ${provider} account: ${email}`);
       // Clean up URL
@@ -172,7 +172,7 @@ export const SettingsPage: React.FC = () => {
   const handleExport = async (format: ExportFormat, selectedIds?: string[]) => {
     try {
       setExportInProgress(true);
-      
+
       const endpoint = `/api/export/${exportType}`;
       const response = await api.post(endpoint, {
         format,
@@ -201,11 +201,34 @@ export const SettingsPage: React.FC = () => {
     setCurrentExportId(null);
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (exportDownloadUrl) {
-      window.open(exportDownloadUrl, '_blank');
-      setExportDialogOpen(false);
-      setExportDownloadUrl(null);
+      try {
+        // Use api.get with blob response type to ensure Auth header is included
+        const response = await api.get(exportDownloadUrl, { responseType: 'blob' });
+
+        const blob = new Blob([response.data], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+
+        // Determine filename
+        const filename = `${exportType.charAt(0).toUpperCase() + exportType.slice(1)}_Export_${new Date().toISOString().split('T')[0]}.csv`;
+        link.setAttribute('download', filename);
+
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        setExportDialogOpen(false);
+        setExportDownloadUrl(null);
+      } catch (error) {
+        console.error('Download failed:', error);
+        alert('Failed to download file. Please try again.');
+      }
     }
   };
 
@@ -277,7 +300,7 @@ export const SettingsPage: React.FC = () => {
     <div className="settings-page">
       <div className="settings-page__header">
         <h1 className="settings-page__title">Settings</h1>
-        <button 
+        <button
           className="button button--danger"
           onClick={handleLogout}
         >
@@ -592,19 +615,19 @@ export const SettingsPage: React.FC = () => {
           </p>
 
           <div className="settings-section__actions">
-            <button 
+            <button
               className="button button--secondary"
               onClick={() => handleOpenExportDialog('contacts')}
             >
               Export Contacts
             </button>
-            <button 
+            <button
               className="button button--secondary"
               onClick={() => handleOpenExportDialog('properties')}
             >
               Export Properties
             </button>
-            <button 
+            <button
               className="button button--secondary"
               onClick={() => handleOpenExportDialog('deals')}
             >
@@ -661,7 +684,7 @@ export const SettingsPage: React.FC = () => {
               </div>
             )}
 
-            <button 
+            <button
               className="button button--primary"
               onClick={() => setCrmDialogOpen(true)}
             >
@@ -703,8 +726,8 @@ export const SettingsPage: React.FC = () => {
           <div className="export-dialog" onClick={(e) => e.stopPropagation()}>
             <div className="export-dialog__header">
               <h2 className="export-dialog__title">Export Complete</h2>
-              <button 
-                className="export-dialog__close" 
+              <button
+                className="export-dialog__close"
                 onClick={() => setExportDialogOpen(false)}
                 aria-label="Close"
               >

@@ -6,6 +6,11 @@ import { decodeHTMLEntities } from '../utils/text-utils.js';
 import prisma from '../config/database.js';
 import { logger } from './logger.service.js';
 import { tokenTrackingService } from './token-tracking.service.js';
+// import { cloudRobotService } from './cloud-robot.service.js';
+import { intelligentNavigatorService } from './intelligent-navigator.service.js';
+import { navigationPlannerService } from './navigation-planner.service.js';
+import puppeteer from 'puppeteer';
+
 
 
 export interface AskZenaQuery {
@@ -26,6 +31,13 @@ export interface AskZenaResponse {
   answer: string;
   sources: ResponseSource[];
   suggestedActions?: string[];
+  pendingAction?: {
+    type: string;
+    subType?: string;
+    targetSite: string;
+    payload: Record<string, any>;
+    description: string;
+  };
 }
 
 export interface ResponseSource {
@@ -60,13 +72,13 @@ export class AskZenaService {
     this.apiEndpoint = process.env.OPENAI_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions';
     this.model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 
-    console.log('[AskZenaService] Initializing...');
-    console.log('[AskZenaService] OPENAI_API_KEY set:', !!this.apiKey);
-    console.log('[AskZenaService] GEMINI_API_KEY set:', !!process.env.GEMINI_API_KEY);
-    console.log('[AskZenaService] GEMINI_MODEL:', process.env.GEMINI_MODEL || 'gemini-3-flash-preview');
+    logger.info('[AskZenaService] Initializing Ask Zena...');
+    logger.info('[AskZenaService] OPENAI_API_KEY set:', !!this.apiKey);
+    logger.info('[AskZenaService] GEMINI_API_KEY set:', !!process.env.GEMINI_API_KEY);
+    logger.info('[AskZenaService] GEMINI_MODEL:', process.env.GEMINI_MODEL || 'gemini-3-flash-preview');
 
     if (!this.apiKey && !process.env.GEMINI_API_KEY) {
-      console.warn('Warning: Neither OPENAI_API_KEY nor GEMINI_API_KEY set. Ask Zena will use fallback responses.');
+      logger.warn('Warning: Neither OPENAI_API_KEY nor GEMINI_API_KEY set. Ask Zena will use fallback responses.');
     }
   }
 
@@ -87,57 +99,205 @@ export class AskZenaService {
         });
       }
 
-      // Extract search terms and intent from query
-      const searchTerms = this.extractSearchTerms(query.query);
+      logger.info(`[AskZenaService] 📥 RECEIVED QUERY: "${query.query}"`);
 
-      // Try to retrieve relevant context from all data sources
-      let context: SearchContext = {
-        threads: [],
-        contacts: [],
-        properties: [],
-        deals: [],
-        tasks: [],
-        timelineEvents: [],
-        voiceNotes: [],
-        chatHistory: [],
-      };
+      // Phase 5: Check if this is a 3rd party site query (e.g. "Trade Me properties in Takapuna")
+      // Phase 7: Parse intent first to check for approvals
+      logger.info('[AskZenaService] 🔍 Parsing intent...');
+      const intent = await navigationPlannerService.parseIntent(query.query);
+      logger.info(`[AskZenaService] 🔍 Parsed intent action: ${intent.action}`);
 
-      try {
-        context = await this.retrieveContext(query.userId, searchTerms, query.query);
-      } catch (dbError) {
-        console.warn('Database unavailable, using empty context for GPT:', dbError);
+      if (intent.action === 'write') {
+        logger.info('[AskZenaService] ✍️ Intent is WRITE, handling pending action...');
+        let description = `Zena will perform a ${intent.parameters.writeAction} action on ${intent.targetSite || 'the connected site'}.`;
+        // ... (rest of write logic remains same)
+
+        if (intent.parameters.writeAction === 'updatePrice') {
+          const adjustment = intent.parameters.priceAdjustment;
+          const formattedAdj = adjustment ? (adjustment > 0 ? `increase of $${Math.abs(adjustment).toLocaleString()}` : `reduction of $${Math.abs(adjustment).toLocaleString()}`) : 'adjustment';
+          description = `Zena will update the price for **${intent.parameters.address || 'the listing'}** on Trade Me, applying a **${formattedAdj}**.`;
+        }
+
+        const response: AskZenaResponse = {
+          answer: `I need your approval to perform a price adjustment for **${intent.parameters.address || 'this property'}** on Trade Me.`,
+          pendingAction: {
+            type: intent.action,
+            subType: intent.parameters.writeAction,
+            targetSite: intent.targetSite || 'unknown',
+            payload: {
+              ...intent.parameters,
+              query: query.query
+            },
+            description
+          },
+          suggestedActions: ["approve_write", "cancel_write"]
+        };
+        return response;
       }
 
-      // Generate response using LLM
-      let response: AskZenaResponse;
-      if (this.apiKey || process.env.GEMINI_API_KEY) {
-        response = await this.generateLLMResponse(query, context);
-      } else {
-        response = this.generateFallbackResponse(query, context);
-      }
+      logger.info('[AskZenaService] 🛤️ Proceeding to Intelligent Navigator check...');
 
-      // If conversationId is provided, save the assistant response
-      if (query.conversationId) {
-        await prisma.chatMessage.create({
-          data: {
-            conversationId: query.conversationId,
-            role: 'assistant',
-            content: response.answer
+      // HYBRID ARCHITECTURE: Classify query type
+      const queryType = this.classifyQueryType(intent);
+      logger.info(`[AskZenaService] 📊 Query Classification: ${queryType}`);
+
+      // For PUBLIC_READ queries, try Gemini with Search Grounding FIRST (no cookies needed)
+      if (queryType === 'PUBLIC_READ') {
+        logger.info('[AskZenaService] 🌐 PUBLIC_READ detected - trying Gemini Search Grounding first...');
+
+        // Build enhanced prompt for Trade Me/property searches
+        const searchTerms = this.extractSearchTerms(query.query);
+        let context: SearchContext = {
+          threads: [], contacts: [], properties: [], deals: [],
+          tasks: [], timelineEvents: [], voiceNotes: [], chatHistory: []
+        };
+
+        try {
+          console.log('[AskZenaService] 🔍 Starting context retrieval for:', searchTerms);
+          const contextStartTime = Date.now();
+          context = await this.retrieveContext(query.userId, searchTerms, query.query);
+          console.log(`[AskZenaService] ✅ Context retrieval complete in ${Date.now() - contextStartTime}ms`);
+          console.log(`[AskZenaService] Context Stats: Deals:${context.deals.length}, Properties:${context.properties.length}, Contacts:${context.contacts.length}`);
+        } catch (dbError) {
+          console.error('[AskZenaService] ❌ Database context retrieval FAILED:', dbError);
+          console.warn('Database unavailable for context:', dbError);
+        }
+
+        try {
+          // Generate response with Gemini + Search Grounding
+          const geminiResponse = await this.generateLLMResponse(query, context);
+
+          // If Gemini returned a good response with data, use it
+          if (geminiResponse.answer && !geminiResponse.answer.includes("couldn't find any information")) {
+            logger.info('[AskZenaService] ✅ Gemini Search Grounding returned valid data');
+
+            if (query.conversationId) {
+              await prisma.chatMessage.create({
+                data: {
+                  conversationId: query.conversationId,
+                  role: 'assistant',
+                  content: geminiResponse.answer
+                }
+              });
+            }
+
+            return geminiResponse;
           }
-        });
 
-        // Update title if it's the first message
-        const messageCount = await prisma.chatMessage.count({
-          where: { conversationId: query.conversationId }
-        });
+          // If Gemini returned insufficient data, fall through
+          logger.info('[AskZenaService] ⚠️ Gemini response insufficient, trying Neural Bridge...');
+        } catch (geminiError) {
+          // Gemini failed, log and fall through to Neural Bridge
+          console.error('[AskZenaService] ❌ Gemini Search Grounding FAILED:', geminiError);
+          logger.error('[AskZenaService] ❌ Gemini call failed, falling back to Neural Bridge');
+        }
+      }
 
-        if (messageCount <= 2) {
-          const title = query.query.length > 50 ? query.query.substring(0, 47) + '...' : query.query;
-          await prisma.chatConversation.update({
-            where: { id: query.conversationId },
-            data: { title }
+      // For AUTHENTICATED_ACTION queries (Write actions)
+      if (queryType === 'AUTHENTICATED_ACTION') {
+        logger.info('[AskZenaService] 🔑 AUTHENTICATED_ACTION detected - delegating to Intelligent Navigator...');
+        const result = await intelligentNavigatorService.executeQuery(query.query);
+        if (result.success) {
+          if (query.conversationId) {
+            await prisma.chatMessage.create({
+              data: { conversationId: query.conversationId, role: 'assistant', content: result.answer || "Action completed!" }
+            });
+          }
+          return {
+            answer: result.answer || "Action completed!",
+            sources: [{ title: 'Neural Bridge', url: '#' } as any],
+            suggestedActions: ["view_on_site"]
+          };
+        }
+        throw new Error(result.error || "Action failed");
+      }
+
+      // For HYBRID_REPORT queries (Complex data extraction + Analysis)
+      if (queryType === 'HYBRID_REPORT') {
+        logger.info('[AskZenaService] 📊 HYBRID_REPORT detected - combining Search Grounding and Neural Bridge...');
+
+        // TRY GROUNDING FIRST (Resilience Optimization)
+        logger.info('[AskZenaService] 🌐 HYBRID_REPORT: Trying Gemini Search Grounding first...');
+        const searchTerms = this.extractSearchTerms(query.query);
+        const groundingContext = await this.retrieveContext(query.userId, searchTerms, query.query);
+        const groundingResponse = await this.generateLLMResponse(query, groundingContext);
+
+        if (groundingResponse.answer && !groundingResponse.answer.includes("couldn't find any information")) {
+          logger.info('[AskZenaService] ✅ HYBRID_REPORT: Grounding successful, skipping primary bridge call');
+          if (query.conversationId) {
+            await prisma.chatMessage.create({
+              data: { conversationId: query.conversationId, role: 'assistant', content: groundingResponse.answer }
+            });
+          }
+          return groundingResponse;
+        }
+
+        logger.info('[AskZenaService] ⚠️ HYBRID_REPORT: Grounding insufficient, falling back to Neural Bridge...');
+        let bridgeData = null;
+        try {
+          const result = await intelligentNavigatorService.executeQuery(query.query);
+          if (result.success) bridgeData = result.data;
+        } catch (bridgeErr) {
+          logger.error('[AskZenaService] ⚠️ Neural Bridge error in hybrid flow:', bridgeErr);
+        }
+
+        const finalContext = await this.retrieveContext(query.userId, searchTerms, query.query);
+        if (bridgeData) {
+          finalContext.chatHistory.push({
+            role: 'system',
+            content: `Real-time Bridge Data: ${JSON.stringify(bridgeData)}`
+          } as any);
+        }
+        const response = await this.generateLLMResponse(query, finalContext);
+        if (query.conversationId) {
+          await prisma.chatMessage.create({
+            data: { conversationId: query.conversationId, role: 'assistant', content: response.answer }
           });
         }
+        return response;
+      }
+
+      // For failed PUBLIC_READ or others, use Neural Bridge as general fallback
+      try {
+        logger.info('[AskZenaService] 🧠 CALLING INTELLIGENT NAVIGATOR (Fallback)');
+        const result = await intelligentNavigatorService.executeQuery(query.query);
+        if (result.success) {
+          logger.info('[AskZenaService] ✅ Using IntelligentNavigator fallback answer');
+          const response: AskZenaResponse = {
+            answer: result.answer || "I've analyzed the real-time data for you.",
+            sources: [{ type: 'property', id: 'cloud_robot', snippet: 'Real-time bridge data.', relevance: 1.0 } as any],
+            suggestedActions: ["view_on_site"]
+          };
+          if (query.conversationId) {
+            await prisma.chatMessage.create({
+              data: { conversationId: query.conversationId, role: 'assistant', content: response.answer }
+            });
+          }
+          return response;
+        }
+      } catch (err) { }
+
+      // Final fallback to LLM Context Search
+      const searchTerms = this.extractSearchTerms(query.query);
+      const context = await this.retrieveContext(query.userId, searchTerms, query.query);
+      const response = await this.generateLLMResponse(query, context);
+
+      if (query.conversationId) {
+        await prisma.chatMessage.create({
+          data: { conversationId: query.conversationId, role: 'assistant', content: response.answer }
+        });
+      }
+      // Update title if it's the first message
+      const messageCount = await prisma.chatMessage.count({
+        where: { conversationId: query.conversationId }
+      });
+
+      if (messageCount <= 2) {
+        const title = query.query.length > 50 ? query.query.substring(0, 47) + '...' : query.query;
+        await prisma.chatConversation.update({
+          where: { id: query.conversationId },
+          data: { title }
+        });
       }
 
       return response;
@@ -147,12 +307,51 @@ export class AskZenaService {
     }
   }
 
+
   /**
    * Process a query with streaming response via WebSocket
    * This simulates streaming by sending response chunks
    */
   async processQueryStreaming(query: AskZenaQuery): Promise<void> {
     try {
+      // Phase 5: Check if this is a 3rd party site query (streaming)
+      if (navigationPlannerService.isThirdPartyQuery(query.query)) {
+        try {
+          console.log('[AskZenaService] Detected 3rd party query (streaming), delegating to Intelligent Navigator...');
+
+          // Send "thinking" status via WebSocket
+          websocketService.broadcastToUser(query.userId, 'ask.response', {
+            chunk: "_Zena is accessing the Neural Bridge to get real-time data..._ ",
+            isComplete: false,
+          });
+
+          const result = await intelligentNavigatorService.executeQuery(query.query);
+
+          if (result.success) {
+            const chunks = this.chunkResponse(result.answer || "");
+
+            for (const chunk of chunks) {
+              websocketService.broadcastToUser(query.userId, 'ask.response', {
+                chunk,
+                isComplete: false,
+              });
+              await new Promise(resolve => setTimeout(resolve, 30));
+            }
+
+            websocketService.broadcastToUser(query.userId, 'ask.response', {
+              chunk: '',
+              isComplete: true,
+              sources: [{ title: 'Real-time Bridge Intelligence', url: '#' }],
+              suggestedActions: ["view_on_site"]
+            });
+
+            return;
+          }
+        } catch (robotError) {
+          console.error('[AskZenaService] Streaming Intelligent Navigator failed:', robotError);
+        }
+      }
+
       // Extract search terms and intent from query
       const searchTerms = this.extractSearchTerms(query.query);
 
@@ -233,6 +432,38 @@ export class AskZenaService {
       .filter(word => word.length > 2 && !stopWords.has(word));
 
     return Array.from(new Set(words));
+  }
+
+  /**
+   * Classify query type for hybrid architecture
+   * Returns: 'PUBLIC_READ' | 'AUTHENTICATED_ACTION' | 'HYBRID_REPORT'
+   */
+  private classifyQueryType(intent: any): 'PUBLIC_READ' | 'AUTHENTICATED_ACTION' | 'HYBRID_REPORT' {
+    // Write actions always require authentication
+    if (intent.action === 'write') {
+      return 'AUTHENTICATED_ACTION';
+    }
+
+    // Report generation benefits from both sources, but CMA reports are best served by Grounding first
+    // Reclassified to PUBLIC_READ to prioritize Search Grounding persistence (Phase 9 resilience)
+    if (intent.action === 'report') {
+      return 'PUBLIC_READ';
+    }
+
+    // Detailed property lookups that need specific data extraction
+    // Also reclassified for resilience, fallback will still use Navigator if needed
+    if (intent.action === 'getDetails' && intent.parameters.address) {
+      return 'PUBLIC_READ';
+    }
+
+    // Public searches and counts can use Gemini Search Grounding
+    // These include: "how many properties", "properties for sale in X", etc.
+    if (intent.action === 'search' || intent.action === 'count' || intent.action === 'list') {
+      return 'PUBLIC_READ';
+    }
+
+    // Default to public read for unknown intents
+    return 'PUBLIC_READ';
   }
 
   /**
@@ -560,9 +791,87 @@ DO NOT rely on your training data for market information - it may be outdated.
 The grounding metadata will provide verified sources that will be shown to the user as clickable links.
 ` : '';
 
+    // Trade Me specific instruction for property searches with filters
+    const isTradeMeQuery = /trade\s?me|trademe/i.test(queryLower);
+    const isPropertySearch = /propert|house|home|apartment|unit|bedroom|bed|sale|listing|for sale/i.test(queryLower);
+    const bedroomMatch = queryLower.match(/(\d+)\s*(?:bed(?:room)?s?)/);
+    const locationMatch = queryLower.match(/(?:in|at)\s+([a-zA-Z\s]+?)(?:,|\s+on|\s+trademe|\s+auckland|$)/i);
+
+    const tradeMeSearchInstruction = (isTradeMeQuery && isPropertySearch) ? `
+*** TRADE ME PROPERTY SEARCH INSTRUCTION ***
+The user wants SPECIFIC DATA from Trade Me NZ property listings.
+You MUST use Google Search with site:trademe.co.nz to find CURRENT listings.
+
+SEARCH QUERY TO USE: "${locationMatch ? locationMatch[1].trim() : ''} ${bedroomMatch ? bedroomMatch[1] + ' bedroom' : ''} property for sale site:trademe.co.nz"
+
+IMPORTANT FILTERS TO APPLY IN YOUR SEARCH:
+${bedroomMatch ? `- BEDROOMS: ${bedroomMatch[1]} bedrooms ONLY. Do NOT include properties with fewer or more bedrooms.` : ''}
+${locationMatch ? `- LOCATION: ${locationMatch[1].trim()} - be specific about this suburb/area.` : ''}
+
+REQUIRED RESPONSE FORMAT:
+1. State the EXACT filtered count if available (e.g., "There are 26 three-bedroom properties for sale in Takapuna")
+2. Provide price range (min to max)
+3. List 3-5 specific example listings with addresses and prices
+4. Include the Trade Me search URL so the user can verify
+
+If the exact count is not available from your search, estimate based on the listings you found and clearly state it's an estimate.
+` : '';
+
+    // Multi-portal search when no specific site is mentioned
+    const isOneRoofQuery = /oneroof/i.test(queryLower);
+    const isRealEstateQuery = /realestate\.co\.nz|real\s?estate\.co/i.test(queryLower);
+    const noSpecificPortal = isPropertySearch && !isTradeMeQuery && !isOneRoofQuery && !isRealEstateQuery;
+
+    const multiPortalSearchInstruction = noSpecificPortal ? `
+*** MULTI-PORTAL PROPERTY SEARCH INSTRUCTION ***
+The user wants property listings from NEW ZEALAND. Since no specific portal was mentioned, search MULTIPLE sources and COMBINE the results.
+
+SEARCH ALL OF THESE PORTALS:
+1. Trade Me Property: "${locationMatch ? locationMatch[1].trim() : ''} ${bedroomMatch ? bedroomMatch[1] + ' bedroom' : ''} property for sale site:trademe.co.nz"
+2. OneRoof: "${locationMatch ? locationMatch[1].trim() : ''} ${bedroomMatch ? bedroomMatch[1] + ' bedroom' : ''} property site:oneroof.co.nz"
+3. RealEstate.co.nz: "${locationMatch ? locationMatch[1].trim() : ''} ${bedroomMatch ? bedroomMatch[1] + ' bedroom' : ''} site:realestate.co.nz"
+
+IMPORTANT FILTERS:
+${bedroomMatch ? `- BEDROOMS: ${bedroomMatch[1]} bedrooms ONLY. Do NOT include properties with different bedroom counts.` : ''}
+${locationMatch ? `- LOCATION: ${locationMatch[1].trim()} - be specific about this suburb/area.` : ''}
+
+DEDUPLICATION RULES:
+- Compare properties by ADDRESS. If the same address appears on multiple portals, list it ONLY ONCE.
+- Note which portal(s) have that listing in parentheses, e.g., "123 Example St, Takapuna (Trade Me, OneRoof)"
+- Prioritise Trade Me prices if there are discrepancies.
+
+REQUIRED RESPONSE FORMAT:
+1. **Total Unique Listings**: Combined count from all portals (deduplicated)
+2. **Price Range**: Min to Max across all sources
+3. **Example Listings**: 5-8 unique properties with addresses, prices, and source portal(s)
+4. **Portal Summary**: How many listings were found on each portal
+
+Example: "I found **42 unique 3-bedroom properties** for sale in Takapuna across Trade Me (26), OneRoof (38), and RealEstate.co.nz (31). After removing duplicates..."
+` : '';
+
+    const isReportQuery = queryLower.includes('report') || queryLower.includes('cma') || queryLower.includes('valuation') || queryLower.includes('sales report');
+
+    const cmaReportInstruction = isReportQuery ? `
+*** SPECIAL INSTRUCTION: HIGH-FIDELITY CMA REPORT ***
+The user wants a PROFESSIONAL Comparable Sales Report (CMA). 
+Your response MUST be detailed, structured, and "awesome." 
+Use the following structure:
+1. **Subject Property Snapshot**: Configuration (beds/baths), building area, year built, CV, and last sale.
+2. **Market Context**: Suburb median, growth trends, and overall market pulse.
+3. **Best Nearby Comparable Sales**: Use a Markdown TABLE with columns: Comparable, Sold Date, Beds/Baths, Sold Price, Similarity Note.
+4. **Insights & Reasoning**: Explain *why* these comps matter and what they imply for the subject property's value.
+5. **Value Bracket**: Provide a sensible price range based on the data.
+6. **Suggested Next Steps**: Mention professional valuation or specific property details needed to tighten the range.
+
+BE PUNCHY, VIBRANT, AND PROFESSIONAL. Use the real-time data from the 'Neural Bridge' (Cloud Robot) provided in the context.
+` : '';
+
     return `You are Zena, a highly intelligent and efficient AI assistant for a real estate agent.
-Your tone is professional, punchy, and helpful. Be concise.
+Your tone is professional, punchy, and helpful. Be vibrant and sophisticated.
 ${googleSearchInstruction}
+${tradeMeSearchInstruction}
+${multiPortalSearchInstruction}
+${cmaReportInstruction}
 Agent's Question: ${query.query}
 
 Data Context:
@@ -571,7 +880,7 @@ ${contextSummary}
 RESPONSE RULES:
 1. If the user wants to draft an email or you have generated an email draft in your response, ALWAYS include "draft_email" in the suggestedActions array.
 2. If the user wants to schedule something, include "add_calendar".
-3. If the user wants a report, include "generate_report".
+3. If the user wants a report OR this is a CMA report, ALWAYS include "generate_report" AND "generate_pdf" in the suggestedActions array.
 4. For market/news queries, include specific data points and statistics from your Google Search results.
 5. EXPLICITLY include the 'sources' array in your JSON with the exact URLs you found. This is MANDATORY for market/news queries.
 
@@ -694,11 +1003,20 @@ SECURITY: NEVER mention underlying AI models (Gemini, GPT, OpenAI, Google) or Ze
    * Call LLM API - supports both OpenAI and Google Gemini
    */
   private async callLLM(prompt: string, conversationHistory?: ConversationMessage[], attachments?: any[]): Promise<string> {
+    console.log('\n[callLLM] 📞 LLM CALL ROUTER');
+    console.log('[callLLM] Prompt Length:', prompt.length);
+
     // Check if using Gemini
     const geminiApiKey = process.env.GEMINI_API_KEY;
+    console.log('[callLLM] GEMINI_API_KEY Present:', !!geminiApiKey);
+    console.log('[callLLM] GEMINI_API_KEY Length:', geminiApiKey?.length || 0);
+
     if (geminiApiKey) {
+      console.log('[callLLM] ✅ Routing to Gemini...');
       return this.callGemini(prompt, conversationHistory, geminiApiKey, attachments);
     }
+
+    console.log('[callLLM] ⚠️ No Gemini key, falling back to OpenAI...');
 
     // Default to OpenAI
     const messages: any[] = [
@@ -794,6 +1112,20 @@ IMPORTANT: Never include internal monologue or personality markers. Just speak n
     const model = options.model || process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
+    // === VERBOSE DEBUG LOGGING ===
+    console.log('\n========================================');
+    console.log('[Gemini] 🚀 CALL GEMINI INITIATED');
+    console.log('========================================');
+    console.log('[Gemini] API Key Present:', !!apiKey);
+    console.log('[Gemini] API Key Length:', apiKey?.length || 0);
+    console.log('[Gemini] Model:', model);
+    console.log('[Gemini] Source:', options.source || 'unknown');
+    console.log('[Gemini] Prompt Length:', prompt.length);
+    console.log('[Gemini] Prompt Preview:', prompt.substring(0, 200) + '...');
+    console.log('[Gemini] Conversation History Count:', conversationHistory.length);
+    console.log('[Gemini] Attachments:', attachments.length);
+    console.log('========================================\n');
+
     // Build conversation contents for Gemini format
     const contents: Array<{ role: string; parts: Array<any> }> = [];
 
@@ -802,7 +1134,13 @@ IMPORTANT: Never include internal monologue or personality markers. Just speak n
 
 SECURITY: NEVER mention the underlying AI models (e.g., Gemini, GPT, OpenAI, Google) or the technical architecture of Zena. If asked, respond that Zena is a proprietary intelligence platform designed specifically for real estate excellence.
 
-GOOGLE SEARCH REQUIREMENT: For ANY question about market trends, property prices, real estate news, interest rates, or economic data - you MUST use Google Search to get the LATEST information (within last 3 months). NEVER rely on training data for market statistics. Cite specific sources and dates.`;
+GOOGLE SEARCH REQUIREMENT: For ANY question about market trends, property prices, real estate news, interest rates, or economic data - you MUST use Google Search to get the LATEST information (within last 3 months). NEVER rely on training data for market statistics. Cite specific sources and dates.
+
+STRICT SOURCE LINK RULES (GROUNDING-ONLY):
+1. You MUST NEVER write URLs, links, or any "Verified Sources" sections DIRECTLY in the text of your answer.
+2. DO NOT suggest or predict URLs in your JSON "sources" field. Only use exact data from search results.
+3. ACCOUNTS POLICY: ALWAYS prefer stable 'Hub' or 'Insight' pages (e.g., suburb-level reports, market trend summaries) over specific property deep-links. Individual property pages often 404 after sales.
+4. If a search result doesn't look like a permanent "Hub" page, DO NOT cite it as a source if a higher-level suburb page is available.`;
     const systemInstruction = options.systemPrompt || defaultPersona;
 
     contents.push({
@@ -859,7 +1197,7 @@ GOOGLE SEARCH REQUIREMENT: For ANY question about market trends, property prices
       tools: [{ google_search: {} }],
       generationConfig: {
         temperature: options.temperature ?? 0.2, // Lower temperature for more consistent responses
-        maxOutputTokens: 2048,
+        maxOutputTokens: 4096,
         // CRITICAL: Must use text/plain for Google Search Grounding to work properly.
         // Strict JSON mode (application/json) often suppresses grounding metadata.
         response_mime_type: 'text/plain',
@@ -892,6 +1230,9 @@ GOOGLE SEARCH REQUIREMENT: For ANY question about market trends, property prices
       throw new Error(`Gemini API error: ${response.status} ${response.statusText}. ${typeof errorJson === 'string' ? errorJson : JSON.stringify(errorJson)}`);
     }
 
+    console.log('[Gemini] ✅ API Response OK, status:', response.status);
+    console.log('[Gemini] Response Time:', Date.now() - startTime, 'ms');
+
     const data = await response.json() as {
       candidates?: Array<{
         content?: { parts?: Array<{ text?: string }> },
@@ -922,7 +1263,32 @@ GOOGLE SEARCH REQUIREMENT: For ANY question about market trends, property prices
     if (groundingChunks && groundingChunks.length > 0) {
       groundingChunks.forEach((chunk: any) => {
         if (chunk.web?.uri) {
-          const uri = chunk.web.uri;
+          const rawUri = chunk.web.uri;
+          const uri = this.regularizeUrl(rawUri);
+
+          // --- LINK HARDENING: Filter out likely hallucinations ---
+          // 1. Check for repeated address slugs (hallucination pattern)
+          const urlParts = uri.split('/');
+          const hasRepeatedSlugs = urlParts.some((part, idx) => part.length > 5 && urlParts.indexOf(part) !== idx);
+
+          // 2. Check for generic placeholders or obvious model guesses
+          const isGeneric = uri.includes('example.com') || uri.includes('/PROPERTY-ID') || uri.includes('/ADDRESS-HERE');
+
+          // 3. Check for extremely long/suspicious query strings
+          const isSuspect = uri.length > 250 || (uri.match(/\?/g) || []).length > 3;
+
+          // 4. Check for fake Trade Me listing IDs (suspicious round numbers like 4450000000)
+          const tradeMeIdMatch = uri.match(/trademe\.co\.nz.*\/listing\/(\d+)/i);
+          const isFakeTradeMe = tradeMeIdMatch && (
+            parseInt(tradeMeIdMatch[1]) % 100000 === 0 || // Round numbers
+            tradeMeIdMatch[1].length >= 11 // Suspiciously long
+          );
+
+          if (hasRepeatedSlugs || isGeneric || isSuspect || isFakeTradeMe) {
+            console.log('[Gemini] 🛡️ Filtering likely hallucinated source:', uri);
+            return;
+          }
+
           let title = chunk.web.title || uri;
           try { title = chunk.web.title || new URL(uri).hostname; } catch (e) { }
           uniqueSources.set(uri, title);
@@ -943,17 +1309,13 @@ GOOGLE SEARCH REQUIREMENT: For ANY question about market trends, property prices
 
       const parsed = JSON.parse(cleanText);
 
-      // 2. Add Explicit Sources from Prompt
-      if (parsed.sources && Array.isArray(parsed.sources)) {
-        parsed.sources.forEach((s: any) => {
-          if (s.url && s.title) uniqueSources.set(s.url, s.title);
-        });
-        // Remove 'sources' from final output to keep it clean (optional, but good for frontend)
-        delete parsed.sources;
-      }
+      // --- GROUNDING-ONLY POLICY ---
+      // We EXCLUSIVELY use uniqueSources from groundingChunks.
+      // We ignore parsed.sources from the model because it often "predicts" hallucinated URLs.
+      if (parsed.sources) delete parsed.sources;
 
       if (uniqueSources.size > 0) {
-        const sourcesFooter = '\n\n**Verified Sources:**\n' +
+        const sourcesFooter = '\n\n**Zena Verified Sources:**\n' +
           Array.from(uniqueSources.entries())
             .map(([uri, title]) => `- [${title}](${uri})`)
             .join('\n');
@@ -973,7 +1335,7 @@ GOOGLE SEARCH REQUIREMENT: For ANY question about market trends, property prices
       // If parsing fails, we fall back to just appending grounding metadata to raw text if it looks like text
       console.warn('[Gemini] Failed to parse JSON for source injection', e);
       if (uniqueSources.size > 0 && !responseText.trim().startsWith('{') && !responseText.includes('```')) {
-        const sourcesFooter = '\n\n**Verified Sources:**\n' +
+        const sourcesFooter = '\n\n**Zena Verified Sources:**\n' +
           Array.from(uniqueSources.entries())
             .map(([uri, title]) => `- [${title}](${uri})`)
             .join('\n');
@@ -998,6 +1360,57 @@ GOOGLE SEARCH REQUIREMENT: For ANY question about market trends, property prices
     }).catch(() => { });
 
     return responseText;
+  }
+
+  /**
+   * Scrub hallucinated URLs and "Verified Sources" sections from answer text
+   * Defense-in-depth: The model is instructed NOT to write these, but may ignore it.
+   */
+  private scrubHallucinatedUrls(text: string): string {
+    let scrubbed = text;
+
+    // 1. Remove any "Verified Sources:", "Sources:", "Here are links:" sections at end
+    scrubbed = scrubbed.replace(/\n\n\*?\*?(?:Verified Sources|Sources|Here are links|Here are the links)[:\*\*]*\n?[\s\S]*$/gi, '');
+
+    // 2. Remove standalone raw URLs (defense-in-depth)
+    // Matches lines that are just URLs, or bullet points with URLs
+    scrubbed = scrubbed.replace(/^\s*[-•*]?\s*https?:\/\/[^\s]+\s*$/gim, '');
+
+    // 3. Remove markdown links that point to suspicious patterns
+    // e.g., [Title](https://trademe.co.nz/a/property/.../listing/4450000000)
+    scrubbed = scrubbed.replace(/\[([^\]]+)\]\(https?:\/\/[^\)]+\/listing\/\d{10,}\)/gi, '$1');
+
+    console.log('[AskZenaService] 🧹 Scrubbed hallucinated URLs from answer');
+    return scrubbed.trim();
+  }
+
+  /**
+   * Regularize search-returned URLs to fix common structural errors
+   */
+  private regularizeUrl(url: string): string {
+    if (!url) return '';
+    let reg = url.trim();
+
+    // 1. Fix Opes Partners common error (property-market -> property-markets)
+    if (reg.includes('opespartners.co.nz/property-market/')) {
+      reg = reg.replace('/property-market/', '/property-markets/');
+    }
+
+    // 2. Fix OneRoof private listing fragments
+    if (reg.includes('oneroof.co.nz') && reg.endsWith('/Pvt')) {
+      reg = reg.substring(0, reg.length - 4);
+    }
+
+    // 3. Strip tracking and obvious "expired" flags
+    reg = reg.replace(/[?&]is_expired=true.*/i, '');
+    reg = reg.replace(/[?&]utm_source=.*/i, '');
+
+    // 4. Force HTTPS (realestate.co.nz sometimes returns http)
+    if (reg.startsWith('http://')) {
+      reg = 'https://' + reg.substring(7);
+    }
+
+    return reg;
   }
 
   /**
@@ -1033,38 +1446,470 @@ GOOGLE SEARCH REQUIREMENT: For ANY question about market trends, property prices
    */
   private parseResponse(response: string, context: SearchContext): AskZenaResponse {
     try {
-      // Clean up the response from potential markdown code blocks if Gemini didn't use application/json
+      console.log('[AskZenaService] 📥 PARSING LLM RESPONSE (Length:', response.length, ')');
+
       let cleanResponse = response.trim();
+
+      // Remove potential markdown code blocks
       if (cleanResponse.startsWith('```json')) {
         cleanResponse = cleanResponse.replace(/^```json\n?/, '').replace(/\n?```$/, '');
+      } else if (cleanResponse.startsWith('```')) {
+        cleanResponse = cleanResponse.replace(/^```\n?/, '').replace(/\n?```$/, '');
       }
 
-      // Extract JSON from response
-      const jsonMatch = cleanResponse.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
+      // Extract JSON from response - find outermost braces
+      const firstBrace = cleanResponse.indexOf('{');
+      const lastBrace = cleanResponse.lastIndexOf('}');
+
+      if (firstBrace === -1 || lastBrace === -1) {
+        console.log('[AskZenaService] ⚠️ No JSON braces found, returning raw response');
         return {
           answer: cleanResponse,
           sources: this.extractSources(context),
+          suggestedActions: []
         };
       }
 
-      const parsed = JSON.parse(jsonMatch[0]);
-      const rawAnswer = parsed.answer || cleanResponse;
-      const sanitizedAnswer = decodeHTMLEntities(rawAnswer);
+      const jsonString = cleanResponse.substring(firstBrace, lastBrace + 1);
+
+      // Attempt 1: Standard Parse
+      try {
+        const parsed = JSON.parse(jsonString);
+        console.log('[AskZenaService] ✅ Standard JSON parse successful');
+        return this.formatParsedResponse(parsed, cleanResponse, context);
+      } catch (e) {
+        console.log('[AskZenaService] 🛠️ Standard JSON parse failed, attempting newline escaping...');
+      }
+
+      // Attempt 2: Newline Escaping
+      try {
+        // Fix raw newlines inside JSON string values
+        const sanitized = jsonString.replace(/(": ")([\s\S]*?)("[,}\n])/g, (match, p1, p2, p3) => {
+          const escapedValue = p2.replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+          return p1 + escapedValue + p3;
+        });
+        const parsed = JSON.parse(sanitized);
+        console.log('[AskZenaService] ✅ Sanitized JSON parse successful');
+        return this.formatParsedResponse(parsed, cleanResponse, context);
+      } catch (e) {
+        console.log('[AskZenaService] ❌ Sanitized JSON parse failed');
+      }
+
+      // Attempt 3: Regex Extraction of "answer" field (Last Resort / Truncated JSON)
+      console.log('[AskZenaService] 🛠️ Attempting regex recovery for answer...');
+      const answerMatch = jsonString.match(/"answer":\s*"([\s\S]*?)(?:"\s*[,}]|$)/);
+      if (answerMatch && answerMatch[1]) {
+        console.log('[AskZenaService] 🆘 Regex extraction used for answer (Truncated recovery)');
+        return {
+          answer: answerMatch[1].replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\"/g, '"'),
+          sources: this.extractSources(context),
+          suggestedActions: ["generate_report", "generate_pdf"]
+        };
+      }
 
       return {
-        answer: sanitizedAnswer,
+        answer: cleanResponse,
         sources: this.extractSources(context),
-        suggestedActions: parsed.suggestedActions || [],
+        suggestedActions: []
       };
+
     } catch (error) {
-      console.error('Error parsing LLM response:', error);
+      console.error('[AskZenaService] ❌ parseResponse CRITICAL ERROR:', error);
       return {
         answer: response.trim(),
         sources: this.extractSources(context),
+        suggestedActions: []
       };
     }
   }
+
+  /**
+   * Format parsed JSON into AskZenaResponse
+   */
+  private formatParsedResponse(parsed: any, cleanResponse: string, context: SearchContext): AskZenaResponse {
+    let rawAnswer = parsed.answer || cleanResponse;
+    let answer = typeof rawAnswer === 'string'
+      ? rawAnswer
+      : JSON.stringify(rawAnswer, null, 2);
+
+    // Scrub any hallucinated URLs from the answer text
+    answer = this.scrubHallucinatedUrls(answer);
+
+    const sources = (parsed.sources && Array.isArray(parsed.sources))
+      ? parsed.sources
+      : this.extractSources(context);
+
+    const suggestedActions = parsed.suggestedActions || [];
+
+    return { answer, sources, suggestedActions };
+  }
+
+
+
+  /**
+   * Generate PDF from markdown content
+   */
+  async generatePdf(content: string, title: string): Promise<Buffer> {
+    const html = this.markdownToHtml(content, title);
+
+    let browser;
+    try {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      });
+      const page = await browser.newPage();
+      await page.setContent(html, { waitUntil: 'networkidle0' });
+
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
+        printBackground: true
+      });
+
+      return Buffer.from(pdfBuffer);
+    } finally {
+      if (browser) await browser.close();
+    }
+  }
+
+  /**
+   * Simple Markdown to HTML converter with premium styling
+   */
+  private markdownToHtml(markdown: string, title: string): string {
+    // 1. Detect and separate KPI section if it exists (common in property reports)
+    let kpiHtml = '';
+    const lines = markdown.split('\n');
+    const filteredLines: string[] = [];
+    const kpiItems: Array<{ label: string, value: string }> = [];
+
+    lines.forEach(line => {
+      const kpiMatch = line.match(/^\- \*\*([^*]+)\*\*:\s*(.*)$/) || line.match(/^\* \*\*([^*]+)\*\*:\s*(.*)$/);
+      if (kpiMatch && kpiItems.length < 4 && (line.toLowerCase().includes('value') || line.toLowerCase().includes('area') || line.toLowerCase().includes('type') || line.toLowerCase().includes('price'))) {
+        kpiItems.push({ label: kpiMatch[1].trim(), value: kpiMatch[2].trim() });
+      } else {
+        filteredLines.push(line);
+      }
+    });
+
+    if (kpiItems.length > 0) {
+      kpiHtml = `
+        <div class="kpi-grid">
+          ${kpiItems.map(item => `
+            <div class="kpi-card">
+              <div class="kpi-label">${item.label}</div>
+              <div class="kpi-value">${item.value}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      markdown = filteredLines.join('\n');
+    }
+
+    // 2. Wrap Sections (###) in Cards
+    let sections = markdown.split(/^### /m);
+    let intro = sections.shift() || '';
+
+    let contentHtml = this.parseMarkdown(intro);
+
+    sections.forEach(section => {
+      const [header, ...rest] = section.split('\n');
+      const body = rest.join('\n');
+      contentHtml += `
+        <div class="section-card">
+          <h3 class="section-title">${header.trim()}</h3>
+          ${this.parseMarkdown(body)}
+        </div>
+      `;
+    });
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>${title}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+          --brand-primary: #7c3aed;
+          --brand-secondary: #3b82f6;
+          --brand-gradient: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+          --text-main: #1f2937;
+          --text-muted: #6b7280;
+          --bg-light: #f9fafb;
+          --border-color: #e5e7eb;
+          --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text-main);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0;
+            background-color: #fff;
+        }
+
+        .page-wrapper {
+          padding: 40px 60px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 25px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 4px;
+          background: var(--brand-gradient);
+          border-radius: 2px;
+        }
+        
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--brand-primary);
+            letter-spacing: -0.5px;
+        }
+        
+        .logo span { font-weight: 300; color: var(--text-muted); padding-left: 10px; }
+
+        .report-meta {
+            text-align: right;
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        .report-type {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--brand-primary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 4px;
+        }
+
+        .report-date {
+          font-size: 12px;
+          color: var(--text-muted);
+        }
+        
+        h1 { 
+          font-family: 'Outfit', sans-serif;
+          font-size: 34px; 
+          font-weight: 800;
+          margin-top: 0; 
+          margin-bottom: 20px;
+          color: #111827; 
+          letter-spacing: -1px;
+        }
+
+        h2 { 
+          font-family: 'Outfit', sans-serif;
+          font-size: 22px; 
+          font-weight: 700;
+          color: var(--brand-primary); 
+          margin-top: 40px; 
+          margin-bottom: 15px;
+        }
+        
+        .kpi-grid {
+          display: flex;
+          gap: 20px;
+          margin-bottom: 40px;
+        }
+
+        .kpi-card {
+          flex: 1;
+          background: var(--bg-light);
+          padding: 20px;
+          border-radius: 12px;
+          border: 1px solid var(--border-color);
+          text-align: center;
+        }
+
+        .kpi-label {
+          font-size: 11px;
+          font-weight: 600;
+          color: var(--text-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 8px;
+        }
+
+        .kpi-value {
+          font-family: 'Outfit', sans-serif;
+          font-size: 18px;
+          font-weight: 700;
+          color: var(--brand-primary);
+        }
+
+        .section-card {
+          background: #fff;
+          border: 1px solid var(--border-color);
+          border-radius: 16px;
+          padding: 30px;
+          margin-bottom: 30px;
+          box-shadow: var(--card-shadow);
+        }
+
+        .section-title {
+          font-family: 'Outfit', sans-serif;
+          font-size: 20px;
+          font-weight: 700;
+          margin-top: 0;
+          margin-bottom: 20px;
+          color: #111827;
+          display: flex;
+          align-items: center;
+        }
+
+        .section-title::before {
+          content: '';
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          background: var(--brand-primary);
+          border-radius: 50%;
+          margin-right: 12px;
+        }
+        
+        p { margin-bottom: 16px; font-size: 15px; color: var(--text-main); }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th {
+          background-color: var(--bg-light);
+          color: var(--text-main);
+          font-weight: 600;
+          text-transform: uppercase;
+          font-size: 11px;
+          letter-spacing: 0.5px;
+          padding: 15px;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+        
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) { background-color: #fafafa; }
+        
+        ul { padding-left: 20px; margin-bottom: 16px; }
+        li { margin-bottom: 10px; font-size: 14px; }
+        
+        .footer {
+            margin-top: 60px;
+            padding: 40px 60px;
+            background-color: #111827;
+            color: #9ca3af;
+            font-size: 12px;
+            text-align: center;
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .footer-branding {
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .footer-logo { color: var(--brand-primary); }
+        
+        a { color: var(--brand-primary); text-decoration: none; font-weight: 500; }
+        strong { font-weight: 700; color: #111827; }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+      <div class="header">
+          <div class="logo">ASK ZENA <span>| Intelligence Platform</span></div>
+          <div class="report-meta">
+            <div class="report-type">Advisory & Market Insight</div>
+            <div class="report-date">${new Date().toLocaleDateString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+          </div>
+      </div>
+      
+      <h1>${title}</h1>
+      
+      ${kpiHtml}
+
+      <div class="content">
+          ${contentHtml}
+      </div>
+    </div>
+    
+    <div class="footer">
+        <span class="footer-branding"><span class="footer-logo">Zena</span> Intelligence Platform</span>
+        &copy; ${new Date().getFullYear()} Zena AI. Confidential property report prepared for professional use.
+        <br/>
+        Real-time intelligence derived from Neural Bridge Search & Gemini Analysis.
+    </div>
+</body>
+</html>
+    `;
+  }
+
+  /**
+   * Helper to parse markdown segments
+   */
+  private parseMarkdown(markdown: string): string {
+    // 1. Tables (Improved grouping)
+    let processed = markdown.replace(/((?:\|.+\|\r?\n?)+)/g, (match) => {
+      const rows = match.trim().split('\n').map(row => {
+        if (row.includes('---')) return '';
+        const cells = row.split('|').filter(c => c.trim() !== '').map(c => `<td>${c.trim()}</td>`).join('');
+        return cells ? `<tr>${cells}</tr>` : '';
+      }).join('');
+      return rows ? `<table>${rows}</h1>` : ''; // Temporary placeholder tag for replacement
+    });
+    // Fix placeholder and finalize table
+    processed = processed.replace(/<\/h1>/g, '</table>');
+
+    return processed
+      // Bold
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      // Headings
+      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+      // Links
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>')
+      // Lists
+      .replace(/^\- (.*$)/gim, '<li>$1</li>')
+      .replace(/^\d\. (.*$)/gim, '<li>$1</li>')
+      // Wrap lists
+      .replace(/(<li>.*?<\/li>)+/g, '<ul>$1</ul>')
+      // Line breaks and paras
+      .split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g, '<br/>')}</p>` : '').join('');
+  }
+
 
   /**
    * Extract sources from context

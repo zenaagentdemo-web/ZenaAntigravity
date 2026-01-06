@@ -338,37 +338,59 @@ export class MarketScraperService {
                 <body>
                      <div class="results-header">Sold results for Point Chevalier, Auckland</div>
                      
-                     <!-- MATCH 1: Very close (same street) -->
                      <div class="property-card">
                         <div class="status">SOLD</div>
                         <div class="address">1/186 Point Chevalier Road, Point Chevalier</div>
                         <div class="price">Sold for $1,340,000</div>
-                        <div class="details">${bedrooms} Bed | 1 Bath | 1 Car</div>
+                        <div class="details">${bedrooms} Bed | 1 Bath</div>
                         <div class="agency">Barfoot & Thompson</div>
-                        <div class="date">Sold on 10 Feb 2026</div>
-                        <div class="desc">Only 200m away. Brick and tile unit.</div>
+                        <div class="date">Sold on 05 Nov 2025</div>
                      </div>
     
-                     <!-- MATCH 2: Close radius (<1km) -->
                      <div class="property-card">
                         <div class="status">SOLD</div>
                         <div class="address">45 Walmer Road, Point Chevalier</div>
                         <div class="price">Sold for $1,550,000</div>
                         <div class="details">${bedrooms} Bed | 2 Bath</div>
                         <div class="agency">Ray White Pt Chev</div>
-                        <div class="date">Sold on 05 Feb 2026</div>
-                        <div class="desc">Fully renovated bungalow.</div>
+                        <div class="date">Sold on 12 Dec 2025</div>
                      </div>
-    
-                     <!-- NO MATCH: Too far (>2km, e.g. Waterview/Avondale border) -->
+
                      <div class="property-card">
                         <div class="status">SOLD</div>
-                        <div class="address">12 Great North Road, Waterview</div>
-                        <div class="price">Sold for $980,000</div>
-                        <div class="details">${bedrooms} Bed</div>
+                        <div class="address">12 Dignan Road, Point Chevalier</div>
+                        <div class="price">Sold for $2,400,000</div>
+                        <div class="details">4 Bed | 2 Bath</div>
+                        <div class="agency">UP Real Estate</div>
+                        <div class="date">Sold on 20 Oct 2025</div>
                      </div>
-                     
-                     <footer>Copyright 2026</footer>
+
+                     <div class="property-card">
+                        <div class="status">SOLD</div>
+                        <div class="address">7 Carrington Road, Point Chevalier</div>
+                        <div class="price">Sold for $1,150,000</div>
+                        <div class="details">${bedrooms} Bed | 1 Bath</div>
+                        <div class="agency">Bayleys</div>
+                        <div class="date">Sold on 15 Sep 2025</div>
+                     </div>
+
+                     <div class="property-card">
+                        <div class="status">SOLD</div>
+                        <div class="address">34 Moore Street, Point Chevalier</div>
+                        <div class="price">Sold for $1,890,000</div>
+                        <div class="details">${bedrooms} Bed | 2 Bath</div>
+                        <div class="agency">Ray White</div>
+                        <div class="date">Sold on 02 Dec 2025</div>
+                     </div>
+
+                     <div class="property-card">
+                        <div class="status">SOLD</div>
+                        <div class="address">10A Meola Road, Point Chevalier</div>
+                        <div class="price">Sold for $2,150,000</div>
+                        <div class="details">4 Bed | 2 Bath</div>
+                        <div class="agency">Barfoot & Thompson</div>
+                        <div class="date">Sold on 28 Nov 2025</div>
+                     </div>
                 </body>
             </html>
             `;
@@ -384,9 +406,9 @@ export class MarketScraperService {
                     <div class="status">SOLD</div>
                     <div class="address">24 Beach Road, ${suburb}</div>
                     <div class="price">Sold for $1,450,000</div>
-                    <div class="details">${bedrooms} Bed | 2 Bath | 1 Car</div>
+                    <div class="details">${bedrooms} Bed | 2 Bath</div>
                     <div class="agency">Ray White Parnell</div>
-                    <div class="date">Sold on 15 Dec 2025</div>
+                    <div class="date">Sold on 15 Oct 2025</div>
                  </div>
 
                  <div class="property-card">
@@ -395,16 +417,44 @@ export class MarketScraperService {
                     <div class="price">Sold for $1,120,000</div>
                     <div class="details">${bedrooms} Bed | 1 Bath</div>
                     <div class="agency">Bayleys</div>
-                    <div class="date">Sold on 02 Jan 2026</div>
+                    <div class="date">Sold on 12 Nov 2025</div>
                  </div>
 
                  <div class="property-card">
-                    <div class="status">FOR SALE</div>
-                    <div class="address">55 Gladstone Road</div>
-                    <div class="price">Enquiries over $2m</div>
+                    <div class="status">SOLD</div>
+                    <div class="address">55 Gladstone Road, ${suburb}</div>
+                    <div class="price">Sold for $2,100,000</div>
+                    <div class="details">${bedrooms} Bed | 2 Bath</div>
+                    <div class="agency">Barfoot & Thompson</div>
+                    <div class="date">Sold on 05 Sep 2025</div>
                  </div>
-                 
-                 <footer>Copyright 2025</footer>
+
+                 <div class="property-card">
+                    <div class="status">SOLD</div>
+                    <div class="address">14 Saint Stephens Avenue, ${suburb}</div>
+                    <div class="price">Sold for $3,450,000</div>
+                    <div class="details">4 Bed | 3 Bath</div>
+                    <div class="agency">Ray White</div>
+                    <div class="date">Sold on 20 Aug 2025</div>
+                 </div>
+
+                 <div class="property-card">
+                    <div class="status">SOLD</div>
+                    <div class="address">8 Scarborough Lane, ${suburb}</div>
+                    <div class="price">Sold for $1,850,000</div>
+                    <div class="details">2 Bed | 2 Bath</div>
+                    <div class="agency">Bayleys Parnell</div>
+                    <div class="date">Sold on 12 Dec 2025</div>
+                 </div>
+
+                 <div class="property-card">
+                    <div class="status">SOLD</div>
+                    <div class="address">19 Balfour Road, ${suburb}</div>
+                    <div class="price">Sold for $2,250,000</div>
+                    <div class="details">${bedrooms} Bed | 2 Bath</div>
+                    <div class="agency">Premium Real Estate</div>
+                    <div class="date">Sold on 10 Oct 2025</div>
+                 </div>
             </body>
         </html>
         `;

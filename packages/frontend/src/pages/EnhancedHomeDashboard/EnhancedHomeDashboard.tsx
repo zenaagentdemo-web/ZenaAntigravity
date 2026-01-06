@@ -861,7 +861,7 @@ export const EnhancedHomeDashboard: React.FC<EnhancedHomeDashboardProps> = ({ te
             style={{ display: visible ? 'block' : 'none' }}
           >
             <WidgetErrorBoundary
-              widgetName="Quick Actions"
+              widgetName="Smart Connections"
               onError={handleWidgetError}
             >
               <QuickActionsPanel

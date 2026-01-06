@@ -50,13 +50,15 @@ export const authenticate = async (
 
     // Development mode: allow demo-token for testing
     if (token === 'demo-token' && process.env.NODE_ENV !== 'production') {
-      console.log('[Auth] Using demo token bypass for development');
+      console.log('[Auth] Detected demo-token, attempting user lookup...');
 
       // Try to find the demo user in the database
       try {
+        const lookupStart = Date.now();
         const demoUser = await prisma.user.findUnique({
           where: { email: 'demo@zena.ai' }
         });
+        console.log(`[Auth] User lookup finished in ${Date.now() - lookupStart}ms. Found:`, !!demoUser);
 
         if (demoUser) {
           req.user = {
@@ -81,6 +83,7 @@ export const authenticate = async (
         };
       }
 
+      console.log('[Auth] Proceeding to next()');
       next();
       return;
     }

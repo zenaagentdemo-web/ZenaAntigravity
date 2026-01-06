@@ -25,6 +25,7 @@ import historyRoutes from './routes/history.routes.js';
 import actionsRoutes from './routes/actions.routes.js';
 import zenaActionsRoutes from './routes/zena-actions.routes.js';
 import marketDataRoutes from './routes/market-data.routes.js';
+import connectionRoutes from './routes/connections.routes.js';
 import { syncEngineService } from './services/sync-engine.service.js';
 import { calendarSyncEngineService } from './services/calendar-sync-engine.service.js';
 import { websocketService } from './services/websocket.service.js';
@@ -70,6 +71,21 @@ app.get('/health', healthCheckService.healthCheckHandler.bind(healthCheckService
 app.get('/api/health', healthCheckService.healthCheckHandler.bind(healthCheckService));
 app.get('/health/live', healthCheckService.livenessHandler.bind(healthCheckService));
 app.get('/health/ready', healthCheckService.readinessHandler.bind(healthCheckService));
+
+// Debug endpoint to view logs
+app.get('/api/debug/logs', (req, res) => {
+  try {
+    const logPath = path.join(process.cwd(), 'debug.log');
+    if (fs.existsSync(logPath)) {
+      const logs = fs.readFileSync(logPath, 'utf8');
+      res.type('text/plain').send(logs);
+    } else {
+      res.status(404).send('Log file not found at: ' + logPath);
+    }
+  } catch (err) {
+    res.status(500).send('Error reading logs: ' + (err as Error).message);
+  }
+});
 
 // Metrics endpoint (protected in production)
 app.get('/metrics', (req, res) => {
@@ -144,8 +160,12 @@ app.use('/api/actions', actionsRoutes);
 // Zena Actions routes (AI-powered deal actions)
 app.use('/api/zena-actions', zenaActionsRoutes);
 
-// Market Data routes (Standalone Scraper)
 app.use('/api/market-data', marketDataRoutes);
+
+// Connections routes
+import { restoreSessions } from './controllers/connections.controller.js';
+import connectionRoutes from './routes/connections.routes.js';
+app.use('/api/connections', connectionRoutes);
 
 // Communications routes
 import communicationsRoutes from './routes/communications.routes.js';
@@ -159,6 +179,10 @@ app.use('/api/oracle', oracleRoutes);
 import godmodeRoutes from './routes/godmode.routes.js';
 app.use('/api/godmode', godmodeRoutes);
 
+// CRM Delivery routes (Email Bridge)
+import crmDeliveryRoutes from './routes/crm-delivery.routes.js';
+app.use('/api/crm-delivery', crmDeliveryRoutes);
+
 // 404 handler - must be after all routes
 app.use(notFoundMiddleware);
 
@@ -168,16 +192,22 @@ app.use(errorHandlingMiddleware);
 // Create HTTP server
 const server = createServer(app);
 
-// Initialize WebSocket server
-websocketService.initialize(server);
+// Initialize WebSocket server and background engines only if not in test
+if (process.env.NODE_ENV !== 'test') {
+  websocketService.initialize(server);
 
-// Start sync engines
-syncEngineService.start();
-calendarSyncEngineService.start();
+  // Restore sessions from disk (safe initialization)
+  restoreSessions();
 
-// Start deal scheduler (Phase 2b)
-dealSchedulerService.start();
-godmodeSchedulerService.start();
+  // Start sync engines
+  syncEngineService.start();
+  calendarSyncEngineService.start();
+  calendarSyncEngineService.start();
+
+  // Start deal scheduler (Phase 2b)
+  dealSchedulerService.start();
+  godmodeSchedulerService.start();
+}
 
 // Graceful shutdown
 const shutdown = async (signal: string) => {
@@ -223,18 +253,20 @@ process.on('unhandledRejection', (reason: any) => {
   process.exit(1);
 });
 
-// Start server
-server.listen(PORT, () => {
-  logger.info('Server started', {
-    port: PORT,
-    environment: process.env.NODE_ENV || 'development',
-    nodeVersion: process.version,
-    databaseConfigured: !!process.env.DATABASE_URL,
-  });
+// Start server if not in test
+if (process.env.NODE_ENV !== 'test') {
+  server.listen(PORT, () => {
+    logger.info('Server started', {
+      port: PORT,
+      environment: process.env.NODE_ENV || 'development',
+      nodeVersion: process.version,
+      databaseConfigured: !!process.env.DATABASE_URL,
+    });
 
-  logger.info('WebSocket server initialized', {
-    endpoint: `ws://localhost:${PORT}/ws`,
+    logger.info('WebSocket server initialized', {
+      endpoint: `ws://localhost:${PORT}/ws`,
+    });
   });
-});
+}
 
 export default app;

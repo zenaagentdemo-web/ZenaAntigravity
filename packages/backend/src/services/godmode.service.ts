@@ -11,6 +11,7 @@ import { oracleService } from './oracle.service.js';
 import { askZenaService } from './ask-zena.service.js';
 import { timelineService } from './timeline.service.js';
 import { actionRegistry } from './actions/index.js';
+import { syncLedgerService } from './sync-ledger.service.js';
 
 const prisma = new PrismaClient();
 
@@ -28,7 +29,8 @@ export type ActionType =
     // New Autonomous Actions (Phase 3)
     | 'generate_weekly_report'
     | 'schedule_viewing'
-    | 'compliance_audit';
+    | 'compliance_audit'
+    | 'crm_sync';
 
 // Godmode modes
 export type GodmodeMode = 'off' | 'demi_god' | 'full_god';
@@ -222,19 +224,36 @@ class GodmodeService {
      * Get action history for a user
      */
     async getActionHistory(userId: string, limit: number = 50): Promise<any[]> {
-        return prisma.autonomousAction.findMany({
-            where: {
-                userId,
-                status: { in: ['completed', 'dismissed', 'failed'] },
-            },
-            include: {
-                contact: {
-                    select: { id: true, name: true },
+        try {
+            // Add timeout to prevent infinite hangs
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Database query timeout')), 10000);
+            });
+
+            const queryPromise = prisma.autonomousAction.findMany({
+                where: {
+                    userId,
+                    status: { in: ['completed', 'dismissed', 'failed'] },
                 },
-            },
-            orderBy: { createdAt: 'desc' },
-            take: limit,
-        });
+                include: {
+                    contact: {
+                        select: { id: true, name: true },
+                    },
+                    property: {
+                        select: { id: true, address: true },
+                    },
+                },
+                orderBy: { createdAt: 'desc' },
+                take: limit,
+            });
+
+            const result = await Promise.race([queryPromise, timeoutPromise]);
+            return result as any[];
+        } catch (error) {
+            console.error('[Godmode] getActionHistory error:', error);
+            // Return empty array on error rather than hanging
+            return [];
+        }
     }
 
     /**
@@ -319,6 +338,8 @@ class GodmodeService {
 
             switch (action.actionType) {
                 case 'send_email':
+                case 'SEND_NEWSLETTER':
+                case 'send_newsletter':
                     result = await this.executeSendEmail(action);
                     break;
                 case 'schedule_followup':
@@ -329,6 +350,9 @@ class GodmodeService {
                     break;
                 case 'archive_contact':
                     result = await this.executeArchiveContact(action);
+                    break;
+                case 'crm_sync':
+                    result = await this.executeCrmSync(action);
                     break;
                 default:
                     // Try to find a strategy for this action type
@@ -510,6 +534,40 @@ class GodmodeService {
     }
 
     /**
+     * Proactively scan for unsynced changes and generate a bulk sync suggestion
+     */
+    async generateSyncSuggestions(userId: string): Promise<CreateActionInput[]> {
+        const delta = await syncLedgerService.getUnsyncedChanges(userId);
+
+        if (delta.total === 0) return [];
+
+        const settings = await this.getSettings(userId);
+        const suggestions: CreateActionInput[] = [];
+
+        // Generate a single high-priority action for the bulk sync
+        const sampleText = delta.samples.map(s => `• ${s.name} (${s.reason})`).join('\n');
+
+        suggestions.push({
+            userId,
+            actionType: 'crm_sync',
+            priority: 10, // Top priority
+            title: `Unsynced Changes Detected (${delta.total})`,
+            description: `WHY IT MATTERS: You have ${delta.total} updates in Zena that are not yet in your CRM. This includes ${delta.contacts} contacts and ${delta.properties} properties. GAIN: Syncing now ensures your CRM remains the single source of truth and prevents data fragmentation.`,
+            reasoning: `Found ${delta.total} records where updatedAt > lastCrmExportAt.`,
+            payload: {
+                deltaCount: delta.total,
+                contacts: delta.contacts,
+                properties: delta.properties,
+                samples: delta.samples
+            },
+            contextSummary: `Unsynced items include:\n${sampleText}`,
+            mode: settings.mode === 'full_god' ? 'full_god' : 'demi_god'
+        });
+
+        return suggestions;
+    }
+
+    /**
      * Generate suggested actions for a PROPERTY based on intelligence data
      * This powers property-level Godmode actions
      */
@@ -684,6 +742,57 @@ class GodmodeService {
             message: `Archived ${action.contact?.name}`,
         };
     }
+
+    private async executeCrmSync(action: any): Promise<ExecutionResult> {
+        const userId = action.userId;
+        const delta = await syncLedgerService.getUnsyncedChanges(userId);
+
+        if (delta.total === 0) {
+            return { success: true, message: 'No changes to sync' };
+        }
+
+        const { crmDeliveryService } = await import('./crm-delivery.service.js');
+
+        // 1. Sync Contacts
+        const unsyncedContacts = await prisma.contact.findMany({
+            where: {
+                userId,
+                OR: [
+                    { lastCrmExportAt: null },
+                    { updatedAt: { gt: prisma.contact.fields.lastCrmExportAt } }
+                ]
+            }
+        });
+
+        for (const contact of unsyncedContacts) {
+            await crmDeliveryService.syncContact(userId, contact);
+        }
+
+        // 2. Sync Properties
+        const unsyncedProperties = await prisma.property.findMany({
+            where: {
+                userId,
+                OR: [
+                    { lastCrmExportAt: null },
+                    { updatedAt: { gt: prisma.property.fields.lastCrmExportAt } }
+                ]
+            }
+        });
+
+        for (const prop of unsyncedProperties) {
+            await crmDeliveryService.syncProperty(userId, prop);
+        }
+
+        return {
+            success: true,
+            message: `Successfully synced ${delta.total} records to CRM via Email Bridge.`,
+            data: {
+                syncedCount: delta.total,
+                contacts: delta.contacts,
+                properties: delta.properties
+            }
+        };
+    }
     async runThrottledScan(userId: string): Promise<{ success: boolean; message: string; data?: any }> {
         const settings = await this.getSettings(userId);
         const lastScan = settings.lastGodmodeScanAt;
@@ -765,6 +874,27 @@ class GodmodeService {
             } catch (error) {
                 console.error(`[Godmode] Error scanning contact ${contact.id}:`, error);
             }
+        }
+
+        // 3. Proactive Sync Check
+        try {
+            const syncSuggestions = await this.generateSyncSuggestions(userId);
+            for (const suggestion of syncSuggestions) {
+                // Don't duplicate sync alerts within 48h
+                const recentAlert = await prisma.autonomousAction.findFirst({
+                    where: {
+                        userId,
+                        actionType: 'crm_sync',
+                        createdAt: { gte: new Date(Date.now() - 48 * 60 * 60 * 1000) }
+                    }
+                });
+                if (recentAlert) continue;
+
+                await this.queueAction(suggestion);
+                queued++;
+            }
+        } catch (error) {
+            console.error('[Godmode] Error checking for sync deltas:', error);
         }
 
         return { queued, executed };

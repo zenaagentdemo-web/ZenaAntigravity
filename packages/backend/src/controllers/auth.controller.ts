@@ -124,17 +124,16 @@ export class AuthController {
       }
 
 
-      console.error('Login error:', error);
-      // Log full stack trace for debugging 500 errors
-      if (error instanceof Error && error.stack) {
-        console.error(error.stack);
-      }
-
+      console.error('Login error - full details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        email: req.body.email
+      });
       res.status(500).json({
         error: {
-          code: 'INTERNAL_ERROR',
-          message: 'An error occurred during login',
-          retryable: true,
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'An internal server error occurred during login. Please contact support.',
+          details: process.env.NODE_ENV === 'development' && error instanceof Error ? error.stack : undefined
         },
       });
     }

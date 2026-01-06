@@ -14,6 +14,7 @@ import {
     bulkApprove,
     suggestActions,
     triggerHeartbeat,
+    seedMockActions,
 } from '../controllers/godmode.controller.js';
 
 const router = Router();
@@ -38,4 +39,8 @@ router.post('/bulk-approve', bulkApprove);
 // Suggestions
 router.post('/suggest/:contactId', suggestActions);
 
+// Dev/Testing - Seed mock pending actions
+router.post('/seed-mock', seedMockActions);
+
 export default router;
+

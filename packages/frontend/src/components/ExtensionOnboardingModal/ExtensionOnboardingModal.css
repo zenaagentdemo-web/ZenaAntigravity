@@ -1,0 +1,694 @@
+/* Extension Onboarding Modal - Premium Design */
+
+.extension-onboarding-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.extension-onboarding-modal {
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+    border-radius: 24px;
+    width: 90%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    border: 1px solid rgba(165, 180, 252, 0.2);
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 100px rgba(165, 180, 252, 0.1);
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Progress Bar */
+.onboarding-progress {
+    padding: 20px 24px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #a5b4fc, #10b981);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+/* Close Button */
+.onboarding-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.onboarding-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Step Content */
+.onboarding-step {
+    padding: 32px 32px 40px;
+    text-align: center;
+    animation: fadeInStep 0.4s ease;
+}
+
+@keyframes fadeInStep {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.step-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.step-icon.pulse {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.step-icon.spin {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.step-icon.success-icon {
+    font-size: 72px;
+    animation: successBounce 0.6s ease;
+}
+
+@keyframes successBounce {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.onboarding-step h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.step-description {
+    font-size: 15px;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Benefits List */
+.benefits-list {
+    text-align: left;
+    margin: 24px 0;
+    padding: 20px;
+    background: rgba(165, 180, 252, 0.05);
+    border-radius: 16px;
+    border: 1px solid rgba(165, 180, 252, 0.1);
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    color: #e2e8f0;
+    font-size: 14px;
+}
+
+.benefit-item:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.benefit-icon {
+    font-size: 20px;
+}
+
+/* Time Indicator */
+.step-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 20px;
+    color: #10b981;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 24px;
+}
+
+/* Buttons */
+.onboarding-btn {
+    width: 100%;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 12px;
+}
+
+.onboarding-btn.primary {
+    background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%);
+    color: #0f0f1a;
+    box-shadow: 0 4px 20px rgba(165, 180, 252, 0.3);
+}
+
+.onboarding-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(165, 180, 252, 0.4);
+}
+
+.onboarding-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.onboarding-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.onboarding-btn.text {
+    background: transparent;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.onboarding-btn.text:hover {
+    color: #94a3b8;
+}
+
+/* Browser Mockup */
+.install-visual {
+    margin: 24px 0;
+}
+
+.browser-mockup {
+    background: #1e1e2e;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.browser-bar {
+    background: #2a2a3e;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.browser-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.browser-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3a3a4e;
+}
+
+.browser-dots span:first-child {
+    background: #ff5f56;
+}
+
+.browser-dots span:nth-child(2) {
+    background: #ffbd2e;
+}
+
+.browser-dots span:last-child {
+    background: #27ca40;
+}
+
+.browser-url {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #64748b;
+}
+
+.browser-content {
+    padding: 20px;
+}
+
+.store-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.store-icon {
+    font-size: 32px;
+}
+
+.store-info {
+    flex: 1;
+    text-align: left;
+}
+
+.store-name {
+    font-weight: 600;
+    color: white;
+    font-size: 14px;
+}
+
+.store-rating {
+    font-size: 12px;
+    color: #fbbf24;
+}
+
+.store-btn {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    animation: pulseBtn 2s infinite;
+}
+
+@keyframes pulseBtn {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(26, 115, 232, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(26, 115, 232, 0);
+    }
+}
+
+.arrow-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 16px;
+    color: #10b981;
+}
+
+.arrow {
+    font-size: 24px;
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.arrow-text {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Checking State */
+.checking-loader {
+    padding: 24px 0;
+}
+
+.loader-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.loader-dots span {
+    width: 12px;
+    height: 12px;
+    background: #a5b4fc;
+    border-radius: 50%;
+    animation: loaderBounce 0.6s infinite alternate;
+}
+
+.loader-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loader-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes loaderBounce {
+    from {
+        transform: translateY(0);
+        opacity: 0.5;
+    }
+
+    to {
+        transform: translateY(-8px);
+        opacity: 1;
+    }
+}
+
+.not-found {
+    margin-top: 16px;
+}
+
+.not-found p {
+    color: #f59e0b;
+    margin-bottom: 16px;
+}
+
+/* Success State */
+.onboarding-step.success .step-description {
+    color: #10b981;
+}
+
+.success-features {
+    text-align: left;
+    margin: 24px 0;
+    padding: 20px;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 16px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.success-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    color: #e2e8f0;
+    font-size: 14px;
+}
+
+.success-item .check {
+    color: #10b981;
+    font-weight: 700;
+}
+
+.success-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(251, 191, 36, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    text-align: left;
+    font-size: 13px;
+    color: #e2e8f0;
+    margin-bottom: 24px;
+}
+
+.tip-icon {
+    font-size: 20px;
+}
+
+/* Mode Toggle */
+.step-options {
+    margin: 16px 0 24px;
+    display: flex;
+    justify-content: center;
+}
+
+.mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 16px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.mode-toggle.active {
+    border-color: #a5b4fc;
+    background: rgba(165, 180, 252, 0.1);
+}
+
+.mode-toggle input {
+    display: none;
+}
+
+.toggle-slider {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    background: #475569;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.toggle-slider::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.mode-toggle.active .toggle-slider {
+    background: #818cf8;
+}
+
+.mode-toggle.active .toggle-slider::after {
+    left: 18px;
+}
+
+.toggle-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #94a3b8;
+}
+
+.mode-toggle.active .toggle-label {
+    color: #a5b4fc;
+}
+
+/* Manual Steps */
+.manual-steps {
+    text-align: left;
+    margin: 24px 0;
+}
+
+.manual-step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.manual-step-num {
+    width: 24px;
+    height: 24px;
+    background: #818cf8;
+    color: #0f0f1a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.manual-step-content {
+    color: #e2e8f0;
+    font-size: 14px;
+    line-height: 1.5;
+    flex: 1;
+}
+
+.manual-step-content code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #a5b4fc;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+}
+
+.manual-step-content code:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.path-copy-box {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #0f0f1a;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(165, 180, 252, 0.2);
+}
+
+.path-copy-box code {
+    flex: 1;
+    font-size: 12px;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.copy-btn {
+    background: transparent;
+    border: none;
+    color: #818cf8;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    color: #a5b4fc;
+    transform: scale(1.1);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .extension-onboarding-modal {
+        width: 95%;
+        max-height: 95vh;
+        border-radius: 20px;
+    }
+
+    .onboarding-step {
+        padding: 24px 20px 32px;
+    }
+
+    .step-icon {
+        font-size: 48px;
+    }
+
+    .onboarding-step h2 {
+        font-size: 20px;
+    }
+}

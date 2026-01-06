@@ -22,7 +22,9 @@ import {
   DollarSign,
   Zap,
   Clock,
-  Loader2
+  Loader2,
+  Download,
+  Database
 } from 'lucide-react';
 import { api } from '../../utils/apiClient';
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
@@ -30,6 +32,9 @@ import { AmbientBackground } from '../../components/AmbientBackground/AmbientBac
 import { BatchActionBar } from '../../components/BatchActionBar/BatchActionBar';
 import { IntelScoreTooltip } from '../../components/IntelScoreTooltip/IntelScoreTooltip';
 import { useThreadActions } from '../../hooks/useThreadActions';
+import { ToastContainer } from '../../components/Toast/Toast';
+import { CrmQuickSetupModal } from '../ConnectionCentrePage/CrmQuickSetupModal';
+import { CrmSuccessOverlay } from '../../components/CrmSuccessOverlay/CrmSuccessOverlay';
 import {
   EngagementScore,
   DealStage,
@@ -143,7 +148,7 @@ const ContactLink = ({ children, ...props }: any) => {
 export const ContactsPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { addToast } = useThreadActions();
+  const { addToast, state: actionState, dismissToast } = useThreadActions();
 
   // Helper for lazy state initialization (Persistence)
   const getPersistedState = (key: string, defaultValue: any) => {
@@ -187,7 +192,7 @@ export const ContactsPage: React.FC = () => {
         });
         return updatedContacts;
       });
-      addToast(`Synchronized ${lastBatchUpdate.updates.length} records with Zena brain`, 'info');
+      addToast('info', `Synchronized ${lastBatchUpdate.updates.length} records with Zena brain`);
     }
   }, [lastBatchUpdate, addToast]);
 
@@ -219,7 +224,7 @@ export const ContactsPage: React.FC = () => {
               : c
           ));
         }
-        addToast(`Discovery complete for ${lastDiscoveryUpdate.contactName || 'contact'}`, 'success');
+        addToast('success', `Discovery complete for ${lastDiscoveryUpdate.contactName || 'contact'}`);
       }
     }
   }, [lastDiscoveryUpdate, addToast]);
@@ -241,6 +246,9 @@ export const ContactsPage: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [lastSelectedId, setLastSelectedId] = useState<string | null>(null);
+  const [isCrmSetupOpen, setIsCrmSetupOpen] = useState(false);
+  const [showSyncSuccess, setShowSyncSuccess] = useState(false);
+  const [targetCrm, setTargetCrm] = useState('Generic CRM');
 
 
   // Smart Search State (Persisted)
@@ -295,7 +303,7 @@ export const ContactsPage: React.FC = () => {
       }
     } catch (e) {
       console.error('Smart search failed:', e);
-      addToast('Zena is having trouble accessing the neural network.', 'error');
+      addToast('error', 'Zena is having trouble accessing the neural network.');
     } finally {
       setIsAnalyzingQuery(false);
     }
@@ -308,6 +316,7 @@ export const ContactsPage: React.FC = () => {
     if (isSmartSearchActive) setIsSmartSearchActive(false);
   };
   const [isBatchMode, setIsBatchMode] = useState(false);
+  const [batchModeType, setBatchModeType] = useState<'full' | 'export' | null>(null);
   const [showComposeModal, setShowComposeModal] = useState(false);
   const [isNewContactModalOpen, setIsNewContactModalOpen] = useState(false);
   const [targetContact, setTargetContact] = useState<Contact | null>(null);
@@ -408,7 +417,7 @@ export const ContactsPage: React.FC = () => {
         }
         return c;
       }));
-      addToast(`Updated engagement for contact`, 'info');
+      addToast('info', `Updated engagement for contact`);
     }
   }, [lastEngagementUpdate, addToast]);
 
@@ -426,7 +435,7 @@ export const ContactsPage: React.FC = () => {
         }
         return c;
       }));
-      addToast(`Contact categorised as ${lastCategoryUpdate.zenaCategory}`, 'success');
+      addToast('success', `Contact categorised as ${lastCategoryUpdate.zenaCategory}`);
     }
   }, [lastCategoryUpdate, addToast]);
 
@@ -484,8 +493,13 @@ export const ContactsPage: React.FC = () => {
       newSelected.add(id);
     }
     setSelectedIds(newSelected);
-    if (newSelected.size > 0) setIsBatchMode(true);
-    else setIsBatchMode(false);
+    if (newSelected.size > 0) {
+      setIsBatchMode(true);
+      if (!batchModeType) setBatchModeType('full');
+    } else {
+      setIsBatchMode(false);
+      setBatchModeType(null);
+    }
   };
 
   const toggleBatchMode = () => {
@@ -493,12 +507,14 @@ export const ContactsPage: React.FC = () => {
       clearSelection();
     } else {
       setIsBatchMode(true);
+      setBatchModeType('full');
     }
   };
 
   const clearSelection = () => {
     setSelectedIds(new Set());
     setIsBatchMode(false);
+    setBatchModeType(null);
   };
 
   const handleAddContact = () => {
@@ -510,12 +526,12 @@ export const ContactsPage: React.FC = () => {
       console.log('[ContactsPage] Saving new contact:', contactData);
       const response = await api.post('/api/contacts', contactData);
       if (response.data && response.data.contact) {
-        addToast('Contact added to Zena Brain successfully.', 'success');
+        addToast('success', 'Contact added to Zena Brain successfully.');
         loadContacts(); // Refresh the list
       }
     } catch (err) {
       console.error('[ContactsPage] Failed to save contact:', err);
-      addToast('System failed to persist contact record.', 'error');
+      addToast('error', 'System failed to persist contact record.');
     }
   };
 
@@ -639,7 +655,7 @@ export const ContactsPage: React.FC = () => {
 
   const handleSync = async () => {
     setIsRefreshing(true);
-    addToast('Contacting Zena brain for neural synchronization...', 'info');
+    addToast('info', 'Contacting Zena brain for neural synchronization...');
 
     try {
       // Trigger background discovery for prioritized contacts
@@ -660,16 +676,56 @@ export const ContactsPage: React.FC = () => {
     }
   };
 
-  const handleBatchAction = (action: string) => {
+  const handleEmailSyncToCRM = async (contactId?: string) => {
+    try {
+      const idsToSync = contactId ? [contactId] : Array.from(selectedIds);
+      if (idsToSync.length === 0) return;
+
+      addToast('info', `Zena is syncing ${idsToSync.length} record${idsToSync.length > 1 ? 's' : ''} to your CRM via Email Bridge...`);
+
+      // Check if user has CRM email configured
+      const configRes = await api.get('/api/crm-delivery/config');
+      if (!configRes.data?.crmEmail) {
+        setIsCrmSetupOpen(true);
+        return;
+      }
+
+      // Sync each record (in a real production app we might have a bulk endpoint, but for now we'll do them sequentially or in parallel)
+      const results = await Promise.all(idsToSync.map(id => api.post(`/api/crm-delivery/sync/contact/${id}`)));
+
+      const successCount = results.length;
+
+      // apiClient throws on error, so if we get here all syncs succeeded
+      setTargetCrm(configRes.data?.crmType || 'CRM');
+      setShowSyncSuccess(true);
+      addToast('success', `Successfully synced ${successCount} contact${successCount > 1 ? 's' : ''} to your CRM.`);
+
+
+      clearSelection();
+      // Refresh to update delta calculation
+      setTimeout(() => loadContacts(), 1000);
+    } catch (err: any) {
+      console.error('[ContactsPage] CRM Email Sync failed:', err);
+      addToast('error', err.response?.data?.error || 'Failed to sync with CRM. Check your connection.');
+    }
+  };
+
+  const handleBatchAction = async (action: BatchAction) => {
     switch (action) {
-      case 'delete_all':
-        handleBatchDelete();
+      case 'delete':
+        await handleBatchDelete();
         break;
-      case 'compose':
-        handleOpenCompose();
+      case 'tag_intel':
+        await handleSaveBatchTag(); // Assuming handleSaveBatchTag is the correct function for 'tag_intel'
         break;
-      case 'tag':
-        setIsTagModalOpen(true);
+      case 'export_crm':
+        await handleExportForCRM();
+        break;
+      case 'email_crm':
+        await handleEmailSyncToCRM();
+        break;
+      case 'add_to_deal':
+        // Handle add to deal
         break;
       default:
         console.warn(`Action ${action} not implemented for contacts.`);
@@ -681,13 +737,13 @@ export const ContactsPage: React.FC = () => {
       const ids = Array.from(selectedIds);
       console.log('[ContactsPage] Bulk updating intelligence for', ids.length, 'contacts:', data);
       await api.patch('/api/contacts/bulk', { ids, data });
-      addToast(`Successfully applied intelligence to ${ids.length} records.`, 'success');
+      addToast('success', `Successfully applied intelligence to ${ids.length} records.`);
       setIsTagModalOpen(false);
       clearSelection();
       loadContacts(); // Refresh list to reflect updates
     } catch (err) {
       console.error('[ContactsPage] Bulk update failed:', err);
-      addToast('System failed to apply batch intelligence.', 'error');
+      addToast('error', 'System failed to apply batch intelligence.');
     }
   };
 
@@ -704,11 +760,73 @@ export const ContactsPage: React.FC = () => {
     try {
       await api.post('/api/contacts/bulk-delete', { ids: idsToDelete });
       setContacts(prev => prev.filter(c => !selectedIds.has(c.id)));
-      addToast(`Successfully purged ${count} contact record${count > 1 ? 's' : ''}.`, 'success');
+      addToast('success', `Successfully purged ${count} contact record${count > 1 ? 's' : ''}.`);
       clearSelection();
     } catch (err) {
       console.error('[ContactsPage] Failed to bulk delete contacts:', err);
-      addToast('System failed to execute bulk purge. Please try again.', 'error');
+      addToast('error', 'System failed to execute bulk purge. Please try again.');
+    }
+  };
+
+  /**
+   * Export selected contacts (or all if none selected) as CRM-ready CSV
+   * Uses backend service to ensure sync timestamps are recorded
+   */
+  const handleExportForCRM = async () => {
+    try {
+      addToast('info', 'Zena is generating your CRM export...');
+
+      // Get record IDs if selected, otherwise undefined (export all)
+      const recordIds = selectedIds.size > 0 ? Array.from(selectedIds) : undefined;
+
+      const response = await api.post<{ exportId: string }>('/api/export/contacts', {
+        format: 'csv',
+        recordIds
+      });
+
+      const { exportId } = response.data;
+
+      // Clear selection immediately
+      if (selectedIds.size > 0) {
+        clearSelection();
+      }
+
+      // Wait for backend processing (simulated 2s) and refresh
+      // This ensures deltaCount disappears because lastCrmExportAt is updated in DB
+      setTimeout(async () => {
+        try {
+          // Check status and trigger download
+          const statusRes = await api.get<{ status: string, fileUrl: string }>(`/api/export/${exportId}`);
+          if (statusRes.data.status === 'completed') {
+            // Trigger download via blob fetch (to include Auth header)
+            const downloadUrl = `/api/export/${exportId}/download`;
+            const blobRes = await api.get(downloadUrl, { responseType: 'blob' });
+
+            const blob = new Blob([blobRes.data], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Contacts_Export_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+
+            // Cleanup
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            addToast('success', 'Export complete. Syncing delta ledger...');
+            await loadContacts(); // REFRESH STATE
+          }
+        } catch (e) {
+          console.error('[ContactsPage] Poll export error:', e);
+          // Still refresh even if download trigger fails
+          await loadContacts();
+        }
+      }, 2500);
+
+    } catch (err) {
+      console.error('[ContactsPage] Export for CRM failed:', err);
+      addToast('error', 'Export failed. Please try again.');
     }
   };
 
@@ -745,6 +863,28 @@ export const ContactsPage: React.FC = () => {
     // 4. Sort Alphabetically
     return list.sort((a, b) => a.name.localeCompare(b.name));
   }, [contacts, filterRole, predictions, searchQuery]);
+
+  // Delta Detection: Count contacts updated since last export (CSV or Email)
+  const deltaCountSet = useMemo(() => {
+    return new Set(contacts.filter(c => {
+      // Get the most recent export time (either CSV or Email)
+      const lastExportAt = c.lastCrmExportAt || c.lastCsvExportAt
+        ? Math.max(
+          c.lastCrmExportAt ? new Date(c.lastCrmExportAt).getTime() : 0,
+          c.lastCsvExportAt ? new Date(c.lastCsvExportAt).getTime() : 0
+        )
+        : null;
+
+      if (!lastExportAt) return true; // Never exported
+
+      // Buffer of 2 seconds to account for server processing time / clock drift
+      const updateTime = new Date(c.updatedAt).getTime();
+      return updateTime > lastExportAt + 2000;
+    }).map(c => c.id));
+  }, [contacts]);
+
+
+  const deltaCount = deltaCountSet.size;
 
 
   const getTopOracleSignal = (contactId: string) => {
@@ -816,6 +956,7 @@ export const ContactsPage: React.FC = () => {
 
         <header className="contacts-page__header">
           <div className="contacts-page__title-group">
+            <span className="contacts-page__subtitle">ZENA RELATIONSHIP INTELLIGENCE</span>
             <h1 className="contacts-page__title">Contacts</h1>
           </div>
 
@@ -829,6 +970,26 @@ export const ContactsPage: React.FC = () => {
             >
               <CheckSquare size={18} />
               <span className="contacts-page__select-label">Select</span>
+            </button>
+
+            <button
+              className={`contacts-page__action-btn contacts-page__export-crm-btn ${deltaCount > 0 ? 'pulsating' : ''}`}
+              onClick={deltaCount > 0 ? () => {
+                // If deltas exist, select them and enter batch mode
+                const newSelected = new Set(contacts.filter(c => deltaCountSet.has(c.id)).map(c => c.id));
+                setSelectedIds(newSelected);
+                setIsBatchMode(true);
+                setBatchModeType('export');
+                addToast('info', `${deltaCount} updated contacts selected for CRM export.`);
+              } : () => {
+                setIsBatchMode(true);
+                setBatchModeType('export');
+              }}
+              title={deltaCount > 0 ? `${deltaCount} deltas detected. Click to select and export.` : "Export contacts to CRM"}
+            >
+              <Download size={18} />
+              <span>Export to CRM</span>
+              {deltaCount > 0 && <span className="delta-badge">{deltaCount}</span>}
             </button>
 
 
@@ -1360,7 +1521,8 @@ export const ContactsPage: React.FC = () => {
             isVisible={isBatchMode}
             onAction={handleBatchAction as any}
             onCancel={clearSelection}
-            actions={['compose', 'tag', 'delete_all']}
+            className={batchModeType === 'export' ? 'batch-action-bar--export-mode' : ''}
+            actions={batchModeType === 'export' ? ['export_crm', 'email_crm'] : ['tag_intel', 'export_crm', 'email_crm', 'delete']}
           />,
           document.body
         )
@@ -1373,6 +1535,26 @@ export const ContactsPage: React.FC = () => {
         selectedCount={selectedIds.size}
       />
 
+      <ToastContainer
+        toasts={actionState.toasts}
+        onDismiss={dismissToast}
+      />
+
+      <CrmQuickSetupModal
+        isOpen={isCrmSetupOpen}
+        onClose={() => setIsCrmSetupOpen(false)}
+        onSuccess={() => {
+          setIsCrmSetupOpen(false);
+          addToast('success', 'CRM Bridge configured! You can now sync records.');
+        }}
+        addToast={addToast}
+      />
+
+      <CrmSuccessOverlay
+        isVisible={showSyncSuccess}
+        crmType={targetCrm}
+        onClose={() => setShowSyncSuccess(false)}
+      />
       {/* Godmode Action Approval Queue */}
       <ActionApprovalQueue
         isOpen={isActionQueueOpen}

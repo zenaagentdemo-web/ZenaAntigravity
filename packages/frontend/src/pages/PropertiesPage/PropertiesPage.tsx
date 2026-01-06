@@ -21,21 +21,26 @@ import {
   Bath,
   Maximize,
   Clock,
-  TrendingUp,
-  Users,
-  AlertCircle,
-  Sparkles,
-  CheckSquare,
   Loader2,
   X,
   Zap,
-  Shield
+  Shield,
+  Download,
+  Database,
+  CheckSquare,
+  TrendingUp,
+  Sparkles,
+  AlertCircle,
+  Users,
 } from 'lucide-react';
 import { api } from '../../utils/apiClient';
+import { ToastContainer } from '../../components/Toast/Toast';
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
 import { BatchActionBar } from '../../components/BatchActionBar/BatchActionBar';
 import { ZenaCallTooltip } from '../../components/ZenaCallTooltip/ZenaCallTooltip';
 import { AddPropertyModal } from '../../components/AddPropertyModal/AddPropertyModal';
+import { CrmQuickSetupModal } from '../ConnectionCentrePage/CrmQuickSetupModal';
+import { CrmSuccessOverlay } from '../../components/CrmSuccessOverlay/CrmSuccessOverlay';
 import { ZenaBatchComposeModal, ContactForCompose } from '../../components/ZenaBatchComposeModal/ZenaBatchComposeModal';
 import { ZenaBatchPropertyTagModal } from '../../components/ZenaBatchPropertyTagModal/ZenaBatchPropertyTagModal';
 import { SmartMatchModal } from '../../components/SmartMatchModal/SmartMatchModal';
@@ -88,6 +93,7 @@ interface Property {
   heatLevel?: 'hot' | 'active' | 'cold';
   heatReasoning?: string;
   lastActivityDetail?: string;
+  lastCrmExportAt?: string;
 }
 
 type RecommendedAction = SuggestedAction | string;
@@ -131,7 +137,7 @@ let cachedMarketPulse: any = null;
 export const PropertiesPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { addToast } = useThreadActions();
+  const { addToast, state: actionState, dismissToast } = useThreadActions();
   // Helper for lazy state initialization
   const getPersistedState = (key: string, defaultValue: any) => {
     try {
@@ -166,6 +172,7 @@ export const PropertiesPage: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBatchMode, setIsBatchMode] = useState(false);
+  const [batchModeType, setBatchModeType] = useState<'full' | 'export' | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [isComposeModalOpen, setIsComposeModalOpen] = useState(false);
@@ -198,12 +205,36 @@ export const PropertiesPage: React.FC = () => {
   // Oracle & Godmode State
   const [isActionQueueOpen, setIsActionQueueOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isCrmSetupOpen, setIsCrmSetupOpen] = useState(false);
+  const [showSyncSuccess, setShowSyncSuccess] = useState(false);
+  const [targetCrm, setTargetCrm] = useState('Generic CRM');
   const [reportModalData, setReportModalData] = useState<{ address: string; bedrooms?: number } | null>(null);
   const { settings: godmodeSettings, pendingActions, pendingCount, fetchPendingActions } = useGodmode();
 
   const pendingActionPropertyIds = useMemo(() => {
     return new Set(pendingActions?.filter(a => a.propertyId).map(a => a.propertyId!) || []);
   }, [pendingActions]);
+
+  // Delta Detection: Count properties updated since last export (CSV or Email)
+  const deltaCountSet = useMemo(() => {
+    return new Set(properties.filter(p => {
+      // Get the most recent export time (either CSV or Email)
+      const lastExportAt = p.lastCrmExportAt || p.lastCsvExportAt
+        ? Math.max(
+          p.lastCrmExportAt ? new Date(p.lastCrmExportAt).getTime() : 0,
+          p.lastCsvExportAt ? new Date(p.lastCsvExportAt).getTime() : 0
+        )
+        : null;
+
+      if (!lastExportAt) return true; // Never exported
+
+      const updateTime = new Date(p.updatedAt).getTime();
+      return updateTime > lastExportAt + 2000; // 2s buffer
+    }).map(p => p.id));
+  }, [properties]);
+
+
+  const deltaCount = deltaCountSet.size;
 
   const handleOpenActions = async (property: Property, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -319,10 +350,10 @@ export const PropertiesPage: React.FC = () => {
         metadata: { contextOrDraft }
       }).catch(err => console.error('Failed to record action:', err));
 
-      addToast('Zena is drafting your specific improvements.', 'success');
+      addToast('success', 'Zena is drafting your specific improvements.');
     } catch (err) {
       console.error('Failed to initiate Improvement Action:', err);
-      addToast('Failed to start improvement action.', 'error');
+      addToast('error', 'Failed to start improvement action.');
     }
   };
 
@@ -422,7 +453,7 @@ export const PropertiesPage: React.FC = () => {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    addToast('Syncing properties with Zena brain...', 'info');
+    addToast('info', 'Syncing properties with Zena brain...');
 
     // Ensure the spinner shows for at least 800ms for better UX
     const minWait = new Promise(resolve => setTimeout(resolve, 800));
@@ -639,24 +670,26 @@ export const PropertiesPage: React.FC = () => {
     }
   };
 
-  const handleGenerateReport = async (e: React.MouseEvent, propertyId: string) => {
+  const handleGenerateReport = async (e: React.MouseEvent, propertyId?: string) => {
     e.stopPropagation();
 
-    // Find property details
-    const property = properties.find(p => p.id === propertyId);
-    if (!property) {
-      addToast('error', 'Property details not found');
-      return;
+    if (propertyId) {
+      // Find property details
+      const property = properties.find(p => p.id === propertyId);
+      if (!property) {
+        addToast('error', 'Property details not found');
+        return;
+      }
+
+      console.log(`[PropertiesPage] handleGenerateReport triggered for property: ${property.address}`);
+
+      const query = `Perform a comparable market analysis for ${property.address}${property.bedrooms ? ` with ${property.bedrooms} bedrooms` : ''}. Generate a PDF report and list verified sources.`;
+      navigate(`/ask-zena?prompt=${encodeURIComponent(query)}`);
+    } else {
+      // Open the modal for manual address entry
+      setReportModalData(null);
+      setIsReportModalOpen(true);
     }
-
-    console.log(`[PropertiesPage] handleGenerateReport triggered for property: ${property.address}`);
-
-    // Open the modal and pass the property data
-    setReportModalData({
-      address: property.address,
-      bedrooms: property.bedrooms
-    });
-    setIsReportModalOpen(true);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -695,36 +728,143 @@ export const PropertiesPage: React.FC = () => {
       newSelected.add(id);
     }
     setSelectedIds(newSelected);
-    setIsBatchMode(newSelected.size > 0);
+
+    if (newSelected.size > 0) {
+      setIsBatchMode(true);
+      if (!batchModeType) setBatchModeType('full');
+    } else {
+      setIsBatchMode(false);
+      setBatchModeType(null);
+    }
+  };
+
+  const toggleBatchMode = () => {
+    if (isBatchMode) {
+      clearSelection();
+    } else {
+      setIsBatchMode(true);
+      setBatchModeType('full');
+    }
   };
 
   const clearSelection = () => {
     setSelectedIds(new Set());
     setIsBatchMode(false);
+    setBatchModeType(null);
   };
 
-  const handleBatchAction = async (action: string) => {
+  const handleExportForCRM = async () => {
+    if (selectedIds.size === 0) return;
+
+    try {
+      addToast('info', 'Preparing property export package for CRM...');
+
+      const response = await api.post('/api/export/properties', {
+        recordIds: Array.from(selectedIds),
+        format: 'csv'
+      });
+
+      const { exportId } = response.data;
+
+      // Simulate backend preparation time
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Final poll/download check
+      const statusResponse = await api.get(`/api/export/${exportId}`);
+      if (statusResponse.data.status === 'completed') {
+        // Trigger download via blob fetch (to include Auth header)
+        const downloadUrl = `/api/export/${exportId}/download`;
+        const blobRes = await api.get(downloadUrl, { responseType: 'blob' });
+
+        const blob = new Blob([blobRes.data], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `Properties_Export_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        addToast('success', 'Properties exported and sync ledger updated.');
+
+        // Refresh local data to clear delta badges
+        setTimeout(() => loadProperties(), 1000);
+      }
+    } catch (err) {
+      console.error('[PropertiesPage] Export for CRM failed:', err);
+      addToast('error', 'Export failed. Please try again.');
+    }
+  };
+
+  const handleEmailSyncToCRM = async (propertyId?: string) => {
+    try {
+      const idsToSync = propertyId ? [propertyId] : Array.from(selectedIds);
+      if (idsToSync.length === 0) return;
+
+      addToast('info', `Zena is syncing ${idsToSync.length} record${idsToSync.length > 1 ? 's' : ''} to your CRM via Email Bridge...`);
+
+      // Check if user has CRM email configured
+      const configRes = await api.get('/api/crm-delivery/config');
+      if (!configRes.data?.crmEmail) {
+        setIsCrmSetupOpen(true);
+        return;
+      }
+
+      // Sync each record
+      const results = await Promise.all(idsToSync.map(id => api.post(`/api/crm-delivery/sync/property/${id}`)));
+
+      console.log('[PropertiesPage] CRM Sync Results:', results.map(r => ({ data: r.data })));
+
+      // apiClient throws on error, so if we get here all syncs succeeded
+      const successCount = results.length;
+
+      console.log('[PropertiesPage] All syncs successful:', successCount);
+      setTargetCrm(configRes.data?.crmType || 'CRM');
+      setShowSyncSuccess(true);
+      addToast('success', `Successfully synced ${successCount} property record${successCount > 1 ? 's' : ''} to your CRM.`);
+
+
+      clearSelection();
+      // Refresh to update delta calculation
+      setTimeout(() => loadProperties(), 1000);
+    } catch (err: any) {
+      console.error('[PropertiesPage] CRM Email Sync failed:', err);
+      addToast('error', err.response?.data?.error || 'Failed to sync with CRM. Check your connection.');
+    }
+  };
+
+  const handleBatchAction = async (action: BatchAction) => {
     switch (action) {
-      case 'delete_all':
-        if (window.confirm(`Are you sure you want to delete ${selectedIds.size} properties?`)) {
-          try {
-            await api.post('/api/properties/bulk-delete', { ids: Array.from(selectedIds) });
-            setProperties(prev => prev.filter(p => !selectedIds.has(p.id)));
-            clearSelection();
-          } catch (err) {
-            console.error('Batch delete failed:', err);
-            alert('Failed to delete properties. Please try again.');
+      case 'delete':
+        if (selectedIds.size > 0) {
+          const confirmPurge = window.confirm(`Are you sure you want to purge ${selectedIds.size} property records? This action is irreversible.`);
+          if (confirmPurge) {
+            try {
+              await api.post('/api/properties/bulk-delete', { ids: Array.from(selectedIds) });
+              setProperties(prev => prev.filter(p => !selectedIds.has(p.id)));
+              addToast('success', `Successfully purged ${selectedIds.size} records.`);
+            } catch (err) {
+              console.error('Bulk delete failed:', err);
+              addToast('error', 'Failed to delete properties. Please try again.');
+            }
           }
         }
         break;
-      case 'compose':
-        setIsComposeModalOpen(true);
+      case 'export_crm':
+        await handleExportForCRM();
         break;
-      case 'tag':
+      case 'email_crm':
+        await handleEmailSyncToCRM();
+        break;
+      case 'tag_intel':
         setIsTagModalOpen(true);
         break;
-      default:
-        console.warn('Action not implemented:', action);
+      case 'add_to_deal':
+        // Handle add to deal
+        break;
     }
   };
 
@@ -770,67 +910,50 @@ export const PropertiesPage: React.FC = () => {
 
       <div className="properties-page__container">
         {/* God Mode System Overlay */}
-        {godmodeSettings.mode !== 'off' && (
-          <div className={`godmode-system-status ${godmodeSettings.mode}`} style={{
-            background: godmodeSettings.mode === 'full_god' ? 'rgba(255, 215, 0, 0.1)' : 'rgba(139, 92, 246, 0.1)',
-            border: godmodeSettings.mode === 'full_god' ? '1px solid rgba(255, 215, 0, 0.3)' : '1px solid rgba(139, 92, 246, 0.3)',
-            padding: '12px 20px',
-            marginBottom: '20px',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
-            <div className="godmode-status-content" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Zap size={18} color={godmodeSettings.mode === 'full_god' ? '#FFD700' : '#8B5CF6'} className="godmode-icon" />
-              <div className="godmode-info">
-                <span className="godmode-title" style={{
-                  display: 'block',
-                  fontWeight: 600,
-                  color: godmodeSettings.mode === 'full_god' ? '#FFD700' : '#8B5CF6'
-                }}>
-                  {godmodeSettings.mode === 'demi_god' ? 'Demi-God Mode Active' : 'God Mode Active'}
-                </span>
-                <span className="godmode-description" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>
-                  {godmodeSettings.mode === 'demi_god'
-                    ? 'Zena is proactively drafting property actions for your review.'
-                    : 'Zena is autonomously optimising your property portfolio.'}
-                </span>
-              </div>
-            </div>
-            <div className="godmode-banner-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <button
-                onClick={() => window.dispatchEvent(new CustomEvent('zena-show-godmode-history'))}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: 'white',
-                  padding: '6px 14px',
-                  borderRadius: '8px',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)')}
-              >
-                <Clock size={14} />
-                View God Mode Activity
-              </button>
-              <div className="godmode-pulse-indicator" style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: godmodeSettings.mode === 'full_god' ? '#FFD700' : '#8B5CF6',
-                boxShadow: `0 0 10px ${godmodeSettings.mode === 'full_god' ? '#FFD700' : '#8B5CF6'}`
-              }} />
+        <div className={`godmode-system-status ${godmodeSettings.mode}`}>
+          <div className="godmode-status-content">
+            <Zap size={16} className="godmode-icon" />
+            <div className="godmode-info">
+              <span className="godmode-title">
+                {godmodeSettings.mode === 'full_god' ? 'God Mode Active' :
+                  godmodeSettings.mode === 'demi_god' ? 'Demi-God Mode Active' : 'Normal Mode'}
+              </span>
+              <span className="godmode-description">
+                {godmodeSettings.mode === 'full_god'
+                  ? 'Zena is fully autonomous. High-confidence actions are executed automatically 24/7.'
+                  : godmodeSettings.mode === 'demi_god'
+                    ? 'Zena is proactively drafting property actions for your review. You retain full control.'
+                    : 'Background scanning disabled. Suggested actions will appear for manual trigger.'}
+              </span>
             </div>
           </div>
-        )}
+          <div className="godmode-banner-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('zena-show-godmode-history'))}
+              className="godmode-banner-btn"
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                padding: '6px 14px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)')}
+            >
+              <Clock size={14} />
+              View God Mode Activity
+            </button>
+            <div className="godmode-pulse-indicator" />
+          </div>
+        </div>
 
         {/* Header */}
         <header className="properties-page__header">
@@ -839,18 +962,37 @@ export const PropertiesPage: React.FC = () => {
             <h1 className="properties-page__title">Properties</h1>
           </div>
           <div className="properties-page__actions">
+            <button
+              className={`properties-page__action-btn properties-page__select-btn ${isBatchMode ? 'active' : ''}`}
+              onClick={toggleBatchMode}
+              aria-label={isBatchMode ? "Exit selection mode" : "Enter selection mode"}
+              aria-pressed={isBatchMode}
+              data-testid="batch-mode-toggle"
+            >
+              <CheckSquare size={18} />
+              <span className="properties-page__select-label">Select</span>
+            </button>
+
+            <button
+              className={`properties-page__export-crm-btn ${deltaCount > 0 ? 'pulsating' : ''}`}
+              onClick={deltaCount > 0 ? () => {
+                const newSelected = new Set(properties.filter(p => deltaCountSet.has(p.id)).map(p => p.id));
+                setSelectedIds(newSelected);
+                setIsBatchMode(true);
+                setBatchModeType('export');
+                addToast('info', `${deltaCount} updated properties selected for CRM export.`);
+              } : () => {
+                setIsBatchMode(true);
+                setBatchModeType('export');
+              }}
+              title={deltaCount > 0 ? `${deltaCount} deltas detected. Click to select and sync.` : "Export properties to CRM"}
+            >
+              <Download size={18} />
+              <span>Export to CRM</span>
+              {deltaCount > 0 && <span className="delta-badge">{deltaCount}</span>}
+            </button>
+
             <div className="properties-page__view-toggle">
-              <button
-                className={`properties-page__toggle-btn ${isBatchMode ? 'active' : ''}`}
-                onClick={() => {
-                  if (isBatchMode) clearSelection();
-                  else setIsBatchMode(true);
-                }}
-                title="Selection Mode"
-              >
-                <CheckSquare size={18} />
-              </button>
-              <div className="toggle-separator" />
               <button
                 className={`properties-page__toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
                 onClick={() => setViewMode('grid')}
@@ -883,12 +1025,11 @@ export const PropertiesPage: React.FC = () => {
               <span>{isRefreshing ? 'Syncing...' : 'Sync'}</span>
             </button>
 
+
+
             <button
               className="properties-page__report-btn"
-              onClick={() => {
-                setReportModalData(null);
-                setIsReportModalOpen(true);
-              }}
+              onClick={(e) => handleGenerateReport(e)}
               style={{
                 background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
                 border: '1px solid rgba(0, 212, 255, 0.4)',
@@ -914,7 +1055,7 @@ export const PropertiesPage: React.FC = () => {
               }}
             >
               <TrendingUp size={18} />
-              <span>Comparable Analysis Report</span>
+              <span>Comparable Market Analysis</span>
             </button>
 
             {/* God Mode Controls */}
@@ -1310,7 +1451,7 @@ export const PropertiesPage: React.FC = () => {
                             <button className="icon-action-btn" onClick={(e) => handleScheduleOpenHome(e, property)} title="Schedule Open Home">
                               <Calendar size={16} />
                             </button>
-                            <button className="icon-action-btn" onClick={(e) => handleGenerateReport(e, property.id)} title="Generate Comparable Sales Report">
+                            <button className="icon-action-btn" onClick={(e) => handleGenerateReport(e, property.id)} title="Comparable Market Analysis">
                               <TrendingUp size={16} />
                             </button>
                           </div>
@@ -1466,10 +1607,10 @@ export const PropertiesPage: React.FC = () => {
                         <button
                           className="property-card__action-btn"
                           onClick={(e) => handleGenerateReport(e, property.id)}
-                          title="Generate Comparable Sales Report"
+                          title="Comparable Market Analysis"
                         >
                           <TrendingUp size={14} />
-                          Report
+                          CMA
                         </button>
                       </div>
                     </div>
@@ -1480,13 +1621,14 @@ export const PropertiesPage: React.FC = () => {
           </>
         )}
       </div>
-      {isBatchMode && selectedIds.size > 0 && createPortal(
+      {isBatchMode && createPortal(
         <BatchActionBar
           selectedCount={selectedIds.size}
-          isVisible={isBatchMode && selectedIds.size > 0}
-          onAction={handleBatchAction}
+          isVisible={isBatchMode}
+          onAction={handleBatchAction as any}
           onCancel={clearSelection}
-          actions={['compose', 'tag', 'delete_all']}
+          className={batchModeType === 'export' ? 'batch-action-bar--export-mode' : ''}
+          actions={batchModeType === 'export' ? ['export_crm', 'email_crm'] : ['tag_intel', 'export_crm', 'email_crm', 'delete']}
         />,
         document.body
       )}
@@ -1573,6 +1715,26 @@ export const PropertiesPage: React.FC = () => {
         }}
         initialAddress={reportModalData?.address}
         initialBedrooms={reportModalData?.bedrooms}
+      />
+      <ToastContainer
+        toasts={actionState.toasts}
+        onDismiss={dismissToast}
+      />
+
+      <CrmQuickSetupModal
+        isOpen={isCrmSetupOpen}
+        onClose={() => setIsCrmSetupOpen(false)}
+        onSuccess={() => {
+          setIsCrmSetupOpen(false);
+          addToast('success', 'CRM Bridge configured! You can now sync records.');
+        }}
+        addToast={addToast}
+      />
+
+      <CrmSuccessOverlay
+        isVisible={showSyncSuccess}
+        crmType={targetCrm}
+        onClose={() => setShowSyncSuccess(false)}
       />
     </div>
   );

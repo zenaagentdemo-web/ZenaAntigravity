@@ -10,6 +10,7 @@ export interface ExportOptions {
 export interface ExportResult {
   id: string;
   fileUrl: string;
+  content?: string | null;
   recordCount: number;
   status: 'completed' | 'failed';
   error?: string;
@@ -76,6 +77,7 @@ export class ExportService {
     return {
       id: exportRecord.id,
       fileUrl: exportRecord.fileUrl,
+      content: exportRecord.content,
       recordCount: exportRecord.recordCount,
       status: exportRecord.status as 'completed' | 'failed',
     };
@@ -152,6 +154,7 @@ export class ExportService {
         data: {
           status: 'completed',
           fileUrl,
+          content: fileContent,
           recordCount,
           completedAt: new Date(),
         },
@@ -198,7 +201,9 @@ export class ExportService {
   }
 
   /**
-   * Export contacts as CSV
+   * Export contacts as CSV with universal column names
+   * These column names are designed to be auto-detected by CRM import wizards
+   * (Rex Software, MRI Vault, Palace, etc.)
    */
   private async exportContactsCSV(
     userId: string,
@@ -206,34 +211,74 @@ export class ExportService {
   ): Promise<{ content: string; count: number }> {
     const contacts = await this.fetchContacts(userId, recordIds);
 
-    // CSV header
+    // Update lastCrmExportAt for these contacts to track deltas
+    if (contacts.length > 0) {
+      await prisma.contact.updateMany({
+        where: {
+          id: { in: contacts.map(c => c.id) }
+        },
+        data: {
+          lastCrmExportAt: new Date()
+        }
+      });
+    }
+
+    // Universal CSV headers - designed for CRM auto-detection
     const headers = [
-      'Name',
-      'Email Addresses',
-      'Phone Numbers',
-      'Role',
-      'Associated Properties',
-      'Relationship Notes',
+      'First Name',
+      'Last Name',
+      'Email',
+      'Mobile',
+      'Phone Work',
+      'Contact Type',
+      'Company',
+      'Street Address',
+      'Suburb',
+      'City',
+      'Notes',
     ];
 
     // CSV rows
     const rows = contacts.map(contact => {
-      const emails = contact.emails.join('; ');
-      const phones = contact.phones.join('; ');
+      // Split name into first/last (best effort)
+      const nameParts = (contact.name || '').trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      // Get primary email and phone
+      const primaryEmail = contact.emails[0] || '';
+      const phones = contact.phones || [];
+      const mobile = phones.find(p => p.includes('02') || p.includes('04')) || phones[0] || '';
+      const workPhone = phones.find(p => p !== mobile) || '';
+
+      // Get associated property address for context
       const properties = [
         ...contact.vendorProperties.map(p => p.address),
         ...contact.buyerProperties.map(p => p.address),
-      ].join('; ');
+      ];
+      const streetAddress = properties[0] || '';
+
+      // Parse suburb/city from address if possible
+      const addressParts = streetAddress.split(',').map(s => s.trim());
+      const suburb = addressParts[1] || '';
+      const city = addressParts[2] || '';
+
+      // Combine notes
       const notes = (contact.relationshipNotes as any[])
         .map(note => note.content)
         .join(' | ');
 
       return [
-        this.escapeCSV(contact.name),
-        this.escapeCSV(emails),
-        this.escapeCSV(phones),
-        this.escapeCSV(contact.role),
-        this.escapeCSV(properties),
+        this.escapeCSV(firstName),
+        this.escapeCSV(lastName),
+        this.escapeCSV(primaryEmail),
+        this.escapeCSV(mobile),
+        this.escapeCSV(workPhone),
+        this.escapeCSV(contact.role || 'Contact'),
+        this.escapeCSV(''), // Company - empty for now
+        this.escapeCSV(streetAddress),
+        this.escapeCSV(suburb),
+        this.escapeCSV(city),
         this.escapeCSV(notes),
       ];
     });
@@ -307,7 +352,8 @@ export class ExportService {
   }
 
   /**
-   * Export properties as CSV
+   * Export properties as CSV with universal column names
+   * These column names are designed to be auto-detected by CRM import wizards
    */
   private async exportPropertiesCSV(
     userId: string,
@@ -315,48 +361,77 @@ export class ExportService {
   ): Promise<{ content: string; count: number }> {
     const properties = await this.fetchProperties(userId, recordIds);
 
-    // CSV header
+    // Universal CSV headers for property/listing import
     const headers = [
-      'Address',
-      'Vendor Names',
-      'Vendor Emails',
-      'Associated Contacts',
-      'Stage',
-      'Campaign Milestones',
-      'Risk Overview',
+      'Street Address',
+      'Suburb',
+      'City',
+      'Postcode',
+      'Property Type',
+      'Bedrooms',
+      'Bathrooms',
+      'Listing Status',
+      'Price Guide',
+      'Vendor Name',
+      'Vendor Email',
+      'Vendor Mobile',
+      'Agent Notes',
     ];
 
     // CSV rows
     const rows = properties.map(property => {
-      const vendorNames = property.vendors.map(v => v.name).join('; ');
-      const vendorEmails = property.vendors
-        .flatMap(v => v.emails)
-        .join('; ');
-      const contactNames = [
-        ...property.vendors.map(v => v.name),
-        ...property.buyers.map(b => b.name),
-      ].join('; ');
+      // Parse address into components
+      const addressParts = (property.address || '').split(',').map(s => s.trim());
+      const streetAddress = addressParts[0] || property.address || '';
+      const suburb = addressParts[1] || '';
+      const city = addressParts[2] || '';
 
-      const stage = property.deals[0]?.stage || 'N/A';
+      // Get primary vendor
+      const primaryVendor = property.vendors[0];
+      const vendorName = primaryVendor?.name || '';
+      const vendorEmail = primaryVendor?.emails?.[0] || '';
+      const vendorMobile = primaryVendor?.phones?.[0] || '';
 
-      const milestones = (property.milestones as any[])
+      // Get listing status from deals
+      const stage = property.deals[0]?.stage || 'Active';
+
+      // Combine milestones and risk into notes
+      const milestones = (property.milestones as any[] || [])
         .map(m => `${m.type}: ${new Date(m.date).toLocaleDateString()}`)
-        .join(' | ');
+        .join('; ');
+      const notes = [milestones, property.riskOverview].filter(Boolean).join(' | ');
 
       return [
-        this.escapeCSV(property.address),
-        this.escapeCSV(vendorNames),
-        this.escapeCSV(vendorEmails),
-        this.escapeCSV(contactNames),
+        this.escapeCSV(streetAddress),
+        this.escapeCSV(suburb),
+        this.escapeCSV(city),
+        this.escapeCSV(''), // Postcode - empty for now
+        this.escapeCSV('Residential'), // Property type - default
+        this.escapeCSV(''), // Bedrooms - not in current model
+        this.escapeCSV(''), // Bathrooms - not in current model
         this.escapeCSV(stage),
-        this.escapeCSV(milestones),
-        this.escapeCSV(property.riskOverview || ''),
+        this.escapeCSV(''), // Price guide - not in current model
+        this.escapeCSV(vendorName),
+        this.escapeCSV(vendorEmail),
+        this.escapeCSV(vendorMobile),
+        this.escapeCSV(notes),
       ];
     });
 
     // Build CSV content
     const csvLines = [headers, ...rows];
     const content = csvLines.map(row => row.join(',')).join('\n');
+
+    // Update the lastCrmExportAt timestamp for the exported records
+    const propertyIds = properties.map(p => p.id);
+    await prisma.property.updateMany({
+      where: {
+        id: { in: propertyIds }
+      },
+      data: {
+        lastCrmExportAt: new Date()
+      }
+    });
 
     return { content, count: properties.length };
   }

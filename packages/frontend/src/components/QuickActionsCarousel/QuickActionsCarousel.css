@@ -21,7 +21,8 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-tertiary-ht);
-  margin: 0 0 var(--spacing-3, 12px) var(--spacing-2, 8px);
+  margin: 0 0 var(--spacing-3, 12px) 0;
+  text-align: center;
 }
 
 /* ============================================

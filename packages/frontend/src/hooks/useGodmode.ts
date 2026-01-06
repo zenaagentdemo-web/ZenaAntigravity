@@ -123,10 +123,19 @@ export const useGodmodeLogic = (): GodmodeContextType => {
         }
     }, []);
 
-    // Initial fetch in useGodmodeLogic
+    // Initial fetch in useGodmodeLogic and listen for updates
     useEffect(() => {
         fetchSettings();
         fetchPendingActions();
+
+        // Listen for godmode updates from GodmodeToggle
+        const handleUpdate = () => {
+            fetchSettings();
+        };
+        window.addEventListener('zena-godmode-updated', handleUpdate);
+        return () => {
+            window.removeEventListener('zena-godmode-updated', handleUpdate);
+        };
     }, [fetchSettings, fetchPendingActions]);
 
     return {

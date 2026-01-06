@@ -253,3 +253,97 @@ export async function suggestActions(req: Request, res: Response): Promise<void>
         res.status(500).json({ error: 'Failed to generate suggestions' });
     }
 }
+
+/**
+ * POST /api/godmode/seed-mock
+ * Create mock pending actions for testing (DEV ONLY)
+ */
+export async function seedMockActions(req: Request, res: Response): Promise<void> {
+    try {
+        if (!req.user) {
+            res.status(401).json({ error: 'Authentication required' });
+            return;
+        }
+
+        const userId = req.user.userId;
+
+        // Get first few contacts to attach actions to
+        const { PrismaClient } = await import('@prisma/client');
+        const prisma = new PrismaClient();
+
+        const contacts = await prisma.contact.findMany({
+            where: { userId },
+            take: 3,
+            select: { id: true, name: true, emails: true }
+        });
+
+        if (contacts.length === 0) {
+            res.status(400).json({ error: 'No contacts found to attach mock actions to' });
+            return;
+        }
+
+        const mockActions = [
+            {
+                userId,
+                contactId: contacts[0]?.id,
+                actionType: 'SEND_FOLLOWUP',
+                priority: 8,
+                title: `Follow-up Email for ${contacts[0]?.name}`,
+                description: 'Zena detected 5 days of silence after initial property inquiry. Suggesting a gentle check-in.',
+                draftSubject: `Quick follow-up on your property search`,
+                draftBody: `Hi ${contacts[0]?.name?.split(' ')[0]},\n\nI wanted to check in and see if you had any questions about the properties we discussed. I'd be happy to arrange viewings at your convenience.\n\nBest regards`,
+                status: 'pending',
+                mode: 'demi_god',
+                reasoning: 'Contact has been inactive for 5 days after showing high interest signals',
+            },
+            {
+                userId,
+                contactId: contacts[1]?.id || contacts[0]?.id,
+                actionType: 'SCHEDULE_CALL',
+                priority: 6,
+                title: `Schedule Call with ${contacts[1]?.name || contacts[0]?.name}`,
+                description: 'Oracle predicts high sell probability (78%). Recommending proactive outreach.',
+                status: 'pending',
+                mode: 'demi_god',
+                reasoning: 'High seller probability detected from recent email patterns',
+            },
+            {
+                userId,
+                contactId: contacts[2]?.id || contacts[0]?.id,
+                actionType: 'SEND_NEWSLETTER',
+                priority: 4,
+                title: `Market Update for ${contacts[2]?.name || contacts[0]?.name}`,
+                description: 'Monthly market report ready. Contact has opted-in to updates.',
+                draftSubject: 'Auckland Market Update - January 2026',
+                draftBody: 'Hi there,\n\nHere\'s your monthly market update for the Auckland property market...',
+                status: 'pending',
+                mode: 'demi_god',
+                reasoning: 'Scheduled newsletter based on contact preferences',
+            }
+        ];
+
+        const createdActions = [];
+        for (const action of mockActions) {
+            if (action.contactId) {
+                const created = await prisma.autonomousAction.create({
+                    data: action as any,
+                    include: {
+                        contact: { select: { id: true, name: true, emails: true } }
+                    }
+                });
+                createdActions.push(created);
+            }
+        }
+
+        await prisma.$disconnect();
+
+        res.status(200).json({
+            success: true,
+            message: `Created ${createdActions.length} mock pending actions`,
+            actions: createdActions,
+        });
+    } catch (error) {
+        console.error('Error seeding mock actions:', error);
+        res.status(500).json({ error: 'Failed to seed mock actions' });
+    }
+}

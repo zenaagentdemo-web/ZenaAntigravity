@@ -22,6 +22,7 @@ import { realTimeDataService } from '../../services/realTimeDataService';
 import { TranscriptionMerger } from '../../utils/transcription/transcription-merger';
 import { decodeHTMLEntities } from '../../utils/text-utils';
 import { StrategySessionContext, STRATEGY_SESSION_KEY, buildStrategyOpener } from '../../components/DealFlow/types';
+import CRMWriteConfirmationModal from '../../components/CRMWriteConfirmationModal/CRMWriteConfirmationModal';
 import './AskZenaPage.css';
 import './TapToTalkButton.css';
 
@@ -79,6 +80,11 @@ export const AskZenaPage: React.FC = () => {
   const [avatarMode, setAvatarMode] = useState<'hero' | 'assistant'>('hero');
   const [dissolvePhase, setDissolvePhase] = useState<DissolvePhase>('idle');
   const [userTranscript, setUserTranscript] = useState('');
+
+  // Phase 7: CRM Write Approval State
+  const [showWriteConfirmation, setShowWriteConfirmation] = useState(false);
+  const [pendingActionData, setPendingActionData] = useState<any>(null);
+  const [isExecutingWrite, setIsExecutingWrite] = useState(false);
 
   // IMMEDIATE CONTEXT CAPTURE: Capture context from URL *before* any effects run or clear it
   // This persists across re-renders even if searchParams are cleared later
@@ -152,8 +158,39 @@ export const AskZenaPage: React.FC = () => {
       text.includes(term) || (actionId && backendActions.includes(actionId));
 
     // Pin Address chip removed per user request
+    const handleDownloadReport = async (reportContent: string) => {
+      try {
+        setIsLoading(true);
+        console.log('[AskZena] Requesting PDF generation for report...');
+
+        // Use axios/api client to get blob response
+        const res = await api.post('/api/ask/generate-pdf', {
+          content: reportContent,
+          title: 'Market Analysis Report'
+        }, { responseType: 'blob' });
+
+        // Create download link
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Zena_Market_Report.pdf');
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        setIsLoading(false);
+        console.log('[AskZena] PDF download triggered successfully');
+      } catch (err) {
+        console.error('[AskZena] Failed to download report:', err);
+        setError('Failed to generate report PDF. Please try again.');
+        setIsLoading(false);
+      }
+    };
 
     if (hasAction('email', 'draft_email')) {
+
       chips.push({
         label: "Draft Email",
         icon: "✉️",
@@ -172,18 +209,17 @@ export const AskZenaPage: React.FC = () => {
       });
     }
 
-    // Market Report chip removed as requested
-
-    if (hasAction('calendar', 'add_calendar')) {
+    if (hasAction('report', 'generate_report') || hasAction('pdf', 'generate_pdf')) {
       chips.push({
-        label: "Schedule Meeting",
-        icon: "🗓️",
-        onClick: () => console.log("Scheduling via API...")
+        label: "Download Report",
+        icon: "📄",
+        onClick: () => handleDownloadReport(text)
       });
     }
 
     return chips;
   }, []);
+
 
   // Load conversations and messages
   const loadConversations = useCallback(async () => {
@@ -422,7 +458,7 @@ export const AskZenaPage: React.FC = () => {
           if (isFinal) {
             console.log('[AskZena] Zena transcript marked final. Draining response for 1000ms...');
             zenaDrainingRef.current = true;
-            
+
             // DRAIN DELAY: Wait a moment for the actual audio to finish playing
             // before we clear the buffer and reset the speaking flag.
             // Increased to 1000ms to ensure "I've listed those sources on your screen" finishes correctly.
@@ -532,7 +568,7 @@ export const AskZenaPage: React.FC = () => {
           // INTERRUPTION LOGIC:
           // User spoke! 
           const isSignificantSpeech = text.trim().length > 10;
-          
+
           if (playbackTimerRef.current) {
             console.log('[AskZena] User interrupted silence buffer! Cancelling Zena response.');
             clearTimeout(playbackTimerRef.current);
@@ -1203,7 +1239,12 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
     }
 
     try {
-      const response = await api.post<{ response: string; messageId: string; suggestedActions?: string[] }>('/api/ask', {
+      const response = await api.post<{
+        response: string;
+        messageId: string;
+        suggestedActions?: string[];
+        pendingAction?: any;
+      }>('/api/ask', {
         query: queryText, // User's actual query - no prepended context!
         conversationId: convId,
         attachments: attachmentData,
@@ -1213,6 +1254,15 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
 
       if (!isMountedRef.current) {
         console.log('[AskZena] Component unmounted during API call - aborting response processing');
+        return;
+      }
+
+      // Phase 7: Handle pending action
+      if (response.data.pendingAction) {
+        setPendingActionData(response.data.pendingAction);
+        setShowWriteConfirmation(true);
+        setIsLoading(false);
+        setDissolvePhase('idle');
         return;
       }
 
@@ -1290,10 +1340,31 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
       console.log('[AskZena] Response flow complete.');
       loadConversations();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to get response');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to get response';
+      setError(errorMessage);
       setIsLoading(false);
-      // Reset dissolve phase on error
       setDissolvePhase('idle');
+
+      // Create a persistent error message in the chat
+      const errorBubble: Message = {
+        id: `error-${Date.now()}`,
+        role: 'assistant',
+        content: `**Connection Error:** ${errorMessage}\n\nI had trouble reaching the Zena brain. This usually happens during a brief network interruption or server restart.`,
+        timestamp: new Date(),
+        isError: true
+      };
+      setMessages(prev => [...prev, errorBubble]);
+    }
+  };
+
+  const handleRetry = (messageId: string) => {
+    // Find the last user message to resubmit
+    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+    if (lastUserMessage) {
+      // Remove the specific error message that triggered the retry
+      setMessages(prev => prev.filter(m => m.id !== messageId));
+      // Re-submit the content
+      submitQuery(lastUserMessage.content);
     }
   };
 
@@ -1314,6 +1385,40 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
 
     console.log('[AskZena] Submitting query:', inputValue);
     submitQuery(inputValue);
+  };
+
+  const handleApproveWrite = async () => {
+    if (!pendingActionData) return;
+
+    setIsExecutingWrite(true);
+    try {
+      // Execute the actual navigation plan now that user has approved
+      const res = await api.post<{ success: boolean; answer: string; data: any }>('/api/connections/query', {
+        query: inputValue || pendingActionData.payload.note || "Execute approved action",
+        domain: pendingActionData.targetSite
+      });
+
+      if (res.data.success) {
+        // Add success message to chat
+        const successMsg: Message = {
+          id: `write-success-${Date.now()}`,
+          role: 'assistant',
+          content: res.data.answer || "Action successfully completed!",
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, successMsg]);
+        setShowWriteConfirmation(false);
+        setAvatarMode('assistant');
+      } else {
+        setError("Action failed: " + (res.data as any).error);
+      }
+    } catch (err: any) {
+      console.error("Write execution error:", err);
+      setError("Failed to execute action. Please check your connection.");
+    } finally {
+      setIsExecutingWrite(false);
+      setPendingActionData(null);
+    }
   };
 
   // Render Unified Prompt
@@ -1533,6 +1638,7 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
                 <MessageBubble
                   message={message}
                   onPreviewAttachment={setPreviewAttachment}
+                  onRetry={handleRetry}
                 />
               </React.Fragment>
             ))}
@@ -1600,6 +1706,26 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
           onClose={() => setPreviewAttachment(null)}
         />
       )}
+
+      {showWriteConfirmation && pendingActionData && (
+        <CRMWriteConfirmationModal
+          isOpen={showWriteConfirmation}
+          onClose={() => {
+            setShowWriteConfirmation(false);
+            setPendingActionData(null);
+          }}
+          onApprove={handleApproveWrite}
+          action={{
+            type: pendingActionData.subType,
+            targetSite: pendingActionData.targetSite,
+            payload: pendingActionData.payload,
+            description: pendingActionData.description
+          }}
+          isExecuting={isExecutingWrite}
+        />
+      )}
     </div>
   );
 };
+
+export default AskZenaPage;

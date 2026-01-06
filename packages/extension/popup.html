@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zena Sidekick</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 320px;
+            min-height: 380px;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            color: #fff;
+        }
+
+        .header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(165, 180, 252, 0.2);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a5b4fc, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .tagline {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .auto-bridge-status {
+            margin: 16px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            text-align: center;
+        }
+
+        .auto-bridge-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .auto-bridge-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 4px;
+        }
+
+        .auto-bridge-description {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .section {
+            padding: 16px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #a5b4fc;
+            margin-bottom: 12px;
+        }
+
+        .bridge-list {
+            list-style: none;
+        }
+
+        .bridge-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .bridge-item .name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bridge-item .status {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .status.bridged {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 16px;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .footer {
+            padding: 16px;
+            text-align: center;
+            border-top: 1px solid rgba(165, 180, 252, 0.1);
+        }
+
+        .footer a {
+            color: #a5b4fc;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .rescan-info {
+            font-size: 11px;
+            color: #64748b;
+            text-align: center;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">Zena Sidekick</div>
+        <div class="tagline">Automatic Session Bridge</div>
+    </div>
+
+    <div class="auto-bridge-status">
+        <div class="auto-bridge-icon">🔄</div>
+        <div class="auto-bridge-title">AUTO-BRIDGE ACTIVE</div>
+        <div class="auto-bridge-description">
+            Zena automatically detects and bridges your professional sessions. No action required!
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Bridged Sessions</div>
+        <ul class="bridge-list" id="bridgeList">
+            <li class="empty-state">Scanning for sessions...</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <button class="btn btn-primary" id="rescanBtn">
+            🔍 Rescan All Sessions
+        </button>
+        <div class="rescan-info">
+            Sessions are bridged automatically when you log in
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="http://localhost:5173/connections" target="_blank">
+            Open Connection Centre →
+        </a>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

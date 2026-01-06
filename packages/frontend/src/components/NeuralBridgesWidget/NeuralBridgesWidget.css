@@ -1,0 +1,200 @@
+.neural-bridges-widget {
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(165, 180, 252, 0.2);
+    border-radius: 1.5rem;
+    padding: 1.2rem;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    position: relative;
+    max-width: 480px;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.05);
+}
+
+.neural-bridges-widget:hover {
+    border-color: rgba(165, 180, 252, 0.6);
+    background: rgba(15, 23, 42, 0.6);
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(99, 102, 241, 0.3);
+}
+
+.neural-bridges-widget__glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 60%);
+    opacity: 0.3;
+    /* Persistent subtle glow */
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+.neural-bridges-widget:hover .neural-bridges-widget__glow {
+    opacity: 0.8;
+}
+
+.neural-bridges-widget__header {
+    margin-bottom: 1rem;
+    padding-bottom: 0;
+    border-bottom: none;
+    text-align: center;
+}
+
+.neural-bridges-widget__header-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.neural-bridges-widget__title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    background: linear-gradient(90deg, #ffffff, #a5b4fc, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(165, 180, 252, 0.4);
+}
+
+/* Removed status-pill and pulse classes as they are no longer used in TSX */
+
+.neural-bridges-widget__description {
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: rgba(148, 163, 184, 0.8);
+    margin: 0 auto;
+    font-weight: 400;
+    max-width: 90%;
+}
+
+.neural-bridges-widget__mini-grid {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 1rem 0;
+}
+
+.mini-bridge-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.mini-bridge-item:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.mini-bridge-item__icon {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.3s ease;
+}
+
+.mini-bridge-item--active .mini-bridge-item__icon {
+    color: #10b981;
+    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
+}
+
+.mini-bridge-item--syncing .mini-bridge-item__icon {
+    color: #3b82f6;
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
+    animation: glow-pulse 2s infinite;
+}
+
+.mini-bridge-item--offline .mini-bridge-item__icon {
+    color: #64748b;
+    opacity: 0.5;
+}
+
+.neural-bridges-widget__footer {
+    font-size: 0.6rem;
+    text-align: center;
+    color: rgba(99, 102, 241, 0.5);
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    padding-top: 0;
+    border-top: none;
+    text-transform: uppercase;
+}
+
+@keyframes glow-pulse {
+    0% {
+        filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.4));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.8));
+    }
+
+    100% {
+        filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.4));
+    }
+}
+
+@keyframes pulse-simple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.4);
+        opacity: 0.4;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Sci-fi scanning line */
+.neural-bridges-widget::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(165, 180, 252, 0.1),
+            transparent);
+    transform: skewX(-20deg);
+    transition: 0.8s;
+}
+
+.neural-bridges-widget:hover::after {
+    left: 150%;
+}

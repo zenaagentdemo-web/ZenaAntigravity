@@ -38,6 +38,7 @@ const TasksPage = lazy(() => import('./pages/TasksPage/TasksPage').then(m => ({ 
 const PixelExplosionDemo = lazy(() => import('./pages/PixelExplosionDemo/PixelExplosionDemo'));
 const ZenaAskPageDemo = lazy(() => import('./pages/ZenaAskPage/ZenaAskPage').then(m => ({ default: m.ZenaAskPage })));
 const CalendarPage = lazy(() => import('./pages/CalendarPage/CalendarPage').then(m => ({ default: m.CalendarPage })));
+const ConnectionCentrePage = lazy(() => import('./pages/ConnectionCentrePage/ConnectionCentrePage').then(m => ({ default: m.ConnectionCentrePage })));
 
 
 // Minimal loading skeleton - appears instantly for fast perceived loading
@@ -171,6 +172,7 @@ function App() {
                                 <Route path="/search" element={<SearchPage />} />
                                 <Route path="/tasks" element={<TasksPage />} />
                                 <Route path="/calendar" element={<CalendarPage />} />
+                                <Route path="/connections" element={<ConnectionCentrePage />} />
                                 <Route path="/settings" element={<SettingsPage />} />
                               </Routes>
                             </PageTransition>

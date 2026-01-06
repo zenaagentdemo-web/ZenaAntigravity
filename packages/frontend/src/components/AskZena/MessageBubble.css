@@ -144,3 +144,39 @@
     color: #0055aa;
     border-bottom-color: #0055aa;
 }
+
+.message-error-actions {
+    margin-top: 1rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+.retry-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 107, 107, 0.1);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 107, 107, 0.4);
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+    background: rgba(255, 107, 107, 0.2);
+    border-color: #ff6b6b;
+    box-shadow: 0 0 15px rgba(255, 107, 107, 0.2);
+    transform: translateY(-1px);
+}
+
+.retry-btn:active {
+    transform: translateY(0);
+}
+
+.retry-icon {
+    font-size: 1rem;
+}

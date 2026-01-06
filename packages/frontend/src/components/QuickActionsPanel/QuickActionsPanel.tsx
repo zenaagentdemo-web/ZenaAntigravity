@@ -434,8 +434,8 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
                 onFocus={() => setFocusedActionId(action.id)}
                 onBlur={() => setFocusedActionId(null)}
                 aria-label={`${action.label}${action.shortcut ? `. Keyboard shortcut: Alt plus ${action.shortcut}` : ''}${isActionLoading ? '. Loading' :
-                    action.id === 'voice-note' && isRecording ? '. Currently recording' :
-                      action.id === 'voice-note' && isProcessing ? '. Processing voice note' : ''
+                  action.id === 'voice-note' && isRecording ? '. Currently recording' :
+                    action.id === 'voice-note' && isProcessing ? '. Processing voice note' : ''
                   }`}
                 aria-describedby={`${action.id}-description`}
                 aria-pressed={isVoiceNoteActive}

@@ -146,7 +146,7 @@ export const DealQuickActions: React.FC<DealQuickActionsProps> = ({
 
                 {/* Quick Actions */}
                 <div className="quick-actions__section">
-                    <h4 className="quick-actions__section-title">Quick Actions</h4>
+                    <h4 className="quick-actions__section-title">Smart Connections</h4>
                     <div className="quick-actions__grid">
                         <button className="quick-actions__btn" onClick={() => handleGenerateAction('nudge_client', {})}>
                             <span className="quick-actions__btn-icon">📧</span>

@@ -107,6 +107,15 @@ export const BottomNavigation: React.FC = () => {
             <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
         );
+      case 'connections':
+        return (
+          <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
+            <path d="M12 10V6" />
+            <path d="M12 3v1" />
+            <path d="M12 15h.01" />
+          </svg>
+        );
       default:
         return null;
     }

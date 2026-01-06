@@ -18,6 +18,7 @@ import { QuickActionsCarousel, CarouselAction } from '../QuickActionsCarousel/Qu
 import { AmbientBackground } from '../AmbientBackground/AmbientBackground';
 import { CalendarWidget, CalendarAppointment } from '../CalendarWidget/CalendarWidget';
 import { RecentActivityStream, ActivityItem } from '../RecentActivityStream/RecentActivityStream';
+import { NeuralBridgesWidget } from '../NeuralBridgesWidget/NeuralBridgesWidget';
 
 import './HighTechDashboard.css';
 
@@ -320,7 +321,10 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
           />
         </section>
 
-
+        {/* Neural Bridges Status */}
+        <section className="high-tech-dashboard__neural-bridges">
+          <NeuralBridgesWidget />
+        </section>
 
         {/* Quick Actions Carousel */}
         <section

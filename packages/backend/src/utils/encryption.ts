@@ -27,17 +27,17 @@ function getEncryptionKey(): Buffer {
 export function encryptToken(token: string): string {
   const key = getEncryptionKey();
   const iv = crypto.randomBytes(IV_LENGTH);
-  
+
   const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
-  
+
   let encrypted = cipher.update(token, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  
+
   const authTag = cipher.getAuthTag();
-  
+
   // Combine iv, authTag, and encrypted data
   const combined = `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
-  
+
   return Buffer.from(combined).toString('base64');
 }
 
@@ -45,27 +45,33 @@ export function encryptToken(token: string): string {
  * Decrypt a token or sensitive string
  */
 export function decryptToken(encryptedToken: string): string {
-  const key = getEncryptionKey();
-  
-  // Decode from base64
-  const combined = Buffer.from(encryptedToken, 'base64').toString('utf8');
-  const parts = combined.split(':');
-  
-  if (parts.length !== 3) {
-    throw new Error('Invalid encrypted token format');
+  try {
+    const key = getEncryptionKey();
+
+    // Decode from base64
+    const combined = Buffer.from(encryptedToken, 'base64').toString('utf8');
+    const parts = combined.split(':');
+
+    if (parts.length !== 3) {
+      console.error('[Encryption] Invalid encrypted token format (missing parts)');
+      throw new Error('Invalid encrypted token format');
+    }
+
+    const iv = Buffer.from(parts[0], 'hex');
+    const authTag = Buffer.from(parts[1], 'hex');
+    const encrypted = parts[2];
+
+    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
+    decipher.setAuthTag(authTag);
+
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+
+    return decrypted;
+  } catch (error: any) {
+    console.error('[Encryption] Decryption failed:', error.message);
+    throw error;
   }
-  
-  const iv = Buffer.from(parts[0], 'hex');
-  const authTag = Buffer.from(parts[1], 'hex');
-  const encrypted = parts[2];
-  
-  const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
-  decipher.setAuthTag(authTag);
-  
-  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  
-  return decrypted;
 }
 
 /**
@@ -85,11 +91,11 @@ export function verifyPassword(password: string, hashedPassword: string): boolea
   if (parts.length !== 2) {
     return false;
   }
-  
+
   const salt = parts[0];
   const originalHash = parts[1];
   const hash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
-  
+
   return hash === originalHash;
 }
 

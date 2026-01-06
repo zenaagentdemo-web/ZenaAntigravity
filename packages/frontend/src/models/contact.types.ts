@@ -42,6 +42,7 @@ export interface Contact {
     scoringData?: EngagementScore;
     createdAt: string;
     updatedAt: string;
+    lastCrmExportAt?: string;
     zenaIntelligence?: {
         propertyType?: string;
         minBudget?: number;

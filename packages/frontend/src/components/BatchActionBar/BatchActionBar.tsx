@@ -142,6 +142,39 @@ export const BatchActionBar: React.FC<BatchActionBarProps> = ({
           </button>
         )}
 
+        {displayActions.includes('export_crm') && (
+          <button
+            className="batch-action-bar__button batch-action-bar__button--export"
+            onClick={() => onAction('export_crm')}
+            disabled={selectedCount === 0}
+            aria-label={`Export ${selectedCount} items for CRM`}
+            data-testid="export-crm-button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            <span>Export CSV</span>
+          </button>
+        )}
+
+        {displayActions.includes('email_crm') && (
+          <button
+            className="batch-action-bar__button batch-action-bar__button--email"
+            onClick={() => onAction('email_crm')}
+            disabled={selectedCount === 0}
+            aria-label={`Email ${selectedCount} items to CRM`}
+            data-testid="email-crm-button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            <span>Email to CRM</span>
+          </button>
+        )}
+
         {displayActions.includes('mark_read') && (
           <button
             className="batch-action-bar__button batch-action-bar__button--read"
@@ -158,13 +191,13 @@ export const BatchActionBar: React.FC<BatchActionBarProps> = ({
           </button>
         )}
 
-        {displayActions.includes('delete_all') && (
+        {displayActions.includes('delete') && (
           <button
             className="batch-action-bar__button batch-action-bar__button--delete"
-            onClick={() => onAction('delete_all')}
+            onClick={() => onAction('delete')}
             disabled={selectedCount === 0}
             aria-label={`Delete ${selectedCount} items`}
-            data-testid="delete-all-button"
+            data-testid="delete-button"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="3 6 5 6 21 6" />
