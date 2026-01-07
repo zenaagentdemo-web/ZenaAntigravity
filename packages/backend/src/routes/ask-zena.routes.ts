@@ -43,6 +43,9 @@ router.get('/contact-call-intel/:id', askZenaController.getContactCallIntel);
 // POST /api/ask/smart-search - Parse natural language search query
 router.post('/smart-search', askZenaController.parseSearchQuery);
 
+// POST /api/ask/deal-search - Parse natural language deal search query
+router.post('/deal-search', askZenaController.parseDealSearchQuery);
+
 // POST /api/ask/property-search - Parse natural language property search query
 router.post('/property-search', askZenaController.parsePropertySearchQuery);
 

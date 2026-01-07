@@ -30,15 +30,6 @@
     margin-bottom: 32px;
 }
 
-.deal-flow-page__title {
-    font-size: 32px;
-    font-weight: 800;
-    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.5) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 4px;
-}
 
 .deal-flow-page__subtitle {
     color: rgba(255, 255, 255, 0.4);
@@ -70,7 +61,7 @@
     color: rgba(255, 255, 255, 0.4);
     padding: 6px 16px;
     font-size: 0.6875rem;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-family-sans);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -92,7 +83,7 @@
     border: 1px solid rgba(0, 212, 255, 0.3);
     padding: 6px 16px;
     border-radius: 8px;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-family-sans);
     font-weight: 600;
     font-size: 0.6875rem;
     text-transform: uppercase;
@@ -223,7 +214,7 @@
     font-size: 13px;
     color: rgba(255, 255, 255, 0.4);
     margin-top: 6px;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-family-sans);
 }
 
 .deal-flow__column-content {

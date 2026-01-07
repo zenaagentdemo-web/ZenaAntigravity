@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/database.js';
 import { encrypt, decrypt } from '../utils/encryption.js';
 import { OAuthTokens } from './oauth.service.js';
-
-const prisma = new PrismaClient();
 
 /**
  * Calendar Account Service

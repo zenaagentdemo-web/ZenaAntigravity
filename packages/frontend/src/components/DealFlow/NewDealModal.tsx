@@ -23,6 +23,18 @@ interface Property {
     address: string;
 }
 
+interface AddressSuggestion {
+    id: string;
+    fullAddress: string;
+    streetAddress: string;
+    suburb: string;
+    city: string;
+    postcode: string;
+    lat: number;
+    lon: number;
+    source: 'nominatim' | 'database' | 'manual';
+}
+
 interface Contact {
     id: string;
     name: string;
@@ -57,10 +69,15 @@ const SELLER_STAGES: { value: SellerStage; label: string }[] = [
 ];
 
 const SALE_METHODS: { value: SaleMethod; label: string }[] = [
-    { value: 'negotiation', label: 'Negotiation / By Enquiry' },
     { value: 'auction', label: 'Auction' },
     { value: 'tender', label: 'Tender' },
-    { value: 'deadline_sale', label: 'Deadline Sale' }
+    { value: 'deadline_sale', label: 'Deadline Sale' },
+    { value: 'negotiation', label: 'By Negotiation' },
+    { value: 'asking_price', label: 'Asking Price' },
+    { value: 'poa', label: 'Price on Application (POA)' },
+    { value: 'beo', label: 'Buyer Enquiry Over (BEO)' },
+    { value: 'set_date', label: 'Set Date of Sale' },
+    { value: 'custom', label: 'Custom (Other)' }
 ];
 
 const DEFAULT_CONDITIONS: Partial<DealCondition>[] = [
@@ -78,7 +95,8 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
 }) => {
     // Form state
     const [pipelineType, setPipelineType] = useState<PipelineType>(initialPipelineType);
-    const [saleMethod, setSaleMethod] = useState<SaleMethod>('negotiation');
+    const [saleMethod, setSaleMethod] = useState<SaleMethod>('auction');
+    const [customSaleMethod, setCustomSaleMethod] = useState('');
     const [stage, setStage] = useState<string>('');
     const [summary, setSummary] = useState('');
     const [dealValue, setDealValue] = useState('');
@@ -93,9 +111,11 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
 
     // Search results
     const [properties, setProperties] = useState<Property[]>([]);
+    const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
     const [showContactDropdown, setShowContactDropdown] = useState(false);
+    const [isManualEntry, setIsManualEntry] = useState(false);
 
     // UI state
     const [loading, setLoading] = useState(false);
@@ -105,7 +125,8 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
     useEffect(() => {
         if (isOpen) {
             setPipelineType(initialPipelineType);
-            setSaleMethod('negotiation');
+            setSaleMethod('auction');
+            setCustomSaleMethod('');
             setStage(initialPipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
             setSummary('');
             setDealValue('');
@@ -117,6 +138,8 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
             setAuctionDate('');
             setTenderCloseDate('');
             setSelectedConditions([]);
+            setAddressSuggestions([]);
+            setIsManualEntry(false);
             setError(null);
         }
     }, [isOpen, initialPipelineType]);
@@ -126,26 +149,35 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
         setStage(pipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
     }, [pipelineType]);
 
-    // Search properties
+    // Search properties (existing database) and geocoding
     useEffect(() => {
         const searchProperties = async () => {
-            if (propertySearch.length < 2) {
+            if (propertySearch.length < 3) {
                 setProperties([]);
+                setAddressSuggestions([]);
                 return;
             }
 
             try {
-                const response = await fetchWithAuth(`${API_BASE}/properties?search=${encodeURIComponent(propertySearch)}&limit=5`);
-                if (response.ok) {
-                    const data = await response.json();
+                // Search existing properties in database
+                const propResponse = await fetchWithAuth(`${API_BASE}/properties?search=${encodeURIComponent(propertySearch)}&limit=5`);
+                if (propResponse.ok) {
+                    const data = await propResponse.json();
                     setProperties(data.properties || []);
                 }
+
+                // Search geocoding API for NZ addresses
+                const geoResponse = await fetchWithAuth(`${API_BASE}/geocoding/autocomplete?query=${encodeURIComponent(propertySearch)}`);
+                if (geoResponse.ok) {
+                    const geoData = await geoResponse.json();
+                    setAddressSuggestions(geoData.suggestions || []);
+                }
             } catch (err) {
-                console.error('Error searching properties:', err);
+                console.error('Error searching properties/addresses:', err);
             }
         };
 
-        const debounce = setTimeout(searchProperties, 300);
+        const debounce = setTimeout(searchProperties, 400);
         return () => clearTimeout(debounce);
     }, [propertySearch]);
 
@@ -177,6 +209,24 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
         setPropertySearch(property.address);
         setSummary(property.address);
         setShowPropertyDropdown(false);
+        setIsManualEntry(false);
+    };
+
+    // Handle selecting a geocoded address (will create property on submit)
+    const handleAddressSelect = (suggestion: AddressSuggestion) => {
+        setPropertyId(''); // No existing property
+        setPropertySearch(suggestion.fullAddress);
+        setSummary(suggestion.fullAddress);
+        setShowPropertyDropdown(false);
+        setIsManualEntry(false);
+    };
+
+    // Handle using manual entry
+    const handleUseAsEntered = () => {
+        setPropertyId('');
+        setSummary(propertySearch);
+        setShowPropertyDropdown(false);
+        setIsManualEntry(true);
     };
 
     const handleContactSelect = (contact: Contact) => {
@@ -200,6 +250,11 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
         // Validation
         if (!summary.trim()) {
             setError('Please enter a deal summary');
+            return;
+        }
+
+        if (saleMethod === 'custom' && !customSaleMethod.trim()) {
+            setError('Please enter a custom sale method');
             return;
         }
 
@@ -233,13 +288,36 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
                 }
             }
 
+            // If no existing property selected but we have an address, create the property first
+            let finalPropertyId = propertyId;
+            if (!propertyId && propertySearch.trim()) {
+                try {
+                    const propResponse = await fetchWithAuth(`${API_BASE}/properties`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            address: propertySearch.trim(),
+                            type: 'residential',
+                            status: 'active'
+                        })
+                    });
+                    if (propResponse.ok) {
+                        const propData = await propResponse.json();
+                        finalPropertyId = propData.property?.id;
+                    }
+                } catch (propErr) {
+                    console.warn('Could not auto-create property:', propErr);
+                    // Continue without property linking - deal will still be created
+                }
+            }
+
             const dealData: Record<string, unknown> = {
                 pipelineType,
                 saleMethod,
+                customSaleMethod: saleMethod === 'custom' ? customSaleMethod.trim() : undefined,
                 stage,
                 summary: summary.trim(),
                 dealValue: dealValue ? parseFloat(dealValue.replace(/[^0-9.]/g, '')) : undefined,
-                propertyId: propertyId || undefined,
+                propertyId: finalPropertyId || undefined,
                 contactIds: contactId ? [contactId] : undefined,
                 conditions: conditions.length > 0 ? conditions : undefined,
                 settlementDate: settlementDate ? new Date(settlementDate).toISOString() : undefined,
@@ -287,27 +365,6 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
                 </div>
 
                 <form className="new-deal-modal__form" onSubmit={handleSubmit}>
-                    {/* Pipeline Type Toggle */}
-                    <div className="new-deal-modal__field">
-                        <label className="new-deal-modal__label">Pipeline</label>
-                        <div className="new-deal-modal__toggle">
-                            <button
-                                type="button"
-                                className={`new-deal-modal__toggle-btn ${pipelineType === 'buyer' ? 'new-deal-modal__toggle-btn--active' : ''}`}
-                                onClick={() => setPipelineType('buyer')}
-                            >
-                                Buyer
-                            </button>
-                            <button
-                                type="button"
-                                className={`new-deal-modal__toggle-btn ${pipelineType === 'seller' ? 'new-deal-modal__toggle-btn--active' : ''}`}
-                                onClick={() => setPipelineType('seller')}
-                            >
-                                Seller
-                            </button>
-                        </div>
-                    </div>
-
                     {/* Sale Method */}
                     <div className="new-deal-modal__field">
                         <label className="new-deal-modal__label">Sale Method</label>
@@ -322,37 +379,98 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
                         </select>
                     </div>
 
-                    {/* Property Search */}
+                    {/* Custom Sale Method Input */}
+                    {saleMethod === 'custom' && (
+                        <div className="new-deal-modal__field">
+                            <label className="new-deal-modal__label">Custom Sale Method *</label>
+                            <input
+                                type="text"
+                                className="new-deal-modal__input"
+                                placeholder="Enter your sale method..."
+                                value={customSaleMethod}
+                                onChange={(e) => setCustomSaleMethod(e.target.value)}
+                                required
+                            />
+                        </div>
+                    )}
+
+                    {/* Property Search with Geocoding */}
                     <div className="new-deal-modal__field">
-                        <label className="new-deal-modal__label">Property</label>
+                        <label className="new-deal-modal__label">Property Address</label>
                         <div className="new-deal-modal__autocomplete">
                             <input
                                 type="text"
                                 className="new-deal-modal__input"
-                                placeholder="Search property address..."
+                                placeholder="Start typing an address..."
                                 value={propertySearch}
                                 onChange={(e) => {
                                     setPropertySearch(e.target.value);
                                     setPropertyId('');
+                                    setIsManualEntry(false);
                                     setShowPropertyDropdown(true);
                                 }}
                                 onFocus={() => setShowPropertyDropdown(true)}
                             />
-                            {showPropertyDropdown && properties.length > 0 && (
-                                <div className="new-deal-modal__dropdown">
-                                    {properties.map(property => (
-                                        <button
-                                            key={property.id}
-                                            type="button"
-                                            className="new-deal-modal__dropdown-item"
-                                            onClick={() => handlePropertySelect(property)}
-                                        >
-                                            {property.address}
-                                        </button>
-                                    ))}
+                            {showPropertyDropdown && (properties.length > 0 || addressSuggestions.length > 0 || propertySearch.length >= 3) && (
+                                <div className="new-deal-modal__dropdown new-deal-modal__dropdown--grouped">
+                                    {/* Existing Properties */}
+                                    {properties.length > 0 && (
+                                        <>
+                                            <div className="new-deal-modal__dropdown-header">Your Properties</div>
+                                            {properties.map(property => (
+                                                <button
+                                                    key={property.id}
+                                                    type="button"
+                                                    className="new-deal-modal__dropdown-item new-deal-modal__dropdown-item--property"
+                                                    onClick={() => handlePropertySelect(property)}
+                                                >
+                                                    <span className="new-deal-modal__dropdown-icon">🏠</span>
+                                                    {property.address}
+                                                </button>
+                                            ))}
+                                        </>
+                                    )}
+
+                                    {/* Geocoded Addresses */}
+                                    {addressSuggestions.length > 0 && (
+                                        <>
+                                            <div className="new-deal-modal__dropdown-header">NZ Addresses</div>
+                                            {addressSuggestions.map(suggestion => (
+                                                <button
+                                                    key={suggestion.id}
+                                                    type="button"
+                                                    className="new-deal-modal__dropdown-item new-deal-modal__dropdown-item--suggestion"
+                                                    onClick={() => handleAddressSelect(suggestion)}
+                                                >
+                                                    <span className="new-deal-modal__dropdown-icon">📍</span>
+                                                    {suggestion.fullAddress}
+                                                </button>
+                                            ))}
+                                        </>
+                                    )}
+
+                                    {/* Manual Entry Option */}
+                                    {propertySearch.length >= 3 && (
+                                        <>
+                                            <div className="new-deal-modal__dropdown-divider" />
+                                            <button
+                                                type="button"
+                                                className="new-deal-modal__dropdown-item new-deal-modal__dropdown-item--manual"
+                                                onClick={handleUseAsEntered}
+                                            >
+                                                <span className="new-deal-modal__dropdown-icon">✏️</span>
+                                                Use as entered: "{propertySearch}"
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
+                        {isManualEntry && (
+                            <p className="new-deal-modal__hint new-deal-modal__hint--manual">
+                                ℹ️ New property will be created with this address
+                            </p>
+                        )}
                     </div>
 
                     {/* Contact Search */}
@@ -402,9 +520,9 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
                         />
                     </div>
 
-                    {/* Deal Value */}
+                    {/* Asking Price */}
                     <div className="new-deal-modal__field">
-                        <label className="new-deal-modal__label">Deal Value (NZD)</label>
+                        <label className="new-deal-modal__label">Asking Price (NZD)</label>
                         <input
                             type="text"
                             className="new-deal-modal__input"

@@ -640,12 +640,6 @@ export const PropertyDetailPage: React.FC = () => {
     }
   };
 
-  // Group threads by party type
-  const groupedThreads = {
-    vendor: threads.filter(t => t.classification === 'vendor'),
-    buyer: threads.filter(t => t.classification === 'buyer'),
-    other: threads.filter(t => !['vendor', 'buyer'].includes(t.classification)),
-  };
 
   // Get all contacts for compose modal
   const allContacts = [
@@ -922,81 +916,27 @@ export const PropertyDetailPage: React.FC = () => {
             <h2 className="property-detail-page__section-title">
               <Mail size={18} /> Email Correspondence
             </h2>
-
-            {/* Vendor Emails */}
-            {groupedThreads.vendor.length > 0 && (
-              <div className="property-detail-page__thread-group">
-                <div className="thread-group-header vendor">
-                  <span className="thread-group-label">🏷️ Vendor Communication</span>
-                  <span className="thread-group-count">{groupedThreads.vendor.length}</span>
+            <div className="property-detail-page__threads-list">
+              {threads.map(thread => (
+                <div
+                  key={thread.id}
+                  className="property-detail-page__thread-item"
+                  onClick={() => navigate(`/threads/${thread.id}`)}
+                >
+                  <div className="thread-item__header">
+                    <span className="thread-item__subject">{thread.subject}</span>
+                    <span className="thread-item__date">{formatDate(thread.lastMessageAt)}</span>
+                  </div>
+                  <p className="thread-item__summary">{thread.summary}</p>
+                  <div className="thread-item__badges">
+                    <span className={`thread-badge ${thread.classification}`}>{thread.classification}</span>
+                    {thread.riskLevel !== 'none' && (
+                      <span className={`thread-badge risk-${thread.riskLevel}`}>Risk: {thread.riskLevel}</span>
+                    )}
+                  </div>
                 </div>
-                <div className="property-detail-page__threads-list">
-                  {groupedThreads.vendor.map(thread => (
-                    <div
-                      key={thread.id}
-                      className="property-detail-page__thread-item"
-                      onClick={() => navigate(`/threads/${thread.id}`)}
-                    >
-                      <div className="thread-item__header">
-                        <span className="thread-item__subject">{thread.subject}</span>
-                        <span className="thread-item__date">{formatDate(thread.lastMessageAt)}</span>
-                      </div>
-                      <p className="thread-item__summary">{thread.summary}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Buyer Emails */}
-            {groupedThreads.buyer.length > 0 && (
-              <div className="property-detail-page__thread-group">
-                <div className="thread-group-header buyer">
-                  <span className="thread-group-label">🏷️ Buyer Inquiries</span>
-                  <span className="thread-group-count">{groupedThreads.buyer.length}</span>
-                </div>
-                <div className="property-detail-page__threads-list">
-                  {groupedThreads.buyer.map(thread => (
-                    <div
-                      key={thread.id}
-                      className="property-detail-page__thread-item"
-                      onClick={() => navigate(`/threads/${thread.id}`)}
-                    >
-                      <div className="thread-item__header">
-                        <span className="thread-item__subject">{thread.subject}</span>
-                        <span className="thread-item__date">{formatDate(thread.lastMessageAt)}</span>
-                      </div>
-                      <p className="thread-item__summary">{thread.summary}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Other Emails */}
-            {groupedThreads.other.length > 0 && (
-              <div className="property-detail-page__thread-group">
-                <div className="thread-group-header other">
-                  <span className="thread-group-label">🏷️ Other Parties</span>
-                  <span className="thread-group-count">{groupedThreads.other.length}</span>
-                </div>
-                <div className="property-detail-page__threads-list">
-                  {groupedThreads.other.map(thread => (
-                    <div
-                      key={thread.id}
-                      className="property-detail-page__thread-item"
-                      onClick={() => navigate(`/threads/${thread.id}`)}
-                    >
-                      <div className="thread-item__header">
-                        <span className="thread-item__subject">{thread.subject}</span>
-                        <span className="thread-item__date">{formatDate(thread.lastMessageAt)}</span>
-                      </div>
-                      <p className="thread-item__summary">{thread.summary}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+              ))}
+            </div>
           </section>
         )}
 

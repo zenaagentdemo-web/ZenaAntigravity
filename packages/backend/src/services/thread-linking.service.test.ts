@@ -479,6 +479,58 @@ describe('ThreadLinkingService', () => {
         threads[1].lastMessageAt.getTime()
       );
     });
+
+    it('should return threads associated with property contacts even if not explicitly linked to property', async () => {
+      // Create contact
+      const contact = await prisma.contact.create({
+        data: {
+          userId: testUserId,
+          name: 'Associated Vendor',
+          emails: ['vendor@example.com'],
+          phones: [],
+          role: 'vendor',
+          relationshipNotes: [],
+        },
+      });
+
+      // Create property and associate contact as vendor
+      const property = await prisma.property.create({
+        data: {
+          userId: testUserId,
+          address: '700 Contact Lane',
+          milestones: [],
+          vendors: {
+            connect: { id: contact.id }
+          }
+        },
+      });
+
+      // Create thread involving the contact but NOT linked to the property
+      const participants: Participant[] = [
+        { name: 'Associated Vendor', email: 'vendor@example.com' },
+        { name: 'Agent', email: 'agent@example.com' }
+      ];
+
+      await prisma.thread.create({
+        data: {
+          userId: testUserId,
+          emailAccountId: testEmailAccountId,
+          externalId: 'ext-contact-prop-1',
+          subject: 'Random Discussion',
+          participants: participants as any,
+          classification: 'vendor',
+          category: 'focus',
+          nextActionOwner: 'agent',
+          lastMessageAt: new Date(),
+          summary: 'This thread is about the property but not explicitly linked',
+        },
+      });
+
+      const threads = await threadLinkingService.getThreadsForProperty(property.id);
+
+      expect(threads).toHaveLength(1);
+      expect(threads[0].subject).toBe('Random Discussion');
+    });
   });
 
   describe('getThreadsForContact', () => {

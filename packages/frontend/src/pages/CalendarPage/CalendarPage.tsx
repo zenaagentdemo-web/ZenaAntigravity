@@ -5,6 +5,7 @@ import { Sparkles, Calendar, CheckCircle2, MapPin, ArrowRight, Clock, ChevronLef
 import { CalendarAppointment } from '../../components/CalendarWidget/CalendarWidget';
 import { ScheduleOpenHomeModal } from '../../components/ScheduleOpenHomeModal/ScheduleOpenHomeModal';
 import { CalendarMiniPicker } from '../../components/CalendarMiniPicker/CalendarMiniPicker';
+import { GodmodeToggle } from '../../components/GodmodeToggle/GodmodeToggle';
 import { api } from '../../utils/apiClient';
 import './CalendarPage.css';
 
@@ -246,6 +247,9 @@ export const CalendarPage: React.FC = () => {
                         </span>
                         <button className="nav-btn" onClick={() => navigateDate(1)}><ChevronRight size={20} /></button>
                     </div>
+                </div>
+                <div className="calendar-page__godmode-area">
+                    <GodmodeToggle compact />
                 </div>
                 <div className="calendar-view-toggles">
                     <button

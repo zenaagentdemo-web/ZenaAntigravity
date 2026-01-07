@@ -9,11 +9,10 @@
  * - HIGH_INTENT: Explicit buying/selling intent (viewings, offers, pre-approvals)
  */
 
-import { PrismaClient, ZenaCategory } from '@prisma/client';
+import { ZenaCategory } from '@prisma/client';
 import { websocketService } from './websocket.service.js';
 import { askZenaService } from './ask-zena.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 // LLM API configuration
 

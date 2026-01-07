@@ -1,8 +1,7 @@
 // Nurture Service - Post-settlement client nurture automation
-import { PrismaClient, NurtureSequence, Deal, Contact } from '@prisma/client';
+import { NurtureSequence, Deal, Contact } from '@prisma/client';
 import { notificationService } from './notification.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 // NZ Nurture schedule (days after settlement)
 const NURTURE_SCHEDULE = [

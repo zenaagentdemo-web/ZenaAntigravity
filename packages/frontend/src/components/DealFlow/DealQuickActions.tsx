@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import { Deal, STAGE_LABELS } from './types';
+import { useDealIntelligence, analyseDeal } from './ZenaIntelligence/ZenaIntelligenceEngine';
 import './DealQuickActions.css';
 
 // API base URL  
@@ -56,6 +56,11 @@ export const DealQuickActions: React.FC<DealQuickActionsProps> = ({
     const [loading, setLoading] = useState(false);
     const [generatingAction, setGeneratingAction] = useState<string | null>(null);
     const [generatedDraft, setGeneratedDraft] = useState<string | null>(null);
+
+    // Get Zena intelligence (heuristic for immediate display, then AI hydrated)
+    const { intelligence: aiIntelligence, loading: aiLoading } = useDealIntelligence(deal.id);
+    const heuristicIntelligence = analyseDeal(deal);
+    const intelligence = aiIntelligence || heuristicIntelligence;
 
     // Fetch pending actions when opened
     useEffect(() => {
@@ -134,12 +139,19 @@ export const DealQuickActions: React.FC<DealQuickActionsProps> = ({
                         <div className="quick-actions__health-score">
                             <span className="health-label">Deal Health</span>
                             <div className="health-bar">
-                                <div className="health-fill" style={{ width: '75%', backgroundColor: '#22c55e' }}></div>
+                                <div
+                                    className="health-fill"
+                                    style={{
+                                        width: `${intelligence.healthScore}%`,
+                                        backgroundColor: intelligence.healthScore > 70 ? '#22c55e' : intelligence.healthScore > 40 ? '#eab308' : '#ef4444'
+                                    }}
+                                ></div>
                             </div>
+                            <span className="health-percentage">{intelligence.healthScore}%</span>
                         </div>
                         <div className="quick-actions__sentiment">
-                            <span className="sentiment-emoji">😊</span>
-                            <span className="sentiment-text">Positive Momentum</span>
+                            <span className="sentiment-emoji">{intelligence.healthScore > 70 ? '😊' : intelligence.healthScore > 40 ? '😐' : '😟'}</span>
+                            <span className="sentiment-text">{intelligence.sentiment || 'Analyzing Sentiment...'}</span>
                         </div>
                     </div>
                 </div>

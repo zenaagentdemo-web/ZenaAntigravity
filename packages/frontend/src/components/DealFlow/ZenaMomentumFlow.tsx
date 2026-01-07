@@ -6,11 +6,13 @@
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Deal, PipelineType, StrategySessionContext, STAGE_LABELS } from './types';
-import { ZenaDealCard, analyseDeal, NZ_MARKET_DATA } from './ZenaIntelligence';
+import { ZenaDealCard, analyseDeal, fetchDealIntelligence, NZ_MARKET_DATA, DealIntelligence } from './ZenaIntelligence';
 import { ZenaAvatarWidget } from '../ZenaAvatarWidget/ZenaAvatarWidget';
 import { AmbientBackground } from '../AmbientBackground/AmbientBackground';
+import { useEffect } from 'react';
 import './ZenaMomentumFlow.css';
 
 const STAGE_CONFIG: Record<string, { colour: string; label: string }> = {
@@ -52,6 +54,13 @@ interface ZenaMomentumFlowProps {
     pipelineType?: PipelineType;
     onDealSelect?: (deal: Deal) => void;
     onStartZenaLive?: (context: StrategySessionContext) => void;
+    selectedStage?: string | null;
+    onStageSelect?: (stage: string | null) => void;
+    healthFilter?: 'all' | 'needsAttention' | 'healthy';
+    onHealthFilterChange?: (filter: 'all' | 'needsAttention' | 'healthy') => void;
+    isBatchMode?: boolean;
+    selectedIds?: Set<string>;
+    onDealUpdate?: (dealId: string, updates: Partial<Deal>) => void;
 }
 
 export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
@@ -59,9 +68,73 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
     pipelineType = 'buyer',
     onDealSelect,
     onStartZenaLive,
+    selectedStage: controlledSelectedStage,
+    onStageSelect,
+    healthFilter: controlledHealthFilter,
+    onHealthFilterChange,
+    isBatchMode = false,
+    selectedIds = new Set(),
+    onDealUpdate,
 }) => {
-    const [selectedStage, setSelectedStage] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const [internalSelectedStage, setInternalSelectedStage] = useState<string | null>(null);
     const [showAllStages, setShowAllStages] = useState(false);
+    const [internalHealthFilter, setInternalHealthFilter] = useState<'all' | 'needsAttention' | 'healthy'>('all');
+
+    const [intelligenceMap, setIntelligenceMap] = useState<Record<string, DealIntelligence>>({});
+
+    // Use controlled state if provided, otherwise internal
+    const selectedStage = controlledSelectedStage !== undefined ? controlledSelectedStage : internalSelectedStage;
+    const healthFilter = controlledHealthFilter !== undefined ? controlledHealthFilter : internalHealthFilter;
+
+    // Hydrate deals with deep AI intelligence
+    useEffect(() => {
+        const hydrateIntelligence = async () => {
+            // Only hydrate active deals shown in current view to avoid 100s of requests
+            const dealsToHydrate = deals.slice(0, 10); // Batch first 10 for performance
+
+            for (const deal of dealsToHydrate) {
+                if (intelligenceMap[deal.id]) continue; // Already hydrated
+
+                try {
+                    const deepAiInt = await fetchDealIntelligence(deal.id);
+
+                    // Executive Sync: If AI found a new risk level, update parent state
+                    if (onDealUpdate && deepAiInt.riskLevel && deepAiInt.riskLevel !== deal.riskLevel) {
+                        onDealUpdate(deal.id, {
+                            riskLevel: deepAiInt.riskLevel,
+                            // We could also sync riskFlags if needed, but riskLevel is key for stats
+                        });
+                    }
+
+                    setIntelligenceMap(prev => ({
+                        ...prev,
+                        [deal.id]: deepAiInt
+                    }));
+                } catch (err) {
+                    console.error('Failed to hydrate deal intelligence:', err);
+                }
+            }
+        };
+
+        hydrateIntelligence();
+    }, [deals]);
+
+    const handleStageSelect = useCallback((stage: string | null) => {
+        if (onStageSelect) {
+            onStageSelect(stage);
+        } else {
+            setInternalSelectedStage(stage);
+        }
+    }, [onStageSelect]);
+
+    const handleHealthFilterChange = useCallback((filter: 'all' | 'needsAttention' | 'healthy') => {
+        if (onHealthFilterChange) {
+            onHealthFilterChange(filter);
+        } else {
+            setInternalHealthFilter(filter);
+        }
+    }, [onHealthFilterChange]);
 
     // Analyse all deals for intelligence and NZ-ify addresses
     const dealsWithIntelligence = useMemo(() => {
@@ -80,6 +153,7 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
             };
 
             const baseIntelligence = analyseDeal(realisticDeal);
+            const hydratedIntelligence = intelligenceMap[deal.id] || baseIntelligence;
 
             // TESTING MODE: Force first 3 deals to appear in Momentum Radar
             // Remove this block when connected to real data
@@ -107,23 +181,22 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
 
             return {
                 deal: realisticDeal,
-                intelligence: { ...baseIntelligence, ...testingOverride },
+                intelligence: { ...hydratedIntelligence, ...testingOverride },
             };
         });
-    }, [deals]);
+    }, [deals, intelligenceMap]);
 
-    // Sort deals by health score (lowest first - needs attention)
-    const sortedDeals = useMemo(() => {
-        return [...dealsWithIntelligence].sort(
-            (a, b) => a.intelligence.healthScore - b.intelligence.healthScore
-        );
-    }, [dealsWithIntelligence]);
+    // Apply health filter to deals
+    const dealsByHealth = useMemo(() => {
+        // If the parent is controlling healthFilter, it means the 'deals' prop is already filtered
+        if (controlledHealthFilter !== undefined) return dealsWithIntelligence;
 
-    // Filter by selected stage
-    const filteredDeals = useMemo(() => {
-        if (!selectedStage) return sortedDeals;
-        return sortedDeals.filter(d => d.deal.stage === selectedStage);
-    }, [sortedDeals, selectedStage]);
+        if (healthFilter === 'all') return dealsWithIntelligence;
+        if (healthFilter === 'needsAttention') {
+            return dealsWithIntelligence.filter(d => d.intelligence.stageHealthStatus === 'critical' || d.intelligence.stageHealthStatus === 'warning');
+        }
+        return dealsWithIntelligence.filter(d => d.intelligence.stageHealthStatus === 'healthy');
+    }, [dealsWithIntelligence, healthFilter, controlledHealthFilter]);
 
     // Calculate stats
     const stats = useMemo(() => {
@@ -134,22 +207,32 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
         const healthy = dealsWithIntelligence.filter(
             d => d.intelligence.stageHealthStatus === 'healthy'
         ).length;
-        const avgHealthScore = total > 0
-            ? Math.round(dealsWithIntelligence.reduce((sum, d) => sum + d.intelligence.healthScore, 0) / total)
-            : 0;
 
-        return { total, needsAttention, healthy, avgHealthScore };
+        return { total, needsAttention, healthy };
     }, [deals, dealsWithIntelligence]);
+
+    // Sort deals by health score (lowest first - needs attention)
+    const sortedDeals = useMemo(() => {
+        return [...dealsByHealth].sort(
+            (a, b) => a.intelligence.healthScore - b.intelligence.healthScore
+        );
+    }, [dealsByHealth]);
+
+    // Filter by selected stage
+    const filteredDeals = useMemo(() => {
+        if (!selectedStage) return sortedDeals;
+        return sortedDeals.filter(d => d.deal.stage === selectedStage);
+    }, [sortedDeals, selectedStage]);
 
     // Group deals by stage for sidebar
     const dealsByStage = useMemo(() => {
-        return deals.reduce((acc, deal) => {
-            const stage = deal.stage || (pipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
+        return dealsByHealth.reduce((acc, dealWrapper) => {
+            const stage = dealWrapper.deal.stage || (pipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
             if (!acc[stage]) acc[stage] = [];
-            acc[stage].push(deal);
+            acc[stage].push(dealWrapper.deal);
             return acc;
         }, {} as Record<string, Deal[]>);
-    }, [deals, pipelineType]);
+    }, [dealsByHealth, pipelineType]);
 
     // Determine relevant stages in chronological order
     const relevantSequence = pipelineType === 'buyer' ? BUYER_SEQUENCE : SELLER_SEQUENCE;
@@ -168,44 +251,15 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
         console.log('Power Move executed:', { dealId, action, content });
     }, []);
 
+    // Clear all filters (stage and health)
+    const clearAllFilters = useCallback(() => {
+        handleStageSelect(null);
+        handleHealthFilterChange('all');
+    }, [handleStageSelect, handleHealthFilterChange]);
+
     return (
         <div className="zena-momentum-flow">
             <AmbientBackground variant="default" showParticles={true} showGradientOrbs={true} />
-            {/* Header - Stats Overview */}
-            <div className="zena-momentum-flow__header">
-                <div className="momentum-header__stats">
-                    <div className="momentum-stat">
-                        <div className="momentum-stat__header">
-                            <span className="momentum-stat__value">{stats.total}</span>
-                            <div className="status-beacon status-beacon--active" />
-                        </div>
-                        <span className="momentum-stat__label">Active Deals</span>
-                    </div>
-                    <div className="momentum-stat momentum-stat--warning">
-                        <div className="momentum-stat__header">
-                            <span className="momentum-stat__value">{stats.needsAttention}</span>
-                            {stats.needsAttention > 0 && <div className="status-beacon status-beacon--warning" />}
-                        </div>
-                        <span className="momentum-stat__label">Need Attention</span>
-                    </div>
-                    <div className="momentum-stat momentum-stat--healthy">
-                        <div className="momentum-stat__header">
-                            <span className="momentum-stat__value">{stats.healthy}</span>
-                            <div className="status-beacon status-beacon--healthy" />
-                        </div>
-                        <span className="momentum-stat__label">On Track</span>
-                    </div>
-                    <div className="momentum-stat">
-                        <div className="momentum-stat__header">
-                            <span className="momentum-stat__value">{stats.avgHealthScore}%</span>
-                            <div className="status-beacon status-beacon--active" />
-                        </div>
-                        <span className="momentum-stat__label">Avg Health</span>
-                    </div>
-                </div>
-
-            </div>
-
             {/* Main Content */}
             <div className="zena-momentum-flow__content">
                 {/* Left Sidebar - Stage Filter */}
@@ -229,7 +283,7 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
                                         <motion.button
                                             key={stage}
                                             className={`sidebar__stage ${isSelected ? 'sidebar__stage--selected' : ''}`}
-                                            onClick={() => setSelectedStage(isSelected ? null : stage)}
+                                            onClick={() => handleStageSelect(isSelected ? null : stage)}
                                             style={{
                                                 '--stage-colour': config.colour,
                                             } as React.CSSProperties}
@@ -258,12 +312,12 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
                             <span className={`toggle-icon ${showAllStages ? 'open' : ''}`}>▼</span>
                         </button>
 
-                        {selectedStage && (
+                        {(selectedStage || healthFilter !== 'all') && (
                             <button
-                                className="sidebar__clear-filter"
-                                onClick={() => setSelectedStage(null)}
+                                className="sidebar__see-all"
+                                onClick={clearAllFilters}
                             >
-                                Clear Selection
+                                SEE ALL DEALS
                             </button>
                         )}
                     </div>
@@ -294,6 +348,8 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
                                 onStartZenaLive={onStartZenaLive}
                                 isDimmed={selectedStage !== null && deal.stage !== selectedStage}
                                 isHighlighted={intelligence.needsLiveSession}
+                                isBatchMode={isBatchMode}
+                                isSelected={selectedIds.has(deal.id)}
                             />
                         ))}
 
@@ -310,84 +366,31 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
 
                 {/* Right Sidebar - Zena Coaching Hub */}
                 <div className="zena-momentum-flow__coaching">
-                    <div className="coaching__zena-widget">
-                        <ZenaAvatarWidget
-                            variant="central"
-                            coachingStatus={stats.needsAttention > 0
-                                ? `Hone-In: ${stats.needsAttention} Sticky Deals`
-                                : 'Analysing Pipeline...'}
-                            onLiveClick={() => onStartZenaLive?.()}
-                        />
-                    </div>
+                    {/* Synchronise priority deals for count alignment */}
+                    {(() => {
+                        const priorityDeals = sortedDeals.filter(d => d.intelligence.needsLiveSession);
+                        const priorityCount = priorityDeals.length;
 
-                    <div className="coaching__priority-deals">
-                        <div className="coaching__header-row">
-                            <h4 className="coaching__section-title">Momentum Radar</h4>
-                            <div className="momentum-radar__dot" />
-                        </div>
-
-                        <div className="priority-deals__list">
-                            {sortedDeals
-                                .filter(d => d.intelligence.needsLiveSession)
-                                .slice(0, 3)
-                                .map(({ deal, intelligence }) => {
-                                    // Build context for strategy session
-                                    const stageLabel = STAGE_LABELS[deal.stage] || deal.stage;
-                                    const context: StrategySessionContext = {
-                                        dealId: deal.id,
-                                        address: deal.property?.address || 'Unknown',
-                                        stage: deal.stage,
-                                        stageLabel,
-                                        dealValue: deal.dealValue,
-                                        daysInStage: intelligence.daysInStage,
-                                        healthScore: intelligence.healthScore,
-                                        healthStatus: intelligence.stageHealthStatus,
-                                        primaryRisk: intelligence.riskSignals[0]?.description || 'Deal needs attention',
-                                        riskType: intelligence.riskSignals[0]?.type || 'stalling',
-                                        coachingInsight: intelligence.coachingInsight,
-                                        suggestedAction: intelligence.suggestedPowerMove?.headline,
-                                        contactName: deal.contacts?.[0]?.name,
-                                    };
-
-                                    return (
-                                        <motion.div
-                                            key={deal.id}
-                                            className="priority-deal"
-                                            initial={{ opacity: 0, scale: 0.95 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            onClick={() => onStartZenaLive?.(context)}
-                                            whileHover={{ x: 4, backgroundColor: 'rgba(255, 0, 60, 0.15)' }}
-                                        >
-                                            <div className="priority-deal__header">
-                                                <span className="priority-deal__address">
-                                                    {deal.property?.address || 'Unknown'}
-                                                </span>
-                                                <span className="priority-deal__risk-badge">
-                                                    {intelligence.healthScore}%
-                                                    <span className={`priority-deal__trend ${intelligence.healthVelocity < 0 ? 'down' : 'up'}`}>
-                                                        {intelligence.healthVelocity > 0 ? '↑' : '↓'}{Math.abs(intelligence.healthVelocity)}%
-                                                    </span>
-                                                </span>
-                                            </div>
-                                            <div className="priority-deal__insight">
-                                                {intelligence.riskSignals[0]?.description || 'Deal needs attention'}
-                                            </div>
-                                            <div className="priority-deal__action-hint">
-                                                START STRATEGY SESSION →
-                                            </div>
-                                        </motion.div>
-                                    );
-                                })}
-
-                            {sortedDeals.filter(d => d.intelligence.needsLiveSession).length === 0 && (
-                                <div className="coaching__all-good">
-                                    <div className="all-good__icon">✨</div>
-                                    <div className="all-good__text">All deals are on track</div>
-                                    <div className="all-good__subtext">Zena is monitoring for new signals</div>
+                        return (
+                            <>
+                                <div className="coaching__zena-widget">
+                                    <ZenaAvatarWidget
+                                        variant="central"
+                                        coachingStatus="Strategy Session" // Dummy status to trigger "Start Strategy Session" label
+                                        onAvatarClick={() => {
+                                            // INNOVATION: Clicking face opens written strategy session
+                                            // Passing the exact prompt the user wants
+                                            navigate('/ask-zena?mode=strategy-session&view=chat&greeting=strategy-session');
+                                        }}
+                                        onLiveClick={() => {
+                                            // INNOVATION: Clicking button opens verbal strategy session (Zena Live)
+                                            navigate(`/ask-zena?greeting=strategy-session&liveMode=true&t=${Date.now()}`);
+                                        }}
+                                    />
                                 </div>
-                            )}
-                        </div>
-                    </div>
+                            </>
+                        );
+                    })()}
                 </div>
             </div>
         </div>

@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import {
   dealFlowService,
   BUYER_STAGES,
@@ -7,8 +6,8 @@ import {
   STAGE_LABELS
 } from '../services/deal-flow.service.js';
 import { PipelineType } from '../models/types.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
+import { dealIntelligenceService } from '../services/deal-intelligence.service.js';
 
 const VALID_PIPELINE_TYPES = ['buyer', 'seller'];
 const VALID_SALE_METHODS = ['negotiation', 'auction', 'tender', 'deadline_sale'];
@@ -497,38 +496,6 @@ export class DealsController {
   }
 
   /**
-   * GET /api/deals/forecast
-   * Get revenue forecast by month with stage-weighted probabilities
-   */
-  async getRevenueForecast(req: Request, res: Response): Promise<void> {
-    try {
-      if (!req.user) {
-        res.status(401).json({
-          error: {
-            code: 'AUTH_TOKEN_MISSING',
-            message: 'Authentication required',
-            retryable: false,
-          },
-        });
-        return;
-      }
-
-      const monthsAhead = parseInt(req.query.months as string, 10) || 6;
-      const forecast = await dealFlowService.getRevenueForecast(req.user.userId, monthsAhead);
-      res.status(200).json(forecast);
-    } catch (error) {
-      console.error('Get revenue forecast error:', error);
-      res.status(500).json({
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Failed to fetch revenue forecast',
-          retryable: true,
-        },
-      });
-    }
-  }
-
-  /**
    * POST /api/deals
    * Create a new deal
    */
@@ -869,6 +836,325 @@ export class DealsController {
         error: {
           code: 'INTERNAL_ERROR',
           message: 'Failed to fetch stages',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * POST /api/deals/bulk-delete
+   * Delete multiple deals at once
+   */
+  async bulkDelete(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const { ids } = req.body;
+
+      if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'ids must be a non-empty array',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Verify all deals belong to user
+      const userDeals = await prisma.deal.findMany({
+        where: {
+          id: { in: ids },
+          userId: req.user.userId,
+        },
+        select: { id: true },
+      });
+
+      const userDealIds = userDeals.map(d => d.id);
+
+      if (userDealIds.length === 0) {
+        res.status(404).json({
+          error: {
+            code: 'NOT_FOUND',
+            message: 'No matching deals found',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Delete related timeline events first
+      await prisma.timelineEvent.deleteMany({
+        where: {
+          entityType: 'deal',
+          entityId: { in: userDealIds },
+        },
+      });
+
+      // Delete related tasks
+      await prisma.task.deleteMany({
+        where: {
+          dealId: { in: userDealIds },
+        },
+      });
+
+      // Delete the deals
+      const result = await prisma.deal.deleteMany({
+        where: {
+          id: { in: userDealIds },
+        },
+      });
+
+      res.status(200).json({
+        deleted: result.count,
+        message: `Successfully deleted ${result.count} deal(s)`,
+      });
+    } catch (error) {
+      console.error('Bulk delete deals error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to delete deals',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * POST /api/deals/bulk-archive
+   * Archive multiple deals at once
+   */
+  async bulkArchive(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const { ids } = req.body;
+
+      if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'ids must be a non-empty array',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Verify all deals belong to user
+      const userDeals = await prisma.deal.findMany({
+        where: {
+          id: { in: ids },
+          userId: req.user.userId,
+        },
+        select: { id: true },
+      });
+
+      const userDealIds = userDeals.map(d => d.id);
+
+      if (userDealIds.length === 0) {
+        res.status(404).json({
+          error: {
+            code: 'NOT_FOUND',
+            message: 'No matching deals found',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Archive the deals by updating status
+      const result = await prisma.deal.updateMany({
+        where: {
+          id: { in: userDealIds },
+        },
+        data: {
+          status: 'archived',
+        },
+      });
+
+      // Record archive action in timeline for each deal
+      await prisma.timelineEvent.createMany({
+        data: userDealIds.map(id => ({
+          userId: req.user!.userId,
+          type: 'note',
+          entityType: 'deal',
+          entityId: id,
+          summary: 'Deal archived',
+          timestamp: new Date(),
+        })),
+      });
+
+      res.status(200).json({
+        archived: result.count,
+        message: `Successfully archived ${result.count} deal(s)`,
+      });
+    } catch (error) {
+      console.error('Bulk archive deals error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to archive deals',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * POST /api/deals/bulk-restore
+   * Restore multiple archived deals to active status
+   */
+  async bulkRestore(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const { ids } = req.body;
+
+      if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'ids must be a non-empty array',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Verify all deals belong to user
+      const userDeals = await prisma.deal.findMany({
+        where: {
+          id: { in: ids },
+          userId: req.user.userId,
+        },
+        select: { id: true },
+      });
+
+      const userDealIds = userDeals.map(d => d.id);
+
+      if (userDealIds.length === 0) {
+        res.status(404).json({
+          error: {
+            code: 'NOT_FOUND',
+            message: 'No matching deals found',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Restore the deals by updating status to active
+      const result = await prisma.deal.updateMany({
+        where: {
+          id: { in: userDealIds },
+        },
+        data: {
+          status: 'active',
+        },
+      });
+
+      // Record restore action in timeline
+      await prisma.timelineEvent.createMany({
+        data: userDealIds.map(id => ({
+          userId: req.user!.userId,
+          type: 'note',
+          entityType: 'deal',
+          entityId: id,
+          summary: 'Deal restored from archive',
+          timestamp: new Date(),
+        })),
+      });
+
+      res.status(200).json({
+        restored: result.count,
+        message: `Successfully restored ${result.count} deal(s)`,
+      });
+    } catch (error) {
+      console.error('Bulk restore deals error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to restore deals',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * GET /api/deals/:id/intelligence
+   * Perform deep AI intelligence analysis on a deal
+   */
+  async analyzeDeal(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const { id } = req.params;
+
+      // Verify deal belongs to user
+      const deal = await prisma.deal.findFirst({
+        where: { id, userId: req.user.userId },
+      });
+
+      if (!deal) {
+        res.status(404).json({
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Deal not found',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      const analysis = await dealIntelligenceService.analyzeDeal(req.user.userId, id);
+      res.status(200).json(analysis);
+    } catch (error) {
+      console.error('Analyze deal error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to perform AI analysis',
           retryable: true,
         },
       });

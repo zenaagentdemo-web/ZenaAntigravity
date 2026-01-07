@@ -15,6 +15,7 @@ import {
     suggestActions,
     triggerHeartbeat,
     seedMockActions,
+    simulateStress,
 } from '../controllers/godmode.controller.js';
 
 const router = Router();
@@ -41,6 +42,7 @@ router.post('/suggest/:contactId', suggestActions);
 
 // Dev/Testing - Seed mock pending actions
 router.post('/seed-mock', seedMockActions);
+router.post('/simulate-stress', simulateStress);
 
 export default router;
 

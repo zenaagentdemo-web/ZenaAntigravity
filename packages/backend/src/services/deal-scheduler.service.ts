@@ -1,11 +1,10 @@
 // Deal Scheduler Service - Background job for proactive deal monitoring
-import { PrismaClient, Deal } from '@prisma/client';
+import { Deal } from '@prisma/client';
 import { notificationService } from './notification.service.js';
 import { ZenaActionType } from './zena-actions.service.js';
 import { DealCondition } from '../models/types.js';
 import { nurtureService } from './nurture.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 // Scheduler configuration
 const SCAN_INTERVAL_MS = 60 * 60 * 1000; // 1 hour

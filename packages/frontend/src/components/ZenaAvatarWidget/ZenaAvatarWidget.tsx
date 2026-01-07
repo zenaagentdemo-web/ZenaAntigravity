@@ -74,7 +74,7 @@ export const ZenaAvatarWidget: React.FC<ZenaAvatarWidgetProps> = ({
                 />
 
                 {/* Coaching HUD Overlay */}
-                {!isFloating && coachingStatus && (
+                {!isFloating && coachingStatus && coachingStatus !== 'Strategy Session' && (
                     <motion.div
                         className="zena-avatar-widget__coaching-hud"
                         initial={{ opacity: 0, scale: 0.9 }}

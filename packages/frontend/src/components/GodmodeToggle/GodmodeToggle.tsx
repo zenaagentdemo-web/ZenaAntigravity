@@ -9,9 +9,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Power, UserCheck, Zap, Clock, Settings, Calendar } from 'lucide-react';
+import { Power, UserCheck, Zap, Clock, Settings, Calendar, Sliders } from 'lucide-react';
 import { api } from '../../utils/apiClient';
 import { GodmodeHistoryModal } from '../GodmodeHistoryModal/GodmodeHistoryModal';
+import { GodmodeSettingsPanel } from '../GodmodeSettingsPanel/GodmodeSettingsPanel';
 import { ZenaDatePicker } from '../ZenaDatePicker/ZenaDatePicker';
 import { ZenaTimePicker } from '../ZenaTimePicker/ZenaTimePicker';
 import './GodmodeToggle.css';
@@ -79,6 +80,7 @@ export const GodmodeToggle: React.FC<GodmodeToggleProps> = ({
     const [showWarning, setShowWarning] = useState(false);
     const [pendingMode, setPendingMode] = useState<GodmodeMode | null>(null);
     const [showHistory, setShowHistory] = useState(false);
+    const [showFeatureSettings, setShowFeatureSettings] = useState(false);
     const [isSchedulingInModal, setIsSchedulingInModal] = useState(false);
 
     const [timeWindowStart, setTimeWindowStart] = useState('21:00');
@@ -204,24 +206,36 @@ export const GodmodeToggle: React.FC<GodmodeToggleProps> = ({
         // Compact mode: just show current mode icon
         if (compact) {
             return (
-                <div
-                    className={`godmode-toggle godmode-toggle--compact godmode-toggle--${settings.mode}`}
-                    style={{
-                        '--mode-color': currentMode.color,
-                        '--mode-glow': currentMode.glow
-                    } as React.CSSProperties}
-                    onClick={() => {
-                        const modes: GodmodeMode[] = ['off', 'demi_god', 'full_god'];
-                        const nextIndex = (modes.indexOf(settings.mode) + 1) % modes.length;
-                        handleModeChange(modes[nextIndex]);
-                    }}
-                >
-                    <div className="godmode-toggle__mythic-icon">
-                        {currentMode.icon}
+                <div className="godmode-compact-container">
+                    <div
+                        className={`godmode-toggle godmode-toggle--compact godmode-toggle--${settings.mode}`}
+                        style={{
+                            '--mode-color': currentMode.color,
+                            '--mode-glow': currentMode.glow
+                        } as React.CSSProperties}
+                        onClick={() => {
+                            const modes: GodmodeMode[] = ['off', 'demi_god', 'full_god'];
+                            const nextIndex = (modes.indexOf(settings.mode) + 1) % modes.length;
+                            handleModeChange(modes[nextIndex]);
+                        }}
+                    >
+                        <div className="godmode-toggle__mythic-icon">
+                            {currentMode.icon}
+                        </div>
+                        <div className="godmode-toggle__mythic-label">
+                            {currentMode.mythicLabel}
+                        </div>
                     </div>
-                    <div className="godmode-toggle__mythic-label">
-                        {currentMode.mythicLabel}
-                    </div>
+                    <button
+                        className="godmode-settings-gear"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowFeatureSettings(true);
+                        }}
+                        title="Configure God Powers"
+                    >
+                        <Sliders size={16} />
+                    </button>
                 </div>
             );
         }
@@ -436,6 +450,16 @@ export const GodmodeToggle: React.FC<GodmodeToggleProps> = ({
                     isOpen={showHistory}
                     onClose={() => setShowHistory(false)}
                 />,
+                document.body
+            )}
+
+            {/* Feature-Level Settings Modal */}
+            {showFeatureSettings && createPortal(
+                <div className="godmode-warning-overlay" onClick={() => setShowFeatureSettings(false)}>
+                    <div className="godmode-feature-settings-modal" onClick={e => e.stopPropagation()}>
+                        <GodmodeSettingsPanel onClose={() => setShowFeatureSettings(false)} />
+                    </div>
+                </div>,
                 document.body
             )}
         </div>

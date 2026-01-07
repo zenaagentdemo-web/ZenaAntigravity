@@ -1,16 +1,15 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/database.js';
+import { websocketService } from './websocket.service.js';
 import { emailAccountService } from './email-account.service.js';
+import { aiProcessingService } from './ai-processing.service.js';
+import { contactAutoCreationService } from './contact-auto-creation.service.js';
+import { timelineService } from './timeline.service.js';
+import { threadLinkingService } from './thread-linking.service.js';
 import { gmailConnectorService } from './gmail-connector.service.js';
 import { microsoftConnectorService } from './microsoft-connector.service.js';
-import { imapConnectorService } from './imap-connector.service.js';
 import { yahooConnectorService } from './yahoo-connector.service.js';
-import { aiProcessingService } from './ai-processing.service.js';
-import { threadLinkingService } from './thread-linking.service.js';
-import { timelineService } from './timeline.service.js';
-import { websocketService } from './websocket.service.js';
-import { contactAutoCreationService } from './contact-auto-creation.service.js';
-
-const prisma = new PrismaClient();
+import { imapConnectorService } from './imap-connector.service.js';
+import { dealSchedulerService } from './deal-scheduler.service.js';
 
 export interface SyncJob {
   accountId: string;
@@ -48,7 +47,7 @@ export class SyncEngineService {
     }
 
     console.log('Starting sync engine...');
-    
+
     // Run initial sync
     this.syncAllAccounts().catch(console.error);
 
@@ -107,11 +106,11 @@ export class SyncEngineService {
         }
         return true;
       });
-      
+
       if (validAccounts.length < accounts.length) {
         console.warn(`Filtered out ${accounts.length - validAccounts.length} accounts with missing data`);
       }
-      
+
       if (validAccounts.length === 0) {
         console.log('No valid accounts to sync');
         return [];
@@ -236,15 +235,40 @@ export class SyncEngineService {
       };
     } catch (error) {
       console.error(`Sync error for account ${accountId}:`, error);
-      
+
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      // Check if this is a fatal auth/token error that requires user intervention
+      if (
+        errorMessage.includes('Invalid encrypted token') ||
+        errorMessage.includes('Decryption failed') ||
+        errorMessage.includes('decryption failed')
+      ) {
+        console.warn(`Disabling sync for account ${accountId} due to fatal encryption error.`);
+        try {
+          await prisma.emailAccount.update({
+            where: { id: accountId },
+            data: { syncEnabled: false }
+          });
+          console.log(`Sync disabled for account ${accountId}. User needs to reconnect.`);
+          websocketService.broadcastToUser(userId, 'sync.error', {
+            accountId,
+            error: 'Authentication failed. Please reconnect your account.',
+            fatal: true
+          });
+        } catch (dbError) {
+          console.error('Failed to disable sync for account:', dbError);
+        }
+      }
+
       // Emit sync completed event with error
       websocketService.broadcastToUser(userId, 'sync.completed', {
         accountId,
         threadsProcessed: 0,
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: errorMessage,
       });
-      
+
       // Handle retry logic
       await this.handleSyncError(accountId, error);
 
@@ -252,7 +276,7 @@ export class SyncEngineService {
         accountId,
         success: false,
         threadsProcessed: 0,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: errorMessage,
       };
     } finally {
       this.activeSyncs.delete(accountId);
@@ -294,14 +318,14 @@ export class SyncEngineService {
         console.log(
           `Retrying sync for account ${accountId} in ${delay / 1000}s (attempt ${attempts + 1}/${this.MAX_RETRIES})`
         );
-        
+
         // Schedule retry
         await new Promise((resolve) => setTimeout(resolve, delay));
         this.retryAttempts.set(accountId, attempts + 1);
-        
+
         return this.fetchThreadsWithRetry(provider, accessToken, accountId, lastSyncAt);
       }
-      
+
       throw error;
     }
   }
@@ -380,7 +404,7 @@ export class SyncEngineService {
   ): Promise<any[]> {
     try {
       console.log('Attempting Yahoo Mail sync with OAuth token');
-      
+
       const account = await prisma.emailAccount.findUnique({
         where: { id: accountId },
         select: { email: true },
@@ -395,10 +419,10 @@ export class SyncEngineService {
       const threads = await yahooConnectorService.fetchThreads(accessToken, lastSyncAt);
       console.log(`Yahoo Mail API returned ${threads.length} threads`);
       return threads;
-      
+
     } catch (error) {
       console.error('Yahoo fetch threads error:', error);
-      
+
       // If OAuth fails, provide helpful error message
       const errorMessage = error instanceof Error ? error.message : String(error);
       if (errorMessage?.includes('authentication') || errorMessage?.includes('timeout')) {
@@ -408,7 +432,7 @@ export class SyncEngineService {
           '3. Yahoo IMAP OAuth2 may not be properly configured\n\n' +
           'Please check your Yahoo Developer Console and ensure "Email - Read" is enabled.');
       }
-      
+
       throw error;
     }
   }
@@ -528,7 +552,7 @@ export class SyncEngineService {
             if (userEmail) {
               for (const participant of thread.participants) {
                 let email: string;
-                
+
                 // Handle different participant formats
                 if (typeof participant === 'string') {
                   const emailMatch = participant.match(/<(.+?)>/) || [null, participant];

@@ -1,9 +1,9 @@
 import { WebSocket, WebSocketServer } from 'ws';
 import { IncomingMessage } from 'http';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
 import { logger } from './logger.service.js';
 import { multimodalLiveService } from './multimodal-live.service.js';
+import prisma from '../config/database.js';
 
 interface AuthenticatedWebSocket extends WebSocket {
   userId?: string;
@@ -37,9 +37,10 @@ export type WebSocketEventType =
   | 'discovery.started'
   | 'discovery.completed'
   | 'discovery.failed'
-  | 'property.intelligence';
+  | 'property.intelligence'
+  | 'PENDING_ACTION_CREATED'; // NEW: God Mode pending action created
 
-const prisma = new PrismaClient();
+
 
 class WebSocketService {
   private wss: WebSocketServer | null = null;

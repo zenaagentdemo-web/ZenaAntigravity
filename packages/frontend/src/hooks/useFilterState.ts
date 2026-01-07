@@ -38,7 +38,9 @@ const SEARCH_DEBOUNCE_MS = 300;
  */
 const FILTER_TO_CLASSIFICATION: Partial<Record<FilterType, ThreadClassification>> = {
   buyer: 'buyer',
-  vendor: 'vendor'
+  vendor: 'vendor',
+  market: 'market',
+  lawyer_broker: 'lawyer_broker'
 };
 
 /**
@@ -68,7 +70,7 @@ function threadMatchesFilter(thread: Thread, filter: FilterType): boolean {
 
 /**
  * Check if a thread matches the search query
- * Searches in subject, participant names, and summary
+ * Searches in subject, participant names, summary, AI summary, and property address
  */
 function threadMatchesSearch(thread: Thread, query: string): boolean {
   if (!query || query.trim() === '') {
@@ -77,26 +79,40 @@ function threadMatchesSearch(thread: Thread, query: string): boolean {
 
   const normalizedQuery = query.toLowerCase().trim();
 
-  // Check subject
-  if (thread.subject.toLowerCase().includes(normalizedQuery)) {
+  // Check subject (null-safe)
+  if (thread.subject?.toLowerCase().includes(normalizedQuery)) {
     return true;
   }
 
-  // Check participant names
-  const participantMatch = thread.participants.some(
-    p => p.name.toLowerCase().includes(normalizedQuery)
-  );
+  // Check property address (common search target)
+  if (thread.propertyAddress?.toLowerCase().includes(normalizedQuery)) {
+    return true;
+  }
+
+  // Check participant names and emails
+  const participantMatch = thread.participants?.some(p => {
+    if (typeof p === 'string') {
+      return (p as string).toLowerCase().includes(normalizedQuery);
+    }
+    // Handle Participant object
+    const participant = p as any;
+    return (
+      (participant.name && participant.name.toLowerCase().includes(normalizedQuery)) ||
+      (participant.email && participant.email.toLowerCase().includes(normalizedQuery))
+    );
+  });
+
   if (participantMatch) {
     return true;
   }
 
-  // Check summary
-  if (thread.summary.toLowerCase().includes(normalizedQuery)) {
+  // Check summary (null-safe)
+  if (thread.summary?.toLowerCase().includes(normalizedQuery)) {
     return true;
   }
 
   // Check AI summary if available
-  if (thread.aiSummary && thread.aiSummary.toLowerCase().includes(normalizedQuery)) {
+  if (thread.aiSummary?.toLowerCase().includes(normalizedQuery)) {
     return true;
   }
 
@@ -127,6 +143,8 @@ function calculateFilterCounts(threads: Thread[]): Record<FilterType, number> {
     all: threads.length,
     buyer: 0,
     vendor: 0,
+    market: 0,
+    lawyer_broker: 0,
     high_risk: 0,
     normal: 0
   };
@@ -135,6 +153,8 @@ function calculateFilterCounts(threads: Thread[]): Record<FilterType, number> {
     // Count by classification
     if (thread.classification === 'buyer') counts.buyer++;
     if (thread.classification === 'vendor') counts.vendor++;
+    if (thread.classification === 'market') counts.market++;
+    if (thread.classification === 'lawyer_broker') counts.lawyer_broker++;
 
     // Count high risk
     if (thread.riskLevel === 'high') counts.high_risk++;

@@ -6,7 +6,6 @@ export { BlockerWidget } from './BlockerWidget';
 export { QuickContacts } from './QuickContacts';
 export { KeyDatesSection } from './KeyDatesSection';
 export { ConditionsTracker } from './ConditionsTracker';
-export { CommissionPreview } from './CommissionPreview';
 export { ZenaCoachingPanel } from './ZenaCoachingPanel';
 export { SearchCriteriaSection } from './SearchCriteriaSection';
 export { MarketingStatsSection } from './MarketingStatsSection';

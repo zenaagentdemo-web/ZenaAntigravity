@@ -7,7 +7,7 @@
  * Requirements: 7.2, 7.4, 7.6
  */
 
-import React from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BatchAction } from '../../models/newPage.types';
 import './BatchActionBar.css';
 
@@ -29,8 +29,9 @@ export interface BatchActionBarProps {
 /**
  * BatchActionBar Component
  * 
- * Displays a floating action bar at the bottom of the screen when in batch mode.
+ * Displays a floating action bar at the center of the screen when in batch mode.
  * Shows selection count and provides batch action buttons.
+ * Supports dragging to reposition.
  */
 export const BatchActionBar: React.FC<BatchActionBarProps> = ({
   selectedCount,
@@ -40,12 +41,62 @@ export const BatchActionBar: React.FC<BatchActionBarProps> = ({
   className = '',
   actions
 }) => {
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartPos = useRef<{ x: number; y: number; barX: number; barY: number } | null>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button')) return; // Don't drag when clicking buttons
+    setIsDragging(true);
+    const rect = barRef.current?.getBoundingClientRect();
+    if (rect) {
+      dragStartPos.current = {
+        x: e.clientX,
+        y: e.clientY,
+        barX: rect.left + rect.width / 2,
+        barY: rect.top + rect.height / 2
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!dragStartPos.current) return;
+      const deltaX = e.clientX - dragStartPos.current.x;
+      const deltaY = e.clientY - dragStartPos.current.y;
+      setPosition({
+        x: dragStartPos.current.barX + deltaX,
+        y: dragStartPos.current.barY + deltaY
+      });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      dragStartPos.current = null;
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
+
   if (!isVisible) {
     return null;
   }
 
   // Default actions if none provided (backwards compatibility for threads)
   const displayActions = actions || ['snooze_all', 'archive_all', 'mark_read', 'delete_all'];
+
+  const positionStyle = position
+    ? { left: position.x, top: position.y, transform: 'translate(-50%, -50%)' }
+    : {};
 
   const handleSnoozeAll = () => {
     onAction('snooze_all');
@@ -61,10 +112,13 @@ export const BatchActionBar: React.FC<BatchActionBarProps> = ({
 
   return (
     <div
-      className={`batch-action-bar ${className}`}
+      ref={barRef}
+      className={`batch-action-bar ${isDragging ? 'batch-action-bar--dragging' : ''} ${className}`}
       role="toolbar"
       aria-label="Batch actions"
       data-testid="batch-action-bar"
+      onMouseDown={handleMouseDown}
+      style={positionStyle}
     >
       {/* Selection count with animation */}
       <div className="batch-action-bar__count" data-testid="selection-count">
@@ -206,6 +260,39 @@ export const BatchActionBar: React.FC<BatchActionBarProps> = ({
               <line x1="14" y1="11" x2="14" y2="17" />
             </svg>
             <span>Delete All</span>
+          </button>
+        )}
+
+        {displayActions.includes('archive') && (
+          <button
+            className="batch-action-bar__button batch-action-bar__button--archive"
+            onClick={() => onAction('archive')}
+            disabled={selectedCount === 0}
+            aria-label={`Archive ${selectedCount} items`}
+            data-testid="archive-button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="21 8 21 21 3 21 3 8" />
+              <rect x="1" y="3" width="22" height="5" />
+              <line x1="10" y1="12" x2="14" y2="12" />
+            </svg>
+            <span>Archive</span>
+          </button>
+        )}
+
+        {displayActions.includes('restore') && (
+          <button
+            className="batch-action-bar__button batch-action-bar__button--restore"
+            onClick={() => onAction('restore')}
+            disabled={selectedCount === 0}
+            aria-label={`Restore ${selectedCount} items`}
+            data-testid="restore-button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="9 14 4 9 9 4" />
+              <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+            </svg>
+            <span>Restore</span>
           </button>
         )}
       </div>

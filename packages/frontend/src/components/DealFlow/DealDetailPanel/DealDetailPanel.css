@@ -10,7 +10,7 @@
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
-    z-index: 1000;
+    z-index: 2000;
 }
 
 /* ============================================================
@@ -19,10 +19,11 @@
 .deal-detail-panel {
     position: fixed;
     top: 0;
+    bottom: 0;
     right: 0;
     width: 480px;
     max-width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     background: linear-gradient(180deg,
             rgba(15, 23, 42, 0.98) 0%,
             rgba(10, 15, 30, 0.99) 100%);
@@ -30,7 +31,7 @@
     box-shadow:
         -20px 0 60px rgba(0, 0, 0, 0.5),
         inset 1px 0 0 rgba(0, 255, 65, 0.1);
-    z-index: 1001;
+    z-index: 2001;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -129,24 +130,199 @@
     color: #ffffff;
 }
 
-/* Health indicator */
-.deal-detail-panel__health {
-    display: inline-flex;
+/* Momentum Section */
+.deal-detail-panel__momentum-section {
+    display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.deal-detail-panel__health {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-radius: 8px;
+    position: relative;
+    overflow: visible;
 }
 
 .deal-detail-panel__health-score {
-    font-weight: 700;
-    color: #000000;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-right: 10px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .deal-detail-panel__health-label {
-    color: #000000;
+    font-size: 0.75rem;
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.deal-detail-panel__health-info-btn {
+    margin-left: auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    z-index: 10;
+}
+
+.deal-detail-panel__health-info-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
+}
+
+.deal-detail-panel__health-breakdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 260px;
+    background: rgba(15, 23, 42, 0.98);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 255, 65, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    z-index: 1000;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.health-breakdown__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.health-breakdown__title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.health-breakdown__score {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #00ff41;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.health-breakdown__factors {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.health-factor {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.health-factor__indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+}
+
+.health-factor__indicator.healthy {
+    background: #00ff41;
+    box-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
+}
+
+.health-factor__indicator.warning {
+    background: #eab308;
+    box-shadow: 0 0 8px rgba(234, 179, 8, 0.6);
+}
+
+.health-factor__indicator.critical {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+.health-factor__indicator.high {
+    background: #f97316;
+    box-shadow: 0 0 8px rgba(249, 115, 22, 0.6);
+}
+
+.health-factor__indicator.medium {
+    background: #eab308;
+    box-shadow: 0 0 8px rgba(234, 179, 8, 0.6);
+}
+
+.health-factor__label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.4;
+}
+
+.health-breakdown__improve-btn {
+    width: 100%;
+    padding: 10px;
+    background: rgba(0, 255, 65, 0.1);
+    border: 1px solid rgba(0, 255, 65, 0.3);
+    border-radius: 6px;
+    color: #00ff41;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.health-breakdown__improve-btn:hover {
+    background: rgba(0, 255, 65, 0.15);
+    border-color: rgba(0, 255, 65, 0.5);
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.2);
+}
+
+.deal-detail-panel__improve-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(0, 255, 65, 0.2) 0%, rgba(0, 255, 65, 0.05) 100%);
+    border: 1px solid rgba(0, 255, 65, 0.4);
+    border-radius: 8px;
+    color: #00ff41;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.15);
+}
+
+.deal-detail-panel__improve-btn:hover {
+    background: rgba(0, 255, 65, 0.25);
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    transform: translateY(-1px);
+}
+
+.improve-btn__icon {
+    font-size: 1rem;
+    filter: drop-shadow(0 0 5px rgba(0, 255, 65, 0.5));
 }
 
 /* Settlement countdown */
@@ -201,10 +377,10 @@
    ============================================================ */
 .deal-detail-panel__quick-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     padding: 12px 20px;
     border-bottom: 1px solid rgba(0, 255, 65, 0.1);
-    overflow-x: auto;
 }
 
 .deal-detail-panel__quick-action {
@@ -291,14 +467,14 @@
 .deal-detail-panel__content {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 20px 20px 100px;
+    /* Account for bottom navigation height (80px) */
 }
 
 /* Tab content sections */
 .deal-detail-panel__overview,
 .deal-detail-panel__people,
-.deal-detail-panel__timeline,
-.deal-detail-panel__financials {
+.deal-detail-panel__timeline {
     display: flex;
     flex-direction: column;
     gap: 20px;

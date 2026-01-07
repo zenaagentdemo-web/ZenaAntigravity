@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { threadLinkingService } from '../services/thread-linking.service.js';
 import { propertyIntelligenceService } from '../services/property-intelligence.service.js';
 import { marketScraperService } from '../services/market-scraper.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 export class PropertiesController {
   /**

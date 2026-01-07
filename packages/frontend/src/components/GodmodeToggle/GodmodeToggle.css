@@ -507,3 +507,37 @@
         transform: rotate(360deg);
     }
 }
+
+/* Compact Container with Settings Gear */
+.godmode-compact-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.godmode-settings-gear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.godmode-settings-gear:hover {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: rgba(0, 212, 255, 0.4);
+    color: #00D4FF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
+}
+
+/* Feature-Level Settings Modal */
+.godmode-feature-settings-modal {
+    animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}

@@ -14,27 +14,38 @@
 
 .batch-action-bar {
   position: fixed !important;
-  bottom: 110px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: auto !important;
-  min-width: 480px !important;
+  min-width: 400px !important;
   max-width: 95vw !important;
   z-index: 10000 !important;
-  border-radius: 100px !important;
-  background: rgba(13, 13, 31, 0.95) !important;
+  border-radius: 16px !important;
+  background: rgba(13, 13, 31, 0.98) !important;
   backdrop-filter: blur(25px) !important;
   -webkit-backdrop-filter: blur(25px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 12px 28px !important;
-  gap: 20px !important;
-  animation: batch-bar-center-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  padding: 16px 24px !important;
+  gap: 16px !important;
+  animation: batch-bar-center-pop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   box-shadow:
-    0 15px 45px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(0, 212, 255, 0.2) !important;
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(0, 212, 255, 0.25) !important;
+  cursor: grab;
+  user-select: none;
+}
+
+.batch-action-bar:active {
+  cursor: grabbing;
+}
+
+.batch-action-bar--dragging {
+  cursor: grabbing !important;
+  animation: none !important;
 }
 
 
@@ -53,12 +64,12 @@
 /* Slide-up entrance animations */
 @keyframes batch-bar-center-pop {
   from {
-    transform: translate(-50%, 40px);
+    transform: translate(-50%, -40%);
     opacity: 0;
   }
 
   to {
-    transform: translate(-50%, 0);
+    transform: translate(-50%, -50%);
     opacity: 1;
   }
 }

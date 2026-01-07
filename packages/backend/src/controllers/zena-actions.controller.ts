@@ -1,14 +1,11 @@
 // Zena Actions Controller - API endpoints for AI-powered deal actions
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import {
     zenaActionsService,
     ZenaActionType,
     ACTION_CONFIGS
 } from '../services/zena-actions.service.js';
-
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 /**
  * GET /api/actions/deal/:dealId/pending

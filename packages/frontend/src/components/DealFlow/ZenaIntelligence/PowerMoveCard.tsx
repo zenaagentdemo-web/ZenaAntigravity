@@ -56,7 +56,8 @@ export const PowerMoveCard: React.FC<PowerMoveCardProps> = ({
     const [showDraft, setShowDraft] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    const handleCopy = useCallback(async () => {
+    const handleCopy = useCallback(async (e: React.MouseEvent) => {
+        e.stopPropagation();
         try {
             await navigator.clipboard.writeText(powerMove.draftContent);
             setCopied(true);
@@ -67,15 +68,27 @@ export const PowerMoveCard: React.FC<PowerMoveCardProps> = ({
         }
     }, [powerMove.draftContent, onCopy]);
 
-    const handleExecute = useCallback(() => {
+    const handleExecute = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
         onExecute?.(powerMove.action, powerMove.draftContent);
     }, [onExecute, powerMove]);
+
+    const handleDismiss = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        onDismiss?.();
+    }, [onDismiss]);
+
+    const handleToggleDraft = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        setShowDraft(!showDraft);
+    }, [showDraft]);
 
     const priorityClass = `power-move-card--${powerMove.priority}`;
 
     return (
         <motion.div
             className={`power-move-card ${priorityClass} ${compact ? 'power-move-card--compact' : ''}`}
+            onClick={(e) => e.stopPropagation()} // Stop propagation from the card itself
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -88,7 +101,7 @@ export const PowerMoveCard: React.FC<PowerMoveCardProps> = ({
                 {onDismiss && (
                     <button
                         className="power-move-card__dismiss"
-                        onClick={onDismiss}
+                        onClick={handleDismiss}
                         aria-label="Dismiss"
                     >
                         ×
@@ -112,7 +125,7 @@ export const PowerMoveCard: React.FC<PowerMoveCardProps> = ({
             {/* Draft content toggle */}
             <button
                 className="power-move-card__toggle"
-                onClick={() => setShowDraft(!showDraft)}
+                onClick={handleToggleDraft}
             >
                 {showDraft ? 'Hide Draft' : 'View Draft'}
                 <span className={`power-move-card__toggle-arrow ${showDraft ? 'open' : ''}`}>

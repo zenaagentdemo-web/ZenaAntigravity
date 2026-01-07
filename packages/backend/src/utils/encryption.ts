@@ -53,7 +53,6 @@ export function decryptToken(encryptedToken: string): string {
     const parts = combined.split(':');
 
     if (parts.length !== 3) {
-      console.error('[Encryption] Invalid encrypted token format (missing parts)');
       throw new Error('Invalid encrypted token format');
     }
 
@@ -69,8 +68,7 @@ export function decryptToken(encryptedToken: string): string {
 
     return decrypted;
   } catch (error: any) {
-    console.error('[Encryption] Decryption failed:', error.message);
-    throw error;
+    throw new Error(`Decryption failed: ${error.message}`);
   }
 }
 

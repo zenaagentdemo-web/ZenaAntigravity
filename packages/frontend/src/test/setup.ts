@@ -1,5 +1,16 @@
-import { vi } from 'vitest';
-import '@testing-library/jest-dom';
+import { vi, expect } from 'vitest';
+import * as matchers from '@testing-library/jest-dom/matchers';
+
+// Type definitions for matchers
+declare module 'vitest' {
+  interface Assertion<T = any> extends jest.Matchers<void, T>, matchers.TestingLibraryMatchers<T, void> { }
+}
+
+expect.extend(matchers);
+
+// Make sure vi is available globally if needed
+(global as any).vi = vi;
+(global as any).expect = expect;
 
 // Mock localStorage
 const localStorageMock = {

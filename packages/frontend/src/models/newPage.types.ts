@@ -177,7 +177,7 @@ export const RISK_LEVEL_SCORES: Record<RiskLevel, number> = {
 /**
  * Available filter types for thread list
  */
-export type FilterType = 'all' | 'buyer' | 'vendor' | 'high_risk' | 'normal';
+export type FilterType = 'all' | 'buyer' | 'vendor' | 'market' | 'lawyer_broker' | 'high_risk' | 'normal';
 
 /**
  * Filter option with metadata
@@ -201,7 +201,7 @@ export type ThreadAction = 'view' | 'snooze' | 'send_draft' | 'archive' | 'mark_
 /**
  * Batch actions for multiple items (threads, contacts, etc.)
  */
-export type BatchAction = 'delete' | 'mark_read' | 'mark_unread' | 'tag_intel' | 'export_crm' | 'email_crm' | 'add_to_deal';
+export type BatchAction = 'delete' | 'archive' | 'restore' | 'mark_read' | 'mark_unread' | 'tag_intel' | 'export_crm' | 'email_crm' | 'add_to_deal';
 
 /**
  * Snooze duration options

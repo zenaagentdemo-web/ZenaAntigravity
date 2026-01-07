@@ -1,7 +1,6 @@
-import { PrismaClient, Deal, Thread } from '@prisma/client';
+import { Deal, Thread } from '@prisma/client';
 import { websocketService } from './websocket.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 /**
  * Risk level enumeration

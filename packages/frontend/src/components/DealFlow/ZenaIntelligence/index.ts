@@ -12,6 +12,7 @@ export {
     type RiskSeverity,
     type PowerMove,
     type PowerMoveAction,
+    fetchDealIntelligence,
     type EmailSentiment,
 } from './ZenaIntelligenceEngine';
 

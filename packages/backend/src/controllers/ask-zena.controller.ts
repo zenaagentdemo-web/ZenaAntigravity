@@ -375,6 +375,38 @@ export async function parsePropertySearchQuery(req: Request, res: Response): Pro
 }
 
 /**
+ * POST /api/ask/deal-search
+ * Parse natural language deal search query into structured filters
+ */
+export async function parseDealSearchQuery(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { query } = req.body;
+    if (!query) {
+      res.status(400).json({ error: 'Search query is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Parsing deal smart search query: "${query}"`);
+
+    const result = await askZenaService.parseDealSearchQuery(userId, query);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in parseDealSearchQuery:', error);
+    res.status(500).json({
+      error: 'Failed to parse deal search query',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
  * POST /api/ask/contact-search
  * Parse natural language contact search queries and return rich AI responses
  */

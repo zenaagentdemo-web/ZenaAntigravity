@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { MOCK_FOCUS_THREADS, MOCK_WAITING_THREADS } from './mockData.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 /**
  * Service for managing Focus and Waiting list logic

@@ -2,32 +2,85 @@
 > @zena/backend@1.0.0 dev
 > tsx watch src/index.ts
 
-8:02:52 AM [tsx] rerunning
-c[AskZenaService] Initializing...
-[AskZenaService] OPENAI_API_KEY set: false
-[AskZenaService] GEMINI_API_KEY set: true
-[AskZenaService] GEMINI_MODEL: gemini-3-flash-preview
+4:30:40 PM [tsx] rerunning
+c{"timestamp":"2026-01-07T03:30:40.785Z","level":"info","message":"[NavigationPlanner] Initialized with Gemini model: gemini-3-flash-preview"}
+{"timestamp":"2026-01-07T03:30:40.812Z","level":"info","message":"[AskZenaService] Initializing Ask Zena..."}
+{"timestamp":"2026-01-07T03:30:40.812Z","level":"info","message":"[AskZenaService] OPENAI_API_KEY set:"}
+{"timestamp":"2026-01-07T03:30:40.812Z","level":"info","message":"[AskZenaService] GEMINI_API_KEY set:","context":true}
+{"timestamp":"2026-01-07T03:30:40.812Z","level":"info","message":"[AskZenaService] GEMINI_MODEL:","context":"gemini-3-flash-preview"}
 [AIProcessingService] Using Gemini for processing: gemini-3-flash-preview
+[DealsRoutes] Registering bulk-delete route
+[DealsRoutes] Registering bulk-archive route
+[DealsRoutes] Registering bulk-restore route
 [ActionRegistry] Registered strategy for generate_weekly_report
 [ActionRegistry] Registered strategy for buyer_match_intro
 [ActionRegistry] Registered strategy for schedule_viewing
 WebSocket server initialized
+[SessionPersistence] 📂 Loading sessions from /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/sessions.json...
+[CloudRobot] Session stored for aistudio.google.com
+[IntelligentNavigator] Session stored for aistudio.google.com
+[CloudRobot] Session stored for trademe.co.nz
+[IntelligentNavigator] Session stored for trademe.co.nz
+[CloudRobot] Session stored for oneroof.co.nz
+[IntelligentNavigator] Session stored for oneroof.co.nz
+[CloudRobot] Session stored for homes.co.nz
+[IntelligentNavigator] Session stored for homes.co.nz
+[CloudRobot] Session stored for realestate.co.nz
+[IntelligentNavigator] Session stored for realestate.co.nz
+[CloudRobot] Session stored for chatgpt.com
+[IntelligentNavigator] Session stored for chatgpt.com
+[CloudRobot] Session stored for reinz.co.nz
+[IntelligentNavigator] Session stored for reinz.co.nz
+[SessionPersistence] ✅ Restored 7 sessions from disk
 Starting sync engine...
 Sync engine started (interval: 60s)
 Starting calendar sync engine...
 Calendar sync engine started (interval: 600s)
+Calendar sync engine already running
 [DealScheduler] Starting scheduler...
 [DealScheduler] Scheduler started
 [GodmodeScheduler] Starting autonomous pulse (6-hour interval, Full God only)...
-{"timestamp":"2026-01-04T19:02:54.431Z","level":"info","message":"Server started","context":{"port":"3001","environment":"development","nodeVersion":"v25.2.1","databaseConfigured":true}}
-{"timestamp":"2026-01-04T19:02:54.544Z","level":"info","message":"WebSocket server initialized","context":{"endpoint":"ws://localhost:3001/ws"}}
+{"timestamp":"2026-01-07T03:30:40.927Z","level":"info","message":"Server started","context":{"port":"3001","environment":"development","nodeVersion":"v25.2.1","databaseConfigured":true}}
+{"timestamp":"2026-01-07T03:30:40.947Z","level":"info","message":"WebSocket server initialized","context":{"endpoint":"ws://localhost:3001/ws"}}
 Found 0 calendar accounts to sync
 Found 1 accounts to sync
-Starting sync for account 9ef2b23c-2e1d-4ba9-8002-79d57ddd1448 (gmail)
-Sync error for account 9ef2b23c-2e1d-4ba9-8002-79d57ddd1448: Error: Invalid encrypted token format
-    at decryptToken (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/utils/encryption.ts:55:11)
+Starting sync for account 31280b65-8baf-4ec2-8094-e6f6c564ab77 (gmail)
+[Encryption] Invalid encrypted token format (missing parts)
+[Encryption] Decryption failed: Invalid encrypted token format
+Sync error for account 31280b65-8baf-4ec2-8094-e6f6c564ab77: Error: Invalid encrypted token format
+    at decryptToken (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/utils/encryption.ts:57:13)
     at EmailAccountService.getEmailAccountById (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/email-account.service.ts:98:20)
     at EmailAccountService.getValidAccessToken (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/email-account.service.ts:169:21)
     at SyncEngineService.syncAccount (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/sync-engine.service.ts:180:27)
     at async Promise.allSettled (index 0)
     at SyncEngineService.syncAllAccounts (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/sync-engine.service.ts:121:23)
+[DealScheduler] Running deadline scan...
+Found 1 accounts to sync
+Starting sync for account 31280b65-8baf-4ec2-8094-e6f6c564ab77 (gmail)
+[Encryption] Invalid encrypted token format (missing parts)
+[Encryption] Decryption failed: Invalid encrypted token format
+Sync error for account 31280b65-8baf-4ec2-8094-e6f6c564ab77: Error: Invalid encrypted token format
+    at decryptToken (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/utils/encryption.ts:57:13)
+    at EmailAccountService.getEmailAccountById (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/email-account.service.ts:98:20)
+    at EmailAccountService.getValidAccessToken (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/email-account.service.ts:169:21)
+    at SyncEngineService.syncAccount (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/sync-engine.service.ts:180:27)
+    at async Promise.allSettled (index 0)
+    at SyncEngineService.syncAllAccounts (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/sync-engine.service.ts:121:23)
+[DealScheduler] Scan complete. Checked 2 users.
+{"timestamp":"2026-01-07T03:32:27.126Z","level":"info","message":"Received SIGTERM, shutting down gracefully..."}
+Sync engine stopped
+Calendar sync engine stopped
+[DealScheduler] Stopping scheduler...
+[DealScheduler] Scheduler stopped
+[GodmodeScheduler] Stopped.
+WebSocket server shut down
+{"timestamp":"2026-01-07T03:32:27.147Z","level":"info","message":"HTTP server closed"}
+{"timestamp":"2026-01-07T03:32:27.147Z","level":"info","message":"Database disconnected"}
+{"timestamp":"2026-01-07T03:32:27.148Z","level":"info","message":"Graceful shutdown completed"}
+npm error Lifecycle script `dev` failed with error:
+npm error code 143
+npm error path /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend
+npm error workspace @zena/backend@1.0.0
+npm error location /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend
+npm error command failed
+npm error command sh -c tsx watch src/index.ts

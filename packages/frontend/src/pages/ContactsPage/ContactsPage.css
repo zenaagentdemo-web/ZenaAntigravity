@@ -311,10 +311,9 @@
   gap: 0.5rem;
   padding: 0 1.25rem;
   height: 52px;
-  /* Match input height roughly */
   border-radius: 100px;
-  background: linear-gradient(135deg, var(--neon-cyan-dim) 0%, rgba(0, 212, 255, 0.2) 100%);
-  border: 1px solid var(--neon-cyan);
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.3) 0%, rgba(0, 212, 255, 0.1) 100%);
+  border: 1px solid #00D4FF;
   color: white;
   font-weight: 600;
   cursor: pointer;
@@ -323,9 +322,9 @@
 }
 
 .smart-search-btn:hover:not(:disabled) {
-  background: var(--neon-cyan);
+  background: #00D4FF;
   color: black;
-  box-shadow: 0 0 20px var(--neon-cyan-dim);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
   transform: translateY(-1px);
 }
 

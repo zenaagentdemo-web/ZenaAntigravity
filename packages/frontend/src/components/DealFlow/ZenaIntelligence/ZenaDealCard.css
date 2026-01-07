@@ -6,19 +6,27 @@
 
 .zena-deal-card {
     position: relative;
-    background: linear-gradient(135deg, rgba(20, 20, 35, 0.95) 0%, rgba(10, 10, 18, 0.98) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    /* Slightly sharper for tactical feel */
-    padding: 16px;
+    background: linear-gradient(135deg, rgba(20, 20, 35, 0.7) 0%, rgba(10, 10, 18, 0.85) 100%);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 20px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
 }
 
 .zena-deal-card:hover {
-    border-color: rgba(0, 243, 255, 0.3);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-color: rgba(0, 243, 255, 0.4);
+    transform: translateY(-4px);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.6),
+        0 0 20px rgba(0, 243, 255, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
 /* Health status variants */
@@ -127,33 +135,44 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 12px;
-    margin-top: 12px;
+    gap: 16px;
+    margin-bottom: 16px;
 }
 
 .zena-deal-card__title-row {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
     flex: 1;
 }
 
 .zena-deal-card__address {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: #fff;
-    line-height: 1.3;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.zena-deal-card__contact {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6875rem;
-    color: rgba(255, 255, 255, 0.4);
-    font-weight: 500;
+.zena-deal-card__main-address {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
 }
+
+.zena-deal-card__suburb {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.zena-deal-card__stage-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+/* .zena-deal-card__contact removed via TSX */
 
 .contact-icon {
     font-size: 0.75rem;
@@ -161,97 +180,327 @@
 }
 
 .zena-deal-card__stage {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.625rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'JetBrains Mono', monospace;
 }
 
 .zena-deal-card__stage[data-status="healthy"] {
-    background: rgba(0, 255, 65, 0.15);
+    background: rgba(0, 255, 65, 0.1);
     color: #00ff41;
+    border-color: rgba(0, 255, 65, 0.2);
 }
 
 .zena-deal-card__stage[data-status="warning"] {
-    background: rgba(255, 215, 0, 0.15);
+    background: rgba(255, 215, 0, 0.1);
     color: #ffd700;
+    border-color: rgba(255, 215, 0, 0.2);
 }
 
 .zena-deal-card__stage[data-status="critical"] {
-    background: rgba(255, 0, 60, 0.15);
+    background: rgba(255, 0, 60, 0.1);
     color: #ff003c;
+    border-color: rgba(255, 0, 60, 0.2);
 }
 
-/* Color-coded brackets */
-.zena-deal-card--warning .zena-deal-card__bracket {
-    border-color: rgba(255, 215, 0, 0.4);
-}
-
-.zena-deal-card--critical .zena-deal-card__bracket {
-    border-color: rgba(255, 0, 60, 0.4);
-}
 
 .zena-deal-card--critical .zena-deal-card__scanner {
     background: linear-gradient(90deg, transparent, rgba(255, 0, 60, 0.4), transparent);
 }
 
-/* Deal Info */
-.zena-deal-card__info {
+/* Info Bar */
+.zena-deal-card__info-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 16px;
 }
 
 .zena-deal-card__value {
+    font-size: 1.5rem;
+    /* Slightly larger */
+    font-weight: 800;
+    color: #00ff41;
+    /* Vibrant matrix green */
     font-family: 'JetBrains Mono', monospace;
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #00f3ff;
+    letter-spacing: -0.03em;
+    text-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+    /* Green glow for "pop" */
+    margin: 4px 0;
 }
 
 .zena-deal-card__days {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.5);
 }
 
-/* Coaching Insight */
-.zena-deal-card__insight {
+.zena-deal-card__contact {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
-    margin-top: 12px;
-    padding: 10px 12px;
-    background: rgba(255, 215, 0, 0.08);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 8px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.zena-deal-card__insight-icon {
-    font-size: 0.875rem;
-    flex-shrink: 0;
+/* Health Transparency Styles */
+.zena-deal-card__health-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.premium-icon--lightbulb {
+.zena-deal-card__health-info-btn {
     width: 18px;
     height: 18px;
-    object-fit: contain;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.zena-deal-card__health-info-btn:hover {
+    background: rgba(0, 243, 255, 0.1);
+    color: #00f3ff;
+    border-color: rgba(0, 243, 255, 0.3);
+}
+
+.zena-deal-card__health-breakdown {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 10px;
+    margin: 12px 0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+}
+
+.health-breakdown__factors {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.health-factor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.health-factor__indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
     flex-shrink: 0;
 }
 
-.zena-deal-card__insight-text {
+.health-factor__indicator.healthy {
+    background: #00ff41;
+    box-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
+}
+
+.health-factor__indicator.warning {
+    background: #ffd700;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+
+.health-factor__indicator.stalling,
+.health-factor__indicator.critical {
+    background: #ff003c;
+    box-shadow: 0 0 6px rgba(255, 0, 60, 0.5);
+}
+
+.health-factor__label {
+    font-size: 0.6875rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: var(--font-family-mono);
+}
+
+.health-breakdown__improve-btn:hover {
+    background: rgba(0, 243, 255, 0.2);
+    border-color: #00f3ff;
+    box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
+}
+
+/* Surface Insight */
+.zena-deal-card__surface-insight {
+    position: relative;
+    background: rgba(0, 243, 255, 0.03);
+    border-left: 2px solid rgba(0, 243, 255, 0.3);
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    border-radius: 0 4px 4px 0;
+}
+
+.insight-pulse {
+    position: absolute;
+    top: 10px;
+    left: -4px;
+    width: 6px;
+    height: 6px;
+    background: #00f3ff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00f3ff;
+    animation: insight-pulse-anim 2s infinite;
+}
+
+@keyframes insight-pulse-anim {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.insight-text {
     font-size: 0.8125rem;
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(255, 255, 255, 0.7);
     line-height: 1.4;
+    font-style: italic;
+    margin: 0;
+}
+
+/* Proactive Action Button */
+.zena-deal-card__proactive-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.15) 0%, rgba(0, 243, 255, 0.05) 100%);
+    border: 1px solid rgba(0, 243, 255, 0.5);
+    border-radius: 8px;
+    color: #00f3ff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 243, 255, 0.1);
+}
+
+.zena-deal-card__proactive-action:hover {
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.25) 0%, rgba(0, 243, 255, 0.1) 100%);
+    border-color: #00f3ff;
+    box-shadow: 0 6px 20px rgba(0, 243, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Intelligence Toggle Button */
+.zena-deal-card__intelligence-toggle {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 36px;
+    /* Slightly larger for visibility */
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(10, 10, 20, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1.5px solid rgba(0, 243, 255, 0.5);
+    /* Brighter/thicker border */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 10px rgba(0, 243, 255, 0.1);
+}
+
+.zena-deal-card__intelligence-toggle:hover {
+    background: rgba(0, 243, 255, 0.15);
+    border-color: #00f3ff;
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+}
+
+.zena-deal-card__intelligence-toggle--active {
+    background: rgba(0, 243, 255, 0.25);
+    border-color: #00f3ff;
+    color: #00f3ff;
+    box-shadow: 0 0 25px rgba(0, 243, 255, 0.4);
+}
+
+.zena-deal-card__intel-icon {
+    width: 22px;
+    /* Restoring size */
+    height: 22px;
+    object-fit: contain;
+    opacity: 0.95;
+    /* High visibility */
+    filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.6));
+    /* Stronger pop */
+    transition: all 0.2s ease;
+}
+
+.zena-deal-card__intelligence-toggle:hover .zena-deal-card__intel-icon {
+    opacity: 1;
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 12px rgba(0, 243, 255, 0.8));
+}
+
+.zena-deal-card__intelligence-toggle--pulsate {
+    animation: intelligence-pulse 2s infinite;
+}
+
+@keyframes intelligence-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.6);
+    }
+
+    70% {
+        box-shadow: 0 0 0 12px rgba(0, 243, 255, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 243, 255, 0);
+    }
+}
+
+.zena-deal-card__expanded-content {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 /* Power Move Button */
@@ -336,43 +585,6 @@
    TACTICAL HUD ADDITIONS
    ============================================================ */
 
-/* tactical brackets */
-.zena-deal-card__bracket {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border: 1.5px solid rgba(0, 243, 255, 0.3);
-    z-index: 5;
-    pointer-events: none;
-}
-
-.zena-deal-card__bracket.tl {
-    top: 6px;
-    left: 6px;
-    border-right: 0;
-    border-bottom: 0;
-}
-
-.zena-deal-card__bracket.tr {
-    top: 6px;
-    right: 6px;
-    border-left: 0;
-    border-bottom: 0;
-}
-
-.zena-deal-card__bracket.bl {
-    bottom: 6px;
-    left: 6px;
-    border-right: 0;
-    border-top: 0;
-}
-
-.zena-deal-card__bracket.br {
-    bottom: 6px;
-    right: 6px;
-    border-left: 0;
-    border-top: 0;
-}
 
 /* scanner animation */
 .zena-deal-card__scanner {
@@ -481,4 +693,57 @@
 
 .zena-deal-card:hover .zena-deal-card__bitstream {
     color: rgba(0, 243, 255, 0.4);
+}
+
+/* ============================================================
+   SELECTION & BATCH ACTIONS
+   ============================================================ */
+
+.zena-deal-card--selected {
+    border-color: #00f3ff !important;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3), inset 0 0 10px rgba(0, 243, 255, 0.1);
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.05) 0%, rgba(10, 10, 18, 0.98) 100%);
+}
+
+.zena-deal-card__checkbox {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 20;
+}
+
+.zena-deal-card__checkbox--selected {
+    background: #00f3ff;
+    border-color: #00f3ff;
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+    transform: scale(1.1);
+}
+
+.checkmark-stem {
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background-color: #000;
+    left: 10px;
+    top: 3px;
+    transform: rotate(45deg);
+}
+
+.checkmark-kick {
+    position: absolute;
+    width: 5px;
+    height: 2px;
+    background-color: #000;
+    left: 4px;
+    top: 10px;
+    transform: rotate(45deg);
 }

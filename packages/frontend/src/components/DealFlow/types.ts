@@ -4,7 +4,16 @@
 export type PipelineType = 'buyer' | 'seller';
 
 // Sale method - NZ-specific sale types
-export type SaleMethod = 'negotiation' | 'auction' | 'tender' | 'deadline_sale';
+export type SaleMethod =
+    | 'auction'           // Competitive bidding, unconditional on fall of hammer
+    | 'tender'            // Sealed written offers by deadline
+    | 'deadline_sale'     // Offers by set date, can sell prior
+    | 'negotiation'       // Open negotiation, no set price/date
+    | 'asking_price'      // Fixed advertised price
+    | 'poa'               // Price on Application
+    | 'beo'               // Buyer Enquiry Over
+    | 'set_date'          // Set Date of Sale
+    | 'custom';           // User-defined method
 
 // Buyer pipeline stages
 export type BuyerStage =
@@ -117,20 +126,13 @@ export interface MarketingStats {
     trend: 'up' | 'down';
 }
 
-// Commission tier
-export interface CommissionTier {
-    minPrice: number;
-    maxPrice: number | null;
-    rate: number;
-    fixedFee?: number;
-}
-
 // Deal interface for frontend
 export interface Deal {
     id: string;
     userId: string;
     pipelineType: PipelineType;
     saleMethod: SaleMethod;
+    customSaleMethod?: string;  // User-defined sale method when saleMethod is 'custom'
     stage: DealStage;
     riskLevel: RiskLevel;
     riskFlags: string[];
@@ -140,8 +142,6 @@ export interface Deal {
 
     // Financial
     dealValue?: number;
-    commissionFormulaId?: string;
-    estimatedCommission?: number;
 
     // Dates
     conditions?: DealCondition[];
@@ -165,12 +165,6 @@ export interface Deal {
         phone?: string;
     }[];
     timelineEvents?: any[]; // Array of TimelineEvent from ActivityLogger
-
-    // Conjunctional Sales (Phase 3)
-    isConjunctional?: boolean;
-    conjunctionalAgencyName?: string;
-    conjunctionalSplit?: number;      // 0.5 = 50% our share
-    isListingAgent?: boolean;         // true = we're listing, false = selling agent
 
     // Extended stage data
     searchCriteria?: SearchCriteria;
@@ -201,7 +195,6 @@ export interface PipelineResponse {
     summary: {
         totalDeals: number;
         totalValue: number;
-        totalCommission: number;
         atRiskCount: number;
         overdueCount: number;
         todayCount: number;
@@ -216,7 +209,6 @@ export interface DashboardStats {
     overdueDeals: number;
     todayDeals: number;
     totalPipelineValue: number;
-    totalPendingCommission: number;
     dealsClosedThisMonth: number;
 }
 
@@ -242,7 +234,7 @@ export const STAGE_LABELS: Record<string, string> = {
     conditional: 'Conditional',
     unconditional: 'Unconditional',
     pre_settlement: 'Pre-Settlement',
-    settled: 'Closed',
+    settled: 'Settled',
     nurture: 'Nurture'
 };
 

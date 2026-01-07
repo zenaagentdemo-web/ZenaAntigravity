@@ -40,6 +40,7 @@ import { ComposeModal } from '../../components/ComposeModal/ComposeModal';
 import { Portal } from '../../components/Portal/Portal';
 
 import { BatchAction, FilterOption, SnoozeOptions } from '../../models/newPage.types';
+import { GodmodeToggle } from '../../components/GodmodeToggle/GodmodeToggle';
 import './NewPage.css';
 
 interface NewPageProps {
@@ -96,7 +97,8 @@ export const NewPage: React.FC<NewPageProps> = ({ filterMode = 'focus' }) => {
     selectedIds,
     toggleBatchMode,
     exitBatchMode,
-    toggleSelection
+    toggleSelection,
+    enterBatchMode
   } = useBatchState();
 
   // Dropdown state management (single expansion invariant)
@@ -183,6 +185,12 @@ export const NewPage: React.FC<NewPageProps> = ({ filterMode = 'focus' }) => {
   const handleSelect = useCallback((threadId: string) => {
     toggleSelection(threadId);
   }, [toggleSelection]);
+
+  // Handle long press to enter batch mode and select item
+  const handleLongPress = useCallback((threadId: string) => {
+    enterBatchMode();
+    toggleSelection(threadId);
+  }, [enterBatchMode, toggleSelection]);
 
   // Handle thread actions
   const handleAction = useCallback((threadId: string, action: 'view' | 'snooze' | 'send_draft' | 'delete' | 'forward' | 'move_to' | 'archive' | 'mark_read') => {
@@ -357,6 +365,7 @@ export const NewPage: React.FC<NewPageProps> = ({ filterMode = 'focus' }) => {
           onDropdownToggle={handleDropdownToggle}
           onQuickReply={handleQuickReply}
           onSelect={handleSelect}
+          onLongPress={handleLongPress}
           onAction={handleAction}
           className={animationClass}
         />
@@ -500,23 +509,28 @@ export const NewPage: React.FC<NewPageProps> = ({ filterMode = 'focus' }) => {
       <AmbientBackground variant="subtle" />
 
       <div className="new-page__container">
-        {/* Header */}
-        <NewPageHeader
-          threadCount={filteredThreads.length}
-          urgentCount={urgentCount}
-          isCompact={isHeaderCompact}
-          syncStatus={syncStatus}
-          onRefresh={handleRefresh}
-          onSearch={setSearchQuery}
-          onToggleBatchMode={toggleBatchMode}
-          isBatchMode={isBatchMode}
-          onFilterChange={setFilters}
-          onViewFolders={handleViewFolders}
-          onCreateFolder={handleCreateFolder}
-          title={filterMode === 'focus' ? 'New mail' : filterMode === 'waiting' ? 'Awaiting response' : 'All inbox'}
-          activeFolderName={activeFolderId ? [...ALL_FOLDERS, ...customFolders].find(f => f.id === activeFolderId)?.name : undefined}
-          onClearFolder={() => setFolderId(null)}
-        />
+        {/* Header with God Mode Toggle */}
+        <div className="new-page__header-wrapper">
+          <NewPageHeader
+            threadCount={filteredThreads.length}
+            urgentCount={urgentCount}
+            isCompact={isHeaderCompact}
+            syncStatus={syncStatus}
+            onRefresh={handleRefresh}
+            onSearch={setSearchQuery}
+            onToggleBatchMode={toggleBatchMode}
+            isBatchMode={isBatchMode}
+            onFilterChange={setFilters}
+            onViewFolders={handleViewFolders}
+            onCreateFolder={handleCreateFolder}
+            title={filterMode === 'focus' ? 'New mail' : filterMode === 'waiting' ? 'Awaiting response' : 'All inbox'}
+            activeFolderName={activeFolderId ? [...ALL_FOLDERS, ...customFolders].find(f => f.id === activeFolderId)?.name : undefined}
+            onClearFolder={() => setFolderId(null)}
+          />
+          <div className="new-page__godmode-toggle">
+            <GodmodeToggle compact />
+          </div>
+        </div>
 
         {/* Filter chips */}
         <FilterChips
@@ -591,6 +605,7 @@ export const NewPage: React.FC<NewPageProps> = ({ filterMode = 'focus' }) => {
                     onDropdownToggle={handleDropdownToggle}
                     onQuickReply={handleQuickReply}
                     onSelect={handleSelect}
+                    onLongPress={handleLongPress}
                     onAction={handleAction}
                     className={animationClass}
                   />
@@ -638,7 +653,7 @@ export const NewPage: React.FC<NewPageProps> = ({ filterMode = 'focus' }) => {
       <Portal>
         <BatchActionBar
           selectedCount={selectedIds.size}
-          isVisible={isBatchMode}
+          isVisible={isBatchMode && selectedIds.size > 0}
           onAction={handleBatchAction}
           onCancel={exitBatchMode}
         />

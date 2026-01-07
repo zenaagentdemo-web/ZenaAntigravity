@@ -16,7 +16,6 @@ export type SectionId =
     | 'keyDates'
     | 'settlement'
     | 'preInspection'
-    | 'commission'
     | 'zenaCoaching'
     | 'followUp'
     | 'marketingStats'
@@ -64,7 +63,7 @@ const BUYER_CONSULT_CONFIG: StageConfiguration = {
         { id: 'searchCriteria', priority: 'always', order: 2 },
         { id: 'blocker', priority: 'when_relevant', order: 3 },
         { id: 'zenaCoaching', priority: 'always', order: 4 },
-        { id: 'keyDates', priority: 'when_relevant', order: 5 },
+        { id: 'keyDates', priority: 'when_relevant', order: 10 },
     ],
     quickActions: [
         { id: 'call-buyer', label: 'Call', icon: '📞', primary: true, action: 'call', target: 'buyer' },
@@ -124,9 +123,8 @@ const OFFER_MADE_CONFIG: StageConfiguration = {
         { id: 'offerDetails', priority: 'always', order: 1 },
         { id: 'blocker', priority: 'always', order: 2 },
         { id: 'contacts', priority: 'always', order: 3 },
-        { id: 'keyDates', priority: 'always', order: 4 },
         { id: 'zenaCoaching', priority: 'always', order: 5 },
-        { id: 'commission', priority: 'when_relevant', order: 6 },
+        { id: 'keyDates', priority: 'always', order: 10 },
     ],
     quickActions: [
         { id: 'call-listing-agent', label: 'Call Agent', icon: '📞', primary: true, action: 'call', target: 'listing_agent' },
@@ -144,10 +142,9 @@ const CONDITIONAL_CONFIG: StageConfiguration = {
     sections: [
         { id: 'conditions', priority: 'always', order: 1 },
         { id: 'blocker', priority: 'always', order: 2 },
-        { id: 'keyDates', priority: 'always', order: 3 },
         { id: 'contacts', priority: 'always', order: 4 },
         { id: 'zenaCoaching', priority: 'always', order: 5 },
-        { id: 'commission', priority: 'always', order: 6 },
+        { id: 'keyDates', priority: 'always', order: 10 },
     ],
     quickActions: [
         { id: 'chase-finance', label: 'Chase Finance', icon: '📞', primary: true, action: 'call', target: 'broker' },
@@ -166,10 +163,9 @@ const UNCONDITIONAL_CONFIG: StageConfiguration = {
     sections: [
         { id: 'settlement', priority: 'always', order: 1 },
         { id: 'conditions', priority: 'collapsed', order: 2 },
-        { id: 'keyDates', priority: 'always', order: 3 },
         { id: 'contacts', priority: 'always', order: 4 },
         { id: 'zenaCoaching', priority: 'always', order: 5 },
-        { id: 'commission', priority: 'always', order: 6 },
+        { id: 'keyDates', priority: 'always', order: 10 },
     ],
     quickActions: [
         { id: 'confirm-settlement', label: 'Confirm Date', icon: '📞', primary: true, action: 'call', target: 'solicitor' },
@@ -190,7 +186,6 @@ const PRE_SETTLEMENT_CONFIG: StageConfiguration = {
         { id: 'blocker', priority: 'always', order: 3 },
         { id: 'contacts', priority: 'always', order: 4 },
         { id: 'zenaCoaching', priority: 'always', order: 5 },
-        { id: 'commission', priority: 'always', order: 6 },
     ],
     quickActions: [
         { id: 'book-inspection', label: 'Book Inspection', icon: '📅', primary: true, action: 'schedule' },
@@ -207,11 +202,10 @@ const SETTLED_CONFIG: StageConfiguration = {
     blockerTypes: [],
     coachingFocus: 'Relationship nurturing',
     sections: [
-        { id: 'commission', priority: 'always', order: 1 },
-        { id: 'followUp', priority: 'always', order: 2 },
+        { id: 'followUp', priority: 'always', order: 1 },
         { id: 'contacts', priority: 'always', order: 3 },
-        { id: 'keyDates', priority: 'collapsed', order: 4 },
         { id: 'zenaCoaching', priority: 'when_relevant', order: 5 },
+        { id: 'keyDates', priority: 'collapsed', order: 10 },
     ],
     quickActions: [
         { id: 'send-gift', label: 'Send Gift', icon: '🎁', primary: true, action: 'custom' },
@@ -228,8 +222,8 @@ const NURTURE_CONFIG: StageConfiguration = {
     coachingFocus: 'Staying top of mind',
     sections: [
         { id: 'contacts', priority: 'always', order: 1 },
-        { id: 'keyDates', priority: 'always', order: 2 },
         { id: 'zenaCoaching', priority: 'when_relevant', order: 3 },
+        { id: 'keyDates', priority: 'always', order: 10 },
     ],
     quickActions: [
         { id: 'check-in', label: 'Check In', icon: '💬', primary: true, action: 'sms', target: 'buyer' },
@@ -252,7 +246,7 @@ const APPRAISAL_CONFIG: StageConfiguration = {
         { id: 'contacts', priority: 'always', order: 1 },
         { id: 'blocker', priority: 'when_relevant', order: 2 },
         { id: 'zenaCoaching', priority: 'always', order: 3 },
-        { id: 'keyDates', priority: 'when_relevant', order: 4 },
+        { id: 'keyDates', priority: 'when_relevant', order: 10 },
     ],
     quickActions: [
         { id: 'send-report', label: 'Send CMA', icon: '📋', primary: true, action: 'custom' },
@@ -269,9 +263,9 @@ const LISTING_SIGNED_CONFIG: StageConfiguration = {
     coachingFocus: 'Launch preparation excellence',
     sections: [
         { id: 'contacts', priority: 'always', order: 1 },
-        { id: 'keyDates', priority: 'always', order: 2 },
         { id: 'blocker', priority: 'when_relevant', order: 3 },
         { id: 'zenaCoaching', priority: 'always', order: 4 },
+        { id: 'keyDates', priority: 'always', order: 10 },
     ],
     quickActions: [
         { id: 'book-photos', label: 'Photos', icon: '📷', primary: true, action: 'schedule' },
@@ -290,9 +284,9 @@ const MARKETING_CONFIG: StageConfiguration = {
     sections: [
         { id: 'marketingStats', priority: 'always', order: 1 },
         { id: 'blocker', priority: 'when_relevant', order: 2 },
-        { id: 'keyDates', priority: 'always', order: 3 },
         { id: 'contacts', priority: 'always', order: 4 },
         { id: 'zenaCoaching', priority: 'always', order: 5 },
+        { id: 'keyDates', priority: 'always', order: 10 },
     ],
     quickActions: [
         { id: 'open-home', label: 'Open Home', icon: '📅', primary: true, action: 'schedule' },
@@ -312,9 +306,8 @@ const OFFERS_RECEIVED_CONFIG: StageConfiguration = {
         { id: 'offers', priority: 'always', order: 1 },
         { id: 'blocker', priority: 'when_relevant', order: 2 },
         { id: 'contacts', priority: 'always', order: 3 },
-        { id: 'keyDates', priority: 'always', order: 4 },
         { id: 'zenaCoaching', priority: 'always', order: 5 },
-        { id: 'commission', priority: 'when_relevant', order: 6 },
+        { id: 'keyDates', priority: 'always', order: 10 },
     ],
     quickActions: [
         { id: 'present-offer', label: 'Present', icon: '📞', primary: true, action: 'call', target: 'seller' },
@@ -378,8 +371,8 @@ export function getStageConfig(stage: DealStage, pipelineType: PipelineType): St
             coachingFocus: 'General guidance',
             sections: [
                 { id: 'contacts', priority: 'always', order: 1 },
-                { id: 'keyDates', priority: 'always', order: 2 },
                 { id: 'zenaCoaching', priority: 'always', order: 3 },
+                { id: 'keyDates', priority: 'always', order: 10 },
             ],
             quickActions: [
                 { id: 'call', label: 'Call', icon: '📞', primary: true, action: 'call' },

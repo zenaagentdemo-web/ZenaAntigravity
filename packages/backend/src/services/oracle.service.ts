@@ -9,11 +9,9 @@
  * BRAIN-FIRST ARCHITECTURE: All predictions now route through Zena's LLM brain
  */
 
-import { PrismaClient } from '@prisma/client';
 import { predictPersonality, PERSONALITY_MARKERS } from './personality-markers.service';
 import { askZenaService } from './ask-zena.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 // LLM API configuration
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;

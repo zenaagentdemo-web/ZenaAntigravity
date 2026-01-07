@@ -1,0 +1,138 @@
+.inbox-pending-actions {
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(0, 212, 255, 0.05));
+    border: 1px solid rgba(155, 89, 182, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.inbox-pending-actions__toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.inbox-pending-actions__toggle:hover {
+    background: rgba(155, 89, 182, 0.1);
+}
+
+.inbox-pending-actions__badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #9B59B6;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.inbox-pending-actions__list {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.inbox-pending-action {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s ease;
+}
+
+.inbox-pending-action:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.inbox-pending-action:last-child {
+    border-bottom: none;
+}
+
+.inbox-pending-action__priority {
+    width: 4px;
+    height: 40px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.inbox-pending-action__icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00D4FF;
+    flex-shrink: 0;
+}
+
+.inbox-pending-action__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.inbox-pending-action__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.inbox-pending-action__description {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+}
+
+.inbox-pending-action__draft {
+    margin-top: 8px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.inbox-pending-action__actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.inbox-pending-action__btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.inbox-pending-action__btn--approve {
+    background: rgba(46, 213, 115, 0.2);
+    color: #2ed573;
+}
+
+.inbox-pending-action__btn--approve:hover {
+    background: rgba(46, 213, 115, 0.3);
+    transform: scale(1.05);
+}
+
+.inbox-pending-action__btn--dismiss {
+    background: rgba(255, 71, 87, 0.2);
+    color: #ff4757;
+}
+
+.inbox-pending-action__btn--dismiss:hover {
+    background: rgba(255, 71, 87, 0.3);
+    transform: scale(1.05);
+}

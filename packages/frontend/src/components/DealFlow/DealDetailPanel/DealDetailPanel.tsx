@@ -2,11 +2,12 @@
  * DealDetailPanel - Slide-in panel showing deal details when card is clicked
  */
 
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Deal, STAGE_LABELS, formatCurrency, calculateDaysInStage } from '../types';
 import { getStageConfig, QuickAction } from './StageConfig';
-import { analyseDeal, DealIntelligence } from '../ZenaIntelligence/ZenaIntelligenceEngine';
+import { analyseDeal, DealIntelligence, useDealIntelligence } from '../ZenaIntelligence/ZenaIntelligenceEngine';
 import { logActivity } from '../utils/ActivityLogger';
 
 // Section components
@@ -15,7 +16,6 @@ import {
     QuickContacts,
     KeyDatesSection,
     ConditionsTracker,
-    CommissionPreview,
     ZenaCoachingPanel,
     SearchCriteriaSection,
     MarketingStatsSection,
@@ -31,6 +31,7 @@ import {
 } from './sections';
 
 import './DealDetailPanel.css';
+import { useNavigate } from 'react-router-dom';
 
 interface DealDetailPanelProps {
     deal: Deal;
@@ -40,7 +41,7 @@ interface DealDetailPanelProps {
     onStartZenaLive?: (dealId: string) => void;
 }
 
-type TabId = 'overview' | 'intelligence' | 'people' | 'timeline' | 'financials';
+type TabId = 'overview' | 'intelligence' | 'people' | 'timeline';
 
 interface Tab {
     id: TabId;
@@ -53,7 +54,6 @@ const TABS: Tab[] = [
     { id: 'intelligence', label: 'Intelligence', icon: '🧠' },
     { id: 'people', label: 'People', icon: '👥' },
     { id: 'timeline', label: 'Timeline', icon: '📅' },
-    { id: 'financials', label: 'Financials', icon: '💰' },
 ];
 
 export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
@@ -63,13 +63,40 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
     onNavigateToContact,
     onStartZenaLive,
 }) => {
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<TabId>('overview');
+    const [showHealthBreakdown, setShowHealthBreakdown] = useState(false);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    // Scroll back to top when deal changes
+    useEffect(() => {
+        if (contentRef.current) {
+            contentRef.current.scrollTop = 0;
+        }
+    }, [deal.id, activeTab]);
 
     // Get stage configuration
     const stageConfig = getStageConfig(deal.stage, deal.pipelineType);
 
-    // Get Zena intelligence
-    const intelligence: DealIntelligence = analyseDeal(deal);
+    // Get Zena intelligence (heuristic for immediate display, then AI hydrated)
+    const { intelligence: aiIntelligence, loading: aiLoading } = useDealIntelligence(deal.id);
+    const heuristicIntelligence: DealIntelligence = analyseDeal(deal);
+    const intelligence = aiIntelligence || heuristicIntelligence;
+
+    // Phase 3: Executive Brain Sync
+    // If opening this panel triggers an AI analysis that changes the risk level,
+    // we must notify the parent to update the dashboard stats immediately.
+    useEffect(() => {
+        if (aiIntelligence?.riskLevel && onDealUpdate && aiIntelligence.riskLevel !== deal.riskLevel) {
+            console.log(`[DealDetailPanel] Syncing AI risk level (${aiIntelligence.riskLevel}) to dashboard`);
+            onDealUpdate({
+                ...deal,
+                riskLevel: aiIntelligence.riskLevel,
+                // Also sync flags if available
+                riskFlags: aiIntelligence.riskSignals?.map(s => s.description) || deal.riskFlags
+            });
+        }
+    }, [aiIntelligence, deal.riskLevel, onDealUpdate]);
 
     // Days in stage
     const daysInStage = calculateDaysInStage(deal.stageEnteredAt);
@@ -107,31 +134,68 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
 
     // Handle quick action click
     const handleQuickAction = useCallback((action: QuickAction) => {
-        switch (action.action) {
-            case 'call': {
+        // Log action
+        console.log('Tactical action triggered:', action.id);
+
+        switch (action.id) {
+            case 'chase-finance':
+                // AI-powered finance nudge
+                navigate('/ask-zena', {
+                    state: {
+                        initialMessage: `Zena, I need to check the finance status for ${deal.property?.address.split(',')[0]}. Can you draft a firm but professional text for the broker?`,
+                        dealContext: { id: deal.id, address: deal.property?.address }
+                    }
+                });
+                break;
+
+            case 'check-report':
+                // AI-powered report analysis
+                navigate('/ask-zena', {
+                    state: {
+                        initialMessage: `Zena, let's analyze the building report for ${deal.property?.address.split(',')[0]}. What are the key risks we should be looking for?`,
+                        dealContext: { id: deal.id, address: deal.property?.address }
+                    }
+                });
+                break;
+
+            case 'call-solicitor':
+            case 'confirm-settlement':
                 handleCommunication('call');
+                // Could open system dialer here if protocols supported
+                window.location.href = `tel:${deal.contacts?.find(c => c.role === 'solicitor')?.phone || ''}`;
                 break;
-            }
-            case 'sms': {
-                handleCommunication('sms');
+
+            case 'mark-satisfied':
+                if (onDealUpdate) {
+                    onDealUpdate({
+                        ...deal,
+                        conditions: deal.conditions?.map(c => ({ ...c, status: 'satisfied' as const }))
+                    });
+                    // AI follow-up
+                    navigate('/ask-zena', {
+                        state: {
+                            initialMessage: `Conditions are satisfied for ${deal.property?.address.split(',')[0]}. What's our next power move to ensure a smooth settlement?`
+                        }
+                    });
+                }
                 break;
-            }
-            case 'email': {
-                handleCommunication('email');
-                break;
-            }
+
             default:
-                console.log('Action triggered:', action.id);
-                break;
+                // Fallback to legacy behavior for standard actions
+                switch (action.action) {
+                    case 'call': handleCommunication('call'); break;
+                    case 'sms': handleCommunication('sms'); break;
+                    case 'email': handleCommunication('email'); break;
+                }
         }
-    }, [handleCommunication]);
+    }, [deal, navigate, handleCommunication, onDealUpdate]);
 
     // Get health status color
     const getHealthColor = (status: 'healthy' | 'warning' | 'critical') => {
         switch (status) {
-            case 'healthy': return 'var(--color-success, #22c55e)';
-            case 'warning': return 'var(--color-warning, #eab308)';
-            case 'critical': return 'var(--color-error, #ef4444)';
+            case 'healthy': return '#00ff41'; // Zena Green
+            case 'warning': return '#eab308'; // Warning Gold
+            case 'critical': return '#ef4444'; // Error Red
         }
     };
 
@@ -184,17 +248,6 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
                                     key={`conditions-${idx}`}
                                     deal={deal}
                                     onUpdate={onDealUpdate}
-                                />
-                            );
-                        case 'commission':
-                            return (
-                                <CommissionPreview
-                                    key={`commission-${idx}`}
-                                    dealValue={deal.dealValue}
-                                    estimatedCommission={deal.estimatedCommission}
-                                    isConjunctional={deal.isConjunctional}
-                                    conjunctionalSplit={deal.conjunctionalSplit}
-                                    settlementDate={deal.settlementDate}
                                 />
                             );
                         case 'zenaCoaching':
@@ -308,19 +361,6 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
         </div>
     );
 
-    // Render financials tab content
-    const renderFinancialsTab = () => (
-        <div className="deal-detail-panel__financials">
-            <CommissionPreview
-                dealValue={deal.dealValue}
-                estimatedCommission={deal.estimatedCommission}
-                isConjunctional={deal.isConjunctional}
-                conjunctionalSplit={deal.conjunctionalSplit}
-                settlementDate={deal.settlementDate}
-            />
-        </div>
-    );
-
     const renderIntelligenceTab = () => {
         return (
             <div className="deal-detail-panel__content-inner">
@@ -343,14 +383,12 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
                 return renderPeopleTab();
             case 'timeline':
                 return renderTimelineTab();
-            case 'financials':
-                return renderFinancialsTab();
             default:
                 return null;
         }
     };
 
-    return (
+    return createPortal(
         <AnimatePresence>
             {/* Backdrop */}
             <motion.div
@@ -369,11 +407,6 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             >
-                {/* Tactical Brackets */}
-                <div className="deal-detail-panel__bracket tl" />
-                <div className="deal-detail-panel__bracket tr" />
-                <div className="deal-detail-panel__bracket bl" />
-                <div className="deal-detail-panel__bracket br" />
 
                 {/* Header */}
                 <div className="deal-detail-panel__header">
@@ -399,17 +432,83 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
                         </div>
 
                         {/* Health indicator */}
-                        <div
-                            className="deal-detail-panel__health"
-                            style={{ backgroundColor: getHealthColor(intelligence.stageHealthStatus) }}
-                        >
-                            <span className="deal-detail-panel__health-score">
-                                {intelligence.healthScore}%
-                            </span>
-                            <span className="deal-detail-panel__health-label">
-                                {intelligence.stageHealthStatus === 'healthy' ? 'On Track' :
-                                    intelligence.stageHealthStatus === 'warning' ? 'Needs Attention' : 'Critical'}
-                            </span>
+                        <div className="deal-detail-panel__momentum-section">
+                            <div
+                                className="deal-detail-panel__health"
+                                style={{
+                                    background: `linear-gradient(90deg, ${getHealthColor(intelligence.stageHealthStatus)}cc 0%, rgba(10, 15, 30, 0.4) 100%)`,
+                                    border: `1px solid ${getHealthColor(intelligence.stageHealthStatus)}44`
+                                }}
+                            >
+                                <span className="deal-detail-panel__health-score">
+                                    {intelligence.healthScore}%
+                                </span>
+                                <span className="deal-detail-panel__health-label">
+                                    Momentum Score
+                                </span>
+                                <button
+                                    className="deal-detail-panel__health-info-btn"
+                                    onClick={() => setShowHealthBreakdown(!showHealthBreakdown)}
+                                    title="Why this health score?"
+                                >
+                                    ?
+                                </button>
+
+                                <AnimatePresence>
+                                    {showHealthBreakdown && (
+                                        <motion.div
+                                            className="deal-detail-panel__health-breakdown"
+                                            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                        >
+                                            <div className="health-breakdown__header">
+                                                <span className="health-breakdown__title">Health Intelligence</span>
+                                                <span className="health-breakdown__score">{intelligence.healthScore}%</span>
+                                            </div>
+
+                                            <div className="health-breakdown__content">
+                                                <div className="health-breakdown__factors">
+                                                    <div className="health-factor">
+                                                        <span className={`health-factor__indicator ${daysInStage > 14 ? 'warning' : 'healthy'}`} />
+                                                        <span className="health-factor__label">{daysInStage} days in current stage</span>
+                                                    </div>
+                                                    {intelligence.riskSignals.map((signal, idx) => (
+                                                        <div key={idx} className="health-factor">
+                                                            <span className={`health-factor__indicator ${signal.severity}`} />
+                                                            <span className="health-factor__label">{signal.description}</span>
+                                                        </div>
+                                                    ))}
+                                                    {intelligence.riskSignals.length === 0 && intelligence.healthScore >= 70 && (
+                                                        <div className="health-factor">
+                                                            <span className="health-factor__indicator healthy" />
+                                                            <span className="health-factor__label">No critical risks detected</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <button
+                                                    className="health-breakdown__improve-btn"
+                                                    onClick={() => {
+                                                        setShowHealthBreakdown(false);
+                                                        onStartZenaLive?.(deal.id);
+                                                    }}
+                                                >
+                                                    Improve Deal Health
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            <button
+                                className="deal-detail-panel__improve-btn"
+                                onClick={() => onStartZenaLive?.(deal.id)}
+                            >
+                                <span className="improve-btn__icon">⚡</span>
+                                IMPROVE
+                            </button>
                         </div>
 
                         {/* Settlement countdown */}
@@ -463,11 +562,12 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
                 </div>
 
                 {/* Content */}
-                <div className="deal-detail-panel__content">
+                <div className="deal-detail-panel__content" ref={contentRef}>
                     {renderContent()}
                 </div>
             </motion.div>
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 };
 

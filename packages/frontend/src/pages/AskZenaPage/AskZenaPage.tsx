@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { api } from '../../utils/apiClient';
 import { VoiceRecorder } from '../../components/VoiceRecorder/VoiceRecorder';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ZenaHighTechAvatar } from '../../components/ZenaHighTechAvatar/ZenaHighTechAvatar';
 import { DissolvePhase } from '../../components/DissolveParticleSystem/DissolveParticleSystem';
 import {
@@ -76,6 +78,7 @@ export const AskZenaPage: React.FC = () => {
   const wasManuallyStoppedRef = useRef<boolean>(sessionStorage.getItem('zena_live_manually_stopped') === 'true');
   const isMountedRef = useRef<boolean>(true); // Track mount status to prevent zombie async updates
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [pinnedContext, setPinnedContext] = useState<string | null>(null);
   const [avatarMode, setAvatarMode] = useState<'hero' | 'assistant'>('hero');
   const [dissolvePhase, setDissolvePhase] = useState<DissolvePhase>('idle');
@@ -105,6 +108,7 @@ export const AskZenaPage: React.FC = () => {
   const strategySessionContextRef = useRef<StrategySessionContext | null>(null);
   const hasStrategySessionStartedRef = useRef(false); // Prevent double-trigger in React Strict Mode
   const hasHandledUrlParamsRef = useRef(false); // Track if we've already processed URL start params
+  const pendingSpokenGreetingRef = useRef<string>(''); // Track greeting sent via voice.live.prompt to avoid duplicate
 
 
   // Sync ref with state
@@ -393,6 +397,7 @@ export const AskZenaPage: React.FC = () => {
 
       // Async setup for Live Mode
       const startLiveMode = async () => {
+        setError(null); // Clear any previous errors
         setLiveConnectionStatus('connecting');
         // Ensure WebSocket is connected first
         const connected = await realTimeDataService.ensureConnection();
@@ -478,6 +483,20 @@ export const AskZenaPage: React.FC = () => {
               console.log('[AskZena] Finalizing Zena transcript after 1000ms drain, content:', finalContent.substring(0, 50), '...');
 
               if (finalContent) {
+                // Check if this is the initial greeting we sent via voice.live.prompt
+                // If so, skip adding it since we already added it to messages
+                const pendingGreeting = pendingSpokenGreetingRef.current;
+                if (pendingGreeting && finalContent.toLowerCase().includes(pendingGreeting.toLowerCase().substring(0, 30))) {
+                  console.log('[AskZena] Skipping duplicate greeting from voice transcript');
+                  pendingSpokenGreetingRef.current = ''; // Clear the pending greeting
+                  liveTranscriptBufferRef.current = '';
+                  setStreamingContent('');
+                  setUserTranscript('');
+                  // Mark as responded so inactivity timer can start!
+                  zenaHasRespondedRef.current = true;
+                  return; // Don't add duplicate
+                }
+
                 // THEN: Add Zena's response (including any pending sources)
                 const chips = detectIntentAndGenerateChips(finalContent);
                 const pendingSources = pendingSourcesRef.current;
@@ -731,12 +750,6 @@ export const AskZenaPage: React.FC = () => {
             console.log('[AskZena] Sending inactivity prompt to Zena Live:', promptText);
             isWaitingForIdleResponseRef.current = true;
             realTimeDataService.sendMessage('voice.live.prompt', { text: promptText });
-
-            // Also add a local placeholder so the user sees Zena is trying to help
-            setMessages(prev => [
-              ...prev,
-              { id: `inactivity-${Date.now()}`, role: 'assistant', content: 'Is there anything else I can help you with?', timestamp: new Date() }
-            ]);
           }
           else if (inactiveTime > 10000 && zenaAskedRef.current) {
             console.log('[AskZena] 10s passed after check-in (20s total) - deactivating');
@@ -908,9 +921,85 @@ export const AskZenaPage: React.FC = () => {
 
     const prompt = searchParams.get('prompt');
     const mode = searchParams.get('mode');
+    const greetingKey = searchParams.get('greeting');
 
     if (!hasHandledUrlParamsRef.current) {
       hasHandledUrlParamsRef.current = true;
+      console.log('[AskZena] Handling URL params. Mode:', mode, 'Greeting:', greetingKey);
+
+      // 1. Handle custom greetings (HIGHEST PRIORITY)
+      if (greetingKey === 'strategy-session') {
+        const isLiveMode = searchParams.get('liveMode') === 'true';
+
+        // Try to read context from sessionStorage (set by DealFlowPage)
+        let greetingText = "Let's start a strategy session! How can I help? What deal are you stuck on or need help with?";
+        let pinnedText: string | null = null;
+
+        try {
+          const contextJson = sessionStorage.getItem(STRATEGY_SESSION_KEY);
+          console.log('[AskZena] Strategy session context from sessionStorage:', contextJson);
+          if (contextJson) {
+            const context: StrategySessionContext = JSON.parse(contextJson);
+            strategySessionContextRef.current = context;
+            console.log('[AskZena] Parsed strategy context:', context);
+
+            // Build context-aware opener based on risk type
+            greetingText = buildStrategyOpener(context);
+            pinnedText = `${context.address} • ${context.stageLabel} • ${context.healthScore}% health`;
+            console.log('[AskZena] Context-aware greeting:', greetingText);
+
+            // CRITICAL FIX: Do NOT clear sessionStorage here.
+            // In React Strict Mode (dev), this effect runs twice. 
+            // If we clear it on the first run, the second run (the one that stays) has no context.
+            // sessionStorage.removeItem(STRATEGY_SESSION_KEY); 
+          }
+        } catch (err) {
+          console.error('[AskZena] Failed to parse strategy session context:', err);
+        }
+
+        // Add greeting message
+        setMessages([{
+          id: `greeting-${Date.now()}`,
+          role: 'assistant',
+          content: greetingText,
+          timestamp: new Date()
+        }]);
+
+        // Set pinned context if available
+        if (pinnedText) {
+          setPinnedContext(pinnedText);
+        }
+
+        // Prevent wipe in the other effect
+        isInternalIdChangeRef.current = true;
+
+        if (isLiveMode) {
+          // ZENA LIVE MODE: Keep hero avatar, start conversation mode, speak greeting
+          console.log('[AskZena] Starting Zena Live for strategy session...');
+          setAvatarMode('hero');
+          sessionStorage.removeItem('zena_live_manually_stopped');
+          wasManuallyStoppedRef.current = false;
+          setIsConversationMode(true);
+
+          // Speak using Zena's REAL voice via the live WebSocket (same as normal Zena Live)
+          // Need to wait for the live connection to establish first
+          // Track this greeting so we don't add it again when the transcript comes back
+          pendingSpokenGreetingRef.current = greetingText;
+          setTimeout(() => {
+            console.log('[AskZena] Sending strategy session greeting via Zena Live voice...');
+            realTimeDataService.sendMessage('voice.live.prompt', {
+              text: `Say exactly: "${greetingText}"`
+            });
+          }, 2000);
+        } else {
+          // CHAT MODE: Switch to assistant view for inline chat
+          setAvatarMode('assistant');
+        }
+
+        // Clean up URL and return
+        setSearchParams({}, { replace: true });
+        return;
+      }
 
       if (mode === 'handsfree') {
         const timestamp = searchParams.get('t');
@@ -1046,7 +1135,13 @@ export const AskZenaPage: React.FC = () => {
     if (activeConversationId) {
       loadMessages(activeConversationId);
     } else {
-      setMessages([]);
+      // Only wipe if we haven't just set a greeting/prompt
+      setMessages(prev => {
+        if (prev.length > 0 && prev[0].id.startsWith('greeting-')) {
+          return prev;
+        }
+        return [];
+      });
     }
   }, [activeConversationId, loadMessages]);
 
@@ -1639,6 +1734,24 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
                   message={message}
                   onPreviewAttachment={setPreviewAttachment}
                   onRetry={handleRetry}
+                  onNavigateToDeal={() => {
+                    try {
+                      const dealId = strategySessionContextRef.current?.dealId;
+                      console.log('[AskZena] onNavigateToDeal clicked. DealID:', dealId);
+
+                      if (dealId) {
+                        // CRITICAL: Direct navigation with state is reliable.
+                        console.log('[AskZena] Navigating to /deal-flow with state:', { openDealId: dealId });
+                        navigate('/deal-flow', { state: { openDealId: dealId } });
+                      } else {
+                        console.warn('[AskZena] No dealId found in strategyContext:', strategySessionContextRef.current);
+                      }
+                    } catch (err) {
+                      console.error('[AskZena] CRITICAL ERROR in onNavigateToDeal:', err);
+                    }
+                  }}
+                  showBackToDeal={!!strategySessionContextRef.current && message.role === 'assistant'}
+                  dealAddress={strategySessionContextRef.current?.address}
                 />
               </React.Fragment>
             ))}
@@ -1672,7 +1785,9 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
                 <div className="message-bubble-wrapper assistant">
                   <div className="message-bubble">
                     <div className="message-content">
-                      {streamingContent}
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {streamingContent}
+                      </ReactMarkdown>
                       <span className="typing-cursor">▋</span>
                     </div>
                   </div>

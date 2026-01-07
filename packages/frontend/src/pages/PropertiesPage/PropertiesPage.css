@@ -408,8 +408,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.03);
   border: 2px solid rgba(255, 255, 255, 0.1);
@@ -528,7 +528,7 @@
 }
 
 .stats-orb__value {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   line-height: 1;
   margin-bottom: 4px;
@@ -1728,12 +1728,12 @@
   }
 
   .stats-orb {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
   }
 
   .stats-orb__value {
-    font-size: 22px;
+    font-size: 18px;
   }
 
   .stats-orb__label {

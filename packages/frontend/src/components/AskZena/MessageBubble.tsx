@@ -1,4 +1,5 @@
 import React from 'react';
+import { ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './MessageBubble.css';
@@ -18,9 +19,19 @@ interface MessageBubbleProps {
     message: Message;
     onPreviewAttachment?: (attachment: any) => void;
     onRetry?: (messageId: string) => void;
+    onNavigateToDeal?: () => void;
+    showBackToDeal?: boolean;
+    dealAddress?: string;
 }
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onPreviewAttachment, onRetry }) => {
+export const MessageBubble: React.FC<MessageBubbleProps> = ({
+    message,
+    onPreviewAttachment,
+    onRetry,
+    onNavigateToDeal,
+    showBackToDeal,
+    dealAddress
+}) => {
     const isAssistant = message.role === 'assistant';
 
     return (
@@ -75,6 +86,15 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onPreview
                             Retry Request
                         </button>
                     </div>
+                )}
+                {isAssistant && showBackToDeal && dealAddress && (
+                    <button
+                        className="back-to-deal-btn"
+                        onClick={onNavigateToDeal}
+                    >
+                        <ArrowLeft size={16} />
+                        Back to {dealAddress.split(',')[0]} deal flow card
+                    </button>
                 )}
             </div>
         </div>

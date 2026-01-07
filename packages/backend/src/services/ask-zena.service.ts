@@ -9,6 +9,7 @@ import { tokenTrackingService } from './token-tracking.service.js';
 // import { cloudRobotService } from './cloud-robot.service.js';
 import { intelligentNavigatorService } from './intelligent-navigator.service.js';
 import { navigationPlannerService } from './navigation-planner.service.js';
+import { contextRetrieverService } from './context-retriever.service.js';
 import puppeteer from 'puppeteer';
 
 
@@ -55,7 +56,9 @@ export interface SearchContext {
   tasks: any[];
   timelineEvents: any[];
   voiceNotes: any[];
+  voiceNotes: any[];
   chatHistory: any[];
+  synapseContext?: string;
 }
 
 /**
@@ -672,6 +675,23 @@ export class AskZenaService {
         orderBy: { createdAt: 'desc' },
       });
 
+      // UNIVERSAL SYNAPSE INJECTION:
+      // If we found a clear primary result, fetch its deep context
+      let synapseContext = '';
+      if (deals.length > 0) {
+        const primaryDeal = deals[0];
+        const deepCtx = await contextRetrieverService.getUnifiedContext(userId, 'deal', primaryDeal.id);
+        synapseContext += `\n[Deep Context for Deal: ${primaryDeal.summary}]\n` + contextRetrieverService.formatForPrompt(deepCtx);
+      } else if (properties.length > 0) {
+        const primaryProp = properties[0];
+        const deepCtx = await contextRetrieverService.getUnifiedContext(userId, 'property', primaryProp.id);
+        synapseContext += `\n[Deep Context for Property: ${primaryProp.address}]\n` + contextRetrieverService.formatForPrompt(deepCtx);
+      } else if (contacts.length > 0) {
+        const primaryContact = contacts[0];
+        const deepCtx = await contextRetrieverService.getUnifiedContext(userId, 'contact', primaryContact.id);
+        synapseContext += `\n[Deep Context for Contact: ${primaryContact.name}]\n` + contextRetrieverService.formatForPrompt(deepCtx);
+      }
+
       return {
         threads,
         contacts,
@@ -681,6 +701,7 @@ export class AskZenaService {
         timelineEvents,
         voiceNotes,
         chatHistory: isHistoryQuery ? await searchService.searchChatHistory(searchTerms, userId) : [],
+        synapseContext
       };
     } catch (error) {
       console.error('Error retrieving context:', error);
@@ -775,6 +796,7 @@ Text to fix:
   private buildQueryPrompt(query: AskZenaQuery, context: SearchContext): string {
     // Build context summary
     const contextSummary = this.buildContextSummary(context);
+    const synapseContext = context.synapseContext || '';
 
     // Detect if query is about market trends, news, or external data
     const queryLower = query.query.toLowerCase();
@@ -876,6 +898,7 @@ Agent's Question: ${query.query}
 
 Data Context:
 ${contextSummary}
+${synapseContext}
 
 RESPONSE RULES:
 1. If the user wants to draft an email or you have generated an email draft in your response, ALWAYS include "draft_email" in the suggestedActions array.
@@ -1002,7 +1025,12 @@ SECURITY: NEVER mention underlying AI models (Gemini, GPT, OpenAI, Google) or Ze
   /**
    * Call LLM API - supports both OpenAI and Google Gemini
    */
-  private async callLLM(prompt: string, conversationHistory?: ConversationMessage[], attachments?: any[]): Promise<string> {
+  private async callLLM(
+    prompt: string,
+    conversationHistory?: ConversationMessage[],
+    attachments?: any[],
+    options: { systemPrompt?: string; temperature?: number; model?: string; jsonMode?: boolean; source?: string; useGoogleSearch?: boolean } = {}
+  ): Promise<string> {
     console.log('\n[callLLM] 📞 LLM CALL ROUTER');
     console.log('[callLLM] Prompt Length:', prompt.length);
 
@@ -1013,7 +1041,7 @@ SECURITY: NEVER mention underlying AI models (Gemini, GPT, OpenAI, Google) or Ze
 
     if (geminiApiKey) {
       console.log('[callLLM] ✅ Routing to Gemini...');
-      return this.callGemini(prompt, conversationHistory, geminiApiKey, attachments);
+      return this.callGemini(prompt, conversationHistory, geminiApiKey, attachments, options);
     }
 
     console.log('[callLLM] ⚠️ No Gemini key, falling back to OpenAI...');
@@ -1095,7 +1123,10 @@ IMPORTANT: Never include internal monologue or personality markers. Just speak n
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
 
-    return this.callGemini(prompt, [], apiKey, [], options);
+    console.log(`[AskBrain] Prompt: ${prompt.substring(0, 100)}...`);
+    const response = await this.callGemini(prompt, [], apiKey, [], options);
+    console.log(`[AskBrain] Response: ${response.substring(0, 100)}...`);
+    return response;
   }
 
   /**
@@ -1106,7 +1137,7 @@ IMPORTANT: Never include internal monologue or personality markers. Just speak n
     conversationHistory: ConversationMessage[] = [],
     apiKey?: string,
     attachments: any[] = [],
-    options: { systemPrompt?: string; temperature?: number; model?: string; jsonMode?: boolean; source?: string } = {}
+    options: { systemPrompt?: string; temperature?: number; model?: string; jsonMode?: boolean; source?: string; useGoogleSearch?: boolean } = {}
   ): Promise<string> {
     const startTime = Date.now();
     const model = options.model || process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
@@ -1192,9 +1223,9 @@ STRICT SOURCE LINK RULES (GROUNDING-ONLY):
       parts: currentParts
     });
 
-    const body = JSON.stringify({
+    const useGoogleSearch = options.useGoogleSearch !== false;
+    const bodyObj: any = {
       contents,
-      tools: [{ google_search: {} }],
       generationConfig: {
         temperature: options.temperature ?? 0.2, // Lower temperature for more consistent responses
         maxOutputTokens: 4096,
@@ -1202,7 +1233,13 @@ STRICT SOURCE LINK RULES (GROUNDING-ONLY):
         // Strict JSON mode (application/json) often suppresses grounding metadata.
         response_mime_type: 'text/plain',
       },
-    });
+    };
+
+    if (useGoogleSearch) {
+      bodyObj.tools = [{ google_search: {} }];
+    }
+
+    const body = JSON.stringify(bodyObj);
 
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -2132,7 +2169,7 @@ Generate a professional, contextually appropriate draft that:
 
 Respond with ONLY the draft text (no JSON, no subject line, just the content):`;
 
-      const response = await this.callLLM(prompt);
+      const response = await this.callLLM(prompt, [], undefined, { source: 'draft-generation' });
       return response.trim();
     } catch (error) {
       console.error('Error generating draft:', error);
@@ -2276,7 +2313,7 @@ Respond in JSON format:
         return this.generateFallbackContactEmail(contacts, draftType);
       }
 
-      const response = await this.callLLM(prompt);
+      const response = await this.callLLM(prompt, [], undefined, { source: 'contact-email' });
 
       try {
         const jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -2405,7 +2442,7 @@ Respond in JSON:
         return this.generateFallbackImprovementActions(contact);
       }
 
-      const response = await this.callLLM(prompt);
+      const response = await this.callLLM(prompt, [], undefined, { useGoogleSearch: false, source: 'improvement-actions' });
 
       try {
         const jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -2500,7 +2537,7 @@ Respond in JSON:
         return this.generateFallbackPropertyImprovementActions(property);
       }
 
-      const response = await this.callLLM(prompt, [], undefined, [], { source: 'property-intelligence' });
+      const response = await this.callLLM(prompt, [], undefined, { useGoogleSearch: false, source: 'property-intelligence' });
 
       try {
         const jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -2682,7 +2719,7 @@ Respond in JSON:
         return this.generateFallbackCallIntel(contact);
       }
 
-      const response = await this.callLLM(prompt);
+      const response = await this.callLLM(prompt, [], undefined, { useGoogleSearch: false, source: 'call-intel' });
 
       try {
         const jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -2851,6 +2888,164 @@ Respond in JSON format:
   }
 
   /**
+   * Parse natural language search query into structured filters for DEALS
+   */
+  async parseDealSearchQuery(
+    userId: string,
+    query: string
+  ): Promise<{
+    filters: {
+      pipelineType: 'buyer' | 'seller';
+      keywords: string;
+      riskLevel?: string;
+    };
+    aiInsight?: string;
+    richResponse?: string;
+  }> {
+    try {
+      // 1. Fetch Deal Context: Fetch deals with property addresses and detailed status
+      const userDeals = await prisma.deal.findMany({
+        where: { userId, status: 'active' },
+        include: {
+          property: {
+            select: { address: true }
+          },
+          contacts: {
+            select: { name: true, role: true }
+          }
+        },
+        take: 30
+      });
+
+      // Build rich deal context for AI
+      const dealList = userDeals.map(d => {
+        const daysSinceContact = d.lastContactAt
+          ? Math.floor((Date.now() - new Date(d.lastContactAt).getTime()) / (1000 * 60 * 60 * 24))
+          : null;
+        const contactName = d.contacts?.[0]?.name || 'Unknown';
+        return `- ${d.property?.address || 'Unnamed Deal'}: ${d.pipelineType} pipeline, Stage: ${d.stage}, Risk: ${d.riskLevel}, Contact: ${contactName}, Last Contact: ${daysSinceContact !== null ? `${daysSinceContact} days ago` : 'Never'}`;
+      }).join('\n');
+
+      // Calculate summary stats for context
+      const stats = {
+        total: userDeals.length,
+        atRisk: userDeals.filter(d => d.riskLevel === 'critical' || d.riskLevel === 'high').length,
+        healthy: userDeals.filter(d => d.riskLevel === 'low' || d.riskLevel === 'none').length,
+        buyers: userDeals.filter(d => d.pipelineType === 'buyer').length,
+        sellers: userDeals.filter(d => d.pipelineType === 'seller').length
+      };
+
+      // Detect if this is a summary/analysis query that REQUIRES a richResponse
+      const lowerQuery = query.toLowerCase();
+      const isSummaryQuery = lowerQuery.includes('summarize') ||
+        lowerQuery.includes('analyze') ||
+        lowerQuery.includes('tell me about') ||
+        lowerQuery.includes('how are') ||
+        lowerQuery.includes('what is') ||
+        lowerQuery.includes('market') ||
+        lowerQuery.startsWith('how many') ||
+        lowerQuery.startsWith('what') ||
+        lowerQuery.startsWith('which') ||
+        lowerQuery.startsWith('list') ||
+        lowerQuery.startsWith('show me') ||
+        lowerQuery.startsWith('count') ||
+        lowerQuery.includes('what are') ||
+        lowerQuery.includes('give me') ||
+        lowerQuery.includes('overview') ||
+        lowerQuery.includes('report') ||
+        lowerQuery.includes('doing') ||
+        lowerQuery.includes('status');
+
+      const prompt = `You are a helper for a Real Estate Deal Flow UI. Convert this natural language search query into structured filters.
+
+USER QUERY: "${query}"
+
+DEAL CONTEXT (Current active deals):
+${dealList || 'No active deals in pipeline.'}
+
+PIPELINE STATS:
+- Total: ${stats.total} deals
+- At Risk: ${stats.atRisk}
+- Healthy: ${stats.healthy}
+- Buyers: ${stats.buyers}
+- Sellers: ${stats.sellers}
+
+MARKET CONTEXT:
+You have access to Google Search. You MUST use it to answer general market questions with real-time data.
+
+AVAILABLE FILTERS:
+- pipelineType: 'buyer' (default) or 'seller'
+- keywords: string (any names, addresses, or other text to search for). Use empty string "" if no specific keywords.
+- riskLevel: 'high' (critical/at risk), 'low' (on track/good), or null (if not specified)
+
+RULES:
+1. Map "selling", "sellers", "listings", "vendors" -> pipelineType='seller'.
+2. Map "buying", "buyers", "purchasing" -> pipelineType='buyer'.
+3. Map "on track", "good", "healthy", "going well" -> riskLevel='low'.
+4. Map "at risk", "critical", "needs attention", "bad", "stuck" -> riskLevel='high'.
+5. Extract specific names, locations, or dollar amounts to 'keywords'.
+6. Provide an "aiInsight" (max 20 words) explaining what you've filtered for.
+7. ${isSummaryQuery ? 'THIS IS A SUMMARY/ANALYSIS QUERY. You MUST provide a richResponse.' : 'If the user asks a deep question (e.g., "Summarize...", "What is the market...", "How are my deals..."), provide a richResponse.'}
+   RULES FOR richResponse:
+   - Use bullet points, bold text, and brief insights.
+   - Be professional, punchy, and data-driven.
+   - Focus on deal health, pipeline momentum, and suggested next steps.
+   - Max 150 words.
+   - AUTO-CITATION: The system will automatically cite sources. Do not add a 'Sources' section manually.
+   - If it's a simple filter query and NOT a summary request, set richResponse to null.
+
+Respond in JSON format:
+{
+  "filters": {
+    "pipelineType": "...",
+    "keywords": "...",
+    "riskLevel": "..."
+  },
+  "aiInsight": "...",
+  "richResponse": "markdown here or null"
+}`;
+
+      if (!this.apiKey && !process.env.GEMINI_API_KEY) {
+        return {
+          filters: { pipelineType: 'buyer', keywords: query },
+          aiInsight: 'Basic keyword search'
+        };
+      }
+
+      console.log(`[Ask Zena] Parsing deal search: "${query}" (isSummaryQuery: ${isSummaryQuery})`);
+
+      // Use askBrain with jsonMode for reliable JSON output
+      const response = await this.askBrain(prompt, { jsonMode: true });
+
+      try {
+        const parsed = JSON.parse(response);
+        return {
+          filters: {
+            pipelineType: parsed.filters?.pipelineType || parsed.pipelineType || 'buyer',
+            keywords: parsed.filters?.keywords ?? parsed.keywords ?? '',
+            riskLevel: parsed.filters?.riskLevel || parsed.riskLevel
+          },
+          aiInsight: parsed.aiInsight || '',
+          richResponse: parsed.richResponse || undefined
+        };
+      } catch (parseError) {
+        console.error('Error parsing deal search query:', parseError);
+      }
+
+      return {
+        filters: { pipelineType: 'buyer', keywords: query },
+        aiInsight: 'Filtering by keywords'
+      };
+    } catch (error) {
+      console.error('Error parsing deal search query:', error);
+      return {
+        filters: { pipelineType: 'buyer', keywords: query },
+        aiInsight: 'Search fallback active'
+      };
+    }
+  }
+
+  /**
    * Parse natural language search query into structured filters
    */
   async parseSearchQuery(
@@ -2864,41 +3059,41 @@ Respond in JSON format:
     aiInsight?: string;
   }> {
     try {
-      const prompt = `You are a helper for a CRM UI. Convert this natural language search query into structured filters.
+      const prompt = `You are a helper for a CRM UI.Convert this natural language search query into structured filters.
       
 USER QUERY: "${query}"
 
 AVAILABLE FILTERS:
-- role: 'all', 'vendor', 'buyer', 'appraisal', 'investor', 'agent', 'lawyer', 'tradesperson'
-- category: 'all', 'HOT_LEAD', 'HIGH_INTENT' (urgent/active), 'COLD_NURTURE' (long term/passive), 'PULSE' (general)
-- dealStage: 'all', 'lead', 'qualified', 'viewing', 'offer', 'conditional', 'sold', 'settled', 'nurture'
-- keywords: string (any names, locations, property addresses, or other text to search for)
+      - role: 'all', 'vendor', 'buyer', 'appraisal', 'investor', 'agent', 'lawyer', 'tradesperson'
+        - category: 'all', 'HOT_LEAD', 'HIGH_INTENT'(urgent / active), 'COLD_NURTURE'(long term / passive), 'PULSE'(general)
+          - dealStage: 'all', 'lead', 'qualified', 'viewing', 'offer', 'conditional', 'sold', 'settled', 'nurture'
+            - keywords: string(any names, locations, property addresses, or other text to search for)
 
-RULES:
-1. Map "selling", "sellers" -> role='vendor'.
+        RULES:
+        1. Map "selling", "sellers" -> role='vendor'.
 2. Map "buying", "looking" -> role='buyer'.
 3. Map "hot", "on fire" -> category='HOT_LEAD'.
 4. Map "asap", "urgent", "active", "ready" -> category='HIGH_INTENT'.
 5. Map "cold", "old", "lost" -> category='COLD_NURTURE'.
 6. Map "offer", "negotiating", "contract" -> dealStage='offer'.
 7. Map "viewing", "showings" -> dealStage='viewing'.
-8. Extract locations (e.g. "Ponsonby"), names, or other specific terms to 'keywords'.
-10. Provide an "aiInsight" (max 20 words) explaining who you've filtered for (e.g., "Filtering for active buyers in Ponsonby with high intent scores").
+8. Extract locations(e.g. "Ponsonby"), names, or other specific terms to 'keywords'.
+10. Provide an "aiInsight"(max 20 words) explaining who you've filtered for (e.g., "Filtering for active buyers in Ponsonby with high intent scores").
 
-Respond in JSON:
-{
-  "role": "...",
-  "category": "...",
-  "dealStage": "...",
-  "keywords": "...",
-  "aiInsight": "..."
-}`;
+      Respond in JSON:
+      {
+        "role": "...",
+          "category": "...",
+            "dealStage": "...",
+              "keywords": "...",
+                "aiInsight": "..."
+      } `;
 
       if (!this.apiKey && !process.env.GEMINI_API_KEY) {
         return { role: 'all', category: 'all', dealStage: 'all', keywords: query };
       }
 
-      const response = await this.callLLM(prompt);
+      const response = await this.callLLM(prompt, [], undefined, { useGoogleSearch: false, source: 'smart-search' });
 
       try {
         const jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -2946,10 +3141,10 @@ Respond in JSON:
       tips,
       bestAction: {
         type: 'email',
-        description: `Send a personalized check-in to ${firstName}`,
+        description: `Send a personalized check -in to ${firstName} `,
         emailDraft: {
           subject: `Quick update for you`,
-          body: `Hi ${firstName},\n\nI wanted to touch base and see how things are going. I've been keeping an eye out for opportunities that might interest you.\n\nWould you be available for a quick chat this week?\n\nBest regards`
+          body: `Hi ${firstName}, \n\nI wanted to touch base and see how things are going.I've been keeping an eye out for opportunities that might interest you.\n\nWould you be available for a quick chat this week?\n\nBest regards`
         }
       },
       explanation: contact.engagementScore > 70
@@ -3393,7 +3588,7 @@ Respond in JSON format:
   "commonThemes": ["theme1", "theme2"]
 }`;
 
-      const response = await this.callLLM(prompt);
+      const response = await this.callLLM(prompt, [], undefined, { useGoogleSearch: false, source: 'batch-tags' });
 
       try {
         // Extract JSON from response
@@ -3592,7 +3787,7 @@ Respond in JSON format:
         };
       }
 
-      const response = await this.callLLM(prompt);
+      const response = await this.callLLM(prompt, [], undefined, { useGoogleSearch: false, source: 'magic-entry' });
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);

@@ -6,14 +6,14 @@
  * - Full God: Actions auto-execute within user's time window
  */
 
-import { PrismaClient } from '@prisma/client';
+
 import { oracleService } from './oracle.service.js';
 import { askZenaService } from './ask-zena.service.js';
 import { timelineService } from './timeline.service.js';
 import { actionRegistry } from './actions/index.js';
 import { syncLedgerService } from './sync-ledger.service.js';
 
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 // Action types that Godmode can perform
 export type ActionType =
@@ -75,14 +75,27 @@ export interface ExecutionResult {
 
 // User Godmode settings
 export interface GodmodeSettings {
-    mode: GodmodeMode;
+    mode: GodmodeMode; // Global default mode (fallback)
     timeWindowStart?: string; // '21:00' format
     timeWindowEnd?: string;   // '07:00' format
-    enabledActionTypes: ActionType[];
+    enabledActionTypes: ActionType[]; // DEPRECATED: For backward compatibility
+    featureConfig: Record<string, GodmodeMode>; // NEW: Per-feature god mode config
     fullGodStart?: Date | null;
     fullGodEnd?: Date | null;
     lastGodmodeScanAt?: Date | null;
 }
+
+// Default feature configs for new users
+const DEFAULT_FEATURE_CONFIG: Record<string, GodmodeMode> = {
+    'contacts:send_email': 'demi_god',
+    'contacts:schedule_followup': 'demi_god',
+    'properties:vendor_update': 'demi_god',
+    'properties:buyer_match_intro': 'demi_god',
+    'inbox:draft_reply': 'off',
+    'inbox:archive_noise': 'off',
+    'tasks:create_from_email': 'off',
+    'deals:nudge_client': 'off',
+};
 
 class GodmodeService {
     /**
@@ -102,16 +115,73 @@ class GodmodeService {
         const prefs = (user?.preferences as any) || {};
         const godmodePrefs = prefs.godmodeSettings || {};
 
+        // MIGRATION: Convert legacy enabledActionTypes to featureConfig
+        let featureConfig = godmodePrefs.featureConfig || {};
+        if (Object.keys(featureConfig).length === 0) {
+            // First time: initialize with defaults
+            featureConfig = { ...DEFAULT_FEATURE_CONFIG };
+            // If user had legacy enabledActionTypes, migrate them
+            const legacyTypes = godmodePrefs.enabledActionTypes || [];
+            for (const actionType of legacyTypes) {
+                // Map old action types to new feature keys
+                const mapping: Record<string, string> = {
+                    'send_email': 'contacts:send_email',
+                    'schedule_followup': 'contacts:schedule_followup',
+                    'vendor_update': 'properties:vendor_update',
+                    'buyer_match_intro': 'properties:buyer_match_intro',
+                };
+                if (mapping[actionType]) {
+                    featureConfig[mapping[actionType]] = godmodePrefs.mode || 'demi_god';
+                }
+            }
+        }
+
         return {
             mode: godmodePrefs.mode || 'demi_god',
             timeWindowStart: godmodePrefs.timeWindowStart,
             timeWindowEnd: godmodePrefs.timeWindowEnd,
             enabledActionTypes: godmodePrefs.enabledActionTypes || ['send_email', 'schedule_followup'],
+            featureConfig,
             fullGodStart: user?.fullGodStart,
             fullGodEnd: user?.fullGodEnd,
             lastGodmodeScanAt: user?.lastGodmodeScanAt,
         };
     }
+
+    /**
+     * Get the god mode level for a specific feature
+     * @param userId - User ID
+     * @param featureKey - Feature key (e.g., 'inbox:draft_reply', 'contacts:send_email')
+     * @returns GodmodeMode ('off', 'demi_god', 'full_god')
+     */
+    async getFeatureMode(userId: string, featureKey: string): Promise<GodmodeMode> {
+        const settings = await this.getSettings(userId);
+
+        // Check if feature-specific config exists
+        if (settings.featureConfig && settings.featureConfig[featureKey]) {
+            return settings.featureConfig[featureKey];
+        }
+
+        // Fall back to global mode
+        return settings.mode;
+    }
+
+    /**
+     * Check if a feature is enabled (not 'off')
+     */
+    async isFeatureEnabled(userId: string, featureKey: string): Promise<boolean> {
+        const mode = await this.getFeatureMode(userId, featureKey);
+        return mode !== 'off';
+    }
+
+    /**
+     * Check if a feature is in full god mode
+     */
+    async isFullGodForFeature(userId: string, featureKey: string): Promise<boolean> {
+        const mode = await this.getFeatureMode(userId, featureKey);
+        return mode === 'full_god';
+    }
+
 
     /**
      * Update user's Godmode settings

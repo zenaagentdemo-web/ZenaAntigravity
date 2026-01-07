@@ -3,6 +3,7 @@ import { api } from '../../utils/apiClient';
 import { ExportDialog, ExportType, ExportFormat } from '../../components/ExportDialog/ExportDialog';
 import { ExportProgress } from '../../components/ExportProgress/ExportProgress';
 import { CRMDialog, CRMIntegration } from '../../components/CRMDialog/CRMDialog';
+import { GodmodeSettingsPanel } from '../../components/GodmodeSettingsPanel/GodmodeSettingsPanel';
 import './SettingsPage.css';
 
 interface EmailAccount {
@@ -605,6 +606,15 @@ export const SettingsPage: React.FC = () => {
               </div>
             </label>
           </div>
+        </section>
+
+        {/* God Mode Authority Section */}
+        <section className="settings-section settings-section--godmode">
+          <h2 className="settings-section__title">⚡ God Mode Authority</h2>
+          <p className="settings-section__description">
+            Configure AI autonomy for each feature. Control what Zena can do automatically.
+          </p>
+          <GodmodeSettingsPanel />
         </section>
 
         {/* Export & Sync Section */}

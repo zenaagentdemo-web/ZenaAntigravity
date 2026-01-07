@@ -1062,7 +1062,7 @@ export const ContactsPage: React.FC = () => {
             <button
               className={`smart-search-btn ${isAnalyzingQuery ? 'analyzing' : ''}`}
               onClick={handleSmartSearch}
-              disabled={isAnalyzingQuery || !searchQuery.trim()}
+              disabled={isAnalyzingQuery}
               title="Ask Zena to filter results"
             >
               <Sparkles size={16} />

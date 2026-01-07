@@ -16,8 +16,8 @@ export default defineConfig({
         DOTENV_CONFIG_PATH: resolve(__dirname, '.env.test'),
       },
     },
-    // Increase timeout for database operations
-    testTimeout: 10000,
-    hookTimeout: 10000,
+    // Increase timeout for database and AI operations
+    testTimeout: 60000,
+    hookTimeout: 60000,
   },
 });

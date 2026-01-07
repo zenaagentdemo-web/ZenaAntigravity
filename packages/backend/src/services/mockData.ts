@@ -3,7 +3,10 @@ export const MOCK_FOCUS_THREADS = [
     {
         id: 'mock-focus-1',
         subject: 'Urgent: Contract Review for 123 Main St',
-        participants: ['john.doe@example.com', 'jane.smith@lawfirm.com'],
+        participants: [
+            { id: 'p1', name: 'John Doe', email: 'john.doe@example.com', role: 'buyer' },
+            { id: 'p2', name: 'Jane Smith', email: 'jane.smith@lawfirm.com', role: 'lawyer' }
+        ],
         classification: 'inquiry',
         category: 'focus',
         riskLevel: 'high',
@@ -32,7 +35,9 @@ export const MOCK_FOCUS_THREADS = [
     {
         id: 'mock-focus-2',
         subject: 'Viewing Request: 456 Elm St',
-        participants: ['potential.buyer@gmail.com'],
+        participants: [
+            { id: 'p3', name: 'Potential Buyer', email: 'potential.buyer@gmail.com', role: 'buyer' }
+        ],
         classification: 'viewing_request',
         category: 'focus',
         riskLevel: 'medium',
@@ -57,7 +62,9 @@ export const MOCK_FOCUS_THREADS = [
     {
         id: 'mock-focus-3',
         subject: 'Offer received for 789 Oak Ave',
-        participants: ['agent.smith@realty.com'],
+        participants: [
+            { id: 'p4', name: 'Agent Smith', email: 'agent.smith@realty.com', role: 'agent' }
+        ],
         classification: 'offer',
         category: 'focus',
         riskLevel: 'high',
@@ -86,7 +93,9 @@ export const MOCK_FOCUS_THREADS = [
     {
         id: 'mock-focus-4',
         subject: 'Question about school zones',
-        participants: ['parent@school.org'],
+        participants: [
+            { id: 'p5', name: 'Parent', email: 'parent@school.org', role: 'other' }
+        ],
         classification: 'inquiry',
         category: 'focus',
         riskLevel: 'low',
@@ -111,7 +120,9 @@ export const MOCK_FOCUS_THREADS = [
     {
         id: 'mock-focus-5',
         subject: 'Maintenance issue at rental',
-        participants: ['tenant@rental.com'],
+        participants: [
+            { id: 'p6', name: 'Tenant', email: 'tenant@rental.com', role: 'other' }
+        ],
         classification: 'maintenance',
         category: 'focus',
         riskLevel: 'medium',
@@ -139,7 +150,9 @@ export const MOCK_WAITING_THREADS = [
     {
         id: 'mock-waiting-1',
         subject: 'Re: Contract sent',
-        participants: ['lawyer@firm.com'],
+        participants: [
+            { id: 'p7', name: 'Lawyer', email: 'lawyer@firm.com', role: 'lawyer' }
+        ],
         classification: 'legal',
         category: 'waiting',
         riskLevel: 'medium',
@@ -168,7 +181,9 @@ export const MOCK_WAITING_THREADS = [
     {
         id: 'mock-waiting-2',
         subject: 'Vendor feedback on marketing',
-        participants: ['vendor@owner.com'],
+        participants: [
+            { id: 'p8', name: 'Vendor Owner', email: 'vendor@owner.com', role: 'vendor' }
+        ],
         classification: 'vendor_update',
         category: 'waiting',
         riskLevel: 'low',
@@ -193,7 +208,9 @@ export const MOCK_WAITING_THREADS = [
     {
         id: 'mock-waiting-3',
         subject: 'Builder report needed',
-        participants: ['inspector@buildcheck.com'],
+        participants: [
+            { id: 'p9', name: 'Inspector', email: 'inspector@buildcheck.com', role: 'other' }
+        ],
         classification: 'inspection',
         category: 'waiting',
         riskLevel: 'medium',
@@ -222,7 +239,9 @@ export const MOCK_WAITING_THREADS = [
     {
         id: 'mock-waiting-4',
         subject: 'Mortgage approval',
-        participants: ['buyer@newhome.com'],
+        participants: [
+            { id: 'p10', name: 'Buyer', email: 'buyer@newhome.com', role: 'buyer' }
+        ],
         classification: 'finance',
         category: 'waiting',
         riskLevel: 'high',
@@ -251,7 +270,9 @@ export const MOCK_WAITING_THREADS = [
     {
         id: 'mock-waiting-5',
         subject: 'council file request',
-        participants: ['council@city.gov'],
+        participants: [
+            { id: 'p11', name: 'Council', email: 'council@city.gov', role: 'other' }
+        ],
         classification: 'admin',
         category: 'waiting',
         riskLevel: 'low',

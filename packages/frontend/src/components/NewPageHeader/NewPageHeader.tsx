@@ -82,7 +82,6 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Focus search input when opened
   useEffect(() => {
@@ -91,21 +90,9 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
     }
   }, [isSearchOpen]);
 
-  // Debounced search
+  // Pass search query directly to onSearch (useFilterState handles debouncing)
   useEffect(() => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    debounceTimerRef.current = setTimeout(() => {
-      onSearch(searchQuery);
-    }, 300);
-
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-    };
+    onSearch(searchQuery);
   }, [searchQuery, onSearch]);
 
   // Handle refresh with animation
@@ -330,7 +317,7 @@ export const NewPageHeader: React.FC<NewPageHeaderProps> = ({
                 <path d="M9 11l3 3L22 4" />
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
               </svg>
-              <span className="new-page-header__select-label">Select</span>
+              <span className="new-page-header__select-label">{isBatchMode ? 'Cancel' : 'Select'}</span>
             </button>
           )}
 

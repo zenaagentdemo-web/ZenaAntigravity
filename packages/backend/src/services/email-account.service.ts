@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/database.js';
 import { oauthService, OAuthTokens } from './oauth.service.js';
 import { encryptToken, decryptToken } from '../utils/encryption.js';
-
-const prisma = new PrismaClient();
 
 export interface CreateEmailAccountData {
   userId: string;

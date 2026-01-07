@@ -2,6 +2,7 @@ import prisma from '../config/database.js';
 import { logger } from './logger.service.js';
 import { websocketService } from './websocket.service.js';
 import { tokenTrackingService } from './token-tracking.service.js';
+import { contextRetrieverService } from './context-retriever.service.js';
 
 export interface PropertyHeat {
     level: 'hot' | 'active' | 'cold';
@@ -202,6 +203,9 @@ export class PropertyIntelligenceService {
             buyerPatternContext,
             viewingCount: property.viewingCount || 0,
             inquiryCount: property.inquiryCount || 0,
+            synapseContext: contextRetrieverService.formatForPrompt(
+                await contextRetrieverService.getUnifiedContext(userId, 'property', propertyId)
+            )
         });
 
         // Store prediction in database
@@ -283,6 +287,7 @@ export class PropertyIntelligenceService {
         viewingCount: number;
         inquiryCount: number;
         buyerPatternContext: string;
+        synapseContext: string;
     }): Promise<{
         momentumScore: number;
         buyerInterestLevel: 'Low' | 'Medium' | 'High' | 'Hot';
@@ -325,6 +330,9 @@ ${context.threadContext}
 
 BUYER PORTFOLIO PATTERNS (CRITICAL):
 ${context.buyerPatternContext}
+
+HUMAN CONTEXT (SYNAPSE LAYER):
+${context.synapseContext}
 
 INSTRUCTIONS:
 - Use the BUYER PORTFOLIO PATTERNS to identify motivated sectoral buyers and suggest cross-property follow-up strategy.

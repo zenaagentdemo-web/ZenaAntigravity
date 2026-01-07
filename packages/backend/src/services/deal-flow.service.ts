@@ -1,5 +1,5 @@
 // Deal Flow Service - Core business logic for Deal Flow feature
-import { PrismaClient, Deal, CommissionFormula } from '@prisma/client';
+import { Deal, CommissionFormula } from '@prisma/client';
 import {
     PipelineType,
     BuyerStage,
@@ -8,8 +8,7 @@ import {
     DealCondition,
     CommissionTier
 } from '../models/types.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 // Stage definitions for each pipeline
 export const BUYER_STAGES: BuyerStage[] = [
@@ -110,22 +109,7 @@ interface NextDeadline {
     isOverdue: boolean;
 }
 
-// Phase 3: Revenue Forecasting
-interface ForecastBreakdown {
-    stage: string;
-    count: number;
-    value: number;
-    probability: number;
-}
-
-export interface RevenueForecast {
-    period: string;              // "Dec 2024", "Jan 2025"
-    periodDate: Date;            // Start of month
-    expectedCommission: number;  // Probability-weighted
-    rawCommission: number;       // Without probability weighting
-    dealCount: number;
-    breakdown: ForecastBreakdown[];
-}
+// Stage display labels
 
 export class DealFlowService {
     /**
@@ -609,143 +593,6 @@ export class DealFlowService {
         return formula;
     }
 
-    /**
-     * Phase 3: Get revenue forecast by month with stage-weighted probabilities
-     */
-    async getRevenueForecast(userId: string, monthsAhead: number = 6): Promise<RevenueForecast[]> {
-        // Stage probability weights for forecasting
-        const stageProbabilities: Record<string, number> = {
-            conditional: 0.75,
-            unconditional: 0.95,
-            pre_settlement: 0.99,
-            settled: 1.0,
-            // Early stages are speculative
-            buyer_consult: 0.10,
-            shortlisting: 0.15,
-            viewings: 0.20,
-            offer_made: 0.40,
-            appraisal: 0.05,
-            listing_signed: 0.15,
-            marketing: 0.25,
-            offers_received: 0.50,
-            nurture: 0.0 // Not forecasted
-        };
-
-        // Get all active deals with settlement dates
-        const deals = await prisma.deal.findMany({
-            where: {
-                userId,
-                stage: { notIn: ['settled', 'nurture'] },
-                settlementDate: { not: null }
-            }
-        });
-
-        // Also get unconditional deals without explicit settlement dates
-        // (estimate 30 days for pre-settlement, 14 for unconditional)
-        const dealsWithoutDate = await prisma.deal.findMany({
-            where: {
-                userId,
-                stage: { in: ['unconditional', 'pre_settlement'] },
-                settlementDate: null
-            }
-        });
-
-        const now = new Date();
-        const forecasts: Map<string, RevenueForecast> = new Map();
-
-        // Initialize months
-        for (let i = 0; i < monthsAhead; i++) {
-            const monthStart = new Date(now.getFullYear(), now.getMonth() + i, 1);
-            const period = monthStart.toLocaleDateString('en-NZ', { month: 'short', year: 'numeric' });
-
-            forecasts.set(period, {
-                period,
-                periodDate: monthStart,
-                expectedCommission: 0,
-                rawCommission: 0,
-                dealCount: 0,
-                breakdown: []
-            });
-        }
-
-        // Process deals with settlement dates
-        for (const deal of deals) {
-            if (!deal.settlementDate) continue;
-
-            const settlementMonth = deal.settlementDate.toLocaleDateString('en-NZ', {
-                month: 'short',
-                year: 'numeric'
-            });
-
-            const forecast = forecasts.get(settlementMonth);
-            if (!forecast) continue; // Outside forecast window
-
-            const commission = Number(deal.estimatedCommission || 0);
-            const probability = stageProbabilities[deal.stage] || 0.25;
-            const weightedCommission = commission * probability;
-
-            forecast.dealCount++;
-            forecast.rawCommission += commission;
-            forecast.expectedCommission += weightedCommission;
-
-            // Add to breakdown
-            let stageBreakdown = forecast.breakdown.find(b => b.stage === deal.stage);
-            if (!stageBreakdown) {
-                stageBreakdown = {
-                    stage: deal.stage,
-                    count: 0,
-                    value: 0,
-                    probability
-                };
-                forecast.breakdown.push(stageBreakdown);
-            }
-            stageBreakdown.count++;
-            stageBreakdown.value += commission;
-        }
-
-        // Process deals without dates (estimate based on stage)
-        for (const deal of dealsWithoutDate) {
-            const estimatedDays = deal.stage === 'pre_settlement' ? 14 : 30;
-            const estimatedSettlement = new Date();
-            estimatedSettlement.setDate(estimatedSettlement.getDate() + estimatedDays);
-
-            const settlementMonth = estimatedSettlement.toLocaleDateString('en-NZ', {
-                month: 'short',
-                year: 'numeric'
-            });
-
-            const forecast = forecasts.get(settlementMonth);
-            if (!forecast) continue;
-
-            const commission = Number(deal.estimatedCommission || 0);
-            const probability = stageProbabilities[deal.stage] || 0.25;
-            const weightedCommission = commission * probability;
-
-            forecast.dealCount++;
-            forecast.rawCommission += commission;
-            forecast.expectedCommission += weightedCommission;
-
-            let stageBreakdown = forecast.breakdown.find(b => b.stage === deal.stage);
-            if (!stageBreakdown) {
-                stageBreakdown = {
-                    stage: deal.stage,
-                    count: 0,
-                    value: 0,
-                    probability
-                };
-                forecast.breakdown.push(stageBreakdown);
-            }
-            stageBreakdown.count++;
-            stageBreakdown.value += commission;
-        }
-
-        // Sort breakdowns by stage probability (highest first)
-        for (const forecast of forecasts.values()) {
-            forecast.breakdown.sort((a, b) => b.probability - a.probability);
-        }
-
-        return Array.from(forecasts.values());
-    }
 }
 
 export const dealFlowService = new DealFlowService();

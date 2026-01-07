@@ -34,7 +34,7 @@ class ThreadLinkingService {
 
       for (const property of properties) {
         const address = property.address.toLowerCase();
-        
+
         // Check if the address or significant parts of it appear in the text
         if (this.addressMatchesText(address, searchText)) {
           // Link thread to this property
@@ -70,12 +70,12 @@ class ThreadLinkingService {
 
     // Extract street number and street name (basic parsing)
     const addressParts = normalizedAddress.split(/[\s,]+/);
-    
+
     // Check if at least the street number and first part of street name appear
     if (addressParts.length >= 2) {
       const streetNumber = addressParts[0];
       const streetName = addressParts[1];
-      
+
       // Both street number and street name should appear
       if (normalizedText.includes(streetNumber) && normalizedText.includes(streetName)) {
         return true;
@@ -156,7 +156,7 @@ class ThreadLinkingService {
       }
 
       // Find matching contacts
-      const participants = thread.participants as Participant[];
+      const participants = thread.participants as unknown as Participant[];
       if (participants && participants.length > 0) {
         result.contactIds = await this.findContactsForThread(
           thread.userId,
@@ -194,7 +194,7 @@ class ThreadLinkingService {
     try {
       const property = await prisma.property.findUnique({
         where: { id: propertyId },
-        select: { userId: true, address: true },
+        select: { id: true, userId: true, address: true },
       });
 
       if (!property) {
@@ -219,7 +219,7 @@ class ThreadLinkingService {
 
       for (const thread of threads) {
         const threadText = `${thread.subject} ${thread.summary}`.toLowerCase();
-        
+
         if (this.addressMatchesText(searchText, threadText)) {
           await prisma.thread.update({
             where: { id: thread.id },
@@ -249,9 +249,28 @@ class ThreadLinkingService {
    */
   async getThreadsForProperty(propertyId: string): Promise<any[]> {
     try {
-      return await prisma.thread.findMany({
-        where: { propertyId },
-        orderBy: { lastMessageAt: 'desc' },
+      // Get the property with its vendors and buyers
+      const property = await prisma.property.findUnique({
+        where: { id: propertyId },
+        include: {
+          vendors: { select: { emails: true } },
+          buyers: { select: { emails: true } },
+        },
+      });
+
+      if (!property) {
+        throw new Error(`Property ${propertyId} not found`);
+      }
+
+      // Collect all emails of associated contacts
+      const contactEmails = new Set<string>();
+      property.vendors.forEach(v => v.emails.forEach(e => contactEmails.add(e.toLowerCase())));
+      property.buyers.forEach(b => b.emails.forEach(e => contactEmails.add(e.toLowerCase())));
+
+      // Get all threads for this user
+      // We process them to find matches either by propertyId or by participant email
+      const threads = await prisma.thread.findMany({
+        where: { userId: property.userId },
         select: {
           id: true,
           subject: true,
@@ -260,8 +279,30 @@ class ThreadLinkingService {
           category: true,
           riskLevel: true,
           lastMessageAt: true,
+          propertyId: true,
+          participants: true,
         },
       });
+
+      // Filter threads
+      const matchingThreads = threads.filter((thread: any) => {
+        // Match by explicit property linking
+        if (thread.propertyId === propertyId) return true;
+
+        // Match by associated contact email
+        const participants = thread.participants as unknown as Participant[];
+        return participants && participants.some((p: Participant) =>
+          contactEmails.has(p.email.toLowerCase())
+        );
+      });
+
+      return matchingThreads
+        .sort((a: any, b: any) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime())
+        .map(t => {
+          // Remove participants and propertyId from final output to match expected schema
+          const { participants, propertyId, ...threadData } = t;
+          return threadData;
+        });
     } catch (error) {
       console.error('Error getting threads for property:', error);
       throw error;
@@ -301,14 +342,14 @@ class ThreadLinkingService {
       // Filter threads where any participant email matches contact emails
       const matchingThreads = threads.filter((thread: any) => {
         const participants = thread.participants as Participant[];
-        return participants.some((p: Participant) => 
-          contact.emails.some((email: string) => 
+        return participants.some((p: Participant) =>
+          contact.emails.some((email: string) =>
             email.toLowerCase() === p.email.toLowerCase()
           )
         );
       });
 
-      return matchingThreads.sort((a: any, b: any) => 
+      return matchingThreads.sort((a: any, b: any) =>
         b.lastMessageAt.getTime() - a.lastMessageAt.getTime()
       );
     } catch (error) {

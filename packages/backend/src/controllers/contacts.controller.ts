@@ -1,12 +1,10 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { threadLinkingService } from '../services/thread-linking.service.js';
 import { websocketService } from '../services/websocket.service.js';
 import { askZenaService } from '../services/ask-zena.service.js';
 import { neuralScorerService } from '../services/neural-scorer.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 export class ContactsController {
   /**

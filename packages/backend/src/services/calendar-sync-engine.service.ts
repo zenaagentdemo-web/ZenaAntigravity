@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import { calendarAccountService } from './calendar-account.service.js';
 import { calendarEventLinkingService } from './calendar-event-linking.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 export interface CalendarSyncJob {
   accountId: string;
@@ -52,7 +50,7 @@ export class CalendarSyncEngineService {
     }
 
     console.log('Starting calendar sync engine...');
-    
+
     // Run initial sync
     this.syncAllAccounts().catch(console.error);
 
@@ -178,7 +176,7 @@ export class CalendarSyncEngineService {
       };
     } catch (error) {
       console.error(`Calendar sync error for account ${accountId}:`, error);
-      
+
       // Handle retry logic
       await this.handleSyncError(accountId, error);
 
@@ -224,14 +222,14 @@ export class CalendarSyncEngineService {
         console.log(
           `Retrying calendar sync for account ${accountId} in ${delay / 1000}s (attempt ${attempts + 1}/${this.MAX_RETRIES})`
         );
-        
+
         // Schedule retry
         await new Promise((resolve) => setTimeout(resolve, delay));
         this.retryAttempts.set(accountId, attempts + 1);
-        
+
         return this.fetchEventsWithRetry(provider, accessToken, accountId, lastSyncAt);
       }
-      
+
       throw error;
     }
   }
@@ -244,7 +242,7 @@ export class CalendarSyncEngineService {
     lastSyncAt: Date | null
   ): Promise<CalendarEvent[]> {
     const baseUrl = 'https://www.googleapis.com/calendar/v3/calendars/primary/events';
-    
+
     // Build query parameters
     const params = new URLSearchParams({
       maxResults: '250',
@@ -288,7 +286,7 @@ export class CalendarSyncEngineService {
     const startTime = item.start?.dateTime
       ? new Date(item.start.dateTime)
       : new Date(item.start?.date || new Date());
-    
+
     const endTime = item.end?.dateTime
       ? new Date(item.end.dateTime)
       : new Date(item.end?.date || new Date());
@@ -325,7 +323,7 @@ export class CalendarSyncEngineService {
     lastSyncAt: Date | null
   ): Promise<CalendarEvent[]> {
     const baseUrl = 'https://graph.microsoft.com/v1.0/me/calendar/events';
-    
+
     // Build query parameters
     const params = new URLSearchParams({
       $top: '250',
@@ -468,12 +466,12 @@ export class CalendarSyncEngineService {
     // - "789 Elm Rd" or "789 Elm Road"
     // - "Unit 5/123 Main St"
     // - "Apt 10, 456 Oak Ave"
-    
+
     // Pattern: number + street name + street type
     const addressPattern = /\b(\d+[\w\s,/-]*(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Court|Ct|Place|Pl|Boulevard|Blvd|Way|Terrace|Tce|Crescent|Cres|Circuit|Cct)\b)/gi;
-    
+
     const matches = text.match(addressPattern);
-    
+
     if (matches && matches.length > 0) {
       // Return the first match, cleaned up
       return matches[0].trim();

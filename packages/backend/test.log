@@ -1,0 +1,596 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend[39m
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts
+[22m[39m[ActionRegistry] Registered strategy for generate_weekly_report
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts
+[22m[39m[ActionRegistry] Registered strategy for buyer_match_intro
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts
+[22m[39m[ActionRegistry] Registered strategy for schedule_viewing
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[Simulator] Starting Scenario: The Hectic Weekend Rush
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[Simulator] Processing email event for user stress-test-agent-001
+[Simulator] Email from: benny@example.com, Subject: Inquiry: 123 Cloud St
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[Simulator] Calling actionScannerService.onEmailReceived for emailId: email-1
+[ActionScanner] Email received: email-1 for user stress-test-agent-001
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[ActionScanner] Generating reply draft for thread: thread-1
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39mprisma:error 
+Invalid `prisma.thread.findUnique()` invocation in
+/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/inbox-actions.service.ts:40:44
+
+  37     return null;
+  38 }
+  39 
+→ 40 const thread = await prisma.thread.findUnique({
+       where: {
+         id: "thread-1"
+       },
+       include: {
+         emails: {
+         ~~~~~~
+           orderBy: {
+             receivedAt: "desc"
+           },
+           take: 3
+         },
+     ?   user?: true,
+     ?   emailAccount?: true,
+     ?   property?: true,
+     ?   deal?: true,
+     ?   messages?: true
+       }
+     })
+
+Unknown field `emails` for include statement on model `Thread`. Available options are marked with ?.
+
+[90mstderr[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[ActionScanner] Error processing email email-1: PrismaClientValidationError: 
+Invalid `prisma.thread.findUnique()` invocation in
+/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/inbox-actions.service.ts:40:44
+
+  37     return null;
+  38 }
+  39 
+→ 40 const thread = await prisma.thread.findUnique({
+       where: {
+         id: "thread-1"
+       },
+       include: {
+         emails: {
+         ~~~~~~
+           orderBy: {
+             receivedAt: "desc"
+           },
+           take: 3
+         },
+     ?   user?: true,
+     ?   emailAccount?: true,
+     ?   property?: true,
+     ?   deal?: true,
+     ?   messages?: true
+       }
+     })
+
+Unknown field `emails` for include statement on model `Thread`. Available options are marked with ?.
+    at wn (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6623)
+    at $n.request (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6307)
+    at l (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:130:9633)
+    at InboxActionsService.generateReplyDraft [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/inbox-actions.service.ts:40:24[90m)[39m
+    at ActionScannerService.onEmailReceived [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/action-scanner.service.ts:45:41[90m)[39m
+    at IntelligenceSimulatorService.executeEvent [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/intelligence-simulator.service.ts:223:33[90m)[39m
+    at IntelligenceSimulatorService.runScenario [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/intelligence-simulator.service.ts:81:13[90m)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/neural-stress-test.integration.test.ts:58:23 {
+  clientVersion: [32m'5.22.0'[39m
+}
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[Simulator] actionScannerService.onEmailReceived response: {"actionsCreated":0,"actionIds":[]}
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[ActionScanner] Voice note created: vn-1 for user stress-test-agent-001
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[AskBrain] Prompt: Analyze this voice note transcript and extract any action items or tasks.
+        
+Transcript: Just ...
+
+========================================
+[Gemini] 🚀 CALL GEMINI INITIATED
+========================================
+[Gemini] API Key Present: [33mtrue[39m
+[Gemini] API Key Length: [33m39[39m
+[Gemini] Model: gemini-3-flash-preview
+[Gemini] Source: unknown
+[Gemini] Prompt Length: [33m483[39m
+[Gemini] Prompt Preview: Analyze this voice note transcript and extract any action items or tasks.
+        
+Transcript: Just had a call from Vicki, she is worried about the lack of offers on Cloud Street. We need to send her ...
+[Gemini] Conversation History Count: [33m0[39m
+[Gemini] Attachments: [33m0[39m
+========================================
+
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[Gemini] ✅ API Response OK, status: [33m200[39m
+[Gemini] Response Time: [33m3846[39m ms
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[Gemini] Grounding Debug: { hasMetadata: [33mfalse[39m, chunks: [33m0[39m, mode: [32m'json'[39m }
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[AskBrain] Response: {"hasTask":true,"title":"Send Cloud Street market report to Vicki","description":"Prepare and send a...
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[TokenTracker] ask-zena: ~121 input / ~48 output tokens (gemini-3-flash-preview) [3849ms]
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[Godmode] Queued action: Send Cloud Street market report to Vicki (demi_god)
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[ActionScanner] Property milestone: open_home for cloud-st
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould correctly link a new buyer inquiry to an existing property context
+[22m[39m[Godmode] Queued action: Prepare for open home: 123 Cloud St (demi_god)
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39m[Simulator] Starting Scenario: Multi-Property Pivot
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39m[Simulator] Processing email event for user stress-test-agent-001
+[Simulator] Email from: vicki@example.com, Subject: undefined
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39m[Simulator] Calling actionScannerService.onEmailReceived for emailId: e-oak
+[ActionScanner] Email received: e-oak for user stress-test-agent-001
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39m[ActionScanner] Generating reply draft for thread: t-oak
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39mprisma:error 
+Invalid `prisma.thread.findUnique()` invocation in
+/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/inbox-actions.service.ts:40:44
+
+  37     return null;
+  38 }
+  39 
+→ 40 const thread = await prisma.thread.findUnique({
+       where: {
+         id: "t-oak"
+       },
+       include: {
+         emails: {
+         ~~~~~~
+           orderBy: {
+             receivedAt: "desc"
+           },
+           take: 3
+         },
+     ?   user?: true,
+     ?   emailAccount?: true,
+     ?   property?: true,
+     ?   deal?: true,
+     ?   messages?: true
+       }
+     })
+
+Unknown field `emails` for include statement on model `Thread`. Available options are marked with ?.
+
+[90mstderr[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39m[ActionScanner] Error processing email e-oak: PrismaClientValidationError: 
+Invalid `prisma.thread.findUnique()` invocation in
+/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/inbox-actions.service.ts:40:44
+
+  37     return null;
+  38 }
+  39 
+→ 40 const thread = await prisma.thread.findUnique({
+       where: {
+         id: "t-oak"
+       },
+       include: {
+         emails: {
+         ~~~~~~
+           orderBy: {
+             receivedAt: "desc"
+           },
+           take: 3
+         },
+     ?   user?: true,
+     ?   emailAccount?: true,
+     ?   property?: true,
+     ?   deal?: true,
+     ?   messages?: true
+       }
+     })
+
+Unknown field `emails` for include statement on model `Thread`. Available options are marked with ?.
+    at wn (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6623)
+    at $n.request (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6307)
+    at l (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:130:9633)
+    at InboxActionsService.generateReplyDraft [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/inbox-actions.service.ts:40:24[90m)[39m
+    at ActionScannerService.onEmailReceived [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/action-scanner.service.ts:45:41[90m)[39m
+    at IntelligenceSimulatorService.executeEvent [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/intelligence-simulator.service.ts:223:33[90m)[39m
+    at IntelligenceSimulatorService.runScenario [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/intelligence-simulator.service.ts:81:13[90m)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/neural-stress-test.integration.test.ts:84:23 {
+  clientVersion: [32m'5.22.0'[39m
+}
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39m[Simulator] actionScannerService.onEmailReceived response: {"actionsCreated":0,"actionIds":[]}
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39m[Simulator] Processing email event for user stress-test-agent-001
+[Simulator] Email from: steve@example.com, Subject: undefined
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39m[Simulator] Calling actionScannerService.onEmailReceived for emailId: e-pine
+[ActionScanner] Email received: e-pine for user stress-test-agent-001
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39m[ActionScanner] Generating reply draft for thread: t-pine
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39mprisma:error 
+Invalid `prisma.thread.findUnique()` invocation in
+/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/inbox-actions.service.ts:40:44
+
+  37     return null;
+  38 }
+  39 
+→ 40 const thread = await prisma.thread.findUnique({
+       where: {
+         id: "t-pine"
+       },
+       include: {
+         emails: {
+         ~~~~~~
+           orderBy: {
+             receivedAt: "desc"
+           },
+           take: 3
+         },
+     ?   user?: true,
+     ?   emailAccount?: true,
+     ?   property?: true,
+     ?   deal?: true,
+     ?   messages?: true
+       }
+     })
+
+Unknown field `emails` for include statement on model `Thread`. Available options are marked with ?.
+
+[90mstderr[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39m[ActionScanner] Error processing email e-pine: PrismaClientValidationError: 
+Invalid `prisma.thread.findUnique()` invocation in
+/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/inbox-actions.service.ts:40:44
+
+  37     return null;
+  38 }
+  39 
+→ 40 const thread = await prisma.thread.findUnique({
+       where: {
+         id: "t-pine"
+       },
+       include: {
+         emails: {
+         ~~~~~~
+           orderBy: {
+             receivedAt: "desc"
+           },
+           take: 3
+         },
+     ?   user?: true,
+     ?   emailAccount?: true,
+     ?   property?: true,
+     ?   deal?: true,
+     ?   messages?: true
+       }
+     })
+
+Unknown field `emails` for include statement on model `Thread`. Available options are marked with ?.
+    at wn (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6623)
+    at $n.request (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6307)
+    at l (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:130:9633)
+    at InboxActionsService.generateReplyDraft [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/inbox-actions.service.ts:40:24[90m)[39m
+    at ActionScannerService.onEmailReceived [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/action-scanner.service.ts:45:41[90m)[39m
+    at IntelligenceSimulatorService.executeEvent [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/intelligence-simulator.service.ts:223:33[90m)[39m
+    at IntelligenceSimulatorService.runScenario [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/intelligence-simulator.service.ts:81:13[90m)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/neural-stress-test.integration.test.ts:84:23 {
+  clientVersion: [32m'5.22.0'[39m
+}
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould maintain strict context separation for multiple simultaneous deals
+[22m[39m[Simulator] actionScannerService.onEmailReceived response: {"actionsCreated":0,"actionIds":[]}
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould auto-execute actions in Full God Mode without pending approval
+[22m[39m[Simulator] Starting Scenario: Full God Autonomy Test
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould auto-execute actions in Full God Mode without pending approval
+[22m[39m[Simulator] Processing email event for user stress-test-agent-001
+[Simulator] Email from: benny@example.com, Subject: Confirming viewing
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould auto-execute actions in Full God Mode without pending approval
+[22m[39m[Simulator] Calling actionScannerService.onEmailReceived for emailId: email-autonomy
+[ActionScanner] Email received: email-autonomy for user stress-test-agent-001
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould auto-execute actions in Full God Mode without pending approval
+[22m[39m[ActionScanner] Generating reply draft for thread: thread-autonomy
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould auto-execute actions in Full God Mode without pending approval
+[22m[39mprisma:error 
+Invalid `prisma.thread.findUnique()` invocation in
+/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/inbox-actions.service.ts:40:44
+
+  37     return null;
+  38 }
+  39 
+→ 40 const thread = await prisma.thread.findUnique({
+       where: {
+         id: "thread-autonomy"
+       },
+       include: {
+         emails: {
+         ~~~~~~
+           orderBy: {
+             receivedAt: "desc"
+           },
+           take: 3
+         },
+     ?   user?: true,
+     ?   emailAccount?: true,
+     ?   property?: true,
+     ?   deal?: true,
+     ?   messages?: true
+       }
+     })
+
+Unknown field `emails` for include statement on model `Thread`. Available options are marked with ?.
+
+[90mstderr[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould auto-execute actions in Full God Mode without pending approval
+[22m[39m[ActionScanner] Error processing email email-autonomy: PrismaClientValidationError: 
+Invalid `prisma.thread.findUnique()` invocation in
+/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/inbox-actions.service.ts:40:44
+
+  37     return null;
+  38 }
+  39 
+→ 40 const thread = await prisma.thread.findUnique({
+       where: {
+         id: "thread-autonomy"
+       },
+       include: {
+         emails: {
+         ~~~~~~
+           orderBy: {
+             receivedAt: "desc"
+           },
+           take: 3
+         },
+     ?   user?: true,
+     ?   emailAccount?: true,
+     ?   property?: true,
+     ?   deal?: true,
+     ?   messages?: true
+       }
+     })
+
+Unknown field `emails` for include statement on model `Thread`. Available options are marked with ?.
+    at wn (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6623)
+    at $n.request (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6307)
+    at l (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:130:9633)
+    at InboxActionsService.generateReplyDraft [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/inbox-actions.service.ts:40:24[90m)[39m
+    at ActionScannerService.onEmailReceived [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/action-scanner.service.ts:45:41[90m)[39m
+    at IntelligenceSimulatorService.executeEvent [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/intelligence-simulator.service.ts:223:33[90m)[39m
+    at IntelligenceSimulatorService.runScenario [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/intelligence-simulator.service.ts:81:13[90m)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/neural-stress-test.integration.test.ts:115:23 {
+  clientVersion: [32m'5.22.0'[39m
+}
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould auto-execute actions in Full God Mode without pending approval
+[22m[39m[Simulator] actionScannerService.onEmailReceived response: {"actionsCreated":0,"actionIds":[]}
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[Simulator] Starting Scenario: The Hectic Weekend Rush
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[Simulator] Processing email event for user stress-test-agent-001
+[Simulator] Email from: benny@example.com, Subject: Inquiry: 123 Cloud St
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[Simulator] Calling actionScannerService.onEmailReceived for emailId: email-1
+[ActionScanner] Email received: email-1 for user stress-test-agent-001
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[ActionScanner] Generating reply draft for thread: thread-1
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39mprisma:error 
+Invalid `prisma.thread.findUnique()` invocation in
+/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/inbox-actions.service.ts:40:44
+
+  37     return null;
+  38 }
+  39 
+→ 40 const thread = await prisma.thread.findUnique({
+       where: {
+         id: "thread-1"
+       },
+       include: {
+         emails: {
+         ~~~~~~
+           orderBy: {
+             receivedAt: "desc"
+           },
+           take: 3
+         },
+     ?   user?: true,
+     ?   emailAccount?: true,
+     ?   property?: true,
+     ?   deal?: true,
+     ?   messages?: true
+       }
+     })
+
+Unknown field `emails` for include statement on model `Thread`. Available options are marked with ?.
+
+[90mstderr[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[ActionScanner] Error processing email email-1: PrismaClientValidationError: 
+Invalid `prisma.thread.findUnique()` invocation in
+/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/inbox-actions.service.ts:40:44
+
+  37     return null;
+  38 }
+  39 
+→ 40 const thread = await prisma.thread.findUnique({
+       where: {
+         id: "thread-1"
+       },
+       include: {
+         emails: {
+         ~~~~~~
+           orderBy: {
+             receivedAt: "desc"
+           },
+           take: 3
+         },
+     ?   user?: true,
+     ?   emailAccount?: true,
+     ?   property?: true,
+     ?   deal?: true,
+     ?   messages?: true
+       }
+     })
+
+Unknown field `emails` for include statement on model `Thread`. Available options are marked with ?.
+    at wn (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:29:1363)
+    at $n.handleRequestError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6958)
+    at $n.handleAndLogRequestError (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6623)
+    at $n.request (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6307)
+    at l (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/[4m@prisma/client[24m/runtime/library.js:130:9633)
+    at InboxActionsService.generateReplyDraft [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/inbox-actions.service.ts:40:24[90m)[39m
+    at ActionScannerService.onEmailReceived [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/action-scanner.service.ts:45:41[90m)[39m
+    at IntelligenceSimulatorService.executeEvent [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/intelligence-simulator.service.ts:223:33[90m)[39m
+    at IntelligenceSimulatorService.runScenario [90m(/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/intelligence-simulator.service.ts:81:13[90m)[39m
+    at [90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/[39msrc/services/neural-stress-test.integration.test.ts:134:23 {
+  clientVersion: [32m'5.22.0'[39m
+}
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[Simulator] actionScannerService.onEmailReceived response: {"actionsCreated":0,"actionIds":[]}
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[ActionScanner] Voice note created: vn-1 for user stress-test-agent-001
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[AskBrain] Prompt: Analyze this voice note transcript and extract any action items or tasks.
+        
+Transcript: Just ...
+
+========================================
+[Gemini] 🚀 CALL GEMINI INITIATED
+========================================
+[Gemini] API Key Present: [33mtrue[39m
+[Gemini] API Key Length: [33m39[39m
+[Gemini] Model: gemini-3-flash-preview
+[Gemini] Source: unknown
+[Gemini] Prompt Length: [33m483[39m
+[Gemini] Prompt Preview: Analyze this voice note transcript and extract any action items or tasks.
+        
+Transcript: Just had a call from Vicki, she is worried about the lack of offers on Cloud Street. We need to send her ...
+[Gemini] Conversation History Count: [33m0[39m
+[Gemini] Attachments: [33m0[39m
+========================================
+
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[Gemini] ✅ API Response OK, status: [33m200[39m
+[Gemini] Response Time: [33m3425[39m ms
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[Gemini] Grounding Debug: { hasMetadata: [33mfalse[39m, chunks: [33m0[39m, mode: [32m'json'[39m }
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[AskBrain] Response: {"hasTask":true,"title":"Send market report to Vicki","description":"Prepare and send a market repor...
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[TokenTracker] ask-zena: ~121 input / ~45 output tokens (gemini-3-flash-preview) [3426ms]
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[Godmode] Queued action: Send market report to Vicki (demi_god)
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[ActionScanner] Property milestone: open_home for cloud-st
+
+[90mstdout[2m | src/services/neural-stress-test.integration.test.ts[2m > [22m[2mNeural Intelligence Stress Tests[2m > [22m[2mshould extract actionable tasks from complex voice note transcripts
+[22m[39m[Godmode] Queued action: Prepare for open home: 123 Cloud St (demi_god)
+
+ [31m❯[39m src/services/neural-stress-test.integration.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 8497[2mms[22m[39m
+[31m     [31m×[31m should correctly link a new buyer inquiry to an existing property context[39m[33m 4333[2mms[22m[39m
+[31m     [31m×[31m should maintain strict context separation for multiple simultaneous deals[39m[32m 154[2mms[22m[39m
+[31m     [31m×[31m should auto-execute actions in Full God Mode without pending approval[39m[32m 125[2mms[22m[39m
+     [33m[2m✓[22m[39m should extract actionable tasks from complex voice note transcripts [33m 3868[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/services/neural-stress-test.integration.test.ts[2m > [22mNeural Intelligence Stress Tests[2m > [22mshould correctly link a new buyer inquiry to an existing property context
+[31m[1mAssertionError[22m: expected 0 to be greater than 0[39m
+[36m [2m❯[22m src/services/neural-stress-test.integration.test.ts:[2m69:32[22m[39m
+    [90m 67| [39m        [90m// Verify an action was created[39m
+    [90m 68| [39m        [35mconst[39m actions [33m=[39m emailStep[33m?.[39moutcomes [33m||[39m [][33m;[39m
+    [90m 69| [39m        [34mexpect[39m(actions[33m.[39mlength)[33m.[39m[34mtoBeGreaterThan[39m([34m0[39m)[33m;[39m
+    [90m   | [39m                               [31m^[39m
+    [90m 70| [39m
+    [90m 71| [39m        [90m// Check if action is linked to the correct property[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/services/neural-stress-test.integration.test.ts[2m > [22mNeural Intelligence Stress Tests[2m > [22mshould maintain strict context separation for multiple simultaneous deals
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'title')[39m
+[36m [2m❯[22m src/services/neural-stress-test.integration.test.ts:[2m91:36[22m[39m
+    [90m 89| [39m        [90m// Verify Step 1 (Oak Ave)[39m
+    [90m 90| [39m        [35mconst[39m oakAction [33m=[39m emailSteps[[34m0[39m][33m.[39moutcomes[[34m0[39m][33m;[39m
+    [90m 91| [39m        const oakText = (oakAction.title + oakAction.description + oak…
+    [90m   | [39m                                   [31m^[39m
+    [90m 92| [39m        [34mexpect[39m(oakText)[33m.[39m[34mtoContain[39m([32m'oak ave'[39m)[33m;[39m
+    [90m 93| [39m        [34mexpect[39m(oakText)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'pine rd'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/services/neural-stress-test.integration.test.ts[2m > [22mNeural Intelligence Stress Tests[2m > [22mshould auto-execute actions in Full God Mode without pending approval
+[31m[1mAssertionError[22m: expected 0 to be greater than 0[39m
+[36m [2m❯[22m src/services/neural-stress-test.integration.test.ts:[2m120:32[22m[39m
+    [90m118| [39m        [35mconst[39m actions [33m=[39m autonomyStep[33m?.[39moutcomes [33m||[39m [][33m;[39m
+    [90m119| [39m
+    [90m120| [39m        [34mexpect[39m(actions[33m.[39mlength)[33m.[39m[34mtoBeGreaterThan[39m([34m0[39m)[33m;[39m
+    [90m   | [39m                               [31m^[39m
+    [90m121| [39m
+    [90m122| [39m        // In Full God mode, the action scanner might have auto-execut…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 22:38:29
+[2m   Duration [22m 9.02s[2m (transform 187ms, setup 55ms, import 357ms, tests 8.50s, environment 0ms)[22m
+

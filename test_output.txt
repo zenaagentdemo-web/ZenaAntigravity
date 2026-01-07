@@ -1,0 +1,181 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/Users/hamishmcgee/Desktop/ZenaAntigravity[39m
+
+ [31m❯[39m packages/frontend/src/hooks/useBatchState.property.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 32[2mms[22m[39m
+[31m     [31m×[31m should maintain isBatchMode=true if items are selected[39m[32m 23[2mms[22m[39m
+[31m     [31m×[31m should clear all state on exitBatchMode[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m should return to original state after toggling selection twice[39m[32m 3[2mms[22m[39m
+[31m     [31m×[31m should satisfy NewPage visibility logic: isBatchMode && selectedCount > 0[39m[32m 3[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m packages/frontend/src/hooks/useBatchState.property.test.ts[2m > [22museBatchState Property Tests[2m > [22mshould maintain isBatchMode=true if items are selected
+[31m[1mError[22m: Property failed after 1 tests
+{ seed: -626442286, path: "0:0:0:0", endOnFailure: true }
+Counterexample: [[" "]]
+Shrunk 3 time(s)
+Got ReferenceError: document is not defined
+    at render (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@testing-library/react/dist/pure.js:239:5)
+    at renderHook (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@testing-library/react/dist/pure.js:318:7)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useBatchState.property.test.ts:17:30
+    at Property.predicate (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/property/Property.js:14:54)
+    at Property.run (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/property/Property.generic.js:46:33)
+    at runIt (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:18:30)
+    at check (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:62:11)
+    at Module.assert (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:65:17)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useBatchState.property.test.ts:13:8
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@vitest/runner/dist/index.js:145:11
+
+Hint: Enable verbose mode in order to have the list of all failing values encountered during the run[39m
+[90m [2m❯[22m render node_modules/@testing-library/react/dist/pure.js:[2m239:5[22m[39m
+[90m [2m❯[22m renderHook node_modules/@testing-library/react/dist/pure.js:[2m318:7[22m[39m
+[36m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m17:30[22m[39m
+    [90m 15| [39m        fc.array(fc.string({ minLength: 1 }), { minLength: 1, maxLengt…
+    [90m 16| [39m        (ids) [33m=>[39m {
+    [90m 17| [39m          [35mconst[39m { result } [33m=[39m [34mrenderHook[39m(() [33m=>[39m [34museBatchState[39m())[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m 18| [39m
+    [90m 19| [39m          [90m// Enter batch mode and select items[39m
+[90m [2m❯[22m Property.predicate node_modules/fast-check/lib/esm/check/property/Property.js:[2m14:54[22m[39m
+[90m [2m❯[22m Property.run node_modules/fast-check/lib/esm/check/property/Property.generic.js:[2m46:33[22m[39m
+[90m [2m❯[22m runIt node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m18:30[22m[39m
+[90m [2m❯[22m check node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m62:11[22m[39m
+[90m [2m❯[22m Module.assert node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m65:17[22m[39m
+[90m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m13:8[22m[39m
+[90m [2m❯[22m buildError node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m126:15[22m[39m
+[90m [2m❯[22m throwIfFailed node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m138:11[22m[39m
+[90m [2m❯[22m reportRunDetails node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m151:16[22m[39m
+[90m [2m❯[22m Module.assert node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m69:9[22m[39m
+[90m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m13:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m packages/frontend/src/hooks/useBatchState.property.test.ts[2m > [22museBatchState Property Tests[2m > [22mshould clear all state on exitBatchMode
+[31m[1mError[22m: Property failed after 1 tests
+{ seed: -199473031, path: "0", endOnFailure: true }
+Counterexample: [[]]
+Shrunk 0 time(s)
+Got ReferenceError: document is not defined
+    at render (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@testing-library/react/dist/pure.js:239:5)
+    at renderHook (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@testing-library/react/dist/pure.js:318:7)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useBatchState.property.test.ts:40:30
+    at Property.predicate (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/property/Property.js:14:54)
+    at Property.run (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/property/Property.generic.js:46:33)
+    at runIt (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:18:30)
+    at check (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:62:11)
+    at Module.assert (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:65:17)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useBatchState.property.test.ts:36:8
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@vitest/runner/dist/index.js:145:11
+
+Hint: Enable verbose mode in order to have the list of all failing values encountered during the run[39m
+[90m [2m❯[22m render node_modules/@testing-library/react/dist/pure.js:[2m239:5[22m[39m
+[90m [2m❯[22m renderHook node_modules/@testing-library/react/dist/pure.js:[2m318:7[22m[39m
+[36m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m40:30[22m[39m
+    [90m 38| [39m        fc.array(fc.string({ minLength: 1 }), { minLength: 0, maxLengt…
+    [90m 39| [39m        (ids) [33m=>[39m {
+    [90m 40| [39m          [35mconst[39m { result } [33m=[39m [34mrenderHook[39m(() [33m=>[39m [34museBatchState[39m())[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m 41| [39m
+    [90m 42| [39m          [34mact[39m(() [33m=>[39m {
+[90m [2m❯[22m Property.predicate node_modules/fast-check/lib/esm/check/property/Property.js:[2m14:54[22m[39m
+[90m [2m❯[22m Property.run node_modules/fast-check/lib/esm/check/property/Property.generic.js:[2m46:33[22m[39m
+[90m [2m❯[22m runIt node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m18:30[22m[39m
+[90m [2m❯[22m check node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m62:11[22m[39m
+[90m [2m❯[22m Module.assert node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m65:17[22m[39m
+[90m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m36:8[22m[39m
+[90m [2m❯[22m buildError node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m126:15[22m[39m
+[90m [2m❯[22m throwIfFailed node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m138:11[22m[39m
+[90m [2m❯[22m reportRunDetails node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m151:16[22m[39m
+[90m [2m❯[22m Module.assert node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m69:9[22m[39m
+[90m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m36:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m packages/frontend/src/hooks/useBatchState.property.test.ts[2m > [22museBatchState Property Tests[2m > [22mshould return to original state after toggling selection twice
+[31m[1mError[22m: Property failed after 1 tests
+{ seed: -317259710, path: "0:0:0", endOnFailure: true }
+Counterexample: [" "]
+Shrunk 2 time(s)
+Got ReferenceError: document is not defined
+    at render (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@testing-library/react/dist/pure.js:239:5)
+    at renderHook (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@testing-library/react/dist/pure.js:318:7)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useBatchState.property.test.ts:64:30
+    at Property.predicate (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/property/Property.js:14:54)
+    at Property.run (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/property/Property.generic.js:46:33)
+    at runIt (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:18:30)
+    at check (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:62:11)
+    at Module.assert (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:65:17)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useBatchState.property.test.ts:60:8
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@vitest/runner/dist/index.js:145:11
+
+Hint: Enable verbose mode in order to have the list of all failing values encountered during the run[39m
+[90m [2m❯[22m render node_modules/@testing-library/react/dist/pure.js:[2m239:5[22m[39m
+[90m [2m❯[22m renderHook node_modules/@testing-library/react/dist/pure.js:[2m318:7[22m[39m
+[36m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m64:30[22m[39m
+    [90m 62| [39m        fc[33m.[39m[34mstring[39m({ minLength[33m:[39m [34m1[39m })[33m,[39m
+    [90m 63| [39m        (id) [33m=>[39m {
+    [90m 64| [39m          [35mconst[39m { result } [33m=[39m [34mrenderHook[39m(() [33m=>[39m [34museBatchState[39m())[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m 65| [39m
+    [90m 66| [39m          [34mact[39m(() [33m=>[39m {
+[90m [2m❯[22m Property.predicate node_modules/fast-check/lib/esm/check/property/Property.js:[2m14:54[22m[39m
+[90m [2m❯[22m Property.run node_modules/fast-check/lib/esm/check/property/Property.generic.js:[2m46:33[22m[39m
+[90m [2m❯[22m runIt node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m18:30[22m[39m
+[90m [2m❯[22m check node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m62:11[22m[39m
+[90m [2m❯[22m Module.assert node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m65:17[22m[39m
+[90m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m60:8[22m[39m
+[90m [2m❯[22m buildError node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m126:15[22m[39m
+[90m [2m❯[22m throwIfFailed node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m138:11[22m[39m
+[90m [2m❯[22m reportRunDetails node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m151:16[22m[39m
+[90m [2m❯[22m Module.assert node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m69:9[22m[39m
+[90m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m60:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m packages/frontend/src/hooks/useBatchState.property.test.ts[2m > [22museBatchState Property Tests[2m > [22mshould satisfy NewPage visibility logic: isBatchMode && selectedCount > 0
+[31m[1mError[22m: Property failed after 1 tests
+{ seed: -1496367284, path: "0:0:0", endOnFailure: true }
+Counterexample: [false,[]]
+Shrunk 2 time(s)
+Got ReferenceError: document is not defined
+    at render (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@testing-library/react/dist/pure.js:239:5)
+    at renderHook (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@testing-library/react/dist/pure.js:318:7)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useBatchState.property.test.ts:100:30
+    at Property.predicate (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/property/Property.js:14:54)
+    at Property.run (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/property/Property.generic.js:46:33)
+    at runIt (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:18:30)
+    at check (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:62:11)
+    at Module.assert (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/fast-check/lib/esm/check/runner/Runner.js:65:17)
+    at /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useBatchState.property.test.ts:95:8
+    at file:///Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@vitest/runner/dist/index.js:145:11
+
+Hint: Enable verbose mode in order to have the list of all failing values encountered during the run[39m
+[90m [2m❯[22m render node_modules/@testing-library/react/dist/pure.js:[2m239:5[22m[39m
+[90m [2m❯[22m renderHook node_modules/@testing-library/react/dist/pure.js:[2m318:7[22m[39m
+[36m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m100:30[22m[39m
+    [90m 98| [39m        fc.array(fc.string({ minLength: 1 }), { minLength: 0, maxLengt…
+    [90m 99| [39m        (initialBatchMode[33m,[39m idsToSelect) [33m=>[39m {
+    [90m100| [39m          [35mconst[39m { result } [33m=[39m [34mrenderHook[39m(() [33m=>[39m [34museBatchState[39m())[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m101| [39m
+    [90m102| [39m          [35mif[39m (initialBatchMode) {
+[90m [2m❯[22m Property.predicate node_modules/fast-check/lib/esm/check/property/Property.js:[2m14:54[22m[39m
+[90m [2m❯[22m Property.run node_modules/fast-check/lib/esm/check/property/Property.generic.js:[2m46:33[22m[39m
+[90m [2m❯[22m runIt node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m18:30[22m[39m
+[90m [2m❯[22m check node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m62:11[22m[39m
+[90m [2m❯[22m Module.assert node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m65:17[22m[39m
+[90m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m95:8[22m[39m
+[90m [2m❯[22m buildError node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m126:15[22m[39m
+[90m [2m❯[22m throwIfFailed node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m138:11[22m[39m
+[90m [2m❯[22m reportRunDetails node_modules/fast-check/lib/esm/check/runner/utils/RunDetailsFormatter.js:[2m151:16[22m[39m
+[90m [2m❯[22m Module.assert node_modules/fast-check/lib/esm/check/runner/Runner.js:[2m69:9[22m[39m
+[90m [2m❯[22m packages/frontend/src/hooks/useBatchState.property.test.ts:[2m95:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[90m (4)[39m
+[2m   Start at [22m 19:04:13
+[2m   Duration [22m 887ms[2m (transform 100ms, setup 0ms, import 497ms, tests 32ms, environment 0ms)[22m
+

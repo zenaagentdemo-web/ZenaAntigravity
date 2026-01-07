@@ -14,8 +14,6 @@ router.use(authMiddleware);
 // GET /api/deals/dashboard - Get aggregated dashboard statistics
 router.get('/dashboard', (req, res) => dealsController.getDashboardStats(req, res));
 
-// GET /api/deals/forecast - Get revenue forecast by month
-router.get('/forecast', (req, res) => dealsController.getRevenueForecast(req, res));
 
 // GET /api/deals/stages - Get available stages for a pipeline type
 router.get('/stages', (req, res) => dealsController.getStages(req, res));
@@ -25,6 +23,18 @@ router.get('/pipeline/:type', (req, res) => dealsController.getPipelineDeals(req
 
 // GET /api/deals - List deals with filters by stage and risk
 router.get('/', (req, res) => dealsController.listDeals(req, res));
+
+// POST /api/deals/bulk-delete - Delete multiple deals at once
+console.log('[DealsRoutes] Registering bulk-delete route');
+router.post('/bulk-delete', (req, res) => dealsController.bulkDelete(req, res));
+
+// POST /api/deals/bulk-archive - Archive multiple deals at once
+console.log('[DealsRoutes] Registering bulk-archive route');
+router.post('/bulk-archive', (req, res) => dealsController.bulkArchive(req, res));
+
+// POST /api/deals/bulk-restore - Restore multiple archived deals
+console.log('[DealsRoutes] Registering bulk-restore route');
+router.post('/bulk-restore', (req, res) => dealsController.bulkRestore(req, res));
 
 // POST /api/deals - Create a new deal
 router.post('/', (req, res) => dealsController.createDeal(req, res));
@@ -43,5 +53,8 @@ router.put('/:id/conditions', (req, res) => dealsController.updateConditions(req
 
 // POST /api/deals/:id/tasks - Create task for deal
 router.post('/:id/tasks', (req, res) => dealsController.createTask(req, res));
+
+// GET /api/deals/:id/intelligence - Perform deep AI intelligence analysis on a deal
+router.get('/:id/intelligence', (req, res) => dealsController.analyzeDeal(req, res));
 
 export default router;

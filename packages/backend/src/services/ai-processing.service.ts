@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import type { ThreadClassification, ThreadCategory, ActionOwner } from '../models/types.js';
 import { websocketService } from './websocket.service.js';
 import { contactCategorizationService } from './contact-categorization.service.js';
 import { askZenaService } from './ask-zena.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 export interface ThreadData {
   id: string;

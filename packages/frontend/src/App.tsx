@@ -59,7 +59,7 @@ const LoadingSkeleton: React.FC = () => (
  */
 const GlobalFloatingZena: React.FC = () => {
   const location = useLocation();
-  const hidePaths = ['/ask-zena', '/ask-zena-immersive', '/zena-demo', '/deal-flow'];
+  const hidePaths = ['/ask-zena', '/ask-zena-immersive', '/zena-demo'];
   const shouldHide = hidePaths.some(path => location.pathname.startsWith(path));
 
   if (shouldHide) return null;
@@ -69,6 +69,7 @@ const GlobalFloatingZena: React.FC = () => {
   if (location.pathname.includes('/contacts')) context = 'contacts';
   if (location.pathname.includes('/properties')) context = 'properties';
   if (location.pathname.includes('/inbox')) context = 'inbox';
+  if (location.pathname.includes('/deal-flow')) context = 'dealflow';
   if (location.pathname === '/') context = 'dashboard';
 
   return <ZenaAvatarWidget variant="floating" context={context} />;

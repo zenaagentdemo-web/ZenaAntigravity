@@ -183,6 +183,10 @@ app.use('/api/godmode', godmodeRoutes);
 import crmDeliveryRoutes from './routes/crm-delivery.routes.js';
 app.use('/api/crm-delivery', crmDeliveryRoutes);
 
+// Geocoding routes (Address Autocomplete)
+import geocodingRoutes from './routes/geocoding.routes.js';
+app.use('/api/geocoding', geocodingRoutes);
+
 // 404 handler - must be after all routes
 app.use(notFoundMiddleware);
 
@@ -202,7 +206,6 @@ if (process.env.NODE_ENV !== 'test') {
   // Start sync engines
   syncEngineService.start();
   calendarSyncEngineService.start();
-  calendarSyncEngineService.start();
 
   // Start deal scheduler (Phase 2b)
   dealSchedulerService.start();
@@ -214,19 +217,30 @@ const shutdown = async (signal: string) => {
   logger.info(`Received ${signal}, shutting down gracefully...`);
 
   try {
-    // Stop accepting new connections
-    server.close(() => {
-      logger.info('HTTP server closed');
-    });
-
-    // Stop background services
+    // 1. Stop background services first
+    logger.info('Stopping background services...');
     syncEngineService.stop();
     calendarSyncEngineService.stop();
     dealSchedulerService.stop();
     godmodeSchedulerService.stop();
     websocketService.shutdown();
 
-    // Disconnect from database
+    // 2. Stop accepting new connections
+    if (server.listening) {
+      await new Promise<void>((resolve, reject) => {
+        server.close((err) => {
+          if (err) {
+            logger.error('Error closing HTTP server', err);
+            reject(err);
+          } else {
+            logger.info('HTTP server closed');
+            resolve();
+          }
+        });
+      });
+    }
+
+    // 3. Disconnect from database
     await prisma.$disconnect();
     logger.info('Database disconnected');
 
@@ -234,7 +248,8 @@ const shutdown = async (signal: string) => {
     process.exit(0);
   } catch (error) {
     logger.error('Error during shutdown', error as Error);
-    process.exit(1);
+    // Force exit if graceful shutdown fails
+    setTimeout(() => process.exit(1), 1000).unref();
   }
 };
 

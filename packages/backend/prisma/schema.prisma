@@ -276,6 +276,7 @@ model Deal {
   conjunctionalAgencyName  String?        // e.g., "Harcourts Ponsonby"
   conjunctionalSplit       Float?         // 0.5 = 50/50 split (our share)
   isListingAgent           Boolean @default(true) // true = we're listing, false = we're selling
+  status                   String @default("active") // 'active' | 'archived' | 'deleted'
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

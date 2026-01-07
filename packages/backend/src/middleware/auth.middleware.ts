@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { authService } from '../services/auth.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 // Extend Express Request type to include user
 declare global {

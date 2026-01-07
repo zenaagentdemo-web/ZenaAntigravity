@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { godmodeService } from './godmode.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 // Scan interval: 6 hours (was 1 hour)
 const SCAN_INTERVAL_MS = 6 * 60 * 60 * 1000;

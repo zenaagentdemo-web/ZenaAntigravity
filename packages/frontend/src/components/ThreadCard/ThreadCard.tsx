@@ -18,6 +18,7 @@ import {
 import { isThreadOverdue } from '../../utils/threadPriorityCalculator';
 import { hapticFeedback } from '../../utils/hapticFeedback';
 import { useAnimationPerformance, applyAnimationOptimizations, cleanupAnimationOptimizations } from '../../utils/animationPerformance';
+import { useLongPress } from '../../hooks/useLongPress';
 import './ThreadCard.css';
 
 export interface ThreadCardProps {
@@ -39,6 +40,8 @@ export interface ThreadCardProps {
   onSelect?: (threadId: string) => void;
   /** Callback for thread actions */
   onAction?: (threadId: string, action: 'view' | 'snooze' | 'send_draft' | 'delete' | 'forward' | 'move_to' | 'archive' | 'mark_read') => void;
+  /** Callback when card is long-pressed (enters batch mode) */
+  onLongPress?: (threadId: string) => void;
   /** Whether this is a waiting thread (sent by user) */
   isWaiting?: boolean;
   /** Optional className for styling */
@@ -119,6 +122,7 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
   onDropdownToggle,
   onQuickReply,
   onSelect,
+  onLongPress,
   onAction,
   isWaiting = false,
   className = ''
@@ -201,11 +205,25 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
     }
   };
 
+  // Long press for batch mode
+  const { handlers: longPressHandlers } = useLongPress(() => {
+    if (!isBatchMode && onLongPress) {
+      hapticFeedback.medium();
+      onLongPress(thread.id);
+    }
+  }, {
+    threshold: 500,
+    onStart: () => {
+      if (!isBatchMode) hapticFeedback.light();
+    }
+  });
+
   return (
     <article
       ref={cardRef}
       className={`thread-card ${isDropdownExpanded ? 'thread-card--expanded' : ''} ${isSelected ? 'thread-card--selected' : ''} ${isBatchMode ? 'thread-card--batch-mode' : ''} ${className}`}
       onClick={handleCardClick}
+      {...longPressHandlers}
       role="article"
       aria-label={`Email thread: ${thread.subject}`}
       data-testid="thread-card"

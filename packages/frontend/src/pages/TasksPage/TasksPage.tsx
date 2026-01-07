@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { api } from '../../utils/apiClient';
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
+import { GodmodeToggle } from '../../components/GodmodeToggle/GodmodeToggle';
 import './TasksPage.css';
 
 // Types
@@ -870,6 +871,7 @@ export const TasksPage: React.FC = () => {
                         <h1 className="tasks-page__title">Tasks</h1>
                     </div>
                     <div className="tasks-page__actions">
+                        <GodmodeToggle compact />
                         <button
                             className="tasks-page__add-btn"
                             onClick={() => setShowAddModal(true)}

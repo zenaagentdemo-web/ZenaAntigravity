@@ -1,11 +1,6 @@
-/**
- * Zena Intelligence Engine - NZ Real Estate Momentum Coach
- * 
- * Provides research-backed coaching for deal momentum using NZ market data.
- * Analyses deals for risk signals and generates actionable Power Moves.
- */
-
 import { Deal, DealStage, RiskLevel, calculateDaysInStage } from '../types';
+import { api } from '../../../utils/apiClient';
+import { useState, useEffect } from 'react';
 
 // ============================================================
 // TYPES
@@ -55,6 +50,7 @@ export interface DealIntelligence {
     needsLiveSession: boolean;
     daysInStage: number;
     stageHealthStatus: 'healthy' | 'warning' | 'critical';
+    riskLevel?: string; // AI-determined risk level from backend
 }
 
 // ============================================================
@@ -425,8 +421,68 @@ export function personalisePowerMove(powerMove: PowerMove, deal: Deal): PowerMov
     };
 }
 
+/**
+ * Async version that fetches deep AI intelligence from the backend
+ */
+export async function fetchDealIntelligence(dealId: string): Promise<DealIntelligence> {
+    try {
+        const response = await api.get(`/api/deals/${dealId}/intelligence`);
+        const data = response.data;
+
+        return {
+            ...data,
+            dealId,
+            // Ensure dates are parsed
+            riskSignals: data.riskSignals?.map((s: any) => ({
+                ...s,
+                detectedAt: s.detectedAt ? new Date(s.detectedAt) : new Date()
+            })) || []
+        };
+    } catch (error) {
+        console.error(`[ZenaIntelligence] AI analysis failed for ${dealId}, falling back to heuristics:`, error);
+        // Fallback to local heuristics if AI fails
+        const deal = await api.get(`/api/deals/${dealId}`);
+        return analyseDeal(deal.data.deal);
+    }
+}
+
+/**
+ * Hook for easy intelligence fetching in components
+ */
+export function useDealIntelligence(dealId: string) {
+    const [intelligence, setIntelligence] = useState<DealIntelligence | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadIntelligence = async () => {
+            setLoading(true);
+            try {
+                const data = await fetchDealIntelligence(dealId);
+                if (isMounted) setIntelligence(data);
+            } catch (err) {
+                if (isMounted) setError('Failed to load deep intelligence');
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        if (dealId) {
+            loadIntelligence();
+        }
+
+        return () => { isMounted = false; };
+    }, [dealId]);
+
+    return { intelligence, loading, error };
+}
+
 export default {
     analyseDeal,
+    fetchDealIntelligence,
+    useDealIntelligence,
     personalisePowerMove,
     NZ_MARKET_DATA,
 };

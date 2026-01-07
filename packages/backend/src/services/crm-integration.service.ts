@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { encryptToken, decryptToken } from '../utils/encryption';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 /**
  * CRM provider types

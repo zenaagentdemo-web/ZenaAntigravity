@@ -4,6 +4,13 @@
 
 import { Request, Response } from 'express';
 import { godmodeService } from '../services/godmode.service.js';
+import { intelligenceSimulatorService } from '../services/intelligence-simulator.service.js';
+import {
+    HECTIC_WEEKEND_SCENARIO,
+    FULL_GOD_AUTONOMY_SCENARIO,
+    MULTI_PROPERTY_PIVOT_SCENARIO
+} from '../services/roleplay.scenarios.js';
+import prisma from '../config/database.js';
 
 /**
  * GET /api/godmode/settings
@@ -267,13 +274,10 @@ export async function seedMockActions(req: Request, res: Response): Promise<void
 
         const userId = req.user.userId;
 
-        // Get first few contacts to attach actions to
-        const { PrismaClient } = await import('@prisma/client');
-        const prisma = new PrismaClient();
-
+        // 1. Get first few contacts to attach actions to
         const contacts = await prisma.contact.findMany({
             where: { userId },
-            take: 3,
+            take: 5,
             select: { id: true, name: true, emails: true }
         });
 
@@ -282,60 +286,101 @@ export async function seedMockActions(req: Request, res: Response): Promise<void
             return;
         }
 
+        // 2. Get first few properties to attach actions to
+        const properties = await prisma.property.findMany({
+            where: { userId },
+            take: 3,
+            select: { id: true, address: true }
+        });
+
         const mockActions = [
+            // Contact-centric actions
             {
                 userId,
                 contactId: contacts[0]?.id,
-                actionType: 'SEND_FOLLOWUP',
+                actionType: 'send_email',
                 priority: 8,
-                title: `Follow-up Email for ${contacts[0]?.name}`,
-                description: 'Zena detected 5 days of silence after initial property inquiry. Suggesting a gentle check-in.',
-                draftSubject: `Quick follow-up on your property search`,
+                title: `Re-engage ${contacts[0]?.name} (High churn risk)`,
+                description: `WHY IT MATTERS: This contact has reached a high churn risk threshold due to recent inactivity. GAIN: Sending a personalized re-engagement email now will rebuild trust and ensure they choose you when they are ready to transact.`,
+                draftSubject: `Thinking of you - ${contacts[0]?.name?.split(' ')[0]}`,
                 draftBody: `Hi ${contacts[0]?.name?.split(' ')[0]},\n\nI wanted to check in and see if you had any questions about the properties we discussed. I'd be happy to arrange viewings at your convenience.\n\nBest regards`,
                 status: 'pending',
                 mode: 'demi_god',
                 reasoning: 'Contact has been inactive for 5 days after showing high interest signals',
+                intelligenceSources: [{ type: 'prediction', id: contacts[0]?.id, summary: 'Churn Risk: 0.82' }]
             },
             {
                 userId,
                 contactId: contacts[1]?.id || contacts[0]?.id,
-                actionType: 'SCHEDULE_CALL',
-                priority: 6,
-                title: `Schedule Call with ${contacts[1]?.name || contacts[0]?.name}`,
-                description: 'Oracle predicts high sell probability (78%). Recommending proactive outreach.',
+                actionType: 'schedule_followup',
+                priority: 9,
+                title: `Follow up with ${contacts[1]?.name || contacts[0]?.name} (High sell intent)`,
+                description: `WHY IT MATTERS: Our neural analysis detected a 85% sell probability based on their specific digital behavior and engagement patterns. GAIN: By offering a market appraisal now, you establish yourself as the proactive expert.`,
                 status: 'pending',
                 mode: 'demi_god',
-                reasoning: 'High seller probability detected from recent email patterns',
+                reasoning: 'Predictive analysis indicates a 85% probability that the contact is preparing to sell.',
+                intelligenceSources: [{ type: 'prediction', id: contacts[1]?.id || contacts[0]?.id, summary: 'Sell Probability: 85%' }]
             },
+            // Property-centric actions
+            ...(properties.length > 0 ? [
+                {
+                    userId,
+                    propertyId: properties[0].id,
+                    actionType: 'generate_weekly_report',
+                    priority: 8,
+                    title: `Weekly Vendor Report: ${properties[0].address.split(',')[0]}`,
+                    description: `WHY IT MATTERS: Campaign has been active for 7+ days. Regular reporting builds trust and transparency with vendors. GAIN: Vendors who receive weekly updates are 40% more likely to agree to price adjustments when recommended.`,
+                    reasoning: 'Campaign has been active for 7+ days. Regular reporting schedule triggered.',
+                    draftSubject: `Weekly Campaign Activity - ${properties[0].address}`,
+                    draftBody: `## Executive Summary\nInterest remains steady for ${properties[0].address}. We've seen a slight increase in online engagement this week.\n\n## Traffic & Engagement\n- Total Views: 124 (+12% from last week)\n- New Inquiries: 3\n\n## Buyer Feedback\n- "Stunning presentation, kitchen is a standout."\n- "A few comments regarding the garden size."\n\n## Strategic Recommendation\nMaintain current pricing for one more week of marketing before reviewing.`,
+                    status: 'pending',
+                    mode: 'demi_god',
+                    payload: { pdfUrl: 'mock-report-123.pdf', reportId: 'rep_12345' },
+                    contextSummary: `**Why now?**\nIt has been 7 days since the last report.`
+                },
+                {
+                    userId,
+                    propertyId: properties[0].id,
+                    actionType: 'buyer_match_intro',
+                    priority: 10,
+                    title: `Hot Buyer Match: Sarah Jenkins (95%)`,
+                    description: `Sarah matches ${properties[0].address.split(',')[0]} 95% based on her requirements. GAIN: Introducing matched buyers immediately while enthusiasm is high will create competitive tension.`,
+                    reasoning: 'High-intent buyer active in this price bracket. Early engagement significantly increases conversion probability.',
+                    draftSubject: `First look: Perfect match for your search`,
+                    draftBody: `Hi Sarah,\n\nI've just listed a property at ${properties[0].address} that I thought of you for immediately. It matches 95% of your requirements.\n\nWould you like to see it before the first open home?`,
+                    script: `Hey Sarah, Hamish here. Look, I'm standing in a living room on ${properties[0].address.split(',')[0]} and I thought of you immediately. It's got the master suite you wanted. Can you get here in 20 mins?`,
+                    status: 'pending',
+                    mode: 'demi_god',
+                    contextSummary: `**Why Sarah?**\n- 95% Match Score\n- Viewed 3 similar open homes this month`,
+                    payload: { matchedBuyer: { name: 'Sarah Jenkins', matchScore: 95 } }
+                }
+            ] : []),
+            // Simple generic action
             {
                 userId,
                 contactId: contacts[2]?.id || contacts[0]?.id,
-                actionType: 'SEND_NEWSLETTER',
-                priority: 4,
-                title: `Market Update for ${contacts[2]?.name || contacts[0]?.name}`,
-                description: 'Monthly market report ready. Contact has opted-in to updates.',
-                draftSubject: 'Auckland Market Update - January 2026',
-                draftBody: 'Hi there,\n\nHere\'s your monthly market update for the Auckland property market...',
+                actionType: 'crm_sync',
+                priority: 10,
+                title: `Unsynced Changes Detected (15)`,
+                description: 'WHY IT MATTERS: You have 15 updates in Zena that are not yet in your CRM. GAIN: Syncing now ensures your CRM remains the single source of truth.',
+                reasoning: 'Found 15 records where updatedAt > lastCrmExportAt.',
                 status: 'pending',
                 mode: 'demi_god',
-                reasoning: 'Scheduled newsletter based on contact preferences',
+                payload: { deltaCount: 15, contacts: 10, properties: 5 }
             }
         ];
 
         const createdActions = [];
         for (const action of mockActions) {
-            if (action.contactId) {
-                const created = await prisma.autonomousAction.create({
-                    data: action as any,
-                    include: {
-                        contact: { select: { id: true, name: true, emails: true } }
-                    }
-                });
-                createdActions.push(created);
-            }
+            const created = await prisma.autonomousAction.create({
+                data: action as any,
+                include: {
+                    contact: { select: { id: true, name: true, emails: true } },
+                    property: { select: { id: true, address: true } }
+                }
+            });
+            createdActions.push(created);
         }
-
-        await prisma.$disconnect();
 
         res.status(200).json({
             success: true,
@@ -345,5 +390,45 @@ export async function seedMockActions(req: Request, res: Response): Promise<void
     } catch (error) {
         console.error('Error seeding mock actions:', error);
         res.status(500).json({ error: 'Failed to seed mock actions' });
+    }
+}
+
+/**
+ * POST /api/godmode/simulate-stress
+ * Trigger a neural stress test scenario
+ */
+export async function simulateStress(req: Request, res: Response): Promise<void> {
+    try {
+        if (!req.user) {
+            res.status(401).json({ error: 'Authentication required' });
+            return;
+        }
+
+        const { scenarioName } = req.body;
+        let scenario;
+
+        switch (scenarioName) {
+            case 'hectic_weekend':
+                scenario = HECTIC_WEEKEND_SCENARIO;
+                break;
+            case 'full_god':
+                scenario = FULL_GOD_AUTONOMY_SCENARIO;
+                break;
+            case 'multi_pivot':
+                scenario = MULTI_PROPERTY_PIVOT_SCENARIO;
+                break;
+            default:
+                scenario = HECTIC_WEEKEND_SCENARIO;
+        }
+
+        const auditLog = await intelligenceSimulatorService.runScenario(req.user.userId, scenario);
+
+        res.status(200).json({
+            success: true,
+            auditLog,
+        });
+    } catch (error) {
+        console.error('Error in simulate stress:', error);
+        res.status(500).json({ error: 'Failed to run simulation' });
     }
 }

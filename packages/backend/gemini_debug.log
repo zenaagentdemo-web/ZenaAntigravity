@@ -464,3 +464,21 @@
 [2026-01-03T00:23:43.683Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"EqkDCqYDAXLI2nyuH3/56nHjW+vJQZ6zC+PW+GIL0zzi0+UKvvPfF3p1kxwRimMuDnnf/J1Gm9keO8K6NDfwTt38H2y4kLdjTp1NOKF7/hVEBx+fGLY907nR/SSc/VW56jfqF/RLnzeTknta6wjUuehlfY+grZc6cnf2HJntRLPADJy7BnN/+1Qwnr7YvGlKv9DZnj3kxg6FLDRSigt/y+fleBI5mgFzOamGF0lVsXC+tAM7Zv/JYFGRa2EweSxCBlHu64TkAr9lAngCrpor0neBUDdY7oBCHb2snzfugx61kW/DmgM/Yrc03//7LTZ1pQlNdgjd60bwwn+HoaIc9rMmW0JHQYdcA2xNVv27HiQ2BMBB050Y1PdRzzCrgQwTtIre9YMCeaNbX
 [2026-01-03T00:28:42.004Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
 [2026-01-03T00:28:45.728Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"Eu8DCuwDAXLI2nzXZRoP7LX4Dyvv53ys27h+w5KBoqIXbTvDmagyO5JaN5gBJDY9J0zJu3hXZm13z8NqpW64kK7TKoMpCsRt95ux0eV0RGwB1zPLC6dlrYdrIW42Tsk2FC4QoW8fAETxnsG9jhhczpJBTSQOwvtPhW6TxWFBVjr0FYlRVeeVJsUoMajvTOkrDnAAomG1aNfhiWbjLsRqaMCkklFVZhthClr8NTUnuuIJ0AtBnGMIwI1uUtSBmewx8WPJfRokPVyPZzRJAQysRlj74XlbZ7PbADNTAwJcp94kvuiJxTrmi/0EFsOI8tJ236drhoJcGptvw7dpPMMgXSIHCkc/IS/niU9o+2L9W9XHAifwYEeYwrYeFha92UlY5jMf2k1d4+yns
+[2026-01-06T18:16:48.605Z] Generating TTS for text: 15 Marine Parade is in the red zone, and with the ...
+[2026-01-06T18:16:53.055Z] TTS generated successfully
+[2026-01-06T19:31:08.549Z] Generating TTS for text: 108 Remuera Road is currently sitting at a 50% hea...
+[2026-01-06T19:31:13.553Z] TTS generated successfully
+[2026-01-06T19:38:51.250Z] Generating TTS for text: 108 Remuera Road is currently a coin toss. A 50% h...
+[2026-01-06T19:38:55.901Z] TTS generated successfully
+[2026-01-06T19:57:56.229Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-06T19:57:59.659Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Hello, good morning! My name is Lucy and I'm very excited to meet you.","thoughtSignature":"EpoGCpcGAXLI2nwsYcQ0TTnTlw2jhpqfq0sYTUL5CzMD0Bf6GPwzXjZL90Ps+T0YqmQcBTBIYu7LMCHYg/s1SampDTpCXCzjmUYjtsfnjWWJR9d7lUWPWqTbcxcLm8TKUVKfrJvQq58nxwo64R11eOQaRarEXjhKjUpp2bc1hoB25P7qkDa+dRaXE1cp459mvAaYU3qumR35QYaInE9D8LOh32XS8ieckhagIZmSZ9pFAAhFkElglP2ySsvCZqr8TvgKYm5bk3D0wEJGkkmfHupUPA4ZmSsxDoiPDtAXBZVeIS+h8lDNRjbfSyvMWSEn9Rn0fKHtk8QW0KPR3QxJF9+mHxiKdIZqpVDbjy8Q89d
+[2026-01-06T19:58:19.544Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-06T19:58:23.335Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"I like that idea.","thoughtSignature":"Er4ECrsEAXLI2nxfLL5LldYxMT6KgtVVuDBm+ulIgg+j7MkCvxh/Jq6d5WwOtsgcOQP6+AczBr8/PIt9nBoDNpxAst7GkpJB/mbDAh/3heSdDpsLiCn9CTdsezbzzDfztEgRdGaWylqRcVSSjX7UQIJ2b9PN9ELGI+1kQIJWz4fQ9TAIg+k1SWWXnmlKYISwXReYRYflxNtMmmBCqJiwhK4D46/lHrcoNSn+CZaQ2F2rnjx5hx7OypZGiRDzZdn9US0jEE7mvXT98HZJeoOU768JYpOrFg3CCTtIgc6awm3KzkLAjJwOH92XmQJeyrS73CY9K0z/GuzCIc5XsleOM7GMMZSYwD+xNa5GSRceDJaJv7c4PsXuWU7+ONxgq11qcF5H4z3P5TXwZf3d3hmkNfLYkLsloCbp
+[2026-01-06T20:02:44.862Z] Generating TTS for text: Let's start a strategy session! How can I help? Wh...
+[2026-01-06T20:02:47.001Z] TTS generated successfully
+[2026-01-06T20:03:06.039Z] Generating TTS for text: Let's start a strategy session! How can I help? Wh...
+[2026-01-06T20:03:06.495Z] TTS generated successfully
+[2026-01-06T20:03:17.470Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-06T20:03:21.660Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"The special instructions will be given inside the terminal.","thoughtSignature":"ErkFCrYFAXLI2nyOO/6KHSkRCsCtMKwTW82UZZjRFId/mNMnY8ytzVxTDqfxmgmZyHEOiu+91nuJHx+5rPpZmsfafiUQFL8uMwH9EneKIKCT+wzggUf1Y/qMyWVabxUhQSUglPVrI7J917618SWtw68EqMnp+lclEECF5oX0bfYDTan/smb7LOJbkl/ZjRrhMU9mA6EHNPlfxixc+febuGNI4VwG+yVFXte/NNtiJEOYvri+lfPsm8kkXXGHg7JMEcWkF4J0woxLFH57WsjtM2SSo4g/2mP8CAyMFhSk2F2QyntTq9bpzJ4Og+A8Hg0HFRnhqbEMAPLtomBx0rj3xmoXKqZxhIER+fEw8T6351HJGE3fCIbp6Z
+[2026-01-07T02:44:14.638Z] Generating TTS for text: James Chen is drifting, and at $2.8 million, we ca...
+[2026-01-07T02:44:19.564Z] TTS generated successfully

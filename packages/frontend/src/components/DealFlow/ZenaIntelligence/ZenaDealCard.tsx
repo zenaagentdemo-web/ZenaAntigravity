@@ -6,11 +6,12 @@
  */
 
 import React, { useMemo, useCallback, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Deal, STAGE_LABELS, formatCurrency, StrategySessionContext } from '../types';
 import { analyseDeal, personalisePowerMove, DealIntelligence } from './ZenaIntelligenceEngine';
 import { PowerPulse } from './PowerPulse';
 import { PowerMoveCard } from './PowerMoveCard';
+import { Zap } from 'lucide-react';
 import './ZenaDealCard.css';
 
 interface ZenaDealCardProps {
@@ -22,6 +23,8 @@ interface ZenaDealCardProps {
     compact?: boolean;
     isHighlighted?: boolean;
     isDimmed?: boolean;
+    isBatchMode?: boolean;
+    isSelected?: boolean;
 }
 
 export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
@@ -33,6 +36,8 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
     compact = false,
     isHighlighted = false,
     isDimmed = false,
+    isBatchMode = false,
+    isSelected = false,
 }) => {
     const [showPowerMove, setShowPowerMove] = useState(false);
 
@@ -62,6 +67,21 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
     const hasRisk = intelligence.riskSignals.length > 0;
     const healthClass = `zena-deal-card--${intelligence.stageHealthStatus}`;
 
+    // Extract suburb for secondary line
+    const suburb = useMemo(() => {
+        const address = deal.property?.address || '';
+        const parts = address.split(',');
+        if (parts.length > 1) {
+            return parts[1].trim();
+        }
+        return null;
+    }, [deal.property?.address]);
+
+    const mainAddress = useMemo(() => {
+        const address = deal.property?.address || 'Unknown Property';
+        return address.split(',')[0].trim();
+    }, [deal.property?.address]);
+
     // Handle Zena Live click - build context and pass to parent
     const handleZenaLiveClick = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
@@ -88,7 +108,7 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
 
     return (
         <motion.div
-            className={`zena-deal-card ${healthClass} ${compact ? 'zena-deal-card--compact' : ''} ${isHighlighted ? 'zena-deal-card--highlighted' : ''} ${isDimmed ? 'zena-deal-card--dimmed' : ''}`}
+            className={`zena-deal-card ${healthClass} ${compact ? 'zena-deal-card--compact' : ''} ${isHighlighted ? 'zena-deal-card--highlighted' : ''} ${isDimmed ? 'zena-deal-card--dimmed' : ''} ${isSelected ? 'zena-deal-card--selected' : ''}`}
             onClick={onClick}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -96,15 +116,14 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
             transition={{ duration: 0.2 }}
             layout
         >
-            {/* Tactical Brackets - Only show if not healthy to reduce visual noise */}
-            {intelligence.stageHealthStatus !== 'healthy' && (
-                <>
-                    <div className="zena-deal-card__bracket tl" />
-                    <div className="zena-deal-card__bracket tr" />
-                    <div className="zena-deal-card__bracket bl" />
-                    <div className="zena-deal-card__bracket br" />
-                </>
+            {isBatchMode && (
+                <div className={`zena-deal-card__checkbox ${isSelected ? 'zena-deal-card__checkbox--selected' : ''}`}>
+                    {isSelected && <div className="checkmark-stem"></div>}
+                    {isSelected && <div className="checkmark-kick"></div>}
+                </div>
             )}
+
+
 
             {/* Scanning Laser - Only show for warning/critical deals (ambient) */}
             {intelligence.stageHealthStatus !== 'healthy' && (
@@ -120,92 +139,104 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
             />
 
             {/* Power Pulse - visual health indicator */}
-            <PowerPulse
-                healthScore={intelligence.healthScore}
-                size={compact ? 'small' : 'medium'}
-            />
+            <div className="zena-deal-card__health-container">
+                <PowerPulse
+                    healthScore={intelligence.healthScore}
+                    size={compact ? 'small' : 'medium'}
+                />
+            </div>
 
             {/* Card Header */}
             <div className="zena-deal-card__header">
                 <div className="zena-deal-card__title-row">
                     <div className="zena-deal-card__address">
-                        {deal.property?.address || 'Unknown Property'}
+                        <span className="zena-deal-card__main-address">{mainAddress}</span>
+                        {suburb && <span className="zena-deal-card__suburb">{suburb}</span>}
                     </div>
-                    {deal.contacts && deal.contacts.length > 0 && (
-                        <div className="zena-deal-card__contact" title={`Primary Contact: ${deal.contacts[0].name}`}>
-                            <span className="contact-icon">👤</span>
-                            {deal.contacts[0].name}
-                        </div>
-                    )}
                 </div>
-                <div className="zena-deal-card__stage" data-status={intelligence.stageHealthStatus}>
-                    {stageLabel}
+                <div className="zena-deal-card__stage-column">
+                    <div className="zena-deal-card__stage" data-status={intelligence.stageHealthStatus}>
+                        {stageLabel}
+                    </div>
+                    <div className="zena-deal-card__days">
+                        {intelligence.daysInStage}d
+                    </div>
                 </div>
             </div>
 
             {/* Deal Info */}
-            <div className="zena-deal-card__info">
+            <div className="zena-deal-card__info-bar">
                 <div className="zena-deal-card__value">
                     {deal.dealValue ? formatCurrency(deal.dealValue) : 'TBC'}
                 </div>
-                <div className="zena-deal-card__days">
-                    {intelligence.daysInStage}d in stage
-                </div>
             </div>
 
-
-
-            {/* Zena Coaching Insight */}
-            {hasRisk && (
-                <div className="zena-deal-card__insight">
-                    <img src="/assets/icons/lightbulb_premium.png" alt="Insight" className="premium-icon--lightbulb" />
-                    <span className="zena-deal-card__insight-text">
-                        {intelligence.coachingInsight}
-                    </span>
+            {/* Coaching Snippet on face */}
+            {intelligence.coachingInsight && (
+                <div className="zena-deal-card__surface-insight">
+                    <span className="insight-pulse"></span>
+                    <p className="insight-text">{intelligence.coachingInsight}</p>
                 </div>
             )}
 
-            {/* Power Move Button */}
-            {personalisedPowerMove && (
+            {/* Proactive Action Button */}
+            {intelligence.needsLiveSession && !showPowerMove && (
                 <button
-                    className="zena-deal-card__power-move-btn"
-                    onClick={handlePowerMoveClick}
+                    className="zena-deal-card__proactive-action"
+                    onClick={handleZenaLiveClick}
                 >
-                    <img src="/assets/icons/lightning_bolt_premium.png" alt="Power Move" className="premium-icon--bolt" />
-                    <span className="zena-deal-card__power-move-text">
-                        {personalisedPowerMove.headline}
-                    </span>
+                    <Zap size={14} />
+                    <span>STRATEGY SESSION</span>
                 </button>
             )}
 
-            {/* Expandable Power Move Card */}
-            {showPowerMove && personalisedPowerMove && (
-                <div className="zena-deal-card__power-move-container">
-                    <PowerMoveCard
-                        powerMove={personalisedPowerMove}
-                        onExecute={(action, content) => handlePowerMoveExecute(action, content)}
-                        onDismiss={() => setShowPowerMove(false)}
-                        compact={compact}
+            {(hasRisk || personalisedPowerMove) && (
+                <div className={`zena-deal-card__intelligence-toggle ${showPowerMove ? 'zena-deal-card__intelligence-toggle--active' : ''} ${intelligence.stageHealthStatus === 'critical' ? 'zena-deal-card__intelligence-toggle--pulsate' : ''}`}
+                    onClick={handlePowerMoveClick}
+                    title={showPowerMove ? "Hide Intelligence" : "Show Intelligence Suggestions"}
+                >
+                    <img src={intelligence.stageHealthStatus === 'critical' || intelligence.stageHealthStatus === 'warning' ? "/assets/icons/lightning_bolt_premium.png" : "/assets/icons/lightbulb_premium.png"}
+                        alt="Intelligence"
+                        className="zena-deal-card__intel-icon"
                     />
                 </div>
             )}
 
-            {/* Needs Zena Live indicator - clickable button */}
-            {intelligence.needsLiveSession && (
-                <button
-                    className="zena-deal-card__live-indicator"
-                    onClick={handleZenaLiveClick}
-                >
-                    <span className="zena-deal-card__live-icon">🧠</span>
-                    <span className="zena-deal-card__live-text">NEEDS ZENA PREMIUM</span>
-                </button>
-            )}
+            <AnimatePresence>
+                {showPowerMove && (
+                    <motion.div
+                        className="zena-deal-card__expanded-content"
+                        onClick={(e) => e.stopPropagation()}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                        {/* Power Move Card */}
+                        {personalisedPowerMove && (
+                            <div className="zena-deal-card__power-move-container">
+                                <PowerMoveCard
+                                    powerMove={personalisedPowerMove}
+                                    onExecute={(action, content) => handlePowerMoveExecute(action, content)}
+                                    onDismiss={() => setShowPowerMove(false)}
+                                    compact={compact}
+                                />
+                            </div>
+                        )}
 
-            {/* Tactical Bitstream Raw Data */}
-            <div className="zena-deal-card__bitstream">
-                ID:{deal.id.slice(0, 8)} | HT:{intelligence.healthScore}% | ST:{intelligence.stageHealthStatus.toUpperCase()} | VEL:{intelligence.healthVelocity > 0 ? '+' : ''}{intelligence.healthVelocity}%
-            </div>
-
+                        {/* Zena Live Action (fallback if not proactive button) */}
+                        {!intelligence.needsLiveSession && intelligence.needsLiveSession && (
+                            <button
+                                className="zena-deal-card__live-indicator"
+                                onClick={handleZenaLiveClick}
+                            >
+                                <span className="zena-deal-card__live-icon">🧠</span>
+                                <span className="zena-deal-card__live-text">START STRATEGY SESSION</span>
+                            </button>
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 };

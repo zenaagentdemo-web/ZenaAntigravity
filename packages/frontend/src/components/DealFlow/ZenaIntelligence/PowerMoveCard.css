@@ -2,38 +2,40 @@
  * PowerMoveCard - Styles for one-tap action cards
  */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Font imported globally via tokens.css */
 
 .power-move-card {
     position: relative;
-    background: linear-gradient(135deg, rgba(0, 243, 255, 0.08) 0%, rgba(188, 19, 254, 0.05) 100%);
-    border: 1px solid rgba(0, 243, 255, 0.3);
+    background: linear-gradient(135deg, rgba(15, 15, 25, 0.95) 0%, rgba(5, 5, 10, 0.98) 100%);
+    border: 1px solid rgba(0, 243, 255, 0.2);
     border-radius: 12px;
-    padding: 16px;
+    padding: 18px;
     overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
 }
 
 /* Priority variants */
 .power-move-card--high {
-    border-color: rgba(255, 149, 0, 0.5);
-    background: linear-gradient(135deg, rgba(255, 149, 0, 0.08) 0%, rgba(255, 0, 60, 0.05) 100%);
+    border-color: rgba(255, 149, 0, 0.4);
+    box-shadow: 0 0 20px rgba(255, 149, 0, 0.1);
 }
 
 .power-move-card--critical {
     border-color: rgba(255, 0, 60, 0.5);
-    background: linear-gradient(135deg, rgba(255, 0, 60, 0.08) 0%, rgba(255, 0, 60, 0.12) 100%);
-    animation: critical-pulse 2s infinite;
+    background: linear-gradient(135deg, rgba(30, 10, 15, 0.95) 0%, rgba(15, 5, 5, 0.98) 100%);
+    animation: critical-pulse 3s infinite;
 }
 
 @keyframes critical-pulse {
 
     0%,
     100% {
-        box-shadow: 0 0 10px rgba(255, 0, 60, 0.2);
+        box-shadow: 0 8px 32px rgba(255, 0, 60, 0.1);
     }
 
     50% {
-        box-shadow: 0 0 20px rgba(255, 0, 60, 0.4);
+        box-shadow: 0 8px 32px rgba(255, 0, 60, 0.3);
     }
 }
 
@@ -59,7 +61,7 @@
 }
 
 .power-move-card__label {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-family-sans);
     font-size: 0.625rem;
     font-weight: 600;
     letter-spacing: 0.1em;
@@ -114,7 +116,7 @@
     background: none;
     border: none;
     color: rgba(0, 243, 255, 0.8);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-family-sans);
     font-size: 0.75rem;
     cursor: pointer;
     padding: 4px 0;
@@ -164,36 +166,45 @@
 .power-move-card__copy-btn,
 .power-move-card__execute-btn {
     flex: 1;
-    padding: 10px 16px;
+    padding: 12px 16px;
     border-radius: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-family: var(--font-family-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .power-move-card__copy-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .power-move-card__copy-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
 }
 
 .power-move-card__execute-btn {
-    background: linear-gradient(135deg, #00f3ff 0%, #00c4ff 100%);
+    background: linear-gradient(135deg, #00f3ff 0%, #00d2ff 100%);
     border: none;
-    color: #0a0a12;
+    color: #05050a;
+    box-shadow: 0 4px 15px rgba(0, 243, 255, 0.2);
 }
 
 .power-move-card__execute-btn:hover {
-    background: linear-gradient(135deg, #33f5ff 0%, #33d1ff 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 243, 255, 0.3);
+    background: linear-gradient(135deg, #33f5ff 0%, #00e5ff 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 243, 255, 0.4);
+}
+
+.power-move-card__execute-btn:active {
+    transform: translateY(0);
 }

@@ -1,9 +1,8 @@
 // Zena Actions Service - AI-powered proactive deal actions
-import { PrismaClient, Deal, ZenaAction } from '@prisma/client';
+import { Deal, ZenaAction } from '@prisma/client';
 import { DealCondition } from '../models/types.js';
 import { askZenaService } from './ask-zena.service.js';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 // Action types
 export type ZenaActionType =

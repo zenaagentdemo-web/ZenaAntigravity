@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
 import { aiProcessingService } from '../services/ai-processing.service.js';
 import { focusWaitingService } from '../services/focus-waiting.service.js';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../config/database.js';
 
 export class ThreadsController {
   /**
