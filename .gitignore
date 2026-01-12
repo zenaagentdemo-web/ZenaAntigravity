@@ -64,3 +64,27 @@ lerna-debug.log*
 
 # Ignore large datasets
 /data/personality-datasets/
+
+# --- Local logs / debug output (do not commit) ---
+*.log
+**/*.log
+*.pid
+*.pid.lock
+
+# env files (never commit)
+.env
+.env.*
+!**/.env.example
+!**/.env.sample
+
+# runtime/debug artefacts
+packages/backend/sessions.json
+packages/backend/logs/
+packages/backend/debug_output*.txt
+dev.log
+extraction-diag.log
+ngrok.log
+
+# local tooling / scratch
+brain/
+check_*.ts
