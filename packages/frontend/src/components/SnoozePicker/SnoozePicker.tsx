@@ -1,11 +1,5 @@
-/**
- * SnoozePicker Component
- * 
- * Modal for selecting snooze time for threads.
- * Provides quick options and custom date/time picker.
- */
-
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import './SnoozePicker.css';
 
 interface SnoozePickerProps {
@@ -22,28 +16,34 @@ interface SnoozeOption {
 
 const SNOOZE_OPTIONS: SnoozeOption[] = [
     {
-        label: 'Later today',
-        icon: '☕',
+        label: '30 minutes',
+        icon: '⏱️',
         getDate: () => {
             const date = new Date();
-            date.setHours(date.getHours() + 3);
+            date.setMinutes(date.getMinutes() + 30);
             return date;
         }
     },
     {
-        label: 'This evening',
-        icon: '🌙',
+        label: '1 hour',
+        icon: '🕐',
         getDate: () => {
             const date = new Date();
-            date.setHours(18, 0, 0, 0);
-            if (date <= new Date()) {
-                date.setDate(date.getDate() + 1);
-            }
+            date.setHours(date.getHours() + 1);
             return date;
         }
     },
     {
-        label: 'Tomorrow morning',
+        label: '4 hours',
+        icon: '🕓',
+        getDate: () => {
+            const date = new Date();
+            date.setHours(date.getHours() + 4);
+            return date;
+        }
+    },
+    {
+        label: 'Tomorrow',
         icon: '🌅',
         getDate: () => {
             const date = new Date();
@@ -53,31 +53,11 @@ const SNOOZE_OPTIONS: SnoozeOption[] = [
         }
     },
     {
-        label: 'Tomorrow afternoon',
-        icon: '☀️',
-        getDate: () => {
-            const date = new Date();
-            date.setDate(date.getDate() + 1);
-            date.setHours(14, 0, 0, 0);
-            return date;
-        }
-    },
-    {
         label: 'Next week',
         icon: '📅',
         getDate: () => {
             const date = new Date();
             date.setDate(date.getDate() + 7);
-            date.setHours(9, 0, 0, 0);
-            return date;
-        }
-    },
-    {
-        label: 'Next month',
-        icon: '🗓️',
-        getDate: () => {
-            const date = new Date();
-            date.setMonth(date.getMonth() + 1);
             date.setHours(9, 0, 0, 0);
             return date;
         }
@@ -137,7 +117,7 @@ export const SnoozePicker: React.FC<SnoozePickerProps> = ({
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <div className="snooze-picker__backdrop" onClick={onClose}>
             <div
                 className="snooze-picker__modal"
@@ -233,7 +213,8 @@ export const SnoozePicker: React.FC<SnoozePickerProps> = ({
                     </div>
                 )}
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

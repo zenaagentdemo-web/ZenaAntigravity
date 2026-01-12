@@ -1,8 +1,9 @@
 import prisma from '../config/database.js';
-import { logger } from './logger.service.js';
-import { websocketService } from './websocket.service.js';
-import { tokenTrackingService } from './token-tracking.service.js';
 import { contextRetrieverService } from './context-retriever.service.js';
+import { logger } from './logger.service.js';
+import { tokenTrackingService } from './token-tracking.service.js';
+import { userPersonaService } from './user-persona.service.js';
+import { websocketService } from './websocket.service.js';
 
 export interface PropertyHeat {
     level: 'hot' | 'active' | 'cold';
@@ -186,11 +187,19 @@ export class PropertyIntelligenceService {
             }
         }
 
-        // Call LLM for intelligent analysis
-        const prediction = await this.analyzePropertyWithLLM({
+        // 3b. Fetch User Persona for dynamic prompt adjustment
+        const persona = await userPersonaService.getPersona(userId);
+        const personaSnippet = userPersonaService.getSystemPromptSnippet(persona);
+
+        // 3c. Fetch Synapse Layer context (human + asset mesh)
+        const synapseContext = await contextRetrieverService.getUnifiedContext(userId, 'property', propertyId);
+        const synapsePrompt = contextRetrieverService.formatForPrompt(synapseContext);
+
+        // Build final context for LLM
+        const context = {
             address: property.address,
-            status: property.status || 'active',
-            type: property.type || 'residential',
+            status: property.status,
+            type: property.type,
             listingPrice: property.listingPrice ? Number(property.listingPrice) : null,
             bedrooms: property.bedrooms,
             bathrooms: property.bathrooms,
@@ -200,13 +209,15 @@ export class PropertyIntelligenceService {
             hasActiveDeals,
             eventContext,
             threadContext,
-            buyerPatternContext,
             viewingCount: property.viewingCount || 0,
             inquiryCount: property.inquiryCount || 0,
-            synapseContext: contextRetrieverService.formatForPrompt(
-                await contextRetrieverService.getUnifiedContext(userId, 'property', propertyId)
-            )
-        });
+            buyerPatternContext,
+            synapseContext: synapsePrompt,
+            personaSnippet
+        };
+
+        // Call LLM for intelligent analysis
+        const prediction = await this.analyzePropertyWithLLM(context);
 
         // Store prediction in database
         const stored = await prisma.propertyPrediction.upsert({
@@ -288,6 +299,7 @@ export class PropertyIntelligenceService {
         inquiryCount: number;
         buyerPatternContext: string;
         synapseContext: string;
+        personaSnippet: string;
     }): Promise<{
         momentumScore: number;
         buyerInterestLevel: 'Low' | 'Medium' | 'High' | 'Hot';
@@ -305,6 +317,7 @@ export class PropertyIntelligenceService {
         }
 
         const prompt = `You are Zena, an elite AI real estate intelligence agent. Analyze this property listing and provide strategic intelligence.
+${context.personaSnippet}
 
 MARKET CONTEXT:
 You have access to Google Search. You MUST use it to find the latest Late 2025 market trends. Do not rely on generic data.

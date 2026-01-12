@@ -314,11 +314,147 @@ export const ContactsPage: React.FC = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     if (isSmartSearchActive) setIsSmartSearchActive(false);
+    // Clear any existing proactive suggestion when user types
+    if (proactiveSuggestion) setProactiveSuggestion(null);
   };
+
+  // ============================================
+  // GLOBAL PROACTIVITY PHASE 1 - CONTACTS
+  // Proactive Intent Detection
+  // ============================================
+  const [proactiveSuggestion, setProactiveSuggestion] = useState<{
+    message: string;
+    action: string;
+    prefill?: { name?: string };
+  } | null>(null);
+  const [intentDebounceTimer, setIntentDebounceTimer] = useState<NodeJS.Timeout | null>(null);
+
+  // Debounced intent analysis - calls backend after 600ms of no typing
+  useEffect(() => {
+    if (intentDebounceTimer) clearTimeout(intentDebounceTimer);
+
+    if (searchQuery.trim().length >= 3) {
+      const timer = setTimeout(async () => {
+        try {
+          const res = await api.post<{
+            intentDetected: boolean;
+            intentType: string;
+            suggestion?: {
+              message: string;
+              action: string;
+              prefill?: { name?: string };
+            };
+          }>('/api/ask/analyze-intent', { text: searchQuery, context: 'contacts' });
+
+          if (res.data.intentDetected && res.data.suggestion) {
+            setProactiveSuggestion(res.data.suggestion);
+          } else {
+            setProactiveSuggestion(null);
+          }
+        } catch (err) {
+          console.warn('[ContactsPage] Intent analysis failed:', err);
+        }
+      }, 600);
+      setIntentDebounceTimer(timer);
+    } else {
+      setProactiveSuggestion(null);
+    }
+
+    return () => {
+      if (intentDebounceTimer) clearTimeout(intentDebounceTimer);
+    };
+  }, [searchQuery]);
+
+  // Handle proactive suggestion action
+  // GLOBAL PROACTIVITY INVARIANT 1: Context Must Flow Forward
+  const handleProactiveSuggestionClick = () => {
+    if (proactiveSuggestion?.action === 'open_new_contact_modal') {
+      // Pre-fill the new contact modal with extracted name
+      const extractedName = proactiveSuggestion.prefill?.name || '';
+      setNewContactPrefill({ name: extractedName });
+      setIsNewContactModalOpen(true);
+      setProactiveSuggestion(null);
+      setSearchQuery('');
+    }
+  };
+
+  // ============================================
+  // GLOBAL PROACTIVITY PHASE 1 - FEATURE 2
+  // Real-Time Role Prediction
+  // ============================================
+  const [roleSuggestions, setRoleSuggestions] = useState<Record<string, {
+    suggestedRole: string | null;
+    confidence: number;
+    reason: string;
+    shouldSuggest: boolean;
+  }>>({});
+
+  // Analyze roles for visible contacts when they load
+  useEffect(() => {
+    const analyzeRoles = async () => {
+      if (contacts.length === 0) return;
+
+      // Analyze first 10 contacts (to avoid overwhelming API)
+      const toAnalyze = contacts.slice(0, 10);
+
+      for (const contact of toAnalyze) {
+        if (roleSuggestions[contact.id]) continue; // Already analyzed
+
+        try {
+          const res = await api.post<{
+            suggestedRole: string | null;
+            confidence: number;
+            reason: string;
+            shouldSuggest: boolean;
+          }>('/api/ask/analyze-contact-role', { contactId: contact.id });
+
+          if (res.data.shouldSuggest) {
+            setRoleSuggestions(prev => ({
+              ...prev,
+              [contact.id]: res.data
+            }));
+          }
+        } catch (err) {
+          console.warn('[ContactsPage] Role analysis failed for', contact.id);
+        }
+      }
+    };
+
+    // Delay analysis slightly to prioritize initial render
+    const timer = setTimeout(analyzeRoles, 1500);
+    return () => clearTimeout(timer);
+  }, [contacts]);
+
+  // Handle one-click role update
+  const handleRoleSuggestionClick = async (contactId: string, newRole: string) => {
+    try {
+      await api.patch(`/api/contacts/${contactId}`, { role: newRole });
+
+      // Update local state
+      setContacts(prev => prev.map(c =>
+        c.id === contactId ? { ...c, role: newRole as any } : c
+      ));
+
+      // Remove suggestion
+      setRoleSuggestions(prev => {
+        const updated = { ...prev };
+        delete updated[contactId];
+        return updated;
+      });
+
+      addToast('success', `Role updated to ${ROLE_CONFIG[newRole]?.label || newRole}`);
+    } catch (err) {
+      console.error('[ContactsPage] Failed to update role:', err);
+      addToast('error', 'Failed to update role');
+    }
+  };
+
   const [isBatchMode, setIsBatchMode] = useState(false);
   const [batchModeType, setBatchModeType] = useState<'full' | 'export' | null>(null);
   const [showComposeModal, setShowComposeModal] = useState(false);
   const [isNewContactModalOpen, setIsNewContactModalOpen] = useState(false);
+  // GLOBAL PROACTIVITY: Pre-fill data for new contact modal
+  const [newContactPrefill, setNewContactPrefill] = useState<{ name?: string } | null>(null);
   const [targetContact, setTargetContact] = useState<Contact | null>(null);
   const [draftSubject, setDraftSubject] = useState('');
   const [draftMessage, setDraftMessage] = useState('');
@@ -330,6 +466,37 @@ export const ContactsPage: React.FC = () => {
   const [selectedContactForIntel, setSelectedContactForIntel] = useState<Contact | null>(null);
   const [isLoadingStrategic, setIsLoadingStrategic] = useState(false);
   const [contactStrategicActions, setContactStrategicActions] = useState<StrategicAction[]>([]);
+
+  // ============================================
+  // GLOBAL PROACTIVITY - FEATURE 4
+  // Relationship Decay / Nurture Alerts
+  // ============================================
+  const [nurtureScores, setNurtureScores] = useState<Record<string, {
+    score: number;
+    status: 'hot' | 'warm' | 'cold' | 'stale';
+    daysSinceContact: number;
+    recommendation?: string;
+  }>>({});
+
+  // Fetch nurture scores for visible contacts
+  useEffect(() => {
+    const fetchNurtureScores = async () => {
+      if (contacts.length === 0) return;
+
+      const contactIds = contacts.slice(0, 20).map(c => c.id);
+
+      try {
+        const res = await api.post<{ nurtureScores: Record<string, any> }>('/api/contacts/batch-nurture-scores', { contactIds });
+        setNurtureScores(res.data.nurtureScores);
+      } catch (err) {
+        console.warn('[ContactsPage] Nurture score fetch failed:', err);
+      }
+    };
+
+    // Delay to prioritize initial render
+    const timer = setTimeout(fetchNurtureScores, 2000);
+    return () => clearTimeout(timer);
+  }, [contacts]);
 
   const handleOpenContactIntel = (contact: Contact) => {
     setSelectedContactForIntel(contact);
@@ -1088,6 +1255,64 @@ export const ContactsPage: React.FC = () => {
             </button>
           </div>
 
+          {/* GLOBAL PROACTIVITY: Proactive Intent Suggestion Banner */}
+          {proactiveSuggestion && (
+            <div className="proactive-suggestion-banner" style={{
+              marginTop: '12px',
+              padding: '14px 18px',
+              background: 'linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 212, 255, 0.08))',
+              border: '1px solid rgba(0, 255, 136, 0.4)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '16px',
+              animation: 'fadeSlideIn 0.3s ease-out'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Sparkles size={18} style={{ color: '#00FF88' }} />
+                <span style={{ color: 'white', fontSize: '14px', fontWeight: 500 }}>
+                  {proactiveSuggestion.message}
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button
+                  onClick={handleProactiveSuggestionClick}
+                  style={{
+                    padding: '8px 18px',
+                    background: 'linear-gradient(135deg, #00FF88, #00D4FF)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#0a1628',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <Plus size={14} />
+                  Add Contact
+                </button>
+                <button
+                  onClick={() => setProactiveSuggestion(null)}
+                  style={{
+                    padding: '8px 12px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    cursor: 'pointer',
+                    fontSize: '12px'
+                  }}
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* AI Spotlight Rich Answer */}
           {isSmartSearchActive && smartSearchRichResponse && (
             <div className="contacts-page__ai-spotlight">
@@ -1275,11 +1500,19 @@ export const ContactsPage: React.FC = () => {
                       )}
                       <div className="contact-list-item__name">
                         <div
-                          className="contact-list-item__avatar"
+                          className={`contact-list-item__avatar ${nurtureScores[contact.id]?.status === 'stale' ? 'nurture-stale' :
+                              nurtureScores[contact.id]?.status === 'cold' ? 'nurture-cold' : ''
+                            }`}
                           style={{
                             '--heat-score': `${contact.engagementScore}%`,
-                            '--heat-score-decimal': (contact.engagementScore || 0) / 100
+                            '--heat-score-decimal': (contact.engagementScore || 0) / 100,
+                            ...(nurtureScores[contact.id]?.status === 'stale' ? {
+                              boxShadow: '0 0 12px 3px rgba(255, 100, 100, 0.6), 0 0 20px 6px rgba(255, 50, 50, 0.3)'
+                            } : nurtureScores[contact.id]?.status === 'cold' ? {
+                              boxShadow: '0 0 10px 2px rgba(255, 180, 0, 0.5), 0 0 16px 4px rgba(255, 150, 0, 0.2)'
+                            } : {})
                           } as any}
+                          title={nurtureScores[contact.id]?.recommendation || ''}
                         >
                           {getInitials(contact.name)}
                         </div>
@@ -1310,6 +1543,35 @@ export const ContactsPage: React.FC = () => {
                       </div>
                       <div className="contact-list-item__role">
                         <span className="role-tag" style={{ borderLeftColor: config.color }}>{config.label}</span>
+                        {/* GLOBAL PROACTIVITY: Role Suggestion Badge */}
+                        {roleSuggestions[contact.id]?.shouldSuggest && (
+                          <button
+                            className="role-suggestion-badge"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRoleSuggestionClick(contact.id, roleSuggestions[contact.id].suggestedRole!);
+                            }}
+                            title={roleSuggestions[contact.id].reason}
+                            style={{
+                              marginLeft: '8px',
+                              padding: '3px 8px',
+                              background: 'linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 212, 255, 0.1))',
+                              border: '1px solid rgba(0, 255, 136, 0.4)',
+                              borderRadius: '6px',
+                              color: '#00FF88',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            <Sparkles size={10} />
+                            → {ROLE_CONFIG[roleSuggestions[contact.id].suggestedRole!]?.label || roleSuggestions[contact.id].suggestedRole}
+                          </button>
+                        )}
                       </div>
                       <div className="contact-list-item__email">
                         {contact.emails[0] || '-'}
@@ -1508,8 +1770,13 @@ export const ContactsPage: React.FC = () => {
         isNewContactModalOpen && (
           <NewContactModal
             isOpen={isNewContactModalOpen}
-            onClose={() => setIsNewContactModalOpen(false)}
+            onClose={() => {
+              setIsNewContactModalOpen(false);
+              setNewContactPrefill(null); // Clear prefill on close
+            }}
             onSave={handleSaveContact}
+            initialData={newContactPrefill}
+            title={newContactPrefill?.name ? `Add Contact: ${newContactPrefill.name}` : 'Add New Contact'}
           />
         )
       }
@@ -1566,22 +1833,19 @@ export const ContactsPage: React.FC = () => {
         isOpen={isIntelModalOpen}
         onClose={() => setIsIntelModalOpen(false)}
         contactId={selectedContactForIntel?.id || ''}
-        contactName={selectedContactForIntel?.name || 'Contact'}
-        contactRole={selectedContactForIntel?.role || 'buyer'}
-        intelScore={selectedContactForIntel?.engagementScore || 0}
-        momentumVelocity={selectedContactForIntel?.engagementVelocity || 0}
-        isLoadingStrategic={isLoadingStrategic}
-        strategicActions={contactStrategicActions}
+        contactName={selectedContactForIntel?.name || ''}
+        contactRole={selectedContactForIntel?.role || 'other'}
+        intelScore={selectedContactForIntel?.engagementScore || selectedContactForIntel?.scoringData?.intelScore || 0}
+        momentumVelocity={selectedContactForIntel?.engagementVelocity || selectedContactForIntel?.scoringData?.momentum || 0}
         onExecuteStrategy={handleExecuteContactStrategy}
-        onImproveNow={(id, context) => {
-          if (selectedContactForIntel) {
-            handleImproveNow(selectedContactForIntel)({
-              contactName: selectedContactForIntel.name,
-              subject: 'Action Request',
-              body: '',
-              context
-            });
-          }
+        onImproveNow={(action) => {
+          handleOpenCompose(
+            selectedContactForIntel!,
+            action.title,
+            '',
+            `Improvement Action: ${action.title}. Recommended by Zena.`
+          );
+          setIsIntelModalOpen(false);
         }}
       />
 

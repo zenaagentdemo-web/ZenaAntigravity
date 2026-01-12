@@ -23,6 +23,8 @@ export type ErrorCallback = (error: Error) => void;
 export type LiveTranscriptCallback = (text: string, isFinal: boolean) => void;
 export type UserTranscriptCallback = (text: string, isFinal: boolean) => void;
 export type LiveSourcesCallback = (formattedText: string, sources: string[]) => void;
+export type AgentToolCallCallback = (payload: any) => void;
+export type AgentMessageCallback = (payload: { message: string }) => void;
 
 class RealTimeDataService {
   private ws: WebSocket | null = null;
@@ -40,6 +42,8 @@ class RealTimeDataService {
   private liveTranscriptCallbacks: Set<LiveTranscriptCallback> = new Set();
   private userTranscriptCallbacks: Set<UserTranscriptCallback> = new Set();
   private liveSourcesCallbacks: Set<LiveSourcesCallback> = new Set();
+  private agentToolCallCallbacks: Set<AgentToolCallCallback> = new Set();
+  private agentMessageCallbacks: Set<AgentMessageCallback> = new Set();
 
   private currentData: DashboardData | null = null;
   private isConnected = false;
@@ -311,6 +315,15 @@ class RealTimeDataService {
           if (message.payload?.formattedText) {
             this.notifyLiveSources(message.payload.formattedText, message.payload.sources || []);
           }
+          break;
+
+        case 'agent.tool_call':
+          console.log('[RealTime] Agent tool call result:', message.payload);
+          this.notifyAgentToolCall(message.payload);
+          break;
+
+        case 'agent.message':
+          this.notifyAgentMessage(message.payload);
           break;
 
         default:
@@ -674,6 +687,30 @@ class RealTimeDataService {
 
   private notifyLiveSources(formattedText: string, sources: string[]): void {
     this.liveSourcesCallbacks.forEach(cb => cb(formattedText, sources));
+  }
+
+  /**
+   * Subscribe to agent tool calls
+   */
+  onAgentToolCall(callback: AgentToolCallCallback): () => void {
+    this.agentToolCallCallbacks.add(callback);
+    return () => this.agentToolCallCallbacks.delete(callback);
+  }
+
+  private notifyAgentToolCall(payload: any): void {
+    this.agentToolCallCallbacks.forEach(cb => cb(payload));
+  }
+
+  /**
+   * Subscribe to agent messages
+   */
+  onAgentMessage(callback: AgentMessageCallback): () => void {
+    this.agentMessageCallbacks.add(callback);
+    return () => this.agentMessageCallbacks.delete(callback);
+  }
+
+  private notifyAgentMessage(payload: any): void {
+    this.agentMessageCallbacks.forEach(cb => cb(payload));
   }
 
   /**

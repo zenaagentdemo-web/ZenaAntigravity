@@ -14,15 +14,17 @@ interface ZenaDatePickerProps {
     onChange: (value: string) => void;
     placeholder?: string;
     appointments?: Appointment[];
+    defaultOpen?: boolean;
 }
 
 export const ZenaDatePicker: React.FC<ZenaDatePickerProps> = ({
     value,
     onChange,
     placeholder = "Select date and time",
-    appointments = []
+    appointments = [],
+    defaultOpen = false
 }) => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(defaultOpen);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
     const [currentDate, setCurrentDate] = useState(value ? new Date(value) : new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(value ? new Date(value) : null);

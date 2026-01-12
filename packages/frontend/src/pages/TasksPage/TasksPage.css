@@ -20,6 +20,90 @@
     z-index: 10;
 }
 
+/* ============================================
+   God Mode System Status Banner
+   ============================================ */
+.tasks-page .godmode-system-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(0, 212, 255, 0.1) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.tasks-page .godmode-system-status.full_god {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.15) 100%);
+    border-color: rgba(255, 215, 0, 0.4);
+}
+
+.tasks-page .godmode-system-status.demi_god {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(0, 212, 255, 0.1) 100%);
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.tasks-page .godmode-status-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tasks-page .godmode-icon {
+    color: #8b5cf6;
+}
+
+.tasks-page .godmode-system-status.full_god .godmode-icon {
+    color: #ffd700;
+}
+
+.tasks-page .godmode-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tasks-page .godmode-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tasks-page .godmode-description {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.tasks-page .godmode-pulse-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #8b5cf6;
+    animation: godmodePulse 2s infinite;
+}
+
+.tasks-page .godmode-system-status.full_god .godmode-pulse-indicator {
+    background: #ffd700;
+}
+
+@keyframes godmodePulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.3);
+    }
+}
+
 /* --- Header Section --- */
 .tasks-page__header {
     display: flex;
@@ -48,6 +132,23 @@
     letter-spacing: -0.02em;
 }
 
+/* God Mode Themes */
+[data-godmode="demi_god"] .tasks-page__title {
+    background: linear-gradient(135deg, #FFF 0%, #A78BFA 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+}
+
+[data-godmode="full_god"] .tasks-page__title {
+    background: linear-gradient(135deg, #FFF 0%, #FCD34D 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
 .tasks-page__subtitle {
     font-size: 0.9rem;
     color: var(--text-secondary-ht);
@@ -62,23 +163,23 @@
 }
 
 .tasks-page__add-btn {
-    background: #00FF88;
-    border: none;
-    color: #000;
-    padding: 0.75rem 1.25rem;
-    border-radius: 12px;
-    font-weight: 700;
-    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #00D4FF 0%, #00B4D8 100%);
+    border: none;
+    border-radius: 8px;
+    color: #0A0A0F;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 200ms ease;
 }
 
 .tasks-page__add-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 25px rgba(0, 255, 136, 0.5);
+    box-shadow: 0 8px 20px rgba(0, 212, 255, 0.4);
 }
 
 /* --- Controls Section --- */
@@ -342,23 +443,25 @@
 }
 
 .tasks-section__title {
-    font-size: 0.9rem;
-    font-weight: 700;
+    font-size: 1.1rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
     margin: 0;
+    color: inherit;
 }
 
 .tasks-section__count {
     background: rgba(255, 255, 255, 0.1);
-    padding: 0.15rem 0.5rem;
+    padding: 0.2rem 0.75rem;
     border-radius: 100px;
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: 0.85rem;
+    font-weight: 800;
 }
 
 .section--overdue .tasks-section__header {
     color: #FF4757;
+    filter: drop-shadow(0 0 10px rgba(255, 71, 87, 0.3));
 }
 
 .section--overdue .tasks-section__count {
@@ -366,20 +469,34 @@
     color: #FF4757;
 }
 
-.section--today .tasks-section__header {
-    color: #00FF88;
+.section--today .tasks-section__header,
+.section--green .tasks-section__header,
+.section--tomorrow .tasks-section__header,
+.section--day .tasks-section__header,
+.section--property .tasks-section__header {
+    color: #00FF88 !important;
+    filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.4));
 }
 
-.section--today .tasks-section__count {
+.section--today .tasks-section__count,
+.section--green .tasks-section__count,
+.section--tomorrow .tasks-section__count,
+.section--day .tasks-section__count,
+.section--property .tasks-section__count {
     background: rgba(0, 255, 136, 0.2);
     color: #00FF88;
 }
 
-.section--week .tasks-section__header {
-    color: #00D4FF;
+.section--week .tasks-section__header,
+.section--later .tasks-section__header,
+.section--client .tasks-section__header {
+    color: #00D4FF !important;
+    filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.4));
 }
 
-.section--week .tasks-section__count {
+.section--week .tasks-section__count,
+.section--later .tasks-section__count,
+.section--client .tasks-section__count {
     background: rgba(0, 212, 255, 0.2);
     color: #00D4FF;
 }
@@ -426,20 +543,129 @@
     transform: translateX(4px);
 }
 
+.task-card--completing {
+    pointer-events: none;
+    animation: cardComplete 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardComplete {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    30% {
+        transform: scale(1.02);
+        background: rgba(0, 255, 136, 0.1);
+        border-color: #00FF88;
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+    }
+
+    100% {
+        transform: scale(0.95) translateY(-10px);
+        opacity: 0;
+        filter: blur(10px);
+    }
+}
+
 .task-card__checkbox {
     background: none;
     border: none;
     color: var(--priority-color);
     padding: 0;
-    cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
     margin-top: 2px;
 }
 
-.task-card__checkbox:hover {
-    transform: scale(1.15);
-    filter: drop-shadow(0 0 8px var(--priority-glow));
+
+
+.task-card--completing .task-card__checkbox {
+    color: #00FF88;
+    transform: scale(1.2);
+    animation: checkSuccess 0.4s ease-out forwards;
+}
+
+@keyframes checkSuccess {
+    from {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.4);
+    }
+
+    to {
+        transform: scale(1.2);
+    }
+}
+
+.task-card__checkbox--detected-done {
+    position: relative;
+    color: #00FF88;
+    animation: detectedPulse 2s infinite;
+}
+
+@keyframes detectedPulse {
+    0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.4));
+    }
+
+    50% {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.8));
+    }
+
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.4));
+    }
+}
+
+.detected-check {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.task-card__title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.detected-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    color: #00FF88;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    animation: badgeGlow 2s infinite;
+}
+
+@keyframes badgeGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px rgba(0, 255, 136, 0.1);
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+    }
 }
 
 .task-card__content {
@@ -464,10 +690,15 @@
 
 .task-card__due {
     font-size: 0.8rem;
-    color: var(--text-secondary-ht);
+    color: #FF4757 !important;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 0.35rem;
+}
+
+.task-card__due svg {
+    color: #FF4757 !important;
 }
 
 .task-card__due--overdue {
@@ -494,12 +725,6 @@
 .task-card__tag--property {
     color: rgba(255, 0, 255, 0.8);
     background: rgba(255, 0, 255, 0.1);
-}
-
-.task-card__source {
-    font-size: 1rem;
-    flex-shrink: 0;
-    opacity: 0.6;
 }
 
 /* Expanded Task State */
@@ -888,4 +1113,241 @@
         align-items: flex-start;
         gap: 0.5rem;
     }
+
+    .tasks-page__status-filters {
+        flex-wrap: wrap;
+    }
+}
+
+/* --- Status Filter Tabs --- */
+.tasks-page__status-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    flex-wrap: wrap;
+}
+
+.tasks-page__status-tab {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: var(--text-secondary-ht);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tasks-page__status-tab:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tasks-page__status-tab--active {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: rgba(0, 255, 136, 0.4);
+    color: #00FF88;
+}
+
+.tasks-page__status-tab--active.tasks-page__status-tab--overdue {
+    background: rgba(255, 71, 87, 0.1);
+    border-color: rgba(255, 71, 87, 0.4);
+    color: #FF4757;
+}
+
+.tasks-page__status-tab--active.tasks-page__status-tab--completed {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: rgba(0, 212, 255, 0.4);
+    color: #00D4FF;
+}
+
+.tasks-page__status-count {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.tasks-page__status-count--overdue {
+    background: rgba(255, 71, 87, 0.2);
+    color: #FF4757;
+}
+
+.tasks-page__status-count--completed {
+    background: rgba(0, 212, 255, 0.2);
+    color: #00D4FF;
+}
+
+/* --- Mark Complete Button --- */
+.task-card__action-btn--complete {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: rgba(0, 255, 136, 0.3);
+    color: #00FF88;
+}
+
+.task-card__action-btn--complete:hover {
+    background: rgba(0, 255, 136, 0.2);
+    border-color: #00FF88;
+    color: #00FF88;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+}
+
+.task-card__action-btn--reopen {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: rgba(0, 212, 255, 0.3);
+    color: #00D4FF;
+}
+
+.task-card__action-btn--reopen:hover {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: #00D4FF;
+    color: #00D4FF;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+/* --- Undo Toast --- */
+.tasks-page__undo-toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(20, 20, 30, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 14px;
+    padding: 0.875rem 1.25rem;
+    z-index: 1000;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 136, 0.1);
+    animation: toastCenterFadeIn 0.3s ease-out;
+}
+
+@keyframes toastCenterFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.undo-toast__content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.undo-toast__icon {
+    color: #00FF88;
+    flex-shrink: 0;
+}
+
+.undo-toast__message {
+    font-size: 0.9rem;
+    color: var(--text-secondary-ht);
+}
+
+.undo-toast__message strong {
+    color: white;
+}
+
+.undo-toast__undo-btn {
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    color: #00D4FF;
+    padding: 0.5rem 0.875rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+}
+
+.undo-toast__undo-btn:hover {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: #00D4FF;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+.undo-toast__dismiss {
+    background: none;
+    border: none;
+    color: var(--text-tertiary-ht);
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: color 0.2s ease;
+}
+
+.undo-toast__dismiss:hover {
+    color: #FF4757;
+}
+
+/* --- Gold Pending Actions Button --- */
+.tasks-page__pending-actions-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid #f59e0b;
+    border-radius: 100px;
+    color: #fbbf24;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: mythic-radar 3s ease-in-out infinite;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+}
+
+.tasks-page__pending-actions-btn:hover {
+    background: rgba(245, 158, 11, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
+}
+
+@keyframes mythic-radar {
+
+    0%,
+    100% {
+        border-color: rgba(245, 158, 11, 0.4);
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.2), 0 0 0px rgba(245, 158, 11, 0.1);
+        transform: scale(1);
+    }
+
+    50% {
+        border-color: #f59e0b;
+        box-shadow: 0 0 25px rgba(245, 158, 11, 0.6), 0 0 15px rgba(245, 158, 11, 0.3);
+        transform: scale(1.05);
+    }
+}
+.task-card__tag--clickable {
+    cursor: pointer;
+    border: none; /* Reset button border */
+    transition: all 0.2s ease;
+}
+
+.task-card__tag--clickable:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
 }

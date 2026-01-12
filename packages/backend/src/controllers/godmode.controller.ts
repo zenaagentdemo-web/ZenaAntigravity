@@ -164,7 +164,12 @@ export async function approveAction(req: Request, res: Response): Promise<void> 
         });
     } catch (error) {
         console.error('Error approving action:', error);
-        res.status(500).json({ error: 'Failed to approve action' });
+        const message = error instanceof Error ? error.message : 'Failed to approve action';
+        if (message.includes('not found') || message.includes('already processed')) {
+            res.status(404).json({ error: message });
+        } else {
+            res.status(500).json({ error: message });
+        }
     }
 }
 
@@ -190,7 +195,12 @@ export async function dismissAction(req: Request, res: Response): Promise<void> 
         });
     } catch (error) {
         console.error('Error dismissing action:', error);
-        res.status(500).json({ error: 'Failed to dismiss action' });
+        const message = error instanceof Error ? error.message : 'Failed to dismiss action';
+        if (message.includes('not found') || message.includes('already processed')) {
+            res.status(404).json({ error: message });
+        } else {
+            res.status(500).json({ error: message });
+        }
     }
 }
 

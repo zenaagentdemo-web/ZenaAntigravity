@@ -5,6 +5,13 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const LOG_FILE = path.join(__dirname, '../../debug.log');
+const AGENT_LOG_FILE = path.join(__dirname, '../../logs/agent-orchestrator.log');
+
+// Ensure logs directory exists
+const logsDir = path.dirname(AGENT_LOG_FILE);
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true });
+}
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 
@@ -131,6 +138,39 @@ class LoggerService {
     if (this.shouldLog('fatal')) {
       const entry = this.formatLogEntry('fatal', message, context, error);
       this.output(entry);
+    }
+  }
+
+  /**
+   * Dedicated structured logging for Agent interactions
+   * Writes to logs/agent-orchestrator.log
+   */
+  agent(message: string, data: any = {}): void {
+    const entry = {
+      timestamp: new Date().toISOString(),
+      message,
+      ...data
+    };
+
+    const output = JSON.stringify(entry);
+
+    // Always write agent logs to dedicated file
+    try {
+      fs.appendFileSync(AGENT_LOG_FILE, output + '\n');
+    } catch (e) {
+      // Ignore write errors
+    }
+
+    // Also output to console in dev
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`\n🤖 [AGENT] ${message}`);
+      if (Object.keys(data).length > 0) {
+        // Pretty print important keys if they exist
+        if (data.query) console.log(`   QUERY: ${data.query}`);
+        if (data.domain) console.log(`   DOMAIN: ${data.domain}`);
+        if (data.tool) console.log(`   TOOL: ${data.tool}`);
+        if (data.status) console.log(`   STATUS: ${data.status}`);
+      }
     }
   }
 

@@ -1114,3 +1114,74 @@
 .deal-flow-page__ai-spotlight .markdown-content strong {
     color: #00D4FF;
 }
+/* Proactive Suggestion Banner */
+.proactive-suggestion-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(6, 78, 59, 0.1));
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    margin-top: 12px;
+    margin-bottom: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    animation: slideDown 0.3s ease-out;
+}
+
+.proactive-suggestion-banner:hover {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(6, 78, 59, 0.15));
+    border-color: rgba(16, 185, 129, 0.5);
+}
+
+.proactive-suggestion-banner span {
+    flex: 1;
+    font-size: 13px;
+    color: #34d399;
+    font-weight: 500;
+}
+
+.proactive-suggestion-banner svg {
+    color: #34d399;
+}
+
+.proactive-suggestion-banner .add-contact-btn {
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.proactive-suggestion-banner .add-contact-btn:hover {
+    background: #059669;
+}
+
+.proactive-suggestion-banner .dismiss-btn {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    border: none;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.proactive-suggestion-banner .dismiss-btn:hover {
+    color: white;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

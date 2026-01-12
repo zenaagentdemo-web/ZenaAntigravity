@@ -1,5 +1,3 @@
-// Prisma schema for Zena AI Real Estate PWA
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,115 +7,103 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User model with authentication fields
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  passwordHash String
-  name         String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  preferences  Json?    // UserPreferences as JSON
-  lastGodmodeScanAt DateTime?
-  fullGodStart    DateTime?
-  fullGodEnd      DateTime?
-  crmEmails       Json?     // Array of {email: string, type: 'rex'|'vault'|'generic', label?: string}
-  crmType         String?   // Default CRM type (legacy, kept for backwards compat)
-
-  // Relations
-  emailAccounts    EmailAccount[]
-  calendarAccounts CalendarAccount[]
-  threads          Thread[]
-  contacts         Contact[]
-  properties       Property[]
-  deals            Deal[]
-  timelineEvents   TimelineEvent[]
-  tasks            Task[]
-  voiceNotes       VoiceNote[]
-  crmIntegrations  CRMIntegration[]
-  exports          Export[]
-  pushSubscriptions PushSubscription[]
-  chatConversations ChatConversation[]
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  passwordHash       String
+  name               String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  preferences        Json?
+  fullGodEnd         DateTime?
+  fullGodStart       DateTime?
+  lastGodmodeScanAt  DateTime?
+  crmType            String?
+  crmEmails          Json?
+  autonomousActions  AutonomousAction[]
+  crmIntegrations    CRMIntegration[]
+  calendarAccounts   CalendarAccount[]
+  chatConversations  ChatConversation[]
   commissionFormulas CommissionFormula[]
-  zenaActions       ZenaAction[]
-  nurtureSequences  NurtureSequence[]
-  autonomousActions AutonomousAction[]
-  crmSyncHistory    CrmSyncLedger[]
+  contacts           Contact[]
+  crmSyncHistory     CrmSyncLedger[]
+  deals              Deal[]
+  emailAccounts      EmailAccount[]
+  exports            Export[]
+  nurtureSequences   NurtureSequence[]
+  properties         Property[]
+  pushSubscriptions  PushSubscription[]
+  tasks              Task[]
+  threads            Thread[]
+  timelineEvents     TimelineEvent[]
+  voiceNotes         VoiceNote[]
+  zenaActions        ZenaAction[]
 
   @@index([email])
 }
 
-// Email account model
 model EmailAccount {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   userId       String
-  provider     String   // 'gmail' | 'outlook' | 'icloud' | 'yahoo' | 'imap'
+  provider     String
   email        String
-  accessToken  String   // encrypted
-  refreshToken String   // encrypted
+  accessToken  String
+  refreshToken String
   tokenExpiry  DateTime
   lastSyncAt   DateTime?
-  syncEnabled  Boolean  @default(true)
-  createdAt    DateTime @default(now())
-
-  // Relations
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  threads Thread[]
+  syncEnabled  Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  threads      Thread[]
 
   @@index([userId])
   @@index([email])
 }
 
-// Calendar account model
 model CalendarAccount {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   userId       String
-  provider     String   // 'google' | 'microsoft' | 'icloud'
+  provider     String
   email        String
-  accessToken  String   // encrypted
-  refreshToken String   // encrypted
+  accessToken  String
+  refreshToken String
   tokenExpiry  DateTime
   lastSyncAt   DateTime?
-  syncEnabled  Boolean  @default(true)
-  createdAt    DateTime @default(now())
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  syncEnabled  Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([email])
 }
 
-// Thread model with classification and categorization
 model Thread {
-  id               String    @id @default(uuid())
-  userId           String
-  emailAccountId   String
-  externalId       String    // provider's thread ID
-  subject          String
-  participants     Json      // Participant[]
-  classification   String    // 'buyer' | 'vendor' | 'market' | 'lawyer_broker' | 'noise'
-  category         String    // 'focus' | 'waiting'
-  propertyId       String?
-  dealId           String?
-  stage            String?   // DealStage
-  riskLevel        String    @default("none") // 'none' | 'low' | 'medium' | 'high'
-  riskReason       String?
-  nextAction       String?
-  nextActionOwner  String    // 'agent' | 'other'
-  lastMessageAt    DateTime
-  lastReplyAt      DateTime?
-  summary          String    @db.Text
-  draftResponse    String?   @db.Text
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  // Relations
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  emailAccount  EmailAccount  @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
-  property      Property?     @relation(fields: [propertyId], references: [id])
-  deal          Deal?         @relation(fields: [dealId], references: [id])
-  messages      Message[]
+  id              String       @id @default(uuid())
+  userId          String
+  emailAccountId  String
+  externalId      String
+  subject         String
+  participants    Json
+  classification  String
+  category        String
+  propertyId      String?
+  dealId          String?
+  stage           String?
+  riskLevel       String       @default("none")
+  riskReason      String?
+  nextAction      String?
+  nextActionOwner String
+  lastMessageAt   DateTime
+  lastReplyAt     DateTime?
+  summary         String
+  draftResponse   String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  messages        Message[]
+  deal            Deal?        @relation(fields: [dealId], references: [id])
+  emailAccount    EmailAccount @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
+  property        Property?    @relation(fields: [propertyId], references: [id])
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([emailAccountId])
@@ -129,166 +115,130 @@ model Thread {
   @@index([lastMessageAt])
 }
 
-// Message model for storing individual email messages
 model Message {
-  id          String   @id @default(uuid())
-  threadId    String
-  externalId  String   // provider's message ID
-  from        Json     // { name: string, email: string }
-  to          Json[]   // Array of { name: string, email: string }
-  cc          Json[]   // Array of { name: string, email: string }
-  subject     String
-  body        String   @db.Text
-  bodyHtml    String?  @db.Text
-  sentAt      DateTime
-  receivedAt  DateTime
-  isFromUser  Boolean  @default(false)
-  createdAt   DateTime @default(now())
-
-  // Relations
-  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  id         String   @id @default(uuid())
+  threadId   String
+  externalId String
+  from       Json
+  to         Json[]
+  cc         Json[]
+  subject    String
+  body       String
+  bodyHtml   String?
+  sentAt     DateTime
+  receivedAt DateTime
+  isFromUser Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  thread     Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
 
   @@unique([threadId, externalId])
   @@index([threadId])
   @@index([sentAt])
 }
 
-// Zena Intelligence Category (AI-assigned)
-enum ZenaCategory {
-  PULSE        // Default - active contacts in normal engagement
-  HOT_LEAD     // High engagement, recent activity, strong buying/selling signals
-  COLD_NURTURE // Low engagement 30+ days, needs re-engagement
-  HIGH_INTENT  // Explicit buying/selling intent (viewings, offers, pre-approvals)
-}
-
-// Contact model with deduplication support
 model Contact {
-  id               String   @id @default(uuid())
-  userId           String
-  name             String
-  emails           String[] // Array of email addresses
-  phones           String[] // Array of phone numbers
-  role             String   // 'buyer' | 'vendor' | 'agent' | 'investor' | 'tradesperson' | 'market' | 'other'
-  relationshipNotes Json[]  // RelationshipNote[]
-  
-  // Intelligence fields
-  intelligenceSnippet  String?  @db.Text  // AI-generated insight about contact
-  zenaIntelligence     Json?              // Flexible field for contact intelligence (budget, location, etc.)
-  engagementReasoning  String?  @db.Text  // AI-generated reasoning for the current engagement score
-  lastActivityDetail   String?  @db.Text  // Last significant activity
-  lastActivityAt       DateTime?          // When last activity occurred
-  
-  // Zena Category (AI-assigned)
-  zenaCategory         ZenaCategory @default(PULSE)
-  categorizedAt        DateTime?    // When last categorized
-  categoryConfidence   Float?       // AI confidence score (0-1)
-  
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  lastCrmExportAt  DateTime? // When this contact was last exported/synced to a CRM
-
-  // Relations
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  deals      Deal[]     @relation("DealContacts")
-  vendorProperties Property[] @relation("VendorContacts")
-  buyerProperties  Property[] @relation("BuyerContacts")
-  nurtureSequences NurtureSequence[]
-  prediction       ContactPrediction?
-  autonomousActions AutonomousAction[]
+  id                  String             @id @default(uuid())
+  userId              String
+  name                String
+  emails              String[]
+  phones              String[]
+  role                String
+  relationshipNotes   Json[]
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  intelligenceSnippet String?
+  lastActivityAt      DateTime?
+  lastActivityDetail  String?
+  categorizedAt       DateTime?
+  categoryConfidence  Float?
+  zenaCategory        ZenaCategory       @default(PULSE)
+  zenaIntelligence    Json?
+  engagementReasoning String?
+  lastCrmExportAt     DateTime?
+  autonomousActions   AutonomousAction[]
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prediction          ContactPrediction?
+  nurtureSequences    NurtureSequence[]
+  buyerProperties     Property[]         @relation("BuyerContacts")
+  deals               Deal[]             @relation("DealContacts")
+  vendorProperties    Property[]         @relation("VendorContacts")
 
   @@index([userId])
   @@index([emails])
   @@index([role])
 }
 
-// Property model with milestone tracking
 model Property {
-  id         String   @id @default(uuid())
-  userId     String
-  address    String
-  type       String   @default("residential") // 'residential' | 'commercial' | 'land'
-  status     String   @default("active")      // 'active' | 'under_contract' | 'sold' | 'withdrawn'
-  listingPrice Decimal? @db.Decimal(12, 2)
-  listingDate  DateTime?
-  rateableValue Int?
-  viewingCount Int      @default(0)
-  inquiryCount Int      @default(0)
-  bedrooms   Int?
-  bathrooms  Int?
-  landSize   String?
-  milestones Json[]   // CampaignMilestone[]
-  riskOverview String? @db.Text
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  lastCrmExportAt DateTime?
-
-  // Relations
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  vendors  Contact[] @relation("VendorContacts")
-  buyers   Contact[] @relation("BuyerContacts")
-  threads  Thread[]
-  deals    Deal[]
-  prediction PropertyPrediction?
+  id                String              @id @default(uuid())
+  userId            String
+  address           String
+  milestones        Json[]
+  riskOverview      String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  bathrooms         Int?
+  bedrooms          Int?
+  landSize          String?
+  floorSize         String?
+  listingPrice      Decimal?            @db.Decimal(12, 2)
+  status            String              @default("active")
+  type              String              @default("residential")
+  inquiryCount      Int                 @default(0)
+  listingDate       DateTime?
+  inferredFromWeb   Boolean             @default(false)
+  rateableValue     Int?
+  viewingCount      Int                 @default(0)
+  lastCrmExportAt   DateTime?
   autonomousActions AutonomousAction[]
+  deals             Deal[]
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prediction        PropertyPrediction?
+  threads           Thread[]
+  buyers            Contact[]           @relation("BuyerContacts")
+  vendors           Contact[]           @relation("VendorContacts")
 
   @@index([userId])
   @@index([address])
 }
 
-// Deal model with stage and risk tracking
 model Deal {
-  id              String   @id @default(uuid())
-  userId          String
-  threadId        String?
-  propertyId      String?
-  
-  // Core fields
-  stage           String   // BuyerStage or SellerStage
-  riskLevel       String   @default("none") // 'none' | 'low' | 'medium' | 'high' | 'critical'
-  riskFlags       String[] // Array of risk indicators
-  nextAction      String?  @db.Text
-  nextActionOwner String   // 'agent' | 'other'
-  summary         String   @db.Text
-  
-  // Pipeline & Sale Type
-  pipelineType    String   @default("buyer") // 'buyer' | 'seller'
-  saleMethod      String   @default("negotiation") // 'negotiation' | 'auction' | 'tender' | 'deadline_sale'
-  
-  // Financial Tracking
-  dealValue             Decimal?  @db.Decimal(12, 2) // Property price / expected price
-  commissionFormulaId   String?   // Link to user's commission formula
-  estimatedCommission   Decimal?  @db.Decimal(10, 2) // Auto-calculated from formula
-  
-  // Deadline Intelligence
-  conditions      Json?    // Array of DealCondition objects
-  settlementDate  DateTime?
-  goLiveDate      DateTime? // For listings: when marketing goes live
-  auctionDate     DateTime? // For auctions
-  tenderCloseDate DateTime? // For tenders
-  
-  // Tracking Metrics
-  stageEnteredAt  DateTime @default(now()) // For "days in stage" calculation
-  lastContactAt   DateTime? // Last communication with client
-  
-  // Conjunctional Sales (Phase 3)
-  isConjunctional          Boolean @default(false)
-  conjunctionalAgencyId    String?
-  conjunctionalAgencyName  String?        // e.g., "Harcourts Ponsonby"
-  conjunctionalSplit       Float?         // 0.5 = 50/50 split (our share)
-  isListingAgent           Boolean @default(true) // true = we're listing, false = we're selling
-  status                   String @default("active") // 'active' | 'archived' | 'deleted'
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  // Relations
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  property          Property?          @relation(fields: [propertyId], references: [id])
-  commissionFormula CommissionFormula? @relation(fields: [commissionFormulaId], references: [id])
-  contacts          Contact[]          @relation("DealContacts")
-  threads           Thread[]
-  zenaActions       ZenaAction[]
-  nurtureSequences  NurtureSequence[]
+  id                      String             @id @default(uuid())
+  userId                  String
+  threadId                String?
+  propertyId              String?
+  stage                   String
+  riskLevel               String             @default("none")
+  riskFlags               String[]
+  nextAction              String?
+  nextActionOwner         String
+  summary                 String
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+  auctionDate             DateTime?
+  commissionFormulaId     String?
+  conditions              Json?
+  conjunctionalAgencyId   String?
+  dealValue               Decimal?           @db.Decimal(12, 2)
+  estimatedCommission     Decimal?           @db.Decimal(10, 2)
+  goLiveDate              DateTime?
+  isConjunctional         Boolean            @default(false)
+  lastContactAt           DateTime?
+  pipelineType            String             @default("buyer")
+  saleMethod              String             @default("negotiation")
+  settlementDate          DateTime?
+  stageEnteredAt          DateTime           @default(now())
+  tenderCloseDate         DateTime?
+  conjunctionalAgencyName String?
+  conjunctionalSplit      Float?
+  isListingAgent          Boolean            @default(true)
+  status                  String             @default("active")
+  commissionFormula       CommissionFormula? @relation(fields: [commissionFormulaId], references: [id])
+  property                Property?          @relation(fields: [propertyId], references: [id])
+  user                    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nurtureSequences        NurtureSequence[]
+  threads                 Thread[]
+  zenaActions             ZenaAction[]
+  contacts                Contact[]          @relation("DealContacts")
 
   @@index([userId])
   @@index([propertyId])
@@ -298,325 +248,260 @@ model Deal {
   @@index([stageEnteredAt])
 }
 
-// Timeline event model
 model TimelineEvent {
   id         String   @id @default(uuid())
   userId     String
-  type       String   // 'email' | 'call' | 'meeting' | 'task' | 'note' | 'voice_note'
-  entityType String   // 'thread' | 'contact' | 'property' | 'deal' | 'calendar_event'
+  type       String
+  entityType String
   entityId   String
-  summary    String   @db.Text
-  content    String?  @db.Text
+  summary    String
+  content    String?
   metadata   Json?
   timestamp  DateTime
   createdAt  DateTime @default(now())
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([entityType, entityId])
   @@index([timestamp])
 }
 
-// Task model
 model Task {
   id          String    @id @default(uuid())
   userId      String
   label       String
-  status      String    @default("open") // 'open' | 'completed'
+  status      String    @default("open")
   dueDate     DateTime?
   dealId      String?
   propertyId  String?
   contactId   String?
-  source      String    // 'email' | 'voice_note' | 'manual' | 'ai_suggested'
+  source      String
   createdAt   DateTime  @default(now())
   completedAt DateTime?
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
   @@index([dueDate])
 }
 
-// Voice note model
 model VoiceNote {
-  id               String    @id @default(uuid())
-  userId           String
-  audioUrl         String
-  transcript       String    @db.Text
-  extractedEntities Json[]   // ExtractedEntity[]
-  processingStatus String    @default("pending") // 'pending' | 'processing' | 'completed' | 'failed'
-  createdAt        DateTime  @default(now())
-  processedAt      DateTime?
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String    @id @default(uuid())
+  userId            String
+  audioUrl          String
+  transcript        String
+  extractedEntities Json[]
+  processingStatus  String    @default("pending")
+  createdAt         DateTime  @default(now())
+  processedAt       DateTime?
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([processingStatus])
 }
 
-// CRM integration model
 model CRMIntegration {
   id          String    @id @default(uuid())
   userId      String
-  provider    String    // 'mri_vault' | 'salesforce' | 'top_producer' | 'kvcore' | 'follow_up_boss'
-  credentials String    // encrypted
+  provider    String
+  credentials String
   syncEnabled Boolean   @default(true)
   lastSyncAt  DateTime?
-  syncConfig  Json      // CRMSyncConfig
+  syncConfig  Json
   createdAt   DateTime  @default(now())
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([provider])
 }
 
-// Export model
 model Export {
   id          String    @id @default(uuid())
   userId      String
-  type        String    // 'contacts' | 'properties' | 'deals'
-  format      String    // 'csv' | 'xlsx' | 'vcard'
-  content     String?   @db.Text
+  type        String
+  format      String
   fileUrl     String
   recordCount Int
-  status      String    @default("pending") // 'pending' | 'processing' | 'completed' | 'failed'
+  status      String    @default("pending")
   createdAt   DateTime  @default(now())
   completedAt DateTime?
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content     String?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
 }
 
-// Push subscription model for web push notifications
 model PushSubscription {
-  id         String   @id @default(uuid())
-  userId     String
-  endpoint   String   @unique
-  keys       Json     // { p256dh: string, auth: string }
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  userId    String
+  endpoint  String   @unique
+  keys      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([endpoint])
 }
 
-// Notification preferences model
 model NotificationPreferences {
-  id                      String   @id @default(uuid())
-  userId                  String   @unique
-  highPriorityThreads     Boolean  @default(true)
-  riskDeals               Boolean  @default(true)
-  calendarReminders       Boolean  @default(true)
-  taskReminders           Boolean  @default(true)
-  newThreads              Boolean  @default(false)
-  // Deal Flow preferences
-  dealDeadlines           Boolean  @default(true)
-  morningBriefing         Boolean  @default(true)
-  settlementCountdown     Boolean  @default(true)
-  staleDealAlerts         Boolean  @default(true)
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  highPriorityThreads Boolean  @default(true)
+  riskDeals           Boolean  @default(true)
+  calendarReminders   Boolean  @default(true)
+  taskReminders       Boolean  @default(true)
+  newThreads          Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  dealDeadlines       Boolean  @default(true)
+  morningBriefing     Boolean  @default(true)
+  settlementCountdown Boolean  @default(true)
+  staleDealAlerts     Boolean  @default(true)
 
   @@index([userId])
 }
 
-// Chat conversation model for Ask Zena history
 model ChatConversation {
-  id        String   @id @default(uuid())
+  id        String        @id @default(uuid())
   userId    String
   title     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages ChatMessage[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
 
   @@index([userId])
 }
 
-// Chat message model
 model ChatMessage {
-  id             String   @id @default(uuid())
+  id             String           @id @default(uuid())
   conversationId String
-  role           String   // 'user' | 'assistant'
-  content        String   @db.Text
-  attachments    Json?    // Array of { type: string, url: string, name: string }
-  createdAt      DateTime @default(now())
-
-  // Relations
-  conversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String
+  content        String
+  attachments    Json?
+  createdAt      DateTime         @default(now())
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
 }
 
-// Commission formula model for tiered commission structures
 model CommissionFormula {
   id        String   @id @default(uuid())
   userId    String
-  name      String   // e.g., "Standard Residential", "Premium Listings"
+  name      String
   isDefault Boolean  @default(false)
-  tiers     Json     // Array of CommissionTier: { minPrice, maxPrice, rate, fixedFee? }
+  tiers     Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Relations
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  deals Deal[]
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deals     Deal[]
 
   @@index([userId])
   @@index([isDefault])
 }
 
-// Zena Action model for AI-powered deal recommendations
 model ZenaAction {
   id          String    @id @default(uuid())
   userId      String
   dealId      String
-  type        String    // 'nudge_client' | 'finance_followup' | 'lim_reminder' | 'pre_settlement_check' | 'insurance_reminder' | 'vendor_update' | 'offer_summary' | 'stale_deal_alert'
-  status      String    @default("pending") // 'pending' | 'executed' | 'dismissed'
-  output      String    @db.Text // Generated draft or message
+  type        String
+  status      String    @default("pending")
+  output      String
   triggeredAt DateTime  @default(now())
   executedAt  DateTime?
   dismissedAt DateTime?
-  
-  // Relations
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   deal        Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
-  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([dealId])
   @@index([status])
   @@index([type])
 }
 
-// Phase 3: Post-Settlement Nurture Sequence
 model NurtureSequence {
   id            String    @id @default(uuid())
   userId        String
   dealId        String
   contactId     String
-  
-  status        String    @default("active")  // 'active' | 'completed' | 'paused'
-  currentStep   Int       @default(1)         // Current step in nurture sequence (1-5+)
-  nextTouchDate DateTime                      // When next touch is due
-  lastTouchAt   DateTime?                     // When last touch was completed
-  
-  // Tracking
-  touchCount    Int       @default(0)         // Total touches completed
-  notes         String?   @db.Text            // Agent notes
-  
+  status        String    @default("active")
+  currentStep   Int       @default(1)
+  nextTouchDate DateTime
+  lastTouchAt   DateTime?
+  touchCount    Int       @default(0)
+  notes         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
-  // Relations
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  deal          Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
   contact       Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  
+  deal          Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, status])
   @@index([nextTouchDate])
   @@index([dealId])
 }
 
-// Oracle: Contact Personality & Propensity Predictions
 model ContactPrediction {
-  id              String   @id @default(uuid())
-  contactId       String   @unique
-  userId          String
-  
-  // Data Maturity (0=Learning, 1=Observing, 2=Profiling, 3=Predicting)
-  maturityLevel   Int      @default(0)
-  emailsAnalyzed  Int      @default(0)
-  eventsCount     Int      @default(0)
-  oldestDataAt    DateTime?
-  
-  // Personality (DISC)
-  personalityType       String?  // 'D' | 'I' | 'S' | 'C' | null (unknown)
-  personalityConfidence Float?   // 0-1
-  detectedMarkers       Json?    // Array of detected linguistic markers
-  communicationTips     Json?    // Array of tips for this personality type
-  
-  // Propensity Predictions (null = no data, don't guess)
-  sellProbability       Float?   // 0-1
-  sellConfidence        Float?   // 0-1
-  sellSignals           Json?    // Array of detected signals
-  buyProbability        Float?   // 0-1
-  buyConfidence         Float?   // 0-1
-  buySignals            Json?    // Array of detected signals
-  
-  // Churn Risk (can be calculated earlier from trends)
-  churnRisk             Float?   // 0-1
-  
-  lastAnalyzedAt  DateTime @default(now())
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
-  
+  id                    String    @id @default(uuid())
+  contactId             String    @unique
+  userId                String
+  maturityLevel         Int       @default(0)
+  emailsAnalyzed        Int       @default(0)
+  eventsCount           Int       @default(0)
+  oldestDataAt          DateTime?
+  personalityType       String?
+  personalityConfidence Float?
+  detectedMarkers       Json?
+  communicationTips     Json?
+  sellProbability       Float?
+  sellConfidence        Float?
+  sellSignals           Json?
+  buyProbability        Float?
+  buyConfidence         Float?
+  buySignals            Json?
+  churnRisk             Float?
+  lastAnalyzedAt        DateTime  @default(now())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  contact               Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([maturityLevel])
   @@index([personalityType])
 }
 
-// Godmode: Autonomous Action Queue
 model AutonomousAction {
-  id          String   @id @default(uuid())
-  userId      String
-  contactId   String?
-  propertyId  String?  // NEW: Support property-level actions
-  
-  // Action Details
-  actionType  String   // 'send_email' | 'send_sms' | 'schedule_followup' | 'archive_contact' | 'update_category' | 'vendor_update' | 'price_review' | 'buyer_match_intro'
-  priority    Int      @default(5) // 1-10 (10 = most urgent)
-  title       String   // Human-readable: "Send nurture email to John Smith"
-  description String?  @db.Text
-  reasoning   String?  @db.Text  // The "Why" behind the action
-  intelligenceSources Json?    // Verifiable evidence: Array of { type, id, summary }
-  
-  // Generated Content (for email/sms actions)
-  draftSubject String?
-  draftBody    String?  @db.Text
-  
-  // New Rich Content Fields (Phase 3)
-  payload      Json?    // Structured data specific to the action (charts, etc.)
-  assets       Json?    // Array of generated assets { type, url, previewComponent }
-  script       String?  @db.Text // Call script or talking points
-  contextSummary String? @db.Text // "Why this, Why now" reasoning with citations
-  
-  // Status & Execution
-  status      String   @default("pending") // 'pending' | 'approved' | 'executing' | 'completed' | 'failed' | 'dismissed'
-  mode        String   // 'demi_god' | 'full_god'
-  
-  // Timing
-  scheduledFor DateTime? // When to execute (for time-windowed Full God)
-  createdAt    DateTime @default(now())
-  approvedAt   DateTime?
-  executedAt   DateTime?
-  dismissedAt  DateTime?
-  
-  // Result
-  executionResult Json?
-  errorMessage    String?
-  
-  // Relations
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  contact  Contact?  @relation(fields: [contactId], references: [id])
-  property Property? @relation(fields: [propertyId], references: [id])
-  
+  id                  String    @id @default(uuid())
+  userId              String
+  contactId           String?
+  actionType          String
+  priority            Int       @default(5)
+  title               String
+  description         String?
+  draftSubject        String?
+  draftBody           String?
+  status              String    @default("pending")
+  mode                String
+  scheduledFor        DateTime?
+  createdAt           DateTime  @default(now())
+  approvedAt          DateTime?
+  executedAt          DateTime?
+  dismissedAt         DateTime?
+  executionResult     Json?
+  errorMessage        String?
+  assets              Json?
+  contextSummary      String?
+  intelligenceSources Json?
+  payload             Json?
+  propertyId          String?
+  reasoning           String?
+  script              String?
+  contact             Contact?  @relation(fields: [contactId], references: [id])
+  property            Property? @relation(fields: [propertyId], references: [id])
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, status])
   @@index([propertyId])
   @@index([scheduledFor])
@@ -624,133 +509,89 @@ model AutonomousAction {
   @@index([actionType])
 }
 
-// Property Intelligence: Momentum & Predictions
 model PropertyPrediction {
-  id                  String   @id @default(uuid())
-  propertyId          String   @unique
-  
-  // Intelligence Scores
-  momentumScore       Int      @default(0) // 0-100
-  buyerInterestLevel  String   @default("Medium") // 'Low' | 'Medium' | 'High' | 'Hot'
-  reasoning           String?  @db.Text
-  
-  // Future Predictions
+  id                  String    @id @default(uuid())
+  propertyId          String    @unique
+  momentumScore       Int       @default(0)
+  buyerInterestLevel  String    @default("Medium")
+  reasoning           String?
   predictedSaleDate   DateTime?
-  marketValueEstimate Decimal? @db.Decimal(12, 2)
-  confidenceScore     Float?   // 0-1
-  
-  // Actionable Intel
-  suggestedActions    Json?    // Array of strings/objects
-  milestoneForecasts  Json?    // Array of { type: string, date: string, confidence: number }
-  
-  lastAnalyzedAt      DateTime @default(now())
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  
-  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  
+  marketValueEstimate Decimal?  @db.Decimal(12, 2)
+  confidenceScore     Float?
+  suggestedActions    Json?
+  milestoneForecasts  Json?
+  lastAnalyzedAt      DateTime  @default(now())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  property            Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
   @@index([propertyId])
   @@index([buyerInterestLevel])
 }
 
-// AI Usage Logging for Token Tracking
 model AIUsageLog {
-  id            String   @id @default(uuid())
-  userId        String?
-  
-  // Source tracking
-  source        String   // 'ask-zena' | 'godmode' | 'property-intelligence' | 'contact-categorization' | etc.
-  endpoint      String?  // API endpoint if applicable
-  
-  // Token metrics
-  model         String   // 'gemini-3-flash-preview' etc.
-  inputTokens   Int      // Estimated from prompt length
-  outputTokens  Int?     // From response
-  
-  // Timing
-  durationMs    Int?     // How long the call took
-  createdAt     DateTime @default(now())
-  
+  id           String   @id @default(uuid())
+  userId       String?
+  source       String
+  endpoint     String?
+  model        String
+  inputTokens  Int
+  outputTokens Int?
+  durationMs   Int?
+  createdAt    DateTime @default(now())
+
   @@index([userId])
   @@index([source])
   @@index([createdAt])
 }
 
-// ============================================
-// SITE DISCOVERY & LEARNING SYSTEM (Hive Mind)
-// ============================================
-
-// Site Knowledge: Stores learned UI information about connected sites
 model SiteKnowledge {
-  id                String   @id @default(uuid())
-  domain            String   @unique  // "trademe.co.nz", "corelogic.co.nz"
-  displayName       String?            // "Trade Me Property"
-  category          String   @default("portal") // 'portal' | 'crm' | 'data_provider' | 'other'
-  
-  // Discovery Status
-  discoveryStatus   String   @default("pending") // 'pending' | 'discovering' | 'completed' | 'failed'
-  discoveryProgress Int      @default(0)  // 0-100 percentage
+  id                String              @id @default(uuid())
+  domain            String              @unique
+  displayName       String?
+  category          String              @default("portal")
+  discoveryStatus   String              @default("pending")
+  discoveryProgress Int                 @default(0)
   lastDiscoveredAt  DateTime?
-  discoveryError    String?  @db.Text
-  
-  // Learned UI Map (from vision analysis)
-  uiMap             Json?    // Complete UI structure: { pages: [], navigation: [], forms: [] }
-  screenshotRefs    String[] // S3/storage paths to screenshots
-  
-  // Site Metadata
+  discoveryError    String?
+  uiMap             Json?
+  screenshotRefs    String[]
   loginUrl          String?
   mainUrl           String?
-  requiresAuth      Boolean  @default(true)
-  
-  // Usage Tracking
-  queryCount        Int      @default(0)
-  successRate       Float    @default(0)
+  requiresAuth      Boolean             @default(true)
+  queryCount        Int                 @default(0)
+  successRate       Float               @default(0)
   lastUsedAt        DateTime?
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  // Relations
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
   actionPaths       LearnedActionPath[]
-  
+
   @@index([domain])
   @@index([discoveryStatus])
   @@index([category])
 }
 
-// Learned Action Path: Cached navigation sequences for specific tasks
 model LearnedActionPath {
-  id              String   @id @default(uuid())
-  siteKnowledgeId String
-  
-  // Task Identification
-  taskType        String   // 'search_properties' | 'count_results' | 'get_details' | 'apply_filter' | 'login' | etc.
-  taskDescription String   // "Search for properties by location"
-  intentPattern   String?  // Regex/keywords to match user queries to this path
-  
-  // The Learned Sequence
-  steps           Json     // Array of NavigationStep: [{ action, target, value?, screenshot? }]
-  extractionRules Json?    // How to extract data after navigation
-  
-  // Quality Metrics
-  successCount    Int      @default(0)
-  failureCount    Int      @default(0)
-  averageDuration Int?     // milliseconds
-  lastSuccessAt   DateTime?
-  lastFailedAt    DateTime?
-  
-  // Version Control (for when sites change)
-  version         Int      @default(1)
-  isActive        Boolean  @default(true)
-  deprecatedAt    DateTime?
+  id                String        @id @default(uuid())
+  siteKnowledgeId   String
+  taskType          String
+  taskDescription   String
+  intentPattern     String?
+  steps             Json
+  extractionRules   Json?
+  successCount      Int           @default(0)
+  failureCount      Int           @default(0)
+  averageDuration   Int?
+  lastSuccessAt     DateTime?
+  lastFailedAt      DateTime?
+  version           Int           @default(1)
+  isActive          Boolean       @default(true)
+  deprecatedAt      DateTime?
   deprecationReason String?
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  // Relations
-  siteKnowledge   SiteKnowledge @relation(fields: [siteKnowledgeId], references: [id], onDelete: Cascade)
-  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  siteKnowledge     SiteKnowledge @relation(fields: [siteKnowledgeId], references: [id], onDelete: Cascade)
+
   @@unique([siteKnowledgeId, taskType, version])
   @@index([siteKnowledgeId])
   @@index([taskType])
@@ -758,18 +599,24 @@ model LearnedActionPath {
 }
 
 model CrmSyncLedger {
-  id            String   @id @default(uuid())
-  userId        String
-  entityType    String   // 'contact' | 'property' | 'deal'
-  entityId      String
-  crmTarget     String   // 'rex' | 'vault' | 'generic'
-  syncMethod    String   // 'email' | 'csv' | 'manual'
-  syncedAt      DateTime @default(now())
-  syncStatus    String   // 'sent' | 'confirmed' | 'failed'
-  emailMessageId String? // For email tracking
-  
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id             String   @id @default(uuid())
+  userId         String
+  entityType     String
+  entityId       String
+  crmTarget      String
+  syncMethod     String
+  syncedAt       DateTime @default(now())
+  syncStatus     String
+  emailMessageId String?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, entityType])
   @@index([userId, syncedAt])
+}
+
+enum ZenaCategory {
+  PULSE
+  HOT_LEAD
+  COLD_NURTURE
+  HIGH_INTENT
 }

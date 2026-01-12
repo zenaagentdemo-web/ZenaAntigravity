@@ -38,7 +38,8 @@ export type WebSocketEventType =
   | 'discovery.completed'
   | 'discovery.failed'
   | 'property.intelligence'
-  | 'PENDING_ACTION_CREATED'; // NEW: God Mode pending action created
+  | 'PENDING_ACTION_CREATED' // NEW: God Mode pending action created
+  | 'agent.message'; // NEW: Interim agent messages (e.g. "Working on it...")
 
 
 
@@ -458,6 +459,13 @@ class WebSocketService {
   }): void {
     const type = `discovery.${data.status}` as WebSocketEventType;
     this.broadcastToUser(userId, type, data);
+  }
+
+  /**
+   * Broadcast interim agent message to user
+   */
+  broadcastAgentMessage(userId: string, message: string): void {
+    this.broadcastToUser(userId, 'agent.message', { message });
   }
 
   /**

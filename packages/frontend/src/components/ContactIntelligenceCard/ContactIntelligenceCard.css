@@ -1,0 +1,161 @@
+.contact-intel-card {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 12px;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.contact-intel-card:hover {
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(56, 189, 248, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.contact-intel-card--risk {
+    border-color: rgba(244, 63, 94, 0.3);
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(244, 63, 94, 0.05));
+}
+
+.contact-intel-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.contact-intel-card__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.intel-icon {
+    color: #38bdf8;
+}
+
+.contact-intel-card__score {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.contact-intel-card__score[data-score^="3"],
+.contact-intel-card__score[data-score^="2"],
+.contact-intel-card__score[data-score^="1"] {
+    color: #f43f5e;
+    background: rgba(244, 63, 94, 0.1);
+    border-color: rgba(244, 63, 94, 0.2);
+}
+
+.contact-intel-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.contact-intel-card__insight .label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.contact-intel-card__insight .value {
+    font-size: 13px;
+    color: #e2e8f0;
+    line-height: 1.4;
+}
+
+.contact-intel-card__action {
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.1), transparent);
+    border-left: 2px solid #38bdf8;
+    padding: 10px 12px;
+    border-radius: 0 8px 8px 0;
+}
+
+.action-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #38bdf8;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.action-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: #f1f5f9;
+    margin-bottom: 4px;
+}
+
+.action-footer .reasoning {
+    font-size: 11px;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* Loading State */
+.contact-intel-card--loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    min-height: 80px;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.zena-zap-pulse {
+    color: #38bdf8;
+    animation: zapPulse 2s infinite;
+}
+
+@keyframes zapPulse {
+    0% {
+        opacity: 0.4;
+        transform: scale(0.95);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    100% {
+        opacity: 0.4;
+        transform: scale(0.95);
+    }
+}
+
+/* Insufficient Data State */
+.contact-intel-card--empty {
+    border-color: rgba(148, 163, 184, 0.2);
+    border-style: dashed;
+    background: rgba(30, 41, 59, 0.2);
+}
+
+.action--prompt {
+    background: rgba(148, 163, 184, 0.1);
+    border-left-color: #94a3b8;
+}
+
+.action--prompt .action-header {
+    color: #94a3b8;
+}

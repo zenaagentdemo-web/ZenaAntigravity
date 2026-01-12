@@ -3,6 +3,7 @@ import { Deal, ZenaAction } from '@prisma/client';
 import { DealCondition } from '../models/types.js';
 import { askZenaService } from './ask-zena.service.js';
 import prisma from '../config/database.js';
+import { userPersonaService } from './user-persona.service.js';
 
 // Action types
 export type ZenaActionType =
@@ -235,6 +236,17 @@ export class ZenaActionsService {
             prompt = prompt.replace(new RegExp(`\\{${key}\\}`, 'g'), String(value || 'Unknown'));
         }
 
+        // Add User Persona linguistic requirements
+        const persona = await userPersonaService.getPersona(userId);
+        const personaSnippet = userPersonaService.getSystemPromptSnippet(persona);
+        prompt = `${personaSnippet}\n\n${prompt}`;
+
+        // Add outcome history for learning from past results
+        const outcomeContext = await this.buildOutcomeContextForLLM(userId, actionType);
+        if (outcomeContext) {
+            prompt += outcomeContext;
+        }
+
         // Generate draft using Gemini (Brain-First)
         let output: string;
         try {
@@ -264,7 +276,7 @@ export class ZenaActionsService {
     /**
      * Get pending actions for a deal based on conditions and dates
      */
-    getPendingActions(deal: DealWithRelations): PendingAction[] {
+    async getPendingActions(deal: DealWithRelations): Promise<PendingAction[]> {
         const actions: PendingAction[] = [];
         const now = new Date();
 
@@ -392,9 +404,22 @@ export class ZenaActionsService {
             });
         }
 
-        // Sort by priority
+        // Apply ML Weighted Ranking
+        const persona = await userPersonaService.getPersona(deal.userId);
+        const actionWeights = persona.actionWeights || {};
+
+        // Sort by priority AND ML Weight
         const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-        actions.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+        actions.sort((a, b) => {
+            // First by priority
+            const pDiff = priorityOrder[a.priority] - priorityOrder[b.priority];
+            if (pDiff !== 0) return pDiff;
+
+            // Then by historical weight (approval rate)
+            const weightA = actionWeights[a.type] || 0.5; // Neutral default
+            const weightB = actionWeights[b.type] || 0.5;
+            return weightB - weightA; // Higher weight first
+        });
 
         return actions;
     }
@@ -443,6 +468,86 @@ export class ZenaActionsService {
             where: { userId, status: 'pending' },
             orderBy: { triggeredAt: 'desc' }
         });
+    }
+
+    /**
+     * Record the outcome of an executed action for AI learning
+     */
+    async recordOutcome(
+        actionId: string,
+        outcome: 'positive' | 'neutral' | 'negative',
+        notes?: string
+    ): Promise<ZenaAction> {
+        return prisma.zenaAction.update({
+            where: { id: actionId },
+            data: {
+                outcome,
+                outcomeNotes: notes || null,
+                outcomeRecordedAt: new Date()
+            }
+        });
+    }
+
+    /**
+     * Get outcome history for similar actions (for LLM context)
+     */
+    async getOutcomeHistory(
+        userId: string,
+        actionType: ZenaActionType,
+        limit: number = 10
+    ): Promise<Array<{
+        type: string;
+        propertyAddress: string;
+        outcome: string;
+        notes: string | null;
+        executedAt: Date;
+    }>> {
+        const actions = await prisma.zenaAction.findMany({
+            where: {
+                userId,
+                type: actionType,
+                outcome: { not: null }
+            },
+            include: {
+                deal: {
+                    include: { property: true }
+                }
+            },
+            orderBy: { executedAt: 'desc' },
+            take: limit
+        });
+
+        return actions.map(a => ({
+            type: a.type,
+            propertyAddress: a.deal?.property?.address || 'Unknown',
+            outcome: a.outcome!,
+            notes: a.outcomeNotes,
+            executedAt: a.executedAt || a.triggeredAt
+        }));
+    }
+
+    /**
+     * Build outcome context for LLM prompts
+     */
+    async buildOutcomeContextForLLM(userId: string, actionType: ZenaActionType): Promise<string> {
+        const history = await this.getOutcomeHistory(userId, actionType, 5);
+
+        if (history.length === 0) {
+            return '';
+        }
+
+        let context = `\n\n## Previous ${ACTION_CONFIGS[actionType]?.label || actionType} Outcomes:\n`;
+        for (const item of history) {
+            const emoji = item.outcome === 'positive' ? '✅' : item.outcome === 'negative' ? '❌' : '➖';
+            context += `${emoji} ${item.propertyAddress}: ${item.outcome}`;
+            if (item.notes) {
+                context += ` (${item.notes})`;
+            }
+            context += '\n';
+        }
+        context += '\nLearn from these outcomes when generating this action.\n';
+
+        return context;
     }
 
     /**

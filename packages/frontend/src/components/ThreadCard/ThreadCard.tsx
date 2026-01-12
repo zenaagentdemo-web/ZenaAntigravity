@@ -306,7 +306,7 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
       </div>
 
       {/* AI Summary with label */}
-      <div className="thread-card__ai-summary-section">
+      <div className={`thread-card__ai-summary-section ${thread.riskLevel === 'high' ? 'thread-card__ai-summary-section--proactive-glow' : ''}`}>
         <h4 className="thread-card__ai-summary-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10" />

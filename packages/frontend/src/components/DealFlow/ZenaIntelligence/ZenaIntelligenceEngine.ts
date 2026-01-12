@@ -41,16 +41,30 @@ export interface PowerMove {
 
 export interface DealIntelligence {
     dealId: string;
-    healthScore: number; // 0-100
-    healthVelocity: number; // percentage change, e.g. -5, +2
+    healthScore: number;
+    healthVelocity: number;
     riskSignals: RiskSignal[];
     suggestedPowerMove: PowerMove | null;
     coachingInsight: string;
+    executiveSummary?: string; // Phase 5: Deep Brief
     emailSentiment: EmailSentiment;
     needsLiveSession: boolean;
     daysInStage: number;
     stageHealthStatus: 'healthy' | 'warning' | 'critical';
-    riskLevel?: string; // AI-determined risk level from backend
+    riskLevel?: string;
+    analyzedAt?: string; // Phase 5: Snapshot time
+}
+
+export interface ContactIntelligence {
+    contactId: string;
+    motivation: string;
+    urgencyScore: number;
+    relationshipHealth: number;
+    keyDrivers: string[];
+    riskSignals: Array<{ type: string; severity: string; description: string }>;
+    strategicAdvice: string;
+    recommendedNextStep: string;
+    analyzedAt?: string;
 }
 
 // ============================================================
@@ -424,25 +438,29 @@ export function personalisePowerMove(powerMove: PowerMove, deal: Deal): PowerMov
 /**
  * Async version that fetches deep AI intelligence from the backend
  */
-export async function fetchDealIntelligence(dealId: string): Promise<DealIntelligence> {
+export async function fetchDealIntelligence(dealId: string, forceRefresh = false): Promise<DealIntelligence> {
     try {
-        const response = await api.get(`/api/deals/${dealId}/intelligence`);
+        const response = await api.get(`/api/deals/${dealId}/intelligence`, {
+            params: { forceRefresh }
+        });
         const data = response.data;
 
         return {
             ...data,
             dealId,
-            // Ensure dates are parsed
             riskSignals: data.riskSignals?.map((s: any) => ({
                 ...s,
                 detectedAt: s.detectedAt ? new Date(s.detectedAt) : new Date()
             })) || []
         };
     } catch (error) {
-        console.error(`[ZenaIntelligence] AI analysis failed for ${dealId}, falling back to heuristics:`, error);
-        // Fallback to local heuristics if AI fails
-        const deal = await api.get(`/api/deals/${dealId}`);
-        return analyseDeal(deal.data.deal);
+        console.error(`[ZenaIntelligence] AI analysis failed for ${dealId}:`, error);
+        // Fallback to local heuristics if AI fails and not a force refresh
+        if (!forceRefresh) {
+            const deal = await api.get(`/api/deals/${dealId}`);
+            return analyseDeal(deal.data.deal);
+        }
+        throw error;
     }
 }
 
@@ -454,29 +472,60 @@ export function useDealIntelligence(dealId: string) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        let isMounted = true;
-
-        const loadIntelligence = async () => {
-            setLoading(true);
-            try {
-                const data = await fetchDealIntelligence(dealId);
-                if (isMounted) setIntelligence(data);
-            } catch (err) {
-                if (isMounted) setError('Failed to load deep intelligence');
-            } finally {
-                if (isMounted) setLoading(false);
-            }
-        };
-
-        if (dealId) {
-            loadIntelligence();
+    const loadIntelligence = async (force = false) => {
+        setLoading(true);
+        try {
+            const data = await fetchDealIntelligence(dealId, force);
+            setIntelligence(data);
+        } catch (err) {
+            setError('Failed to load deep intelligence');
+        } finally {
+            setLoading(false);
         }
+    };
 
-        return () => { isMounted = false; };
+    useEffect(() => {
+        if (dealId) loadIntelligence();
     }, [dealId]);
 
-    return { intelligence, loading, error };
+    return { intelligence, loading, error, refresh: () => loadIntelligence(true) };
+}
+
+/**
+ * Contact Intelligence Fetching
+ */
+export async function fetchContactIntelligence(contactId: string, forceRefresh = false): Promise<ContactIntelligence> {
+    const response = await api.get(`/api/contacts/${contactId}/intelligence`, {
+        params: { forceRefresh }
+    });
+    return response.data;
+}
+
+/**
+ * Hook for Contact Intelligence
+ */
+export function useContactIntelligence(contactId: string) {
+    const [intelligence, setIntelligence] = useState<ContactIntelligence | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const loadIntelligence = async (force = false) => {
+        setLoading(true);
+        try {
+            const data = await fetchContactIntelligence(contactId, force);
+            setIntelligence(data);
+        } catch (err) {
+            setError('Failed to load relationship intel');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (contactId) loadIntelligence();
+    }, [contactId]);
+
+    return { intelligence, loading, error, refresh: () => loadIntelligence(true) };
 }
 
 export default {

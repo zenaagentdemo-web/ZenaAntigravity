@@ -1,0 +1,206 @@
+.morning-brief-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.morning-brief-modal {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background: rgba(13, 25, 41, 0.85);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.15), inset 0 0 20px rgba(0, 255, 255, 0.05);
+    overflow: hidden;
+}
+
+.morning-brief-modal__glow {
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.2) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.morning-brief-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.morning-brief-modal__title-row {
+    display: flex;
+    gap: 12px;
+}
+
+.morning-brief-modal__icon {
+    color: #00ffff;
+    filter: drop-shadow(0 0 5px #00ffff);
+    margin-top: 4px;
+}
+
+.morning-brief-modal__title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+}
+
+.morning-brief-modal__greeting {
+    font-size: 24px;
+    font-weight: 800;
+    color: #fff;
+    margin: 4px 0 0 0;
+}
+
+.morning-brief-modal__close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+.morning-brief-modal__close:hover {
+    color: #fff;
+}
+
+.morning-brief-modal__metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.morning-brief-metric-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.morning-brief-metric-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.morning-brief-metric-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+.metric-icon--cyan {
+    color: #00ffff;
+}
+
+.metric-icon--magenta {
+    color: #ff00ff;
+}
+
+.morning-brief-priority-card {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 100, 255, 0.1));
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.priority-card__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #00ffff;
+    margin-bottom: 12px;
+}
+
+.priority-time {
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.priority-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    margin: 4px 0;
+}
+
+.priority-location {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.morning-brief-modal__coaching {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0 4px;
+    margin-bottom: 32px;
+}
+
+.morning-brief-modal__footer {
+    display: flex;
+    gap: 12px;
+}
+
+.morning-brief-btn--secondary {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.morning-brief-btn--primary {
+    flex: 2;
+    background: #00ffff;
+    color: #000;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.morning-brief-btn--primary:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+}

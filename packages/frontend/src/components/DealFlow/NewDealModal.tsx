@@ -1,97 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { PipelineType, SaleMethod, BuyerStage, SellerStage, DealCondition } from './types';
+import { Sparkles } from 'lucide-react';
 import './NewDealModal.css';
 
-// API base URL
-const API_BASE = '/api';
-
-// Fetch function with auth token
-async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
-    const token = localStorage.getItem('authToken');
-    return fetch(url, {
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            ...(options.headers || {})
-        }
-    });
-}
-
-interface Property {
-    id: string;
-    address: string;
-}
-
-interface AddressSuggestion {
-    id: string;
-    fullAddress: string;
-    streetAddress: string;
-    suburb: string;
-    city: string;
-    postcode: string;
-    lat: number;
-    lon: number;
-    source: 'nominatim' | 'database' | 'manual';
-}
-
-interface Contact {
-    id: string;
-    name: string;
-    email?: string;
-}
+// ... (fetchWithAuth ...)
 
 interface NewDealModalProps {
     isOpen: boolean;
     onClose: () => void;
     onDealCreated?: () => void;
     initialPipelineType?: PipelineType;
+    initialData?: {
+        propertyId?: string;
+        propertyAddress?: string;
+        contactId?: string;
+        contactName?: string;
+        stage?: string;
+    };
 }
 
-const BUYER_STAGES: { value: BuyerStage; label: string }[] = [
-    { value: 'buyer_consult', label: 'Buyer Consult' },
-    { value: 'shortlisting', label: 'Shortlisting' },
-    { value: 'viewings', label: 'Viewings' },
-    { value: 'offer_made', label: 'Offer Made' },
-    { value: 'conditional', label: 'Conditional' },
-    { value: 'unconditional', label: 'Unconditional' },
-    { value: 'pre_settlement', label: 'Pre-Settlement' }
-];
-
-const SELLER_STAGES: { value: SellerStage; label: string }[] = [
-    { value: 'appraisal', label: 'Appraisal' },
-    { value: 'listing_signed', label: 'Listing Signed' },
-    { value: 'marketing', label: 'Marketing' },
-    { value: 'offers_received', label: 'Offers Received' },
-    { value: 'conditional', label: 'Conditional' },
-    { value: 'unconditional', label: 'Unconditional' },
-    { value: 'pre_settlement', label: 'Pre-Settlement' }
-];
-
-const SALE_METHODS: { value: SaleMethod; label: string }[] = [
-    { value: 'auction', label: 'Auction' },
-    { value: 'tender', label: 'Tender' },
-    { value: 'deadline_sale', label: 'Deadline Sale' },
-    { value: 'negotiation', label: 'By Negotiation' },
-    { value: 'asking_price', label: 'Asking Price' },
-    { value: 'poa', label: 'Price on Application (POA)' },
-    { value: 'beo', label: 'Buyer Enquiry Over (BEO)' },
-    { value: 'set_date', label: 'Set Date of Sale' },
-    { value: 'custom', label: 'Custom (Other)' }
-];
-
-const DEFAULT_CONDITIONS: Partial<DealCondition>[] = [
-    { type: 'finance', label: 'Finance Approval' },
-    { type: 'building_report', label: 'Building Report' },
-    { type: 'lim', label: 'LIM Report' },
-    { type: 'solicitor', label: 'Solicitor Approval' }
-];
+// ... (constants ...)
 
 export const NewDealModal: React.FC<NewDealModalProps> = ({
     isOpen,
     onClose,
     onDealCreated,
-    initialPipelineType = 'buyer'
+    initialPipelineType = 'buyer',
+    initialData
 }) => {
     // Form state
     const [pipelineType, setPipelineType] = useState<PipelineType>(initialPipelineType);
@@ -109,17 +44,7 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
     const [tenderCloseDate, setTenderCloseDate] = useState('');
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
 
-    // Search results
-    const [properties, setProperties] = useState<Property[]>([]);
-    const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
-    const [contacts, setContacts] = useState<Contact[]>([]);
-    const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
-    const [showContactDropdown, setShowContactDropdown] = useState(false);
-    const [isManualEntry, setIsManualEntry] = useState(false);
-
-    // UI state
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    // ... (rest of state)
 
     // Reset form when modal opens
     useEffect(() => {
@@ -127,13 +52,28 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
             setPipelineType(initialPipelineType);
             setSaleMethod('auction');
             setCustomSaleMethod('');
-            setStage(initialPipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
-            setSummary('');
+
+            // Sync initialData
+            if (initialData) {
+                if (initialData.propertyId) setPropertyId(initialData.propertyId);
+                if (initialData.propertyAddress) {
+                    setPropertySearch(initialData.propertyAddress);
+                    setSummary(initialData.propertyAddress);
+                }
+                if (initialData.contactId) setContactId(initialData.contactId);
+                if (initialData.contactName) setContactSearch(initialData.contactName);
+                if (initialData.stage) setStage(initialData.stage);
+                else setStage(initialPipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
+            } else {
+                setStage(initialPipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
+                setSummary('');
+                setPropertyId('');
+                setPropertySearch('');
+                setContactId('');
+                setContactSearch('');
+            }
+
             setDealValue('');
-            setPropertyId('');
-            setPropertySearch('');
-            setContactId('');
-            setContactSearch('');
             setSettlementDate('');
             setAuctionDate('');
             setTenderCloseDate('');
@@ -142,12 +82,14 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
             setIsManualEntry(false);
             setError(null);
         }
-    }, [isOpen, initialPipelineType]);
+    }, [isOpen, initialPipelineType, initialData]);
 
     // Update default stage when pipeline type changes
     useEffect(() => {
-        setStage(pipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
-    }, [pipelineType]);
+        if (!initialData?.stage) {
+            setStage(pipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
+        }
+    }, [pipelineType, initialData]);
 
     // Search properties (existing database) and geocoding
     useEffect(() => {
@@ -360,7 +302,28 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
             {/* Modal */}
             <div className="new-deal-modal">
                 <div className="new-deal-modal__header">
-                    <h2 className="new-deal-modal__title">New Deal</h2>
+                    <h2 className="new-deal-modal__title">
+                        New Deal
+                        {(initialData?.propertyAddress || initialData?.contactName) && (
+                            <div className="zena-prefill-badge" style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(129, 140, 248, 0.1))',
+                                border: '1px solid rgba(56, 189, 248, 0.2)',
+                                borderRadius: '12px',
+                                padding: '4px 10px',
+                                fontSize: '11px',
+                                color: '#38bdf8',
+                                marginLeft: '12px',
+                                fontWeight: 500,
+                                verticalAlign: 'middle'
+                            }}>
+                                <Sparkles size={12} />
+                                <span>Pre-filled from context</span>
+                            </div>
+                        )}
+                    </h2>
                     <button className="new-deal-modal__close" onClick={onClose}>×</button>
                 </div>
 

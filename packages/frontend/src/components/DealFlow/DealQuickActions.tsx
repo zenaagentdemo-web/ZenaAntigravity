@@ -1,4 +1,6 @@
+import React, { useState, useEffect } from 'react';
 import { Deal, STAGE_LABELS } from './types';
+import { AddNoteModal } from '../AddNoteModal/AddNoteModal';
 import { useDealIntelligence, analyseDeal } from './ZenaIntelligence/ZenaIntelligenceEngine';
 import './DealQuickActions.css';
 
@@ -56,6 +58,7 @@ export const DealQuickActions: React.FC<DealQuickActionsProps> = ({
     const [loading, setLoading] = useState(false);
     const [generatingAction, setGeneratingAction] = useState<string | null>(null);
     const [generatedDraft, setGeneratedDraft] = useState<string | null>(null);
+    const [showNoteModal, setShowNoteModal] = useState(false);
 
     // Get Zena intelligence (heuristic for immediate display, then AI hydrated)
     const { intelligence: aiIntelligence, loading: aiLoading } = useDealIntelligence(deal.id);
@@ -116,6 +119,23 @@ export const DealQuickActions: React.FC<DealQuickActionsProps> = ({
         window.location.href = `/deals/${deal.id}`;
     };
 
+    const handleSaveNote = async (noteData: { content: string; type: string }) => {
+        try {
+            await fetchWithAuth(`${API_BASE}/timeline/notes`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    entityType: 'deal',
+                    entityId: deal.id,
+                    summary: noteData.content,
+                    type: noteData.type
+                })
+            });
+            // Optionally refresh deal data or show success toast
+        } catch (error) {
+            console.error('Failed to save note:', error);
+        }
+    };
+
     if (!isOpen) return null;
 
     const propertyAddress = deal.property?.address || 'No property assigned';
@@ -168,7 +188,7 @@ export const DealQuickActions: React.FC<DealQuickActionsProps> = ({
                             <span className="quick-actions__btn-icon">📄</span>
                             <span>View Deal</span>
                         </button>
-                        <button className="quick-actions__btn" onClick={() => { }}>
+                        <button className="quick-actions__btn" onClick={() => setShowNoteModal(true)}>
                             <span className="quick-actions__btn-icon">📝</span>
                             <span>Add Note</span>
                         </button>
@@ -258,6 +278,15 @@ export const DealQuickActions: React.FC<DealQuickActionsProps> = ({
                     Close
                 </button>
             </div>
+
+            <AddNoteModal
+                isOpen={showNoteModal}
+                onClose={() => setShowNoteModal(false)}
+                onSave={handleSaveNote}
+                entityId={deal.id}
+                entityType="deal"
+                entityName={propertyAddress}
+            />
         </>
     );
 };

@@ -10,6 +10,9 @@ import { tokenTrackingService } from './token-tracking.service.js';
 import { intelligentNavigatorService } from './intelligent-navigator.service.js';
 import { navigationPlannerService } from './navigation-planner.service.js';
 import { contextRetrieverService } from './context-retriever.service.js';
+import { agentOrchestrator } from './agent-orchestrator.service.js';
+import { sessionManager } from './session-manager.service.js';
+import { userPersonaService } from './user-persona.service.js';
 import puppeteer from 'puppeteer';
 
 
@@ -104,21 +107,143 @@ export class AskZenaService {
 
       logger.info(`[AskZenaService] 📥 RECEIVED QUERY: "${query.query}"`);
 
-      // Phase 5: Check if this is a 3rd party site query (e.g. "Trade Me properties in Takapuna")
-      // Phase 7: Parse intent first to check for approvals
-      logger.info('[AskZenaService] 🔍 Parsing intent...');
+      // ═══════════════════════════════════════════════════════════════
+      // 🧠 ZENA DEBUG - ASK ZENA ENTRY
+      // ═══════════════════════════════════════════════════════════════
+      console.log('\n═══════════════════════════════════════════════════════════════');
+      console.log('🧠 ZENA DEBUG - ASK ZENA ENTRY');
+      console.log('═══════════════════════════════════════════════════════════════');
+      console.log('👤 User ID:', query.userId);
+      console.log('💬 Full Query:', query.query);
+      console.log('🆔 Conversation ID:', query.conversationId || 'None');
+      console.log('📎 Attachments:', query.attachments?.length || 0);
+      console.log('📜 History Length:', query.conversationHistory?.length || 0);
+      if (query.conversationHistory && query.conversationHistory.length > 0) {
+        console.log('📜 Recent Conversation History:');
+        query.conversationHistory.slice(-3).forEach((msg, i) => {
+          console.log(`   [${msg.role}]: ${msg.content.substring(0, 100)}${msg.content.length > 100 ? '...' : ''}`);
+        });
+      }
+      console.log('═══════════════════════════════════════════════════════════════\n');
+
+      // ─────────────────────────────────────────────────────────────────
+      // 🧠 ZENA DEBUG - CONFIRMATION ROUTING
+      // ─────────────────────────────────────────────────────────────────
+      const session = sessionManager.getOrCreateSession(query.userId, query.conversationId);
+      const lowerQuery = query.query.toLowerCase().trim();
+      const isAffirmative = ['yes', 'y', 'yup', 'correct', 'confirm', 'approve', 'ok', 'okay', 'do it'].includes(lowerQuery);
+      const isNegative = ['no', 'n', 'nope', 'cancel', 'stop', 'dont', 'don\'t', 'deny'].includes(lowerQuery);
+
+      if (session.pendingConfirmation && (isAffirmative || isNegative)) {
+        console.log('🧠 ZENA DEBUG: Pending confirmation found, routing to Agent Orchestrator');
+        const agentResponse = await agentOrchestrator.processQuery(query.userId, query.query, {
+          conversationId: query.conversationId
+        });
+
+        const response: AskZenaResponse = {
+          answer: agentResponse.answer,
+          sources: [],  // Required property
+          sessionId: agentResponse.sessionId,
+          requiresApproval: agentResponse.requiresApproval,
+          pendingAction: agentResponse.pendingAction as any
+        };
+
+        if (query.conversationId) {
+          await prisma.chatMessage.create({
+            data: { conversationId: query.conversationId, role: 'assistant', content: response.answer }
+          });
+        }
+
+        return response;
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // 🧠 PHASE A FIX: AGENT ORCHESTRATOR FIRST
+      // ═══════════════════════════════════════════════════════════════
+      // Check if this is a tool-related query BEFORE parsing external intent.
+      // This ensures "create contact", "create property", etc. go to the Orchestrator
+      // and don't get hijacked by NavigationPlanner's TradeMe/write handling.
+      // ═══════════════════════════════════════════════════════════════
+      if (this.isToolQuery(query.query) || session.pendingConfirmation) {
+        console.log('🧠 ZENA DEBUG: Tool query detected, routing to Agent Orchestrator FIRST');
+        console.log('   isToolQuery:', this.isToolQuery(query.query));
+        console.log('   hasPendingConfirmation:', !!session.pendingConfirmation);
+
+        const agentResponse = await agentOrchestrator.processQuery(query.userId, query.query, {
+          conversationId: query.conversationId
+        });
+
+        const response: AskZenaResponse = {
+          answer: agentResponse.answer,
+          sources: [],
+          sessionId: agentResponse.sessionId,
+          requiresApproval: agentResponse.requiresApproval,
+          pendingAction: agentResponse.pendingAction as any
+        };
+
+        if (query.conversationId) {
+          await prisma.chatMessage.create({
+            data: { conversationId: query.conversationId, role: 'assistant', content: response.answer }
+          });
+        }
+
+        return response;
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // FALLBACK: Navigation Planner for external site queries
+      // ═══════════════════════════════════════════════════════════════
+      // Phase 7: Parse intent for external site navigation (TradeMe, etc.)
+      logger.info('[AskZenaService] 🔍 Parsing intent (fallback for external sites)...');
       const intent = await navigationPlannerService.parseIntent(query.query);
+
+      // ═══════════════════════════════════════════════════════════════
+      // 🧠 ZENA DEBUG - PARSED INTENT
+      // ═══════════════════════════════════════════════════════════════
+      console.log('\n═══════════════════════════════════════════════════════════════');
+      console.log('🧠 ZENA DEBUG - PARSED INTENT');
+      console.log('═══════════════════════════════════════════════════════════════');
+      console.log('🎯 Action:', intent.action);
+      console.log('📋 Full Intent:', JSON.stringify(intent, null, 2));
+      console.log('═══════════════════════════════════════════════════════════════\n');
+
       logger.info(`[AskZenaService] 🔍 Parsed intent action: ${intent.action}`);
 
       if (intent.action === 'write') {
         logger.info('[AskZenaService] ✍️ Intent is WRITE, handling pending action...');
         let description = `Zena will perform a ${intent.parameters.writeAction} action on ${intent.targetSite || 'the connected site'}.`;
-        // ... (rest of write logic remains same)
+        let payload = { ...intent.parameters, query: query.query };
 
         if (intent.parameters.writeAction === 'updatePrice') {
-          const adjustment = intent.parameters.priceAdjustment;
+          const adjustment = intent.parameters.priceAdjustment || intent.parameters.writePayload?.adjustment;
+          const addressToSearch = intent.parameters.address || intent.parameters.writePayload?.address;
+
+          let currentPrice = null;
+          let newPrice = null;
+
+          if (addressToSearch) {
+            const property = await prisma.property.findFirst({
+              where: {
+                userId: query.userId,
+                address: { contains: addressToSearch, mode: 'insensitive' }
+              }
+            });
+            if (property && property.listingPrice) {
+              currentPrice = Number(property.listingPrice);
+              if (adjustment) {
+                newPrice = currentPrice + adjustment;
+                payload.newPrice = newPrice;
+                payload.currentPrice = currentPrice;
+              }
+            }
+          }
+
           const formattedAdj = adjustment ? (adjustment > 0 ? `increase of $${Math.abs(adjustment).toLocaleString()}` : `reduction of $${Math.abs(adjustment).toLocaleString()}`) : 'adjustment';
-          description = `Zena will update the price for **${intent.parameters.address || 'the listing'}** on Trade Me, applying a **${formattedAdj}**.`;
+          const priceContext = (currentPrice && newPrice)
+            ? ` from **$${currentPrice.toLocaleString()}** to **$${newPrice.toLocaleString()}**`
+            : '';
+
+          description = `Zena will update the price for **${intent.parameters.address || 'the listing'}** on Trade Me${priceContext}, applying a **${formattedAdj}**.`;
         }
 
         const response: AskZenaResponse = {
@@ -127,10 +252,7 @@ export class AskZenaService {
             type: intent.action,
             subType: intent.parameters.writeAction,
             targetSite: intent.targetSite || 'unknown',
-            payload: {
-              ...intent.parameters,
-              query: query.query
-            },
+            payload,
             description
           },
           suggestedActions: ["approve_write", "cancel_write"]
@@ -140,9 +262,46 @@ export class AskZenaService {
 
       logger.info('[AskZenaService] 🛤️ Proceeding to Intelligent Navigator check...');
 
-      // HYBRID ARCHITECTURE: Classify query type
+      // Phase 10: Use Agent Orchestrator for tool-based actions if enabled
       const queryType = this.classifyQueryType(intent);
+
+      // ═══════════════════════════════════════════════════════════════
+      // 🧠 ZENA DEBUG - QUERY ROUTING
+      // ═══════════════════════════════════════════════════════════════
+      console.log('\n═══════════════════════════════════════════════════════════════');
+      console.log('🧠 ZENA DEBUG - QUERY ROUTING');
+      console.log('═══════════════════════════════════════════════════════════════');
+      console.log('📊 Query Type:', queryType);
+      console.log('🔧 Is Tool Query:', this.isToolQuery(query.query));
+      console.log('🛤️ Will Use Orchestrator:', queryType === 'AUTHENTICATED_ACTION' || this.isToolQuery(query.query));
+      console.log('═══════════════════════════════════════════════════════════════\n');
+
       logger.info(`[AskZenaService] 📊 Query Classification: ${queryType}`);
+
+      // If it's an authenticated action or looks like a tool query, use Orchestrator
+      if (queryType === 'AUTHENTICATED_ACTION' || this.isToolQuery(query.query)) {
+        logger.info('[AskZenaService] 🤖 Delegating to Agent Orchestrator...');
+        const agentResponse = await agentOrchestrator.processQuery(query.userId, query.query, {
+          conversationId: query.conversationId
+        });
+
+        const response: AskZenaResponse = {
+          answer: agentResponse.answer,
+          sources: [],
+          pendingAction: agentResponse.pendingAction
+        };
+
+        if (query.conversationId) {
+          await prisma.chatMessage.create({
+            data: {
+              conversationId: query.conversationId,
+              role: 'assistant',
+              content: response.answer
+            }
+          });
+        }
+        return response;
+      }
 
       // For PUBLIC_READ queries, try Gemini with Search Grounding FIRST (no cookies needed)
       if (queryType === 'PUBLIC_READ') {
@@ -438,12 +597,26 @@ export class AskZenaService {
   }
 
   /**
+   * Helper to detect if a query should be handled by the agent tools
+   */
+  private isToolQuery(query: string): boolean {
+    const actionKeywords = [
+      'create', 'add', 'update', 'move', 'delete', 'archive', 'unarchive',
+      'send', 'draft', 'reply', 'snooze', 'mark', 'complete', 'assign', 'link',
+      'portfolio', 'business', 'pipeline', 'summarize',
+      'yes', 'no', 'confirm', 'approve', 'cancel', 'yup', 'nope', 'correct', 'ok', 'okay'
+    ];
+    const lowQuery = query.toLowerCase();
+    return actionKeywords.some(keyword => lowQuery.includes(keyword));
+  }
+
+  /**
    * Classify query type for hybrid architecture
    * Returns: 'PUBLIC_READ' | 'AUTHENTICATED_ACTION' | 'HYBRID_REPORT'
    */
   private classifyQueryType(intent: any): 'PUBLIC_READ' | 'AUTHENTICATED_ACTION' | 'HYBRID_REPORT' {
     // Write actions always require authentication
-    if (intent.action === 'write') {
+    if (intent.action === 'write' || intent.action === 'summarizePortfolio') {
       return 'AUTHENTICATED_ACTION';
     }
 
@@ -717,7 +890,11 @@ export class AskZenaService {
     context: SearchContext
   ): Promise<AskZenaResponse> {
     try {
-      const prompt = this.buildQueryPrompt(query, context);
+      // Get User Persona for dynamic prompt adjustment
+      const persona = await userPersonaService.getPersona(query.userId);
+      const personaSnippet = userPersonaService.getSystemPromptSnippet(persona);
+
+      const prompt = this.buildQueryPrompt(query, context, personaSnippet);
       const response = await this.callLLM(prompt, query.conversationHistory, query.attachments);
       const parsed = this.parseResponse(response, context);
 
@@ -793,7 +970,7 @@ Text to fix:
   /**
    * Build prompt for LLM
    */
-  private buildQueryPrompt(query: AskZenaQuery, context: SearchContext): string {
+  private buildQueryPrompt(query: AskZenaQuery, context: SearchContext, personaSnippet: string = ''): string {
     // Build context summary
     const contextSummary = this.buildContextSummary(context);
     const synapseContext = context.synapseContext || '';
@@ -890,6 +1067,7 @@ BE PUNCHY, VIBRANT, AND PROFESSIONAL. Use the real-time data from the 'Neural Br
 
     return `You are Zena, a highly intelligent and efficient AI assistant for a real estate agent.
 Your tone is professional, punchy, and helpful. Be vibrant and sophisticated.
+${personaSnippet}
 ${googleSearchInstruction}
 ${tradeMeSearchInstruction}
 ${multiPortalSearchInstruction}
@@ -906,6 +1084,8 @@ RESPONSE RULES:
 3. If the user wants a report OR this is a CMA report, ALWAYS include "generate_report" AND "generate_pdf" in the suggestedActions array.
 4. For market/news queries, include specific data points and statistics from your Google Search results.
 5. EXPLICITLY include the 'sources' array in your JSON with the exact URLs you found. This is MANDATORY for market/news queries.
+6. PROACTIVE NUDGES: If the 'Synapse Layer' context reveals a critical mismatch (e.g., a vendor moving overseas in 2 weeks while the listing is still early stage), YOU MUST include a specific suggested action like "Lower Price" or "Call Vendor Immediately".
+7. ACTION APPROVALS: If the user query implies a data update (e.g. "set the price to X"), your 'answer' should explain what will happen, and you must include "approve_write" in suggestedActions.
 
 Response must be valid JSON:
 {
@@ -3797,6 +3977,140 @@ Respond in JSON format:
     } catch (error) {
       console.error('Error parsing property details:', error);
       throw error;
+    }
+  }
+
+  // ============================================
+  // GLOBAL PROACTIVITY PHASE 1 - CONTACTS
+  // ============================================
+
+  /**
+   * Quick contact search by name for intent analysis
+   * Returns matching contacts for deduplication checks
+   */
+  async quickContactSearch(userId: string, name: string): Promise<any[]> {
+    try {
+      const contacts = await prisma.contact.findMany({
+        where: {
+          userId,
+          name: {
+            contains: name,
+            mode: 'insensitive'
+          }
+        },
+        take: 5,
+        select: {
+          id: true,
+          name: true,
+          emails: true
+        }
+      });
+      return contacts;
+    } catch (error) {
+      console.error('[AskZenaService] Quick contact search failed:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Analyze an existing contact's activity and suggest role changes
+   * Uses real timeline events, emails, and linked properties to determine likely role
+   */
+  async analyzeContactRole(userId: string, contactId: string): Promise<{
+    currentRole: string;
+    suggestedRole: string | null;
+    confidence: number;
+    reason: string;
+    shouldSuggest: boolean;
+  }> {
+    try {
+      // Fetch contact with activity data
+      const contact = await prisma.contact.findFirst({
+        where: { id: contactId, userId },
+        include: {
+          linkedProperties: { take: 5 },
+          linkedDeals: { take: 5 }
+        }
+      });
+
+      if (!contact) {
+        return {
+          currentRole: 'other',
+          suggestedRole: null,
+          confidence: 0,
+          reason: 'Contact not found',
+          shouldSuggest: false
+        };
+      }
+
+      const currentRole = contact.role || 'other';
+      let suggestedRole: string | null = null;
+      let confidence = 0;
+      let reason = 'Insufficient activity data for analysis';
+
+      // Analyze linked properties - if they have listings, likely vendor
+      const propertyCount = contact.linkedProperties?.length || 0;
+      const dealCount = contact.linkedDeals?.length || 0;
+
+      // Count timeline events for this contact
+      const timelineCount = await prisma.timelineEvent.count({
+        where: {
+          userId,
+          metadata: {
+            path: ['contactId'],
+            equals: contactId
+          }
+        }
+      });
+
+      // Role inference logic based on real data
+      if (propertyCount >= 1 && currentRole !== 'vendor') {
+        // Has properties linked but not marked as vendor
+        suggestedRole = 'vendor';
+        confidence = Math.min(0.6 + (propertyCount * 0.1), 0.95);
+        reason = `Contact is linked to ${propertyCount} ${propertyCount === 1 ? 'property' : 'properties'} - likely a vendor`;
+      } else if (dealCount >= 2 && currentRole !== 'investor' && currentRole !== 'buyer') {
+        // Multiple deals suggest investor or active buyer
+        suggestedRole = 'investor';
+        confidence = Math.min(0.5 + (dealCount * 0.15), 0.90);
+        reason = `Contact is involved in ${dealCount} deals - suggests active investor`;
+      } else if (timelineCount >= 10 && currentRole === 'other') {
+        // High activity but still marked as 'other'
+        suggestedRole = 'buyer';
+        confidence = 0.65;
+        reason = `High engagement (${timelineCount} activities) suggests active buyer`;
+      }
+
+      // Use email domain analysis as secondary signal
+      const email = contact.emails?.[0];
+      if (email && suggestedRole === null) {
+        const prediction = await this.predictContactType(email, contact.name);
+        if (prediction.confidence >= 0.75 && prediction.suggestedRole !== currentRole) {
+          suggestedRole = prediction.suggestedRole;
+          confidence = prediction.confidence;
+          reason = prediction.reason;
+        }
+      }
+
+      // Only suggest if confidence is above threshold
+      const shouldSuggest = suggestedRole !== null && suggestedRole !== currentRole && confidence >= 0.70;
+
+      return {
+        currentRole,
+        suggestedRole: shouldSuggest ? suggestedRole : null,
+        confidence,
+        reason,
+        shouldSuggest
+      };
+    } catch (error) {
+      console.error('[AskZenaService] Analyze contact role failed:', error);
+      return {
+        currentRole: 'other',
+        suggestedRole: null,
+        confidence: 0,
+        reason: 'Analysis failed',
+        shouldSuggest: false
+      };
     }
   }
 

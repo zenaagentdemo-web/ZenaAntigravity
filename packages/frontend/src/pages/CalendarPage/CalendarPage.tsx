@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Sparkles, Calendar, CheckCircle2, MapPin, ArrowRight, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Sparkles, Calendar, CheckCircle2, MapPin, ArrowRight, Clock, ChevronLeft, ChevronRight, AlertTriangle, X, Plus } from 'lucide-react';
 import { CalendarAppointment } from '../../components/CalendarWidget/CalendarWidget';
 import { ScheduleOpenHomeModal } from '../../components/ScheduleOpenHomeModal/ScheduleOpenHomeModal';
 import { CalendarMiniPicker } from '../../components/CalendarMiniPicker/CalendarMiniPicker';
@@ -64,6 +64,15 @@ export const CalendarPage: React.FC = () => {
     const [selectedSuggestion, setSelectedSuggestion] = useState<string>('');
     const [isConfirming, setIsConfirming] = useState(false);
 
+    // Route Optimization State
+    const [routeWarnings, setRouteWarnings] = useState<{
+        id: string;
+        message: string;
+        type: 'warning' | 'optimization';
+        actionLabel?: string;
+        action?: () => void;
+    }[]>([]);
+
     // Parse URL params for AI suggestions
     useEffect(() => {
         const suggestionsParam = searchParams.get('suggestions');
@@ -103,15 +112,131 @@ export const CalendarPage: React.FC = () => {
 
     const loadData = async () => {
         try {
-            const response = await api.get('/api/properties');
-            if (response.data && response.data.properties) {
-                setProperties(response.data.properties);
-                const generatedAppointments = generateAppointmentsFromProperties(response.data.properties);
-                setAppointments(generatedAppointments);
-            }
+            const [propRes, taskRes, timelineRes] = await Promise.all([
+                api.get('/api/properties'),
+                api.get('/api/tasks?status=open'),
+                api.get('/api/timeline?entityType=calendar_event')
+            ]);
+
+            const loadedProps = propRes.data?.properties || [];
+            const loadedTasks = taskRes.data?.tasks || [];
+            const loadedTimeline = timelineRes.data?.events || [];
+
+            setProperties(loadedProps);
+
+            const propAppts = generateAppointmentsFromProperties(loadedProps);
+            const taskAppts = generateAppointmentsFromTasks(loadedTasks, loadedProps);
+            const timelineAppts = generateAppointmentsFromTimeline(loadedTimeline, loadedProps);
+
+            const allAppts = [...propAppts, ...taskAppts, ...timelineAppts]
+                .sort((a, b) => a.time.getTime() - b.time.getTime());
+
+            setAppointments(allAppts);
+
+            // ANALYZE ROUTES
+            analyzeRoutes(allAppts);
         } catch (err) {
-            console.error('Failed to load properties for calendar', err);
+            console.error('Failed to load combined calendar data', err);
         }
+    };
+
+    const analyzeRoutes = (appts: CalendarAppointment[]) => {
+        const warnings: any[] = [];
+        const todayStr = new Date().toDateString();
+        const now = new Date();
+        const todayAppts = appts
+            .filter(a => a.time.toDateString() === todayStr)
+            .sort((a, b) => a.time.getTime() - b.time.getTime());
+
+        for (let i = 0; i < todayAppts.length - 1; i++) {
+            const current = todayAppts[i];
+            const next = todayAppts[i + 1];
+
+            // Only analyze if the *next* appointment is consistent with the current schedule order
+            // AND the next appointment is starting within the next 3 hours (not "ages away")
+            const timeUntilNextStart = (next.time.getTime() - now.getTime()) / (1000 * 60);
+
+            if (timeUntilNextStart < 0 || timeUntilNextStart > 180) continue; // Skip past events or far future events (3h+)
+
+            // Assuming 1 hour duration for 'current' if not specified
+            const currentEndTime = new Date(current.time.getTime() + 60 * 60 * 1000);
+            const gapMinutes = (next.time.getTime() - currentEndTime.getTime()) / (1000 * 60);
+
+            // Simple Distance Estimate (Manhattan distance approx if coords existed, else random mock for demo)
+            // In reality, we'd use Google Maps API here. 
+            // For now, let's assume a "Critical Alert" only if the gap is remarkably tight (< 30 mins)
+            // and we rely on the heuristic that most property drives are ~15-30 mins.
+
+            if (gapMinutes < 30) {
+                // If gap is less than 30 mins, it's a potential rush.
+                // We refine this: if gap is NEGATIVE, it's an overlap.
+                if (gapMinutes < 0) {
+                    warnings.push({
+                        id: `overlap-${current.id}-${next.id}`,
+                        message: `Schedule Conflict: ${next.title} starts before ${current.title} ends.`,
+                        type: 'warning',
+                        actionLabel: 'Reschedule',
+                        action: () => {
+                            const newTime = new Date(currentEndTime.getTime() + 30 * 60 * 1000); // Suggest 30 mins after current ends
+                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(next.location)}`, '_blank');
+                        }
+                    });
+                } else if (gapMinutes < 20) {
+                    // Tight gap (0-20 mins)
+                    warnings.push({
+                        id: `travel-${current.id}-${next.id}`,
+                        message: `Tight Schedule: Only ${Math.round(gapMinutes)} mins travel time to ${next.title}. Traffic may cause delays.`,
+                        type: 'warning',
+                        actionLabel: 'Optimize Route',
+                        action: () => {
+                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(next.location)}`, '_blank');
+                        }
+                    });
+                }
+            }
+        }
+        setRouteWarnings(warnings);
+    };
+
+    const generateAppointmentsFromTasks = (tasks: any[], props: Property[]): CalendarAppointment[] => {
+        return tasks
+            .filter(t => t.dueDate)
+            .map(t => {
+                const property = props.find(p => p.id === t.propertyId);
+                return {
+                    id: t.id,
+                    time: new Date(t.dueDate),
+                    title: t.label,
+                    location: property?.address || 'Personal Task',
+                    property: property ? {
+                        id: property.id,
+                        address: property.address,
+                        type: property.type
+                    } : undefined,
+                    type: t.label.toLowerCase().includes('call') ? 'call' : 'other',
+                    urgency: 'medium'
+                };
+            });
+    };
+
+    const generateAppointmentsFromTimeline = (events: any[], props: Property[]): CalendarAppointment[] => {
+        return events.map(e => {
+            const propertyId = e.metadata?.propertyId;
+            const property = props.find(p => p.id === propertyId);
+            return {
+                id: e.id,
+                time: new Date(e.timestamp),
+                title: e.summary,
+                location: property?.address || e.metadata?.location || '',
+                property: property ? {
+                    id: property.id,
+                    address: property.address,
+                    type: property.type
+                } : undefined,
+                type: e.type === 'meeting' ? 'meeting' : 'other',
+                urgency: e.metadata?.urgency || 'low'
+            };
+        });
     };
 
     const generateAppointmentsFromProperties = (props: Property[]): CalendarAppointment[] => {
@@ -120,25 +245,21 @@ export const CalendarPage: React.FC = () => {
         props.forEach(property => {
             if (property.milestones) {
                 property.milestones.forEach(milestone => {
-                    const typeLower = milestone.type.toLowerCase();
-                    // Filter relevant types
-                    if (['open_home', 'viewing', 'auction', 'first_open', 'listing', 'settlement'].includes(typeLower) || typeLower.includes('open')) {
-                        const date = new Date(milestone.date);
-                        if (!isNaN(date.getTime())) {
-                            appts.push({
-                                id: milestone.id,
-                                time: date,
-                                title: formatTitle(milestone.type, property.address),
-                                location: property.address,
-                                property: {
-                                    id: property.id,
-                                    address: property.address,
-                                    type: property.type
-                                },
-                                type: mapType(milestone.type),
-                                urgency: determineUrgency(milestone.type),
-                            });
-                        }
+                    const date = new Date(milestone.date);
+                    if (!isNaN(date.getTime())) {
+                        appts.push({
+                            id: milestone.id,
+                            time: date,
+                            title: formatTitle(milestone.type || milestone.title || 'Milestone', property.address),
+                            location: property.address,
+                            property: {
+                                id: property.id,
+                                address: property.address,
+                                type: property.type
+                            },
+                            type: mapType(milestone.type || 'other'),
+                            urgency: determineUrgency(milestone.type || 'low'),
+                        });
                     }
                 });
             }
@@ -285,11 +406,50 @@ export const CalendarPage: React.FC = () => {
                     >
                         Month
                     </button>
+                    <div className="header-separator" style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)', margin: '0 8px' }}></div>
+                    <button
+                        className="calendar-page__add-btn"
+                        onClick={() => {
+                            setSelectedPropertyId('');
+                            setIsScheduleModalOpen(true);
+                        }}
+                    >
+                        <Plus size={18} />
+                        <span>Add Appointment</span>
+                    </button>
                 </div>
             </header>
 
             <main className="calendar-page__content">
                 <section className="calendar-main-view">
+                    {/* Route Intelligence Banner */}
+                    {routeWarnings.length > 0 && (
+                        <div className="calendar-route-intelligence">
+                            {routeWarnings.map(warning => (
+                                <div key={warning.id} className={`route-warning route-warning--${warning.type}`}>
+                                    <div className="route-warning__icon">
+                                        <AlertTriangle size={18} />
+                                    </div>
+                                    <div className="route-warning__content">
+                                        <p>{warning.message}</p>
+                                        {warning.actionLabel && (
+                                            <button className="route-warning__btn" onClick={warning.action}>
+                                                <Sparkles size={12} />
+                                                {warning.actionLabel}
+                                            </button>
+                                        )}
+                                    </div>
+                                    <button
+                                        className="route-warning__close"
+                                        onClick={() => setRouteWarnings(prev => prev.filter(w => w.id !== warning.id))}
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     {/* AI Suggested Open Home Times */}
                     {aiSuggestions.length > 0 && (
                         <div className="high-tech-card ai-suggestions-panel" style={{ marginBottom: '20px', background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.05))', border: '1px solid rgba(0, 212, 255, 0.3)' }}>
@@ -461,17 +621,19 @@ export const CalendarPage: React.FC = () => {
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <div className="appt-actions">
-                                                        <button
-                                                            className="appt-btn"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                navigate(`/properties/${appt.property.id}`);
-                                                            }}
-                                                        >
-                                                            View Property
-                                                        </button>
-                                                    </div>
+                                                    {appt.property?.id && (
+                                                        <div className="appt-actions">
+                                                            <button
+                                                                className="appt-btn"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    navigate(`/properties/${appt.property.id}`);
+                                                                }}
+                                                            >
+                                                                View Property
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
@@ -483,26 +645,9 @@ export const CalendarPage: React.FC = () => {
                 </section>
 
                 <aside className="calendar-sidebar">
+                    {/* Focus: Next Up - TOP of sidebar for immediate attention */}
                     <div className="sidebar-section">
-                        <h2 className="section-title">Navigation</h2>
-                        <CalendarMiniPicker
-                            selectedDate={isValidDate(selectedAgendaDate) ? selectedAgendaDate : new Date()}
-                            appointments={appointments}
-                            onDateSelect={(date) => {
-                                if (!isValidDate(date)) return;
-                                setSelectedAgendaDate(date);
-                                // Scroll to date section
-                                const dateKey = date.toISOString().split('T')[0];
-                                const element = document.getElementById(dateKey);
-                                if (element) {
-                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }
-                            }}
-                        />
-                    </div>
-
-                    <div className="sidebar-section">
-                        <h2 className="section-title">Focus: Next Up</h2>
+                        <h2 className="section-title"><span className="focus-title-highlight">Focus:</span> Next Up</h2>
                         {appointments.filter(a => isValidDate(a.time) && a.time > new Date()).length > 0 ? (
                             (() => {
                                 const nextAppt = appointments
@@ -533,6 +678,26 @@ export const CalendarPage: React.FC = () => {
                         )}
                     </div>
 
+                    {/* Navigation Calendar */}
+                    <div className="sidebar-section">
+                        <h2 className="section-title">Navigation</h2>
+                        <CalendarMiniPicker
+                            selectedDate={isValidDate(selectedAgendaDate) ? selectedAgendaDate : new Date()}
+                            appointments={appointments}
+                            onDateSelect={(date) => {
+                                if (!isValidDate(date)) return;
+                                setSelectedAgendaDate(date);
+                                // Scroll to date section
+                                const dateKey = date.toISOString().split('T')[0];
+                                const element = document.getElementById(dateKey);
+                                if (element) {
+                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                            }}
+                        />
+                    </div>
+
+                    {/* Zena's Intelligence */}
                     <div className="high-tech-card zena-suggestions sidebar-section">
                         <h2 className="section-title">Zena's Intelligence</h2>
                         <div className="suggestion-item">
@@ -544,20 +709,8 @@ export const CalendarPage: React.FC = () => {
                 </aside>
             </main>
 
-            {createPortal(
-                <button
-                    className="fab-add-event"
-                    onClick={() => {
-                        console.log('FAB Clicked - Opening Schedule Modal');
-                        setSelectedPropertyId('');
-                        setIsScheduleModalOpen(true);
-                    }}
-                    title="Add New Event"
-                >
-                    +
-                </button>,
-                document.body
-            )}
+
+            {/* Removed FAB - Moved to Header */}
 
             <ScheduleOpenHomeModal
                 isOpen={isScheduleModalOpen}

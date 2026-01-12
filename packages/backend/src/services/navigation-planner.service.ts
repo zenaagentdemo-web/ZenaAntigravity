@@ -19,7 +19,7 @@ import { logger } from './logger.service.js';
 // ===========================================
 
 export interface NavigationIntent {
-    action: 'search' | 'getDetails' | 'count' | 'list' | 'compare' | 'report' | 'write' | 'unknown';
+    action: 'search' | 'getDetails' | 'count' | 'list' | 'compare' | 'report' | 'write' | 'summarizePortfolio' | 'unknown';
     targetSite?: string;
     parameters: {
         location?: string;
@@ -34,6 +34,15 @@ export interface NavigationIntent {
         query?: string;
         maxPages?: number; // Phase 6
         drillDown?: boolean; // Phase 6
+        writeAction?: string; // Phase 7
+        writePayload?: {
+            address?: string;
+            newPrice?: number;
+            adjustment?: number;
+            note?: string;
+            currentPrice?: number;
+            [key: string]: any;
+        };
     };
     confidence: number;
 }
@@ -61,6 +70,7 @@ Available actions:
 - compare: Compare multiple properties
 - report: Generate a detailed comparable sales report (CMA) for an address
 - write: Perform a mutative action (log note, update field, change status)
+- summarizePortfolio: Provide an executive summary of ALL active deals and portfolio health
 
 Available target sites (use domain):
 {{availableSites}}
@@ -69,7 +79,7 @@ User Question: "{{question}}"
 
 Return JSON only, no explanation:
 {
-    "action": "search|getDetails|count|list|compare|report|unknown",
+    "action": "search|getDetails|count|list|compare|report|summarizePortfolio|unknown",
     "targetSite": "domain or null if not specified",
     "parameters": {
         "location": "suburb or area if mentioned",
@@ -83,7 +93,7 @@ Return JSON only, no explanation:
         "maxPages": number,
         "drillDown": boolean,
         "writeAction": "logNote|updateStatus|updatePrice|etc",
-        "writePayload": { "address": "string", "newPrice": number, "adjustment": number }
+        "writePayload": { "address": "string", "newPrice": number, "adjustment": "number (negative for reductions, positive for increases)" }
     },
     "confidence": 0.0-1.0
 }`;
@@ -178,7 +188,24 @@ export class NavigationPlannerService {
         const adjustMatch = lower.match(/(reduce|lower|increase|raise).*by\s*\$?(\d+,?\d*)/);
         if (adjustMatch) {
             const amount = parseInt(adjustMatch[2].replace(',', ''));
-            intent.parameters.priceAdjustment = lower.includes('reduce') || lower.includes('lower') ? -amount : amount;
+            const adjustment = lower.includes('reduce') || lower.includes('lower') ? -amount : amount;
+            intent.parameters.priceAdjustment = adjustment;
+
+            if (intent.action === 'write') {
+                if (!intent.parameters.writePayload) intent.parameters.writePayload = {};
+                intent.parameters.writePayload.adjustment = adjustment;
+            }
+        }
+
+        // Extract address (look for street patterns, including units)
+        const addressMatch = question.match(/(?:\d+\/)?\d+\s+[\w\s]+(?:road|street|avenue|drive|place|lane|way|rd|st|ave|dr|pl|ln|wy)/i);
+        if (addressMatch) {
+            const addr = addressMatch[0].trim();
+            intent.parameters.address = addr;
+            if (intent.action === 'write') {
+                if (!intent.parameters.writePayload) intent.parameters.writePayload = {};
+                intent.parameters.writePayload.address = addr;
+            }
         }
 
         // Phase 6: Pagination / Depth
@@ -221,11 +248,6 @@ export class NavigationPlannerService {
             intent.parameters.bedrooms = parseInt(bedroomMatch[1]);
         }
 
-        // Extract address (look for street patterns, including units)
-        const addressMatch = question.match(/(?:\d+\/)?\d+\s+[\w\s]+(?:road|street|avenue|drive|place|lane|way|rd|st|ave|dr|pl|ln|wy)/i);
-        if (addressMatch) {
-            intent.parameters.address = addressMatch[0].trim();
-        }
 
         return intent;
     }

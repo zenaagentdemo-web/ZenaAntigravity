@@ -70,7 +70,8 @@ interface Property {
   listingPrice?: number;
   bedrooms?: number;
   bathrooms?: number;
-  landSize?: number;
+  landSize?: string;
+  floorSize?: string;
   dealId?: string;
   milestones: Array<{
     id: string;
@@ -211,9 +212,59 @@ export const PropertiesPage: React.FC = () => {
   const [reportModalData, setReportModalData] = useState<{ address: string; bedrooms?: number } | null>(null);
   const { settings: godmodeSettings, pendingActions, pendingCount, fetchPendingActions } = useGodmode();
 
+
   const pendingActionPropertyIds = useMemo(() => {
     return new Set(pendingActions?.filter(a => a.propertyId).map(a => a.propertyId!) || []);
   }, [pendingActions]);
+
+  // ============================================
+  // GLOBAL PROACTIVITY: Live Intent Extraction
+  // ============================================
+  const [proactiveSuggestion, setProactiveSuggestion] = useState<{ message: string; action: string; data?: any } | null>(null);
+  const [newPropertyPrefill, setNewPropertyPrefill] = useState<any>(null);
+
+  const handleProactiveSuggestionClick = () => {
+    if (proactiveSuggestion?.action === 'open_new_property_modal') {
+      setNewPropertyPrefill(proactiveSuggestion.data);
+      setIsAddModalOpen(true);
+      setProactiveSuggestion(null);
+      setSearchQuery('');
+    }
+  };
+
+  // Detect address patterns in search query
+  useEffect(() => {
+    if (!searchQuery || searchQuery.length < 5) {
+      setProactiveSuggestion(null);
+      return;
+    }
+
+    // Delay detection to avoid flashing
+    const timer = setTimeout(() => {
+      // Address regex: matches "123 Main St", "45A Ponsonby Road", etc.
+      const addressPattern = /\b(\d+[A-Za-z]?\s+[A-Za-z][A-Za-z\s]+(?:Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Ln|Place|Pl|Terrace|Tce|Way|Close|Cl|Crescent|Cres|Boulevard|Blvd|Parade|Pde))\b/i;
+      const match = searchQuery.match(addressPattern);
+
+      if (match) {
+        const address = match[1];
+        // Check if property exists (simple check against loaded properties)
+        const exists = properties.some(p => p.address.toLowerCase().includes(address.toLowerCase()));
+
+        if (!exists) {
+          setProactiveSuggestion({
+            message: `Would you like to add "${address}" as a new property?`,
+            action: 'open_new_property_modal',
+            data: { address }
+          });
+          return;
+        }
+      }
+      setProactiveSuggestion(null);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, properties]);
+
 
   // Delta Detection: Count properties updated since last export (CSV or Email)
   const deltaCountSet = useMemo(() => {
@@ -1172,6 +1223,31 @@ export const PropertiesPage: React.FC = () => {
             </button>
           </div>
 
+          {proactiveSuggestion && (
+            <div className="proactive-suggestion-banner" onClick={handleProactiveSuggestionClick}>
+              <Sparkles size={16} />
+              <span>{proactiveSuggestion.message}</span>
+              <button
+                className="add-contact-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleProactiveSuggestionClick();
+                }}
+              >
+                {proactiveSuggestion.action === 'open_new_property_modal' ? 'Add Property' : 'Action'}
+              </button>
+              <button
+                className="dismiss-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setProactiveSuggestion(null);
+                }}
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+
 
 
 
@@ -1312,12 +1388,15 @@ export const PropertiesPage: React.FC = () => {
                   const statusConfig = STATUS_CONFIG[property.status || 'active'] || STATUS_CONFIG.active;
                   const daysOnMarket = getDaysOnMarket(property);
                   const nextEvent = getNextEvent(property);
+                  const isHot = property.heatLevel === 'hot';
+                  const isStale = property.status === 'active' && daysOnMarket > 21 && (property.momentumScore || 50) < 40;
+                  const isHighMomentum = (property.momentumScore || 0) > 80;
 
                   if (viewMode === 'list') {
                     return (
                       <div
                         key={property.id}
-                        className={`property-list-item ${selectedIds.has(property.id) ? ' property-list-item--selected' : ''} ${isBatchMode ? 'batch-mode' : ''}`}
+                        className={`property-list-item ${selectedIds.has(property.id) ? ' property-list-item--selected' : ''} ${isBatchMode ? 'batch-mode' : ''} ${isHot ? 'property-card--hot' : ''} ${isStale ? 'property-card--stale' : ''}`}
                         onClick={(e) => {
                           if (isBatchMode) toggleSelection(property.id, e);
                           else navigate(`/properties/${property.id}`);
@@ -1339,6 +1418,12 @@ export const PropertiesPage: React.FC = () => {
                           >
                             {statusConfig.label}
                           </span>
+                          {isStale && (
+                            <div className="strategic-pivot-badge list-view" title="Zena Strategic Pivot: Price review recommended" style={{ padding: '2px 6px', marginTop: '4px' }}>
+                              <AlertCircle size={10} />
+                              <span>PIVOT</span>
+                            </div>
+                          )}
                         </div>
                         <div className="property-list-item__address">
                           <div className="address-main">
@@ -1348,7 +1433,8 @@ export const PropertiesPage: React.FC = () => {
                           <div className="property-specs-compact">
                             {property.bedrooms !== undefined && <span className="spec-item">{property.bedrooms} bd</span>}
                             {property.bathrooms !== undefined && <span className="spec-item">{property.bathrooms} ba</span>}
-                            {property.landSize !== undefined && <span className="spec-item">{property.landSize}m²</span>}
+                            {property.floorSize && <span className="spec-item">{property.floorSize} floor</span>}
+                            {property.landSize && <span className="spec-item">{property.landSize} land</span>}
                             <span className="spec-divider">|</span>
                             <span className="property-stats-item"><Users size={10} /> {property.inquiryCount || 0}</span>
                             <span className="property-stats-item"><MapPin size={10} /> {property.viewingCount || 0}</span>
@@ -1466,7 +1552,7 @@ export const PropertiesPage: React.FC = () => {
                   return (
                     <div
                       key={property.id}
-                      className={`property-card ${selectedIds.has(property.id) ? 'property-card--selected' : ''} ${isBatchMode ? 'property-card--selectable' : ''}`}
+                      className={`property-card ${selectedIds.has(property.id) ? 'property-card--selected' : ''} ${isBatchMode ? 'property-card--selectable' : ''} ${isHot ? 'property-card--hot' : ''} ${isStale ? 'property-card--stale' : ''}`}
                       onClick={(e) => {
                         if (isBatchMode) {
                           toggleSelection(property.id, e);
@@ -1483,6 +1569,12 @@ export const PropertiesPage: React.FC = () => {
                       {isBatchMode && (
                         <div className="property-card__selection-check" onClick={e => toggleSelection(property.id, e)}>
                           <div className={`custom-checkbox ${selectedIds.has(property.id) ? 'checked' : ''}`} />
+                        </div>
+                      )}
+                      {isStale && (
+                        <div className="strategic-pivot-badge">
+                          <AlertCircle size={14} />
+                          <span>ZENA STRATEGIC PIVOT: Price review recommended</span>
                         </div>
                       )}
                       <div className="property-card__header">
@@ -1520,7 +1612,7 @@ export const PropertiesPage: React.FC = () => {
                         <div className="property-card__momentum">
                           <div className="momentum-bar">
                             <div
-                              className="momentum-fill"
+                              className={`momentum-fill ${isHighMomentum ? 'momentum-fill--high' : ''}`}
                               style={{ width: `${property.momentumScore}%`, background: `linear-gradient(90deg, #8B5CF6, ${statusConfig.color})` }}
                             />
                           </div>
@@ -1638,6 +1730,7 @@ export const PropertiesPage: React.FC = () => {
         onSave={(newProperty) => {
           setProperties(prev => [newProperty, ...prev]);
         }}
+        initialData={newPropertyPrefill}
       />
       <ZenaBatchPropertyTagModal
         isOpen={isTagModalOpen}

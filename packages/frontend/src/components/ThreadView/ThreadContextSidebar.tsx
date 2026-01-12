@@ -5,8 +5,9 @@
  * Mobile-first with collapsible drawer behavior.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Sparkles, ArrowRight } from 'lucide-react';
 import {
     ThreadDetailedView,
     DealStage
@@ -192,6 +193,22 @@ export const ThreadContextSidebar: React.FC<ThreadContextSidebarProps> = ({
                                                     </li>
                                                 ))}
                                             </ul>
+
+                                            {/* Intent-to-Event Bridge: Booking Detection */}
+                                            {thread.aiInsights.suggestedNextActions.some(a =>
+                                                a.toLowerCase().includes('book') ||
+                                                a.toLowerCase().includes('schedule') ||
+                                                a.toLowerCase().includes('viewing')
+                                            ) && (
+                                                    <button
+                                                        className="thread-context-sidebar__proactive-action"
+                                                        onClick={() => navigate('/viewings/new?prefill=true')}
+                                                    >
+                                                        <Sparkles size={14} style={{ marginRight: '8px' }} />
+                                                        Schedule Viewing
+                                                        <ArrowRight size={14} style={{ marginLeft: 'auto' }} />
+                                                    </button>
+                                                )}
                                         </div>
                                     )}
 

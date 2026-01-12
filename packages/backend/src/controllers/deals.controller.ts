@@ -8,6 +8,7 @@ import {
 import { PipelineType } from '../models/types.js';
 import prisma from '../config/database.js';
 import { dealIntelligenceService } from '../services/deal-intelligence.service.js';
+import { portfolioIntelligenceService } from '../services/portfolio-intelligence.service.js';
 
 const VALID_PIPELINE_TYPES = ['buyer', 'seller'];
 const VALID_SALE_METHODS = ['negotiation', 'auction', 'tender', 'deadline_sale'];
@@ -1158,6 +1159,24 @@ export class DealsController {
           retryable: true,
         },
       });
+    }
+  }
+  /**
+   * GET /api/deals/portfolio/intelligence
+   * Perform global portfolio intelligence analysis
+   */
+  async analyzePortfolio(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: 'Authentication required' });
+        return;
+      }
+
+      const analysis = await portfolioIntelligenceService.analyzeGlobalPortfolio(req.user.userId);
+      res.status(200).json(analysis);
+    } catch (error) {
+      console.error('[DealsController] analyzePortfolio error:', error);
+      res.status(500).json({ error: 'Failed to analyze portfolio' });
     }
   }
 }

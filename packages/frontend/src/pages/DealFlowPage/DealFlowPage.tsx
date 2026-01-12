@@ -17,6 +17,7 @@ import { BatchAction } from '../../models/newPage.types';
 import { PipelineType, PipelineResponse, Deal, NewDealModal, DealQuickActions, ZenaMomentumFlow, StrategySessionContext, STRATEGY_SESSION_KEY, STAGE_LABELS } from '../../components/DealFlow';
 import { analyseDeal } from '../../components/DealFlow/ZenaIntelligence/ZenaIntelligenceEngine';
 import { DealDetailPanel } from '../../components/DealFlow/DealDetailPanel';
+import { PortfolioInsightsCard } from '../../components/DealFlow/ZenaIntelligence/PortfolioInsightsCard';
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
 import { BatchActionBar } from '../../components/BatchActionBar/BatchActionBar';
 import { GodmodeToggle } from '../../components/GodmodeToggle/GodmodeToggle';
@@ -230,6 +231,51 @@ export const DealFlowPage: React.FC = () => {
     const [isBatchMode, setIsBatchMode] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    // ============================================
+    // GLOBAL PROACTIVITY: Live Intent Extraction
+    // ============================================
+    const [proactiveSuggestion, setProactiveSuggestion] = useState<{ message: string; action: string; data?: any } | null>(null);
+    const [newDealPrefill, setNewDealPrefill] = useState<any>(null);
+
+    const handleProactiveSuggestionClick = () => {
+        if (proactiveSuggestion?.action === 'open_new_deal_modal') {
+            setNewDealPrefill(proactiveSuggestion.data);
+            setShowNewDealModal(true);
+            setProactiveSuggestion(null);
+            setSearchQuery('');
+        }
+    };
+
+    // Detect intent in search query
+    useEffect(() => {
+        if (!searchQuery || searchQuery.length < 5) {
+            setProactiveSuggestion(null);
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            // "New deal [address]" or "Deal for [name]"
+            const newDealPattern = /\b(?:new\s+deal|deal\s+for)\s+(.+)/i;
+            const match = searchQuery.match(newDealPattern);
+
+            if (match) {
+                const query = match[1].trim();
+                // Check if it looks like an address (has numbers)
+                const isAddress = /\d/.test(query);
+
+                setProactiveSuggestion({
+                    message: `Start a new deal for "${query}"?`,
+                    action: 'open_new_deal_modal',
+                    data: isAddress ? { propertyAddress: query } : { contactName: query }
+                });
+            } else {
+                setProactiveSuggestion(null);
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
     const [isSmartSearchActive, setIsSmartSearchActive] = useState(false);
     const [smartSearchInsight, setSmartSearchInsight] = useState<string | null>(null);
     const [smartSearchRichResponse, setSmartSearchRichResponse] = useState<string | null>(null);
@@ -799,6 +845,9 @@ export const DealFlowPage: React.FC = () => {
                     </div>
                 </section>
 
+                {/* Global Portfolio Intelligence - Phase 8 */}
+                <PortfolioInsightsCard />
+
                 {/* Search Bar */}
                 <section className="deal-flow-page__controls">
                     <div className="deal-flow-page__search-wrapper">
@@ -846,6 +895,32 @@ export const DealFlowPage: React.FC = () => {
                             <Sparkles size={12} />
                             <span>{smartSearchInsight}</span>
                             <button title="Clear filters" onClick={handleResetFilters}><X size={12} /></button>
+                        </div>
+                    )}
+
+                    {proactiveSuggestion && (
+                        <div className="proactive-suggestion-banner" onClick={handleProactiveSuggestionClick}>
+                            <Sparkles size={16} />
+                            <span>{proactiveSuggestion.message}</span>
+                            <button
+                                className="add-contact-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleProactiveSuggestionClick();
+                                }}
+                            >
+                                <Sparkles size={10} style={{ marginRight: '4px' }} />
+                                {proactiveSuggestion.action === 'open_new_deal_modal' ? 'Create Deal' : 'Action'}
+                            </button>
+                            <button
+                                className="dismiss-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setProactiveSuggestion(null);
+                                }}
+                            >
+                                Dismiss
+                            </button>
                         </div>
                     )}
                 </section>
@@ -955,11 +1030,13 @@ export const DealFlowPage: React.FC = () => {
             </div>
 
             {/* New Deal Modal */}
+            {/* New Deal Modal */}
             <NewDealModal
                 isOpen={showNewDealModal}
                 onClose={() => setShowNewDealModal(false)}
                 onDealCreated={fetchPipeline}
                 initialPipelineType={pipelineType}
+                initialData={newDealPrefill}
             />
 
             {/* Quick Actions Drawer */}

@@ -46,4 +46,12 @@ router.post('/batch-engagement', (req, res) => contactsController.getBatchEngage
 // POST /api/contacts/:id/discovery - Trigger manual discovery pulse for relationship intel
 router.post('/:id/discovery', (req, res) => contactsController.runDiscovery(req, res));
 
+// GET /api/contacts/:id/intelligence - Get deep AI intelligence brief for a contact
+router.get('/:id/intelligence', authMiddleware, contactsController.analyzeContact);
+router.get('/:id/portfolio', authMiddleware, contactsController.getPortfolioIntelligence);
+
+// GLOBAL PROACTIVITY - FEATURE 4: Nurture Scores / Decay Alerts
+router.get('/:id/nurture-score', (req, res) => contactsController.getNurtureScore(req, res));
+router.post('/batch-nurture-scores', (req, res) => contactsController.getBatchNurtureScores(req, res));
+
 export default router;

@@ -1,0 +1,18 @@
+{"timestamp":"2026-01-08T00:08:45.697Z","level":"info","message":"[NavigationPlanner] Initialized with Gemini model: gemini-3-flash-preview"}
+{"timestamp":"2026-01-08T00:08:45.739Z","level":"info","message":"[AskZenaService] Initializing Ask Zena..."}
+{"timestamp":"2026-01-08T00:08:45.740Z","level":"info","message":"[AskZenaService] OPENAI_API_KEY set:"}
+{"timestamp":"2026-01-08T00:08:45.740Z","level":"info","message":"[AskZenaService] GEMINI_API_KEY set:","context":true}
+{"timestamp":"2026-01-08T00:08:45.740Z","level":"info","message":"[AskZenaService] GEMINI_MODEL:","context":"gemini-3-flash-preview"}
+[AIProcessingService] Initialized with Gemini: gemini-3-flash-preview
+--- Phase 6: Portfolio Intelligence Verification ---
+✅ Created simulation for Sarah Jenkins (Portfolio Test) with 2f724ba7-4ef2-473f-9e49-75303dceca05
+   - Seller Deal: 09df34ee-7c19-4ee1-8445-a479caf99253
+   - Buyer Deal: 53f6309a-bcb4-4865-8bab-156f59424a68
+--- Triggering AI Portfolio Synthesis ---
+{"timestamp":"2026-01-08T00:08:45.807Z","level":"info","message":"[PortfolioIntel] Analyzing portfolio for contact 2f724ba7-4ef2-473f-9e49-75303dceca05"}
+✅ PORTFOLIO BRIEF GENERATED:
+   Strategy: SELLING_TO_BUY
+   Summary: Sarah Jenkins is executing a downsizing strategy, aiming to sell her property at 12A Richmond Road for approximately $1.2M to fund the purchase of a high-end apartment in Ponsonby valued at $950k. The portfolio reflects a clear transition from a larger asset to a more manageable, high-value residence.
+   Next Step: Follow up on the outstanding listing proposals for 12A Richmond Road to secure the vendor mandate, as the sale is the critical path for her downsizing move.
+✅ DEPENDENCIES DETECTED:
+   - [HIGH] The purchase of the Ponsonby apartment is contingent upon the successful sale and settlement of 12A Richmond Road to provide the necessary capital.

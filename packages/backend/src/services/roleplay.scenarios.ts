@@ -181,3 +181,104 @@ export const TIME_SPACE_OPTIMIZER_SCENARIO: ScenarioDefinition = {
         }
     ]
 };
+
+/**
+ * SCENARIO 6: The Hectic Weekend Rush
+ * 
+ * Goal: Simulates a high-pressure weekend with multiple incoming inquiries and voice notes.
+ */
+export const HECTIC_WEEKEND_SCENARIO: ScenarioDefinition = {
+    name: 'Hectic Weekend Rush',
+    description: 'Simulates a high-pressure weekend with multiple incoming inquiries and voice notes.',
+    personas: [
+        { id: 'vicki-vendor', name: 'Vicki Vendor', email: 'vicki@example.com', role: 'vendor' },
+        { id: 'benny-buyer', name: 'Benny Buyer', email: 'benny@example.com', role: 'buyer' }
+    ],
+    properties: [
+        { id: 'cloud-st', address: '123 Cloud St', listingPrice: 1250000, status: 'listing', ownerId: 'vicki-vendor' }
+    ],
+    events: [
+        {
+            type: 'email',
+            delayMs: 100,
+            payload: {
+                from: 'benny@example.com',
+                subject: 'Inquiry about 123 Cloud St',
+                body: 'I saw 123 Cloud St online and I am very interested. Can I see it this weekend?'
+            }
+        },
+        {
+            type: 'voice_note',
+            delayMs: 100,
+            payload: {
+                id: 'vn-1',
+                transcript: 'Hey Vicki, just finished the open home at Cloud St. Had about 15 groups through. Need to send you the weekly report soon.'
+            }
+        }
+    ]
+};
+
+/**
+ * SCENARIO 7: Multi-Property Pivot
+ * 
+ * Goal: Tests context separation across multiple distinct properties and deals.
+ */
+export const MULTI_PROPERTY_PIVOT_SCENARIO: ScenarioDefinition = {
+    name: 'Multi-Property Pivot',
+    description: 'Tests context separation across multiple distinct properties and deals.',
+    personas: [
+        { id: 'pete-pine', name: 'Pete Pine', email: 'pete@pine.com', role: 'vendor' },
+        { id: 'olivia-oak', name: 'Olivia Oak', email: 'olivia@oak.com', role: 'vendor' }
+    ],
+    properties: [
+        { id: 'oak-ave', address: '45 Oak Ave', listingPrice: 850000, status: 'listing', ownerId: 'olivia-oak' },
+        { id: 'pine-rd', address: '12 Pine Rd', listingPrice: 2100000, status: 'listing', ownerId: 'pete-pine' }
+    ],
+    events: [
+        {
+            type: 'email',
+            delayMs: 100,
+            payload: {
+                from: 'olivia@oak.com',
+                subject: 'Update on 45 Oak Ave',
+                body: 'How did the marketing go for Oak Ave?'
+            }
+        },
+        {
+            type: 'email',
+            delayMs: 100,
+            payload: {
+                from: 'pete@pine.com',
+                subject: 'Pine Rd Settlement',
+                body: 'Can we confirm the settlement date for Pine Rd?'
+            }
+        }
+    ]
+};
+
+/**
+ * SCENARIO 8: Full God Autonomy
+ * 
+ * Goal: Verifies zero-touch autonomous execution in Full God mode.
+ */
+export const FULL_GOD_AUTONOMY_SCENARIO: ScenarioDefinition = {
+    name: 'Full God Autonomy',
+    description: 'Verifies zero-touch autonomous execution in Full God mode.',
+    personas: [
+        { id: 'benny-buyer', name: 'Benny Buyer', email: 'benny@example.com', role: 'buyer' }
+    ],
+    properties: [
+        { id: 'cloud-st', address: '123 Cloud St', listingPrice: 1250000, status: 'listing', ownerId: 'benny-buyer' }
+    ],
+    events: [
+        {
+            type: 'email',
+            delayMs: 100,
+            payload: {
+                from: 'benny@example.com',
+                subject: 'Question about Cloud St',
+                body: 'Are there any body corp fees for 123 Cloud St?'
+            }
+        }
+    ]
+};

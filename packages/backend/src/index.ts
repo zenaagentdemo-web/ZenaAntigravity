@@ -24,6 +24,8 @@ import dataDeletionRoutes from './routes/data-deletion.routes.js';
 import historyRoutes from './routes/history.routes.js';
 import actionsRoutes from './routes/actions.routes.js';
 import zenaActionsRoutes from './routes/zena-actions.routes.js';
+import foldersRoutes from './routes/folders.routes.js';
+import userRoutes from './routes/user.routes.js';
 import marketDataRoutes from './routes/market-data.routes.js';
 import connectionRoutes from './routes/connections.routes.js';
 import { syncEngineService } from './services/sync-engine.service.js';
@@ -31,6 +33,7 @@ import { calendarSyncEngineService } from './services/calendar-sync-engine.servi
 import { websocketService } from './services/websocket.service.js';
 import { dealSchedulerService } from './services/deal-scheduler.service.js';
 import { godmodeSchedulerService } from './services/godmode-scheduler.service.js';
+import { intelligenceHeartbeatService } from './services/intelligence-heartbeat.service.js';
 import { logger } from './services/logger.service.js';
 import { healthCheckService } from './services/health-check.service.js';
 import {
@@ -159,12 +162,13 @@ app.use('/api/actions', actionsRoutes);
 
 // Zena Actions routes (AI-powered deal actions)
 app.use('/api/zena-actions', zenaActionsRoutes);
+app.use('/api/folders', foldersRoutes);
+app.use('/api/user', userRoutes);
 
 app.use('/api/market-data', marketDataRoutes);
 
 // Connections routes
 import { restoreSessions } from './controllers/connections.controller.js';
-import connectionRoutes from './routes/connections.routes.js';
 app.use('/api/connections', connectionRoutes);
 
 // Communications routes
@@ -190,6 +194,9 @@ app.use('/api/geocoding', geocodingRoutes);
 // 404 handler - must be after all routes
 app.use(notFoundMiddleware);
 
+// 404 handler - must be after all routes
+app.use(notFoundMiddleware);
+
 // Error handling middleware - must be last
 app.use(errorHandlingMiddleware);
 
@@ -210,6 +217,7 @@ if (process.env.NODE_ENV !== 'test') {
   // Start deal scheduler (Phase 2b)
   dealSchedulerService.start();
   godmodeSchedulerService.start();
+  intelligenceHeartbeatService.start();
 }
 
 // Graceful shutdown
@@ -223,6 +231,7 @@ const shutdown = async (signal: string) => {
     calendarSyncEngineService.stop();
     dealSchedulerService.stop();
     godmodeSchedulerService.stop();
+    intelligenceHeartbeatService.stop();
     websocketService.shutdown();
 
     // 2. Stop accepting new connections

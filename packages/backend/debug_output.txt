@@ -1,0 +1,18 @@
+{"timestamp":"2026-01-08T00:07:35.130Z","level":"info","message":"[NavigationPlanner] Initialized with Gemini model: gemini-3-flash-preview"}
+{"timestamp":"2026-01-08T00:07:35.170Z","level":"info","message":"[AskZenaService] Initializing Ask Zena..."}
+{"timestamp":"2026-01-08T00:07:35.171Z","level":"info","message":"[AskZenaService] OPENAI_API_KEY set:"}
+{"timestamp":"2026-01-08T00:07:35.171Z","level":"info","message":"[AskZenaService] GEMINI_API_KEY set:","context":true}
+{"timestamp":"2026-01-08T00:07:35.171Z","level":"info","message":"[AskZenaService] GEMINI_MODEL:","context":"gemini-3-flash-preview"}
+[AIProcessingService] Initialized with Gemini: gemini-3-flash-preview
+--- Phase 6: Portfolio Intelligence Verification ---
+✅ Created simulation for Sarah Jenkins (Portfolio Test) with 2f724ba7-4ef2-473f-9e49-75303dceca05
+   - Seller Deal: 302d83f1-2841-4448-acc3-6843b8437829
+   - Buyer Deal: 0eea3c38-7ce9-49f0-a26b-f98e14719038
+--- Triggering AI Portfolio Synthesis ---
+{"timestamp":"2026-01-08T00:07:35.201Z","level":"info","message":"[PortfolioIntel] Analyzing portfolio for contact 2f724ba7-4ef2-473f-9e49-75303dceca05"}
+{"timestamp":"2026-01-08T00:07:41.902Z","level":"error","message":"[PortfolioIntel] AI Synthesis failed for contact 2f724ba7-4ef2-473f-9e49-75303dceca05:","error":{"name":"SyntaxError","message":"Unterminated string in JSON at position 91 (line 3 column 54)","stack":"SyntaxError: Unterminated string in JSON at position 91 (line 3 column 54)\n    at JSON.parse (<anonymous>)\n    at PortfolioIntelligenceService.analyzePortfolio (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/portfolio-intelligence.service.ts:93:35)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at verifyPortfolioIntelligence (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/scripts/verify-portfolio.ts:69:23)"}}
+✅ PORTFOLIO BRIEF GENERATED:
+   Strategy: SELLING_TO_BUY
+   Summary: [HEURISTIC] Managing 29 active transactions. AI synthesis failed.
+   Next Step: Verify dependency between active deals manually.
+⚠️ No dependencies detected (Expected for Selling-to-Buy).

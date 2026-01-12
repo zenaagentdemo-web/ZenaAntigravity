@@ -86,6 +86,7 @@ export interface GodmodeSettings {
 }
 
 // Default feature configs for new users
+// 🧠 ZENA PROACTIVITY: Tasks features enabled by default for high-intelligence experience
 const DEFAULT_FEATURE_CONFIG: Record<string, GodmodeMode> = {
     'contacts:send_email': 'demi_god',
     'contacts:schedule_followup': 'demi_god',
@@ -93,8 +94,10 @@ const DEFAULT_FEATURE_CONFIG: Record<string, GodmodeMode> = {
     'properties:buyer_match_intro': 'demi_god',
     'inbox:draft_reply': 'off',
     'inbox:archive_noise': 'off',
-    'tasks:create_from_email': 'off',
-    'deals:nudge_client': 'off',
+    'tasks:create_from_email': 'demi_god',      // ✅ ENABLED: AI extracts tasks from emails
+    'tasks:auto_priority': 'demi_god',          // ✅ NEW: AI suggests priority based on deal health
+    'tasks:completion_detection': 'demi_god',   // ✅ NEW: AI detects completed tasks
+    'deals:nudge_client': 'demi_god',           // ✅ ENABLED: Proactive deal nudges
 };
 
 class GodmodeService {
@@ -904,7 +907,7 @@ class GodmodeService {
         // 1. Get candidate contacts (active or recently updated to save tokens)
         // For '10 records' scale, we check all. For production, we'd limit.
         const contacts = await prisma.contact.findMany({
-            where: { userId, archived: false },
+            where: { userId },
             select: { id: true, name: true }
         });
 

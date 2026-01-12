@@ -6,12 +6,16 @@ import {
   getEntityTimeline,
   updateEvent,
   deleteEvent,
+  createGeneralEvent,
 } from '../controllers/timeline.controller.js';
 
 const router = Router();
 
 // All timeline routes require authentication
 router.use(authenticateToken);
+
+// Create generic event (meeting, etc)
+router.post('/events', createGeneralEvent);
 
 // Get timeline events with filters
 router.get('/', getTimeline);

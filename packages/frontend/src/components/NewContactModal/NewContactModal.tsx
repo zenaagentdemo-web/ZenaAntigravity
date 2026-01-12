@@ -63,6 +63,25 @@ export const NewContactModal: React.FC<NewContactModalProps> = ({
         };
     });
 
+    // GLOBAL PROACTIVITY: Track if data was pre-filled by Zena
+    const [wasPrefilledByZena, setWasPrefilledByZena] = useState(false);
+
+    // GLOBAL PROACTIVITY INVARIANT 1: Sync form when initialData changes
+    useEffect(() => {
+        if (initialData?.name) {
+            const parts = initialData.name.split(' ');
+            setFormData(prev => ({
+                ...prev,
+                firstName: parts[0] || '',
+                lastName: parts.slice(1).join(' ') || '',
+                email: initialData.emails?.[0] || prev.email,
+                phone: initialData.phones?.[0] || prev.phone,
+                role: initialData.role || prev.role,
+            }));
+            setWasPrefilledByZena(true);
+        }
+    }, [initialData]);
+
     const [intelligence, setIntelligence] = useState(initialData?.zenaIntelligence || {
         propertyType: 'House',
         minBudget: '',
@@ -153,6 +172,24 @@ export const NewContactModal: React.FC<NewContactModalProps> = ({
                 <div className="ncm-header">
                     <div className="ncm-title">
                         <h2>{title}</h2>
+                        {/* GLOBAL PROACTIVITY INVARIANT 4: Show what Zena knows */}
+                        {wasPrefilledByZena && (
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                marginTop: '4px',
+                                padding: '4px 10px',
+                                background: 'linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 212, 255, 0.1))',
+                                border: '1px solid rgba(0, 255, 136, 0.3)',
+                                borderRadius: '6px',
+                                fontSize: '12px',
+                                color: '#00FF88'
+                            }}>
+                                <Sparkles size={12} />
+                                <span>Pre-filled from your search</span>
+                            </div>
+                        )}
                     </div>
                     <button className="ncm-close-btn" onClick={onClose}>
                         <X size={20} />

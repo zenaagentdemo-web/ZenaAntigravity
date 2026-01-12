@@ -5,6 +5,8 @@ import { websocketService } from '../services/websocket.service.js';
 import { askZenaService } from '../services/ask-zena.service.js';
 import { neuralScorerService } from '../services/neural-scorer.service.js';
 import prisma from '../config/database.js';
+import { portfolioIntelligenceService } from '../services/portfolio-intelligence.service.js'; // New import
+import logger from '../utils/logger.js'; // New import
 
 export class ContactsController {
   /**
@@ -38,7 +40,7 @@ export class ContactsController {
       }
 
       // Create structured contact from parts
-      const name = `${firstName} ${lastName}`.trim();
+      const name = `${firstName} ${lastName} `.trim();
       const emails = [email.toLowerCase()];
       const phones = phone ? [phone] : [];
 
@@ -54,12 +56,12 @@ export class ContactsController {
       let initialSnippet = 'Zena is analyzing this contact...';
       if (intelligence) {
         const parts = [];
-        if (intelligence.timeline) parts.push(`Priority: ${intelligence.timeline}`);
-        if (intelligence.location) parts.push(`Area: ${intelligence.location}`);
-        if (intelligence.maxBudget) parts.push(`Budget: up to $${intelligence.maxBudget}`);
+        if (intelligence.timeline) parts.push(`Priority: ${intelligence.timeline} `);
+        if (intelligence.location) parts.push(`Area: ${intelligence.location} `);
+        if (intelligence.maxBudget) parts.push(`Budget: up to $${intelligence.maxBudget} `);
         if (parts.length > 0) initialSnippet = parts.join('. ') + '.';
       } else if (context) {
-        initialSnippet = `Initial context provided: ${context.substring(0, 100)}`;
+        initialSnippet = `Initial context provided: ${context.substring(0, 100)} `;
       }
 
       const newContact = await prisma.contact.create({
@@ -86,7 +88,7 @@ export class ContactsController {
       // Step 3: Proactive Enrichment - Trigger deep discovery pulse immediately
       // We don't await this to keep the response snappy
       askZenaService.runDiscovery(req.user.userId, newContact.id).catch(err => {
-        console.error(`[Contacts] Neural pulse failed for new contact ${newContact.id}:`, err);
+        console.error(`[Contacts] Neural pulse failed for new contact ${newContact.id}: `, err);
       });
     } catch (error) {
       console.error('Create contact error:', error);
@@ -529,7 +531,7 @@ export class ContactsController {
           res.status(400).json({
             error: {
               code: 'VALIDATION_FAILED',
-              message: `role must be one of: ${validRoles.join(', ')}`,
+              message: `role must be one of: ${validRoles.join(', ')} `,
               retryable: false,
             },
           });
@@ -794,8 +796,8 @@ export class ContactsController {
       const intelligenceUpdate = data.zenaIntelligence || {};
 
       // Generate a manual update snippet to ensure UI reflects change
-      const rolePart = data.role ? `Role updated to ${data.role}. ` : '';
-      const timelinePart = intelligenceUpdate.timeline ? `Priority: ${intelligenceUpdate.timeline}. ` : '';
+      const rolePart = data.role ? `Role updated to ${data.role}.` : '';
+      const timelinePart = intelligenceUpdate.timeline ? `Priority: ${intelligenceUpdate.timeline}.` : '';
       const manualSnippet = `${rolePart}${timelinePart}Zena intelligence manually synchronized.`.trim();
 
       // Use a transaction to update all contacts
@@ -935,7 +937,7 @@ export class ContactsController {
         res.status(400).json({
           error: {
             code: 'VALIDATION_FAILED',
-            message: `source must be one of: ${validSources.join(', ')}`,
+            message: `source must be one of: ${validSources.join(', ')} `,
             retryable: false,
           },
         });
@@ -989,7 +991,7 @@ export class ContactsController {
           type: 'note',
           entityType: 'contact',
           entityId: id,
-          summary: `Note added to ${contact.name}`,
+          summary: `Note added to ${contact.name} `,
           content: content.trim(),
           timestamp: new Date(),
         },
@@ -998,7 +1000,7 @@ export class ContactsController {
       // Trigger AI intelligence update and DEEP DISCOVERY in background
       // This implements "Active Intel Digestion" - Zena re-analyzes immediately after a note is added
       askZenaService.runDiscovery(req.user.userId, id).catch(err =>
-        console.error(`[Active Intel] Failed to refresh intelligence for contact ${id}:`, err)
+        console.error(`[Active Intel] Failed to refresh intelligence for contact ${id}: `, err)
       );
 
       res.status(201).json({
@@ -1165,6 +1167,155 @@ export class ContactsController {
     } catch (error) {
       console.error('Get batch engagement error:', error);
       res.status(500).json({ error: 'Failed' });
+    }
+  }
+
+  /**
+   * GET /api/contacts/:id/intelligence
+   * Get deep AI intelligence brief for a contact
+   */
+  async analyzeContact(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { forceRefresh = false } = req.query;
+
+      if (!req.user) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const { contactIntelligenceService } = await import('../services/contact-intelligence.service.js');
+      const analysis = await contactIntelligenceService.analyzeContact(
+        req.user.userId,
+        id,
+        forceRefresh === 'true' || forceRefresh === true
+      );
+
+      res.status(200).json(analysis);
+    } catch (error) {
+      console.error('[ContactsController] Analyze contact error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to generate contact intelligence',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  /**
+   * GET /api/contacts/:id/portfolio
+   * Get portfolio intelligence for a contact
+   */
+  async getPortfolioIntelligence(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!req.user) {
+        res.status(401).json({
+          error: {
+            code: 'AUTH_TOKEN_MISSING',
+            message: 'Authentication required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Get contact to verify ownership
+      const contact = await prisma.contact.findFirst({
+        where: {
+          id,
+          userId: req.user.userId,
+        },
+        include: {
+          deals: true,
+          vendorProperties: true,
+          buyerProperties: true,
+        },
+      });
+
+      if (!contact) {
+        res.status(404).json({
+          error: {
+            code: 'NOT_FOUND',
+            message: 'Contact not found',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Generate portfolio insights using the portfolio intelligence service
+      const insights = await portfolioIntelligenceService.analyzePortfolio(req.user.userId, id);
+
+      res.status(200).json({
+        contactId: id,
+        insights,
+      });
+    } catch (error) {
+      console.error('[ContactsController] Get portfolio intelligence error:', error);
+      res.status(500).json({
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to get portfolio intelligence',
+          retryable: true,
+        },
+      });
+    }
+  }
+
+  // ============================================
+  // GLOBAL PROACTIVITY - FEATURE 4
+  // Nurture Scores / Relationship Decay Alerts
+  // ============================================
+
+  /**
+   * GET /api/contacts/:id/nurture-score
+   * Get nurture score and decay status for a contact
+   */
+  async getNurtureScore(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!req.user) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const { relationshipService } = await import('../services/relationship.service.js');
+      const result = await relationshipService.calculateNurtureScore(id);
+      res.status(200).json(result);
+    } catch (error) {
+      console.error('[ContactsController] Get nurture score error:', error);
+      res.status(500).json({ error: 'Failed to calculate nurture score' });
+    }
+  }
+
+  /**
+   * POST /api/contacts/batch-nurture-scores
+   * Get nurture scores for multiple contacts
+   */
+  async getBatchNurtureScores(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const { contactIds } = req.body;
+      if (!contactIds || !Array.isArray(contactIds)) {
+        res.status(400).json({ error: 'contactIds array is required' });
+        return;
+      }
+
+      const { relationshipService } = await import('../services/relationship.service.js');
+      const nurtureScores = await relationshipService.batchCalculateNurtureScores(contactIds);
+      res.status(200).json({ nurtureScores });
+    } catch (error) {
+      console.error('[ContactsController] Get batch nurture scores error:', error);
+      res.status(500).json({ error: 'Failed to calculate nurture scores' });
     }
   }
 }

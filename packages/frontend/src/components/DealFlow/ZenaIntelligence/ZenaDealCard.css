@@ -38,9 +38,15 @@
     border-left: 3px solid #ffd700;
 }
 
+.zena-deal-card--stalled {
+    border-color: rgba(255, 191, 0, 0.4);
+    box-shadow: 0 0 25px rgba(255, 191, 0, 0.2), inset 0 0 10px rgba(255, 191, 0, 0.1);
+    animation: spectral-glow-amber 4s infinite ease-in-out;
+}
+
 .zena-deal-card--critical {
     border-left: 3px solid #ff003c;
-    animation: card-warning-pulse 2s infinite, holographic-flicker 4s infinite;
+    animation: card-warning-pulse 2s infinite, holographic-flicker 4s infinite, spectral-glow-red 3s infinite ease-in-out;
 }
 
 @keyframes holographic-flicker {
@@ -69,6 +75,34 @@
     98% {
         opacity: 0.95;
         filter: brightness(1.1) contrast(1.05);
+    }
+}
+
+@keyframes spectral-glow-amber {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(255, 191, 0, 0.15), inset 0 0 10px rgba(255, 191, 0, 0.05);
+        border-color: rgba(255, 191, 0, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(255, 191, 0, 0.4), inset 0 0 20px rgba(255, 191, 0, 0.2);
+        border-color: rgba(255, 191, 0, 0.7);
+    }
+}
+
+@keyframes spectral-glow-red {
+
+    0%,
+    100% {
+        box-shadow: 0 0 25px rgba(255, 0, 60, 0.2), inset 0 0 15px rgba(255, 0, 60, 0.1);
+        border-color: rgba(255, 0, 60, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 50px rgba(255, 0, 60, 0.5), inset 0 0 25px rgba(255, 0, 60, 0.3);
+        border-color: rgba(255, 0, 60, 0.9);
     }
 }
 

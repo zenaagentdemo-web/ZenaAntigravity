@@ -17,8 +17,14 @@ router.post('/', (req, res) => propertiesController.createProperty(req, res));
 // POST /api/properties/bulk-delete - Bulk delete properties
 router.post('/bulk-delete', (req, res) => propertiesController.bulkDeleteProperties(req, res));
 
+// POST /api/properties/bulk-archive - Bulk archive properties
+router.post('/bulk-archive', (req, res) => propertiesController.bulkArchiveProperties(req, res));
+
 // PATCH /api/properties/bulk - Bulk update properties (status, type)
 router.patch('/bulk', (req, res) => propertiesController.bulkUpdateProperties(req, res));
+
+// GET /api/properties/stats - Property statistics (MUST be before /:id)
+router.get('/stats', (req, res) => propertiesController.getStats(req, res));
 
 // Property Intelligence Routes - MUST BE BEFORE /:id to avoid matching "smart-matches" as an ID
 router.get('/smart-matches', propertiesController.getAllSmartMatches.bind(propertiesController));
@@ -35,6 +41,9 @@ router.delete('/:id', (req, res) => propertiesController.deleteProperty(req, res
 
 // Smart matches for single property
 router.get('/:id/smart-matches', propertiesController.getSmartMatches.bind(propertiesController));
+
+// GET /api/properties/:id/milestones - List campaign milestones
+router.get('/:id/milestones', propertiesController.getMilestones.bind(propertiesController));
 
 // POST /api/properties/:id/milestones - Add campaign milestone
 router.post('/:id/milestones', propertiesController.addMilestone.bind(propertiesController));

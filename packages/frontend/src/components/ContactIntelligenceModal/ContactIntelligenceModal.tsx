@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Zap, ArrowRight, MessageSquare, Lightbulb, TrendingUp, TrendingDown, Minus, Send, Shield, Target, Users, HelpCircle, Info } from 'lucide-react';
+import { X, Zap, ArrowRight, MessageSquare, Lightbulb, TrendingUp, TrendingDown, Minus, Send, Shield, Target, Users, HelpCircle, Info, RefreshCw } from 'lucide-react';
 import { ImprovementAction } from '../../utils/ImprovementActionsLibrary';
+import { useContactIntelligence } from '../DealFlow/ZenaIntelligence/ZenaIntelligenceEngine';
+import { PortfolioBriefSection } from './sections/PortfolioBriefSection';
 import './ContactIntelligenceModal.css';
 
 export interface StrategicAction {
@@ -81,11 +83,10 @@ export const ContactIntelligenceModal: React.FC<ContactIntelligenceModalProps> =
     contactRole,
     intelScore,
     momentumVelocity,
-    isLoadingStrategic = false,
-    strategicActions,
     onExecuteStrategy,
     onImproveNow
 }) => {
+    const { intelligence: aiIntel, loading: aiLoading, refresh } = useContactIntelligence(contactId);
     const [activeTab, setActiveTab] = useState<TabType>('strategy');
     const [selectedTipIndices, setSelectedTipIndices] = useState<Set<number>>(new Set());
     const [optimizationTips] = useState<ImprovementAction[]>(MOCK_OPTIMIZATION_TIPS);
@@ -278,39 +279,46 @@ export const ContactIntelligenceModal: React.FC<ContactIntelligenceModalProps> =
                 <div className="contact-intel-modal__content">
                     {activeTab === 'strategy' && (
                         <div className="contact-intel-modal__strategy-content">
-                            <p className="contact-intel-modal__section-description">
-                                High-impact actions to deepen the relationship and accelerate conversion.
-                            </p>
-                            {isLoadingStrategic ? (
+                            {aiLoading ? (
                                 <div className="contact-intel-modal__loading">
                                     <Zap size={32} className="zena-zap-pulse" />
                                     <p>Zena is analyzing relationship dynamics...</p>
                                 </div>
-                            ) : strategicActions.length === 0 ? (
-                                <div className="contact-intel-modal__empty">
-                                    <p>No strategic actions available at this time.</p>
-                                </div>
                             ) : (
-                                <div className="contact-intel-modal__actions-list">
-                                    {strategicActions.map((item, index) => (
-                                        <div key={index} className="contact-intel-modal__action-card">
+                                <>
+                                    {/* Portfolio Strategy Section */}
+                                    <PortfolioBriefSection contactId={contactId} />
+
+                                    {/* AI Brief Section */}
+                                    <div className="contact-ai-brief">
+                                        <div className="contact-ai-brief__item">
+                                            <span className="contact-ai-brief__label">CORE MOTIVATION</span>
+                                            <p className="contact-ai-brief__value">{aiIntel?.motivation || 'Analyzing...'}</p>
+                                        </div>
+                                        <div className="contact-ai-brief__item">
+                                            <span className="contact-ai-brief__label">STRATEGIC ADVICE</span>
+                                            <p className="contact-ai-brief__value">{aiIntel?.strategicAdvice || 'Analyzing...'}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="contact-intel-modal__actions-list">
+                                        <div className="contact-intel-modal__action-card active">
                                             <div className="contact-intel-modal__action-header">
-                                                <div className="contact-intel-modal__action-badge">STRATEGIC RECOMMENDATION</div>
-                                                <div className={`contact-intel-modal__impact-badge impact-${(item.impact || 'Medium').toLowerCase()}`}>
-                                                    {item.impact || 'Medium'} Impact
-                                                </div>
+                                                <div className="contact-intel-modal__action-badge">RECOMMENDED NEXT STEP</div>
+                                                <div className="contact-intel-modal__impact-badge impact-high">High Impact</div>
                                             </div>
                                             <div className="contact-intel-modal__action-content">
-                                                <h3 className="contact-intel-modal__action-title">{item.action}</h3>
+                                                <h3 className="contact-intel-modal__action-title">{aiIntel?.recommendedNextStep || 'Awaiting Zena...'}</h3>
                                                 <div className="contact-intel-modal__reasoning-container">
                                                     <span className="contact-intel-modal__reasoning-label">WHY IT MATTERS:</span>
-                                                    <p className="contact-intel-modal__reasoning">{item.reasoning}</p>
+                                                    <p className="contact-intel-modal__reasoning">This move aligns with detected motivation and current urgency levels.</p>
                                                 </div>
                                             </div>
                                             <div className="contact-intel-modal__action-footer">
                                                 <button
                                                     className="contact-intel-modal__execute-btn"
-                                                    onClick={() => onExecuteStrategy(item.action, item.reasoning)}
+                                                    onClick={() => onExecuteStrategy(aiIntel?.recommendedNextStep || '', 'AI Recommendation')}
+                                                    disabled={!aiIntel}
                                                 >
                                                     <MessageSquare size={14} />
                                                     <span>Execute Action</span>
@@ -318,8 +326,8 @@ export const ContactIntelligenceModal: React.FC<ContactIntelligenceModalProps> =
                                                 </button>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                </>
                             )}
                         </div>
                     )}
@@ -368,7 +376,11 @@ export const ContactIntelligenceModal: React.FC<ContactIntelligenceModalProps> =
 
                 {/* Footer */}
                 <div className="contact-intel-modal__footer">
-                    <p>Zena Autonomous Agent • Contact Intelligence Hub</p>
+                    <button className={`neural-refresh-btn ${aiLoading ? 'spinning' : ''}`} onClick={() => refresh()}>
+                        <RefreshCw size={14} />
+                        <span>{aiLoading ? 'Refreshing Synapses...' : 'Neural Refresh'}</span>
+                    </button>
+                    <p>Zena Autonomous Agent • Relationship Hub</p>
                 </div>
             </div>
         </div>,

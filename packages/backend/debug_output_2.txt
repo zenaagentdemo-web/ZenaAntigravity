@@ -1,0 +1,17 @@
+{"timestamp":"2026-01-08T00:08:05.428Z","level":"info","message":"[NavigationPlanner] Initialized with Gemini model: gemini-3-flash-preview"}
+{"timestamp":"2026-01-08T00:08:05.467Z","level":"info","message":"[AskZenaService] Initializing Ask Zena..."}
+{"timestamp":"2026-01-08T00:08:05.467Z","level":"info","message":"[AskZenaService] OPENAI_API_KEY set:"}
+{"timestamp":"2026-01-08T00:08:05.467Z","level":"info","message":"[AskZenaService] GEMINI_API_KEY set:","context":true}
+{"timestamp":"2026-01-08T00:08:05.467Z","level":"info","message":"[AskZenaService] GEMINI_MODEL:","context":"gemini-3-flash-preview"}
+[AIProcessingService] Initialized with Gemini: gemini-3-flash-preview
+--- Phase 6: Portfolio Intelligence Verification ---
+✅ Created simulation for Sarah Jenkins (Portfolio Test) with 2f724ba7-4ef2-473f-9e49-75303dceca05
+   - Seller Deal: 63ad2b45-fd91-42ff-8ead-76dfc4e1bd39
+   - Buyer Deal: 0a4b841b-c447-4f96-8c20-97c05178fb57
+--- Triggering AI Portfolio Synthesis ---
+{"timestamp":"2026-01-08T00:08:05.536Z","level":"info","message":"[PortfolioIntel] Analyzing portfolio for contact 2f724ba7-4ef2-473f-9e49-75303dceca05"}
+{"timestamp":"2026-01-08T00:08:12.463Z","level":"error","message":"[PortfolioIntel] AI Synthesis failed for contact 2f724ba7-4ef2-473f-9e49-75303dceca05:","error":{"name":"SyntaxError","message":"Unterminated string in JSON at position 695 (line 9 column 12)","stack":"SyntaxError: Unterminated string in JSON at position 695 (line 9 column 12)\n    at JSON.parse (<anonymous>)\n    at PortfolioIntelligenceService.analyzePortfolio (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/portfolio-intelligence.service.ts:96:35)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at verifyPortfolioIntelligence (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/scripts/verify-portfolio.ts:69:23)"}}
+Verification failed: ReferenceError: aiResponse is not defined
+    at PortfolioIntelligenceService.analyzePortfolio (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/portfolio-intelligence.service.ts:110:67)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at verifyPortfolioIntelligence (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/scripts/verify-portfolio.ts:69:23)

@@ -89,5 +89,31 @@ router.post('/timeline-summary', askZenaController.getTimelineSummary);
 // POST /api/ask/generate-pdf - Generate PDF from report content
 router.post('/generate-pdf', askZenaController.generateReportPdf);
 
+// ============================================
+// STICKINESS FEATURES
+// ============================================
+
+// GET /api/ask/recap/daily - Get end-of-day recap
+router.get('/recap/daily', askZenaController.getDailyRecap);
+
+// GET /api/ask/brief/morning - Get morning brief with priority contacts
+router.get('/brief/morning', askZenaController.getMorningBrief);
+
+// POST /api/ask/memory/search - Natural language memory search
+router.post('/memory/search', askZenaController.searchMemory);
+
+// POST /api/ask/action/outcome - Record outcome of a power move
+router.post('/action/outcome', askZenaController.recordActionOutcome);
+
+// ============================================
+// GLOBAL PROACTIVITY PHASE 1 - CONTACTS
+// ============================================
+
+// POST /api/ask/analyze-intent - Analyze search input for proactive suggestions
+router.post('/analyze-intent', askZenaController.analyzeSearchIntent);
+
+// POST /api/ask/analyze-contact-role - Re-analyze existing contact's role
+router.post('/analyze-contact-role', askZenaController.analyzeContactRole);
+
 export default router;
 

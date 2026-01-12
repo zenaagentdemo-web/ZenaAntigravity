@@ -77,6 +77,10 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
         return null;
     }, [deal.property?.address]);
 
+    const isStalled = useMemo(() => {
+        return intelligence.riskSignals.some(s => s.type === 'stalling');
+    }, [intelligence.riskSignals]);
+
     const mainAddress = useMemo(() => {
         const address = deal.property?.address || 'Unknown Property';
         return address.split(',')[0].trim();
@@ -108,7 +112,7 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
 
     return (
         <motion.div
-            className={`zena-deal-card ${healthClass} ${compact ? 'zena-deal-card--compact' : ''} ${isHighlighted ? 'zena-deal-card--highlighted' : ''} ${isDimmed ? 'zena-deal-card--dimmed' : ''} ${isSelected ? 'zena-deal-card--selected' : ''}`}
+            className={`zena-deal-card ${healthClass} ${isStalled ? 'zena-deal-card--stalled' : ''} ${compact ? 'zena-deal-card--compact' : ''} ${isHighlighted ? 'zena-deal-card--highlighted' : ''} ${isDimmed ? 'zena-deal-card--dimmed' : ''} ${isSelected ? 'zena-deal-card--selected' : ''}`}
             onClick={onClick}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -156,7 +160,7 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
                 </div>
                 <div className="zena-deal-card__stage-column">
                     <div className="zena-deal-card__stage" data-status={intelligence.stageHealthStatus}>
-                        {stageLabel}
+                        {isStalled ? 'STALLED' : stageLabel}
                     </div>
                     <div className="zena-deal-card__days">
                         {intelligence.daysInStage}d

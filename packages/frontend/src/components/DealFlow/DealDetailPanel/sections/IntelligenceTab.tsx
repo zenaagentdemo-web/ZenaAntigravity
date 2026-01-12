@@ -11,9 +11,17 @@ interface IntelligenceTabProps {
     deal: Deal;
     intelligence: DealIntelligence;
     onStartZenaLive?: (dealId: string) => void;
+    onRefresh?: () => void;
+    isLoading?: boolean;
 }
 
-export const IntelligenceTab: React.FC<IntelligenceTabProps> = ({ deal, intelligence, onStartZenaLive }) => {
+export const IntelligenceTab: React.FC<IntelligenceTabProps> = ({
+    deal,
+    intelligence,
+    onStartZenaLive,
+    onRefresh,
+    isLoading = false
+}) => {
     const riskInfo = RISK_BADGES[deal.riskLevel];
 
     return (
@@ -45,11 +53,41 @@ export const IntelligenceTab: React.FC<IntelligenceTabProps> = ({ deal, intellig
                             <span className="value" style={{ color: riskInfo.color }}>{riskInfo.label}</span>
                         </div>
                     </div>
-                    <p className="risk-summary__insight">
-                        "{intelligence.coachingInsight}"
-                    </p>
+                    <div className="intelligence-brief">
+                        <h4>Zena Intelligence Brief</h4>
+                        <p className="intelligence-brief__summary">
+                            {intelligence.executiveSummary || intelligence.coachingInsight}
+                        </p>
+                    </div>
                 </div>
             </div>
+
+            {/* AI Power Move */}
+            {intelligence.suggestedPowerMove && (
+                <div className="ai-power-move-section">
+                    <div className="section-label">RECOMMENDED POWER MOVE</div>
+                    <div className="ai-power-move-card">
+                        <div className="ai-power-move-card__header">
+                            <div className="ai-power-move-card__title">
+                                <span className="ai-power-move-card__icon">
+                                    {intelligence.suggestedPowerMove.action === 'email' ? '✉️' :
+                                        intelligence.suggestedPowerMove.action === 'call' ? '📞' : '📱'}
+                                </span>
+                                <h3>{intelligence.suggestedPowerMove.headline}</h3>
+                            </div>
+                            <span className={`priority-badge priority-${intelligence.suggestedPowerMove.priority}`}>
+                                {intelligence.suggestedPowerMove.priority.toUpperCase()}
+                            </span>
+                        </div>
+                        <p className="ai-power-move-card__rationale">{intelligence.suggestedPowerMove.rationale}</p>
+                        <div className="ai-power-move-card__actions">
+                            <button className="ai-power-move-card__btn primary">
+                                Execute {intelligence.suggestedPowerMove.action}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Strategic Options (Power Moves) */}
             <div className="section-label">STRATEGIC OPTIONS</div>
@@ -86,7 +124,14 @@ export const IntelligenceTab: React.FC<IntelligenceTabProps> = ({ deal, intellig
 
             <div className="intelligence-meta">
                 <span className="meta-item">SCAN TIME: 0.2ms</span>
-                <span className="meta-item">DATA SOURCE: LATEST CRM SYNC</span>
+                <span className="meta-item">STATUS: {isLoading ? 'SYNCING...' : 'LIVE'}</span>
+                <button
+                    className={`intelligence-refresh-btn ${isLoading ? 'spinning' : ''}`}
+                    onClick={onRefresh}
+                    disabled={isLoading}
+                >
+                    {isLoading ? '⌛ Refreshing...' : '🔄 Neural Refresh'}
+                </button>
             </div>
         </div>
     );

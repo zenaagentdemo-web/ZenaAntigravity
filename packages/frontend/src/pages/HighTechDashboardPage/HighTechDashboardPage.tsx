@@ -7,6 +7,8 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { api } from '../../utils/apiClient';
+import { realTimeDataService } from '../../services/realTimeDataService';
 import { HighTechDashboard } from '../../components/HighTechDashboard/HighTechDashboard';
 import { CalendarAppointment } from '../../components/CalendarWidget/CalendarWidget';
 import { ActivityItem } from '../../components/RecentActivityStream/RecentActivityStream';
@@ -114,32 +116,37 @@ export const HighTechDashboardPage: React.FC = () => {
   const { user } = useAuth();
   const [activeTasksCount, setActiveTasksCount] = useState(0);
 
-  // Read real task count from localStorage
+  // Fetch real task count from API
   useEffect(() => {
-    const savedTasks = localStorage.getItem('zena_tasks');
-    if (savedTasks) {
+    const fetchTaskCount = async () => {
       try {
-        const tasks = JSON.parse(savedTasks);
-        const pendingCount = tasks.filter((t: any) => t.status !== 'completed').length;
-        setActiveTasksCount(pendingCount);
-      } catch (e) {
-        console.error('Failed to parse tasks for dashboard', e);
-      }
-    }
-
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'zena_tasks' && e.newValue) {
-        try {
-          const tasks = JSON.parse(e.newValue);
-          const pendingCount = tasks.filter((t: any) => t.status !== 'completed').length;
-          setActiveTasksCount(pendingCount);
-        } catch (err) {
-          console.error('Error parsing storage tasks', err);
-        }
+        const response = await api.get<{ tasks: any[] }>('/api/tasks?status=open');
+        const tasks = response.data.tasks || [];
+        setActiveTasksCount(tasks.length);
+      } catch (err) {
+        console.error('Failed to fetch tasks for dashboard', err);
       }
     };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+
+    fetchTaskCount();
+
+    // Listen for agent tool calls to refresh task count
+    const unsubscribeAgent = realTimeDataService.onAgentToolCall((payload) => {
+      if (payload.toolName === 'task.create' || payload.toolName === 'task.update' || payload.toolName === 'task.delete') {
+        console.log('[HighTechDashboardPage] Refreshing task count due to agent action:', payload.toolName);
+        fetchTaskCount();
+      }
+    });
+
+    // Refresh task count every 30 seconds or on refocus
+    const interval = setInterval(fetchTaskCount, 30000);
+    window.addEventListener('focus', fetchTaskCount);
+
+    return () => {
+      unsubscribeAgent();
+      clearInterval(interval);
+      window.removeEventListener('focus', fetchTaskCount);
+    };
   }, []);
 
   // Dashboard data state

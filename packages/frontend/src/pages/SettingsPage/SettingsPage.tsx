@@ -4,6 +4,7 @@ import { ExportDialog, ExportType, ExportFormat } from '../../components/ExportD
 import { ExportProgress } from '../../components/ExportProgress/ExportProgress';
 import { CRMDialog, CRMIntegration } from '../../components/CRMDialog/CRMDialog';
 import { GodmodeSettingsPanel } from '../../components/GodmodeSettingsPanel/GodmodeSettingsPanel';
+import { PersonalizationSection } from './PersonalizationSection';
 import './SettingsPage.css';
 
 interface EmailAccount {
@@ -310,6 +311,9 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       <div className="settings-page__content">
+        {/* Personalization Intelligence Section */}
+        <PersonalizationSection />
+
         {/* Email Accounts Section */}
         <section className="settings-section">
           <h2 className="settings-section__title">Email Accounts</h2>

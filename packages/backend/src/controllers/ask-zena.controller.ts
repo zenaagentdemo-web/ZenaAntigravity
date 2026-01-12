@@ -2,6 +2,10 @@ import { Request, Response } from 'express';
 import { askZenaService, type ConversationMessage } from '../services/ask-zena.service.js';
 import { relationshipService } from '../services/relationship.service.js';
 import { voiceService } from '../services/voice.service.js';
+import { recapService } from '../services/recap.service.js';
+import { morningBriefService } from '../services/morning-brief.service.js';
+import { memorySearchService } from '../services/memory-search.service.js';
+import { zenaActionsService } from '../services/zena-actions.service.js';
 
 /**
  * Ask Zena Controller
@@ -895,6 +899,262 @@ export async function generateReportPdf(req: Request, res: Response): Promise<vo
     console.error('Error in generateReportPdf:', error);
     res.status(500).json({
       error: 'Failed to generate PDF',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+// ============================================
+// STICKINESS FEATURES
+// ============================================
+
+/**
+ * GET /api/ask/recap/daily
+ * Get end-of-day recap
+ */
+export async function getDailyRecap(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const dateStr = req.query.date as string | undefined;
+    const date = dateStr ? new Date(dateStr) : undefined;
+
+    console.log(`[Ask Zena] Generating daily recap for user ${userId}`);
+
+    const recap = await recapService.generateRecap(userId, date);
+    res.status(200).json(recap);
+  } catch (error) {
+    console.error('Error in getDailyRecap:', error);
+    res.status(500).json({
+      error: 'Failed to generate daily recap',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * GET /api/ask/brief/morning
+ * Get morning brief with priority contacts
+ */
+export async function getMorningBrief(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Generating morning brief for user ${userId}`);
+
+    const brief = await morningBriefService.generateMorningBrief(userId);
+    res.status(200).json(brief);
+  } catch (error) {
+    console.error('Error in getMorningBrief:', error);
+    res.status(500).json({
+      error: 'Failed to generate morning brief',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/ask/memory/search
+ * Natural language memory search
+ */
+export async function searchMemory(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { query, types, limit } = req.body;
+
+    if (!query) {
+      res.status(400).json({ error: 'Query is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Searching memory for: "${query}"`);
+
+    const results = await memorySearchService.searchMemory({
+      userId,
+      query,
+      types,
+      limit
+    });
+
+    res.status(200).json({ results });
+  } catch (error) {
+    console.error('Error in searchMemory:', error);
+    res.status(500).json({
+      error: 'Failed to search memory',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/ask/action/outcome
+ * Record outcome of a power move for AI learning
+ */
+export async function recordActionOutcome(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { actionId, outcome, notes } = req.body;
+
+    if (!actionId) {
+      res.status(400).json({ error: 'actionId is required' });
+      return;
+    }
+
+    if (!outcome || !['positive', 'neutral', 'negative'].includes(outcome)) {
+      res.status(400).json({ error: 'outcome must be "positive", "neutral", or "negative"' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Recording outcome "${outcome}" for action ${actionId}`);
+
+    const action = await zenaActionsService.recordOutcome(actionId, outcome, notes);
+    res.status(200).json(action);
+  } catch (error) {
+    console.error('Error in recordActionOutcome:', error);
+    res.status(500).json({
+      error: 'Failed to record action outcome',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+// ============================================
+// GLOBAL PROACTIVITY PHASE 1 - CONTACTS
+// ============================================
+
+/**
+ * POST /api/ask/analyze-intent
+ * Analyze search input text for proactive intent triggers
+ * Used by ContactsPage to detect "new lead", "add contact", etc. patterns
+ */
+export async function analyzeSearchIntent(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { text, context } = req.body;
+
+    if (!text || typeof text !== 'string') {
+      res.status(400).json({ error: 'text is required and must be a string' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Analyzing search intent: "${text}" | Context: ${context || 'contacts'}`);
+
+    // Intent patterns for proactive suggestions (Real data - no mock)
+    const lowerText = text.toLowerCase().trim();
+
+    // Pattern: "new lead [Name]" or "met [Name]" or "add contact [Name]"
+    const newLeadPatterns = [
+      /^(?:new lead|new contact|met|add contact|add)\s+(.+)/i,
+      /^(.+)\s+(?:is a new lead|new buyer|new vendor|interested in)/i
+    ];
+
+    let extractedName: string | null = null;
+    let intentType: 'create_contact' | 'search' | 'none' = 'none';
+
+    for (const pattern of newLeadPatterns) {
+      const match = lowerText.match(pattern);
+      if (match) {
+        extractedName = match[1].trim();
+        intentType = 'create_contact';
+        break;
+      }
+    }
+
+    // If no explicit pattern, check for name-like input (2+ words - case insensitive)
+    // Matches patterns like "John Smith", "john smith", "John smith", etc.
+    if (!extractedName && /^[A-Za-z]+\s+[A-Za-z]+/.test(text.trim())) {
+      // Could be a name - check if it exists in database
+      try {
+        const searchRes = await askZenaService.quickContactSearch(userId, text.trim());
+        if (!searchRes || searchRes.length === 0) {
+          // No existing contact - suggest creation
+          extractedName = text.trim();
+          intentType = 'create_contact';
+        }
+      } catch {
+        // Fallback - assume search intent
+        intentType = 'search';
+      }
+    }
+
+    if (intentType === 'create_contact' && extractedName) {
+      res.status(200).json({
+        intentDetected: true,
+        intentType: 'create_contact',
+        suggestion: {
+          message: `Would you like to add "${extractedName}" as a new contact?`,
+          action: 'open_new_contact_modal',
+          prefill: {
+            name: extractedName
+          }
+        }
+      });
+    } else {
+      res.status(200).json({
+        intentDetected: false,
+        intentType: 'search'
+      });
+    }
+  } catch (error) {
+    console.error('Error in analyzeSearchIntent:', error);
+    res.status(500).json({
+      error: 'Failed to analyze search intent',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/ask/analyze-contact-role
+ * Re-analyze an existing contact's role based on their activity history
+ * Returns a suggested role change if confidence threshold is met
+ */
+export async function analyzeContactRole(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { contactId } = req.body;
+
+    if (!contactId) {
+      res.status(400).json({ error: 'contactId is required' });
+      return;
+    }
+
+    console.log(`[Ask Zena] Analyzing role for contact ${contactId}`);
+
+    const result = await askZenaService.analyzeContactRole(userId, contactId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in analyzeContactRole:', error);
+    res.status(500).json({
+      error: 'Failed to analyze contact role',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
   }

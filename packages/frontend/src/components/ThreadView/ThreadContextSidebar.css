@@ -393,6 +393,40 @@
     color: #FFAA00;
 }
 
+.thread-context-sidebar__proactive-action {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.4);
+    border-radius: 12px;
+    color: #00D4FF;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 200ms ease;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
+}
+
+.thread-context-sidebar__proactive-action:hover {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: rgba(0, 212, 255, 0.6);
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.thread-context-sidebar__proactive-action svg:last-child {
+    opacity: 0.6;
+    transition: transform 200ms ease;
+}
+
+.thread-context-sidebar__proactive-action:hover svg:last-child {
+    opacity: 1;
+    transform: translateX(3px);
+}
+
 /* ============================================
  * PROPERTY CARD
  * ============================================ */

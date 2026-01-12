@@ -36,7 +36,7 @@ export async function getPendingActions(req: Request, res: Response): Promise<vo
         }
 
         // Get pending actions based on deal state
-        const pendingActions = zenaActionsService.getPendingActions(deal);
+        const pendingActions = await zenaActionsService.getPendingActions(deal);
 
         // Get any stored pending actions
         const storedActions = await prisma.zenaAction.findMany({

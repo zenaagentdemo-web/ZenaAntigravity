@@ -27,6 +27,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { api } from '../../utils/apiClient';
+import { AddNoteModal } from '../../components/AddNoteModal/AddNoteModal';
 import { realTimeDataService } from '../../services/realTimeDataService';
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
 import { LogIntelTooltip } from '../../components/LogIntelTooltip/LogIntelTooltip';
@@ -128,6 +129,8 @@ export const ContactDetailPage: React.FC = () => {
   const [isRefreshingBrain, setIsRefreshingBrain] = useState(false);
   const [showPulseHelp, setShowPulseHelp] = useState(false);
 
+  // Relationship decaying / alerts logic
+
   // Throttle state for Neural Pulse (5 minute cooldown)
   const [lastPulseTime, setLastPulseTime] = useState<number | null>(null);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
@@ -170,6 +173,8 @@ export const ContactDetailPage: React.FC = () => {
     return () => unsubscribe();
   }, [id]);
 
+  // Note handlers removed - moved to AddNoteModal
+
   const loadContactData = async () => {
     try {
       setLoading(true);
@@ -203,17 +208,16 @@ export const ContactDetailPage: React.FC = () => {
     }
   };
 
-  const handleAddNote = async () => {
-    if (!noteContent.trim() || !id) return;
+  const handleSaveNote = async (noteData: { content: string; type: string; linkedPropertyId?: string }) => {
+    if (!noteData.content.trim() || !id) return;
 
     try {
       setAddingNote(true);
       await api.post(`/api/contacts/${id}/notes`, {
-        content: noteContent,
-        source: 'manual',
+        content: noteData.content,
+        source: noteData.type === 'voice_note' ? 'voice_note' : 'manual'
       });
       await loadContactData();
-      setNoteContent('');
       setShowNoteForm(false);
     } catch (err) {
       console.error('Failed to add note:', err);
@@ -535,6 +539,64 @@ export const ContactDetailPage: React.FC = () => {
           </div>
         </header>
 
+        {/* Contact Information Section */}
+        <section className="contact-detail-page__section contact-info-section">
+          <h2 className="contact-detail-page__section-title">
+            <Phone size={18} /> Contact Information
+          </h2>
+          <div className="contact-info-grid">
+            {/* Email Addresses */}
+            <div className="contact-info-card">
+              <div className="contact-info-card__header">
+                <Mail size={16} />
+                <span>Email Addresses</span>
+              </div>
+              <div className="contact-info-card__content">
+                {contact.emails && contact.emails.length > 0 ? (
+                  contact.emails.map((email, index) => (
+                    <button
+                      key={index}
+                      className="contact-info-item clickable"
+                      onClick={() => setShowComposeModal(true)}
+                      title="Click to compose email"
+                    >
+                      <Mail size={14} />
+                      <span>{email}</span>
+                    </button>
+                  ))
+                ) : (
+                  <span className="contact-info-empty">No email addresses on file</span>
+                )}
+              </div>
+            </div>
+
+            {/* Phone Numbers */}
+            <div className="contact-info-card">
+              <div className="contact-info-card__header">
+                <Phone size={16} />
+                <span>Phone Numbers</span>
+              </div>
+              <div className="contact-info-card__content">
+                {contact.phones && contact.phones.length > 0 ? (
+                  contact.phones.map((phone, index) => (
+                    <a
+                      key={index}
+                      href={`tel:${phone}`}
+                      className="contact-info-item clickable"
+                      title="Click to call"
+                    >
+                      <Phone size={14} />
+                      <span>{phone}</span>
+                    </a>
+                  ))
+                ) : (
+                  <span className="contact-info-empty">No phone numbers on file</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="contact-detail-page__section">
           <div className="intelligence-section__header">
             <h2 className="contact-detail-page__section-title">
@@ -697,45 +759,14 @@ export const ContactDetailPage: React.FC = () => {
             </button>
           </div>
 
-          {showNoteForm && (
-            <div className="contact-detail-page__note-form">
-              <div className="contact-detail-page__note-input-row">
-                <textarea
-                  className="contact-detail-page__note-textarea"
-                  placeholder="Record relationship intel... What did you learn about this contact?"
-                  value={noteContent}
-                  onChange={(e) => setNoteContent(e.target.value)}
-                  rows={4}
-                />
-                <button
-                  className={`contact-detail-page__voice-btn ${isRecording ? 'recording' : ''}`}
-                  onClick={isRecording ? stopRecording : startRecording}
-                  title={isRecording ? 'Stop recording' : 'Record voice note'}
-                >
-                  {isRecording ? (
-                    <>
-                      <Square size={20} />
-                      <span className="recording-time">{formatRecordingTime(recordingTime)}</span>
-                    </>
-                  ) : (
-                    <img
-                      src="/assets/icons/voice-note-final.png"
-                      alt="Voice note"
-                      className="voice-icon-img"
-                    />
-                  )}
-                </button>
-              </div>
-              <div className="contact-detail-page__note-actions">
-                <button className="contact-detail-page__note-cancel" onClick={() => { setShowNoteForm(false); setNoteContent(''); }}>
-                  Cancel
-                </button>
-                <button className="contact-detail-page__note-save" onClick={handleAddNote} disabled={!noteContent.trim() || addingNote}>
-                  {addingNote ? 'Saving...' : 'Save note'}
-                </button>
-              </div>
-            </div>
-          )}
+          <AddNoteModal
+            isOpen={showNoteForm}
+            onClose={() => setShowNoteForm(false)}
+            onSave={handleSaveNote}
+            entityId={id}
+            entityType="contact"
+            entityName={contact?.name}
+          />
         </section>
 
         {threads.length > 0 && (

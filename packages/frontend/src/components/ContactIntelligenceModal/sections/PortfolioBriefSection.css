@@ -1,0 +1,156 @@
+/* PortfolioBriefSection.css */
+
+.portfolio-brief-section {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.portfolio-brief-section.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: rgba(0, 212, 255, 0.6);
+    gap: 12px;
+}
+
+.portfolio-brief-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.portfolio-brief-header .header-icon {
+    color: #00D4FF;
+    margin-top: 2px;
+}
+
+.portfolio-brief-header h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.strategy-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(0, 212, 255, 0.15);
+    color: #00D4FF;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+    text-transform: uppercase;
+}
+
+.portfolio-summary {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    margin: 0 0 20px;
+}
+
+.section-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.portfolio-dependencies {
+    margin-bottom: 20px;
+}
+
+.dependency-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-left: 3px solid #ccc;
+}
+
+.dependency-card.risk-high {
+    border-left-color: #FF4D4D;
+}
+
+.dependency-card.risk-medium {
+    border-left-color: #FFD700;
+}
+
+.dependency-card.risk-low {
+    border-left-color: #00FF88;
+}
+
+.dependency-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.dependency-risk {
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.dependency-card p {
+    font-size: 12px;
+    color: #fff;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.next-step-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 212, 255, 0.1) 100%);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.next-step-card:hover {
+    transform: translateX(4px);
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.15) 0%, rgba(0, 212, 255, 0.15) 100%);
+}
+
+.next-step-card svg:first-child {
+    color: #ffd700;
+}
+
+.next-step-card p {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    margin: 0;
+}
+
+.next-step-card .arrow {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -79,7 +79,7 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
     const stageConfig = getStageConfig(deal.stage, deal.pipelineType);
 
     // Get Zena intelligence (heuristic for immediate display, then AI hydrated)
-    const { intelligence: aiIntelligence, loading: aiLoading } = useDealIntelligence(deal.id);
+    const { intelligence: aiIntelligence, loading: aiLoading, refresh } = useDealIntelligence(deal.id);
     const heuristicIntelligence: DealIntelligence = analyseDeal(deal);
     const intelligence = aiIntelligence || heuristicIntelligence;
 
@@ -368,6 +368,8 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
                     deal={deal}
                     intelligence={intelligence}
                     onStartZenaLive={onStartZenaLive}
+                    onRefresh={refresh}
+                    isLoading={aiLoading}
                 />
             </div>
         );

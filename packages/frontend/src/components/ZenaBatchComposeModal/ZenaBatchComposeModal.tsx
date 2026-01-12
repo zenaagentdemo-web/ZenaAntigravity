@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Sparkles, X, Shield, RefreshCw, ArrowRight, Send, Users, TrendingUp, Target, FileText, Zap } from 'lucide-react';
 import './ZenaBatchComposeModal.css';
@@ -90,6 +90,12 @@ export const ZenaBatchComposeModal: React.FC<ZenaBatchComposeModalProps> = ({
     const [previousMessage, setPreviousMessage] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [draftType, setDraftType] = useState<'quick' | 'detailed'>('quick');
+
+    // GLOBAL PROACTIVITY INVARIANT 1: Sync form when initialProps change
+    useEffect(() => {
+        if (initialSubject) setSubject(initialSubject);
+        if (initialMessage) setMessage(initialMessage);
+    }, [initialSubject, initialMessage]);
 
     const isGroupEmail = selectedContacts.length > 1;
     const primaryContact = selectedContacts[0];
@@ -255,7 +261,28 @@ Best regards`;
                 <header className="zena-modal-header">
                     <div className="modal-title-group">
                         <Sparkles className="zena-sparkle-icon" size={20} />
-                        <h2>Compose with Zena AI</h2>
+                        <h2>
+                            Compose with Zena AI
+                            {(initialSubject || initialMessage) && (
+                                <div className="zena-prefill-badge" style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(129, 140, 248, 0.1))',
+                                    border: '1px solid rgba(56, 189, 248, 0.2)',
+                                    borderRadius: '12px',
+                                    padding: '4px 10px',
+                                    fontSize: '11px',
+                                    color: '#38bdf8',
+                                    marginLeft: '12px',
+                                    fontWeight: 500,
+                                    verticalAlign: 'middle'
+                                }}>
+                                    <Sparkles size={12} />
+                                    <span>Pre-filled from context</span>
+                                </div>
+                            )}
+                        </h2>
                     </div>
                     <button className="zena-modal-close" onClick={onClose}><X size={20} /></button>
                 </header>

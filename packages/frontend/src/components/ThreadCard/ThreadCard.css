@@ -484,6 +484,30 @@
   flex-shrink: 0;
 }
 
+.thread-card__ai-summary-section--proactive-glow {
+  position: relative;
+  padding: 12px;
+  background: rgba(94, 234, 212, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(94, 234, 212, 0.1);
+  box-shadow: 0 0 20px rgba(94, 234, 212, 0.05);
+  animation: proactive-summary-glow 3s infinite ease-in-out;
+}
+
+@keyframes proactive-summary-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(94, 234, 212, 0.05);
+    border-color: rgba(94, 234, 212, 0.1);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(94, 234, 212, 0.15);
+    border-color: rgba(94, 234, 212, 0.3);
+  }
+}
+
 /* ============================================
  * SUMMARY
  * ============================================ */

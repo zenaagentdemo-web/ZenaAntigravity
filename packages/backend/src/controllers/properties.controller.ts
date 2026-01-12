@@ -221,6 +221,7 @@ export class PropertiesController {
         bedrooms,
         bathrooms,
         landSize,
+        floorSize,
         listingDate,
         rateableValue,
         viewingCount,
@@ -272,6 +273,7 @@ export class PropertiesController {
           bedrooms: bedrooms != null ? (typeof bedrooms === 'number' ? bedrooms : parseInt(bedrooms)) : null,
           bathrooms: bathrooms != null ? (typeof bathrooms === 'number' ? bathrooms : parseInt(bathrooms)) : null,
           landSize: landSize != null ? String(landSize) : null,
+          floorSize: floorSize != null ? String(floorSize) : null,
           listingDate: listingDate ? new Date(listingDate) : null,
           rateableValue: rateableValue != null ? parseInt(rateableValue) : null,
           viewingCount: viewingCount != null ? parseInt(viewingCount) : 0,
@@ -454,6 +456,7 @@ export class PropertiesController {
         bedrooms,
         bathrooms,
         landSize,
+        floorSize,
         listingDate,
         rateableValue,
         viewingCount,
@@ -517,6 +520,7 @@ export class PropertiesController {
       if (bedrooms !== undefined) updateData.bedrooms = bedrooms != null ? parseInt(bedrooms) : null;
       if (bathrooms !== undefined) updateData.bathrooms = bathrooms != null ? parseInt(bathrooms) : null;
       if (landSize !== undefined) updateData.landSize = landSize != null ? String(landSize) : null;
+      if (floorSize !== undefined) updateData.floorSize = floorSize != null ? String(floorSize) : null;
       if (listingDate !== undefined) updateData.listingDate = listingDate ? new Date(listingDate) : null;
       if (rateableValue !== undefined) updateData.rateableValue = rateableValue != null ? parseInt(rateableValue) : null;
       if (viewingCount !== undefined) updateData.viewingCount = viewingCount != null ? parseInt(viewingCount) : 0;
@@ -1114,7 +1118,7 @@ export class PropertiesController {
         if (property) {
           const { propertyIntelligenceService } = await import('../services/property-intelligence.service.js');
           const newPrediction = await propertyIntelligenceService.refreshIntelligence(id, req.user.userId);
-          res.status(200).json({ prediction: newPrediction });
+          res.status(200).json({ intelligence: newPrediction, prediction: newPrediction });
           return;
         }
 
@@ -1122,7 +1126,7 @@ export class PropertiesController {
         return;
       }
 
-      res.status(200).json({ prediction });
+      res.status(200).json({ intelligence: prediction, prediction });
 
     } catch (error) {
       console.error('Get intelligence error:', error);
@@ -1250,6 +1254,132 @@ export class PropertiesController {
     } catch (error) {
       console.error('Generate Comparables error:', error);
       res.status(500).json({ error: 'Failed to generate report' });
+    }
+  }
+
+  /**
+   * GET /api/properties/stats
+   * Get property statistics for the user
+   */
+  async getStats(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: 'Authentication required' });
+        return;
+      }
+
+      const userId = req.user.userId;
+
+      // Count properties by status
+      const [total, active, pending, sold, archived] = await Promise.all([
+        prisma.property.count({ where: { userId } }),
+        prisma.property.count({ where: { userId, status: 'active' } }),
+        prisma.property.count({ where: { userId, status: 'pending' } }),
+        prisma.property.count({ where: { userId, status: 'sold' } }),
+        prisma.property.count({ where: { userId, status: 'archived' } }),
+      ]);
+
+      // Calculate total listing value
+      const properties = await prisma.property.findMany({
+        where: { userId, listingPrice: { not: null } },
+        select: { listingPrice: true },
+      });
+      const totalValue = properties.reduce((sum, p) => sum + (p.listingPrice || 0), 0);
+
+      res.status(200).json({
+        stats: {
+          total,
+          active,
+          pending,
+          sold,
+          archived,
+          totalValue,
+        },
+      });
+    } catch (error) {
+      console.error('Get stats error:', error);
+      res.status(500).json({ error: 'Failed to get property stats' });
+    }
+  }
+
+  /**
+   * POST /api/properties/bulk-archive
+   * Archive multiple properties
+   */
+  async bulkArchiveProperties(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: 'Authentication required' });
+        return;
+      }
+
+      const { ids } = req.body;
+
+      if (!Array.isArray(ids)) {
+        res.status(400).json({ error: 'ids must be an array' });
+        return;
+      }
+
+      if (ids.length === 0) {
+        res.status(200).json({ success: true, archivedCount: 0 });
+        return;
+      }
+
+      const result = await prisma.property.updateMany({
+        where: {
+          id: { in: ids },
+          userId: req.user.userId,
+        },
+        data: {
+          status: 'archived',
+        },
+      });
+
+      res.status(200).json({
+        success: true,
+        archivedCount: result.count,
+      });
+    } catch (error) {
+      console.error('Bulk archive error:', error);
+      res.status(500).json({ error: 'Failed to archive properties' });
+    }
+  }
+
+  /**
+   * GET /api/properties/:id/milestones
+   * Get milestones for a property
+   */
+  async getMilestones(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      if (!req.user) {
+        res.status(401).json({ error: 'Authentication required' });
+        return;
+      }
+
+      const property = await prisma.property.findFirst({
+        where: {
+          id,
+          userId: req.user.userId,
+        },
+        select: {
+          id: true,
+          milestones: true,
+        },
+      });
+
+      if (!property) {
+        res.status(404).json({ error: 'Property not found' });
+        return;
+      }
+
+      res.status(200).json({
+        milestones: property.milestones || [],
+      });
+    } catch (error) {
+      console.error('Get milestones error:', error);
+      res.status(500).json({ error: 'Failed to get milestones' });
     }
   }
 }

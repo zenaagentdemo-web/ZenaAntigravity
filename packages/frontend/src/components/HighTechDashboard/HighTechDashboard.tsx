@@ -19,6 +19,7 @@ import { AmbientBackground } from '../AmbientBackground/AmbientBackground';
 import { CalendarWidget, CalendarAppointment } from '../CalendarWidget/CalendarWidget';
 import { RecentActivityStream, ActivityItem } from '../RecentActivityStream/RecentActivityStream';
 import { NeuralBridgesWidget } from '../NeuralBridgesWidget/NeuralBridgesWidget';
+import { MorningBriefModal } from './MorningBriefModal';
 
 import './HighTechDashboard.css';
 
@@ -56,10 +57,23 @@ export interface HighTechDashboardProps {
   testId?: string;
 }
 
+/**
+ * Format timestamp to HH:MM AM/PM
+ */
+const formatAppointmentTime = (timestamp: string): string => {
+  try {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('en-NZ', { hour: '2-digit', minute: '2-digit', hour12: true });
+  } catch (e) {
+    return timestamp;
+  }
+};
+
 
 
 
 export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
+  userName = 'there', // Default to 'there' if undefined
   focusThreadsCount = 0,
   waitingThreadsCount = 0,
   atRiskDealsCount = 0,
@@ -78,6 +92,23 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
 }) => {
   const navigate = useNavigate();
   const [currentAiState, setCurrentAiState] = useState<ZenaAvatarState>(aiState);
+  const [isBriefOpen, setIsBriefOpen] = useState(false);
+
+  // Auto-show Morning Brief on first mount if there are urgent items
+  useEffect(() => {
+    const hasUrgent = focusThreadsCount > 0 || atRiskDealsCount > 0;
+    const briefDismissed = localStorage.getItem('zena_brief_dismissed');
+    const today = new Date().toDateString();
+
+    if (hasUrgent && briefDismissed !== today) {
+      setIsBriefOpen(true);
+    }
+  }, [focusThreadsCount, atRiskDealsCount]);
+
+  const handleBriefClose = () => {
+    setIsBriefOpen(false);
+    localStorage.setItem('zena_brief_dismissed', new Date().toDateString());
+  };
 
   // Update AI state when prop changes
   useEffect(() => {
@@ -235,6 +266,24 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
         testId="dashboard-ambient-background"
       />
 
+      {/* Morning Brief Modal */}
+      <MorningBriefModal
+        isOpen={isBriefOpen}
+        onClose={handleBriefClose}
+        userName={userName}
+        metrics={{
+          focusThreads: focusThreadsCount,
+          waitingThreads: waitingThreadsCount,
+          atRiskDeals: atRiskDealsCount
+        }}
+        topAppointment={appointments.length > 0 ? {
+          time: formatAppointmentTime(appointments[0].time),
+          title: appointments[0].title,
+          location: appointments[0].location
+        } : undefined}
+        onStartLive={() => navigate('/ask-zena?mode=handsfree')}
+      />
+
       {/* Header Bar */}
       <header className="high-tech-dashboard__header">
         <h1 className="high-tech-dashboard__title">
@@ -244,7 +293,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
 
       {/* Main Content */}
       <main className="high-tech-dashboard__content">
-        {/* Central Zena Orb Hero Section (Full Width) */}
+        {/* Hero Section (Always Top) */}
         <section
           className="high-tech-dashboard__hero"
           aria-label="Zena AI Assistant"
@@ -306,62 +355,73 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
               <img src="/assets/icons/todays-tasks-final.png" alt="" className="intel-btn__icon-img" />
               <span className="intel-btn__label">Today's Tasks</span>
             </button>
+
+            <button
+              className="intel-btn intel-btn--recap"
+              onClick={() => navigate(`/ask-zena?prompt=${encodeURIComponent("Give me my end of day recap. Summarize what I accomplished, highlight any deals needing attention, and suggest priorities for tomorrow.")}&mode=handsfree`)}
+            >
+              <img src="/assets/icons/todays-tasks-final.png" alt="" className="intel-btn__icon-img" />
+              <span className="intel-btn__label">End of Day</span>
+            </button>
           </div>
         </section>
 
-        {/* Floating Metric Orbs - Always visible near top */}
-        <section
-          className="high-tech-dashboard__metrics"
-          aria-label="Key Metrics"
-        >
-          <FloatingMetricOrbs
-            orbs={metricOrbs}
-            onOrbClick={handleMetricClick}
-            testId="dashboard-metrics"
-          />
-        </section>
+        {/* Dynamic Contextual Sections */}
+        {(() => {
+          // Define all potential sections
+          const sections = [
+            {
+              id: 'metrics',
+              priority: 200, // Always top
+              render: () => (
+                <section key="metrics" className="high-tech-dashboard__metrics" aria-label="Key Metrics">
+                  <FloatingMetricOrbs orbs={metricOrbs} onOrbClick={handleMetricClick} />
+                </section>
+              )
+            },
+            {
+              id: 'neural',
+              priority: 70, // Consistent background intelligence
+              render: () => (
+                <section key="neural" className="high-tech-dashboard__neural-bridges">
+                  <NeuralBridgesWidget />
+                </section>
+              )
+            },
+            {
+              id: 'actions',
+              priority: 150, // Second
+              render: () => (
+                <section key="actions" className="high-tech-dashboard__actions" aria-label="Quick Actions">
+                  <QuickActionsCarousel actions={quickActions} onActionClick={handleQuickAction} />
+                </section>
+              )
+            },
+            {
+              id: 'calendar',
+              priority: 100, // Third
+              render: () => (
+                <section key="calendar" className="high-tech-dashboard__calendar" aria-label="Upcoming Appointments">
+                  <CalendarWidget appointments={appointments} onAppointmentClick={onAppointmentClick} maxAppointments={3} showConflicts={true} />
+                </section>
+              )
+            },
+            {
+              id: 'activity',
+              priority: 30, // Usually lowest priority
+              render: () => (
+                <section key="activity" className="high-tech-dashboard__activity" aria-label="Recent Activity">
+                  <RecentActivityStream activities={recentActivities} onActivityClick={onActivityClick} maxItems={5} />
+                </section>
+              )
+            }
+          ];
 
-        {/* Neural Bridges Status */}
-        <section className="high-tech-dashboard__neural-bridges">
-          <NeuralBridgesWidget />
-        </section>
-
-        {/* Quick Actions Carousel */}
-        <section
-          className="high-tech-dashboard__actions"
-          aria-label="Quick Actions"
-        >
-          <QuickActionsCarousel
-            actions={quickActions}
-            onActionClick={handleQuickAction}
-            testId="dashboard-quick-actions"
-          />
-        </section>
-
-        {/* Upcoming Appointments */}
-        <section
-          className="high-tech-dashboard__calendar"
-          aria-label="Upcoming Appointments"
-        >
-          <CalendarWidget
-            appointments={appointments}
-            onAppointmentClick={onAppointmentClick}
-            maxAppointments={3}
-            showConflicts={true}
-          />
-        </section>
-
-        {/* Recent Activity Stream */}
-        <section
-          className="high-tech-dashboard__activity"
-          aria-label="Recent Activity"
-        >
-          <RecentActivityStream
-            activities={recentActivities}
-            onActivityClick={onActivityClick}
-            maxItems={5}
-          />
-        </section>
+          // Sort sections by priority and render
+          return sections
+            .sort((a, b) => b.priority - a.priority)
+            .map(section => section.render());
+        })()}
       </main>
     </div>
   );

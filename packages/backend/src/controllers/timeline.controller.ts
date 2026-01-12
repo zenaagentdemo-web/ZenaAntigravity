@@ -176,6 +176,64 @@ export async function createManualNote(req: Request, res: Response) {
   }
 }
 
+
+/**
+ * Create a general timeline event (meeting, etc.)
+ * POST /api/timeline/events
+ */
+export async function createGeneralEvent(req: Request, res: Response) {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { summary, description, startTime, endTime, location, attendees, type, propertyId, contactId } = req.body;
+
+    if (!summary || !startTime) {
+      return res.status(400).json({ error: 'Summary and Start Time are required' });
+    }
+
+    // Determine entity type/id based on context, or default to generic 'calendar_event'
+    let entityType: any = 'calendar_event';
+    let entityId = `evt_${Date.now()}`; // Generic ID if not linked
+
+    if (propertyId) {
+      entityType = 'property';
+      entityId = propertyId;
+    } else if (contactId) {
+      entityType = 'contact';
+      entityId = contactId;
+    }
+
+    const event = await timelineService.createEvent({
+      userId,
+      type: type || 'meeting',
+      entityType,
+      entityId,
+      summary,
+      content: description,
+      timestamp: new Date(startTime),
+      metadata: {
+        endTime,
+        location,
+        attendees,
+        propertyReference: propertyId,
+        contactReference: contactId
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      event
+    });
+
+  } catch (error) {
+    console.error('Error creating event:', error);
+    res.status(500).json({ error: 'Failed to create event' });
+  }
+}
+
 /**
  * Get timeline for a specific entity
  * GET /api/timeline/:entityType/:entityId

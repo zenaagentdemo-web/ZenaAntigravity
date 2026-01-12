@@ -281,3 +281,64 @@ export async function getOverdueTasks(req: Request, res: Response) {
     });
   }
 }
+
+/**
+ * Reopen a completed task (undo functionality)
+ * PATCH /api/tasks/:id/reopen
+ */
+export async function reopenTask(req: Request, res: Response) {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { id } = req.params;
+
+    const task = await taskService.reopenTask(userId, id);
+
+    res.json({
+      message: 'Task reopened successfully',
+      task,
+    });
+  } catch (error) {
+    console.error('Error reopening task:', error);
+    if (error instanceof Error && error.message === 'Task not found') {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    if (error instanceof Error && error.message === 'Task is not completed') {
+      return res.status(400).json({ error: 'Task is not completed' });
+    }
+    res.status(500).json({
+      error: 'Failed to reopen task',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * 🧠 ZENA INTELLIGENCE: Detect potential task completions from activity
+ * GET /api/tasks/detect-completions
+ */
+export async function detectCompletions(req: Request, res: Response) {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const detections = await taskService.detectTaskCompletions(userId);
+
+    res.json({
+      detections,
+      count: detections.length,
+    });
+  } catch (error) {
+    console.error('Error detecting task completions:', error);
+    res.status(500).json({
+      error: 'Failed to detect task completions',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+

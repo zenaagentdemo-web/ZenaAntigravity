@@ -14,6 +14,9 @@ router.use(authMiddleware);
 // GET /api/deals/dashboard - Get aggregated dashboard statistics
 router.get('/dashboard', (req, res) => dealsController.getDashboardStats(req, res));
 
+// GET /api/deals/portfolio/intelligence - Perform global portfolio intelligence analysis
+router.get('/portfolio/intelligence', (req, res) => dealsController.analyzePortfolio(req, res));
+
 
 // GET /api/deals/stages - Get available stages for a pipeline type
 router.get('/stages', (req, res) => dealsController.getStages(req, res));

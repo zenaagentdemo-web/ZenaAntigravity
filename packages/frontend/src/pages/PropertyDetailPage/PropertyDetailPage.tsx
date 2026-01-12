@@ -32,6 +32,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { api } from '../../utils/apiClient';
+import { AddNoteModal } from '../../components/AddNoteModal/AddNoteModal';
 import { usePropertyIntelligence, PropertyPrediction } from '../../hooks/usePropertyIntelligence';
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
 import { LogIntelTooltip } from '../../components/LogIntelTooltip/LogIntelTooltip';
@@ -59,6 +60,7 @@ interface Property {
   bedrooms?: number;
   bathrooms?: number;
   landSize?: string;
+  floorSize?: string;
   dealId?: string;
   milestones: Milestone[];
   riskOverview?: string;
@@ -256,20 +258,18 @@ export const PropertyDetailPage: React.FC = () => {
     }
   };
 
-  const handleAddNote = async () => {
-    if (!noteContent.trim() || !id) return;
+  const handleSaveNote = async (noteData: { content: string; type: string }) => {
+    if (!noteData.content.trim() || !id) return;
 
     try {
       setAddingNote(true);
       await api.post(`/api/timeline/notes`, {
         entityType: 'property',
         entityId: id,
-        summary: noteContent,
-        type: usedVoiceRecording ? 'voice_note' : 'note'
+        summary: noteData.content,
+        type: noteData.type
       });
       await loadPropertyData();
-      setUsedVoiceRecording(false);
-      setNoteContent('');
       setShowNoteForm(false);
 
       // IMMEDIATE FEEDBACK LOOP: Trigger AI re-analysis
@@ -350,12 +350,13 @@ export const PropertyDetailPage: React.FC = () => {
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('en-NZ', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: 'Pacific/Auckland'
     });
   };
 
@@ -814,6 +815,13 @@ export const PropertyDetailPage: React.FC = () => {
               </div>
               <div className="intel-card-value">
                 {property.bedrooms || '0'} Beds, {property.bathrooms || '0'} Baths
+                {(property.landSize || property.floorSize) && (
+                  <div className="intel-card-subvalue" style={{ fontSize: '11px', opacity: 0.8, marginTop: '4px' }}>
+                    {property.floorSize && <span>{property.floorSize} Floor</span>}
+                    {property.floorSize && property.landSize && <span> • </span>}
+                    {property.landSize && <span>{property.landSize} Land</span>}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -873,41 +881,14 @@ export const PropertyDetailPage: React.FC = () => {
             </button>
           </div>
 
-          {showNoteForm && (
-            <div className="property-detail-page__note-form">
-              <div className="property-detail-page__note-input-row">
-                <textarea
-                  className="property-detail-page__note-textarea"
-                  placeholder="Record property intel... What feedback did you receive? Any buyer interest?"
-                  value={noteContent}
-                  onChange={(e) => setNoteContent(e.target.value)}
-                  rows={4}
-                />
-                <button
-                  className={`property-detail-page__voice-btn ${isRecording ? 'recording' : ''}`}
-                  onClick={isRecording ? stopRecording : startRecording}
-                  title={isRecording ? 'Stop recording' : 'Record voice note'}
-                >
-                  {isRecording ? (
-                    <>
-                      <Square size={20} />
-                      <span className="recording-time">{formatRecordingTime(recordingTime)}</span>
-                    </>
-                  ) : (
-                    <Mic size={20} />
-                  )}
-                </button>
-              </div>
-              <div className="property-detail-page__note-actions">
-                <button className="property-detail-page__note-cancel" onClick={() => { setShowNoteForm(false); setNoteContent(''); }}>
-                  Cancel
-                </button>
-                <button className="property-detail-page__note-save" onClick={handleAddNote} disabled={!noteContent.trim() || addingNote}>
-                  {addingNote ? 'Saving...' : 'Save Intel'}
-                </button>
-              </div>
-            </div>
-          )}
+          <AddNoteModal
+            isOpen={showNoteForm}
+            onClose={() => setShowNoteForm(false)}
+            onSave={handleSaveNote}
+            entityId={id}
+            entityType="property"
+            entityName={property?.address}
+          />
         </section>
 
         {/* Email Correspondence Section */}

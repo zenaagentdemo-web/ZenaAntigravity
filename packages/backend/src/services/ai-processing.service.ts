@@ -66,24 +66,31 @@ export interface EntityExtractionResult {
  * Handles thread classification and categorization using LLM
  */
 export class AIProcessingService {
-  private apiKey: string;
-  private apiEndpoint: string;
-  private model: string;
+  public apiKey: string;
+  public apiEndpoint: string;
+  public model: string;
 
   constructor() {
-    // Use OpenAI by default, can be configured via environment variables
-    this.apiKey = process.env.OPENAI_API_KEY || '';
-    this.apiEndpoint = process.env.OPENAI_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions';
-    this.model = process.env.OPENAI_MODEL || 'gpt-4';
-
-    // Gemini support
+    // Gemini support (Primary)
     const geminiApiKey = process.env.GEMINI_API_KEY;
     const geminiModel = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
 
     if (geminiApiKey) {
-      console.log(`[AIProcessingService] Using Gemini for processing: ${geminiModel}`);
-    } else if (!this.apiKey) {
-      console.warn('Warning: Neither OPENAI_API_KEY nor GEMINI_API_KEY set. AI processing will use fallback classification.');
+      console.log(`[AIProcessingService] Initialized with Gemini: ${geminiModel}`);
+      this.apiKey = geminiApiKey;
+      this.model = geminiModel;
+      this.apiEndpoint = 'google'; // Internal flag
+    } else {
+      // Use OpenAI/Generic fallback
+      this.apiKey = process.env.OPENAI_API_KEY || '';
+      this.apiEndpoint = process.env.OPENAI_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions';
+      this.model = process.env.OPENAI_MODEL || 'gpt-4';
+
+      if (!this.apiKey) {
+        console.warn('Warning: Neither OPENAI_API_KEY nor GEMINI_API_KEY set. AI processing will use limited heuristics.');
+      } else {
+        console.log(`[AIProcessingService] Initialized with OpenAI: ${this.model}`);
+      }
     }
   }
 
@@ -249,12 +256,52 @@ JSON; // End of prompt - ensure valid JSON output only`;
   }
 
   /**
+   * Transcribe audio using Gemini Multimodal
+   */
+  async transcribeAudio(audioData: string, mimeType: string = 'audio/mpeg'): Promise<string> {
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    if (!geminiApiKey) {
+      throw new Error('GEMINI_API_KEY is required for audio transcription');
+    }
+
+    let model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
+    // Use flash for transcription as it's faster
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+
+    // audioData should be base64 string
+    const body = JSON.stringify({
+      contents: [{
+        parts: [
+          { text: "Transcribe this audio exactly as spoken. New Zealand locale. UK English spelling. return only the transcript text." },
+          { inline_data: { mime_type: mimeType, data: audioData } }
+        ]
+      }],
+      generationConfig: {
+        temperature: 0.1,
+      },
+    });
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Gemini Transcription Error: ${response.status} ${error}`);
+    }
+
+    const data = await response.json() as any;
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  }
+
+  /**
    * Call LLM API - supports both OpenAI and Google Gemini
    */
-  private async callLLM(prompt: string): Promise<string> {
-    const geminiApiKey = process.env.GEMINI_API_KEY;
-    if (geminiApiKey) {
-      return this.callGemini(prompt, geminiApiKey);
+  public async callLLM(prompt: string): Promise<string> {
+    if (this.apiEndpoint === 'google') {
+      return this.callGemini(prompt, this.apiKey);
     }
 
     const response = await fetch(this.apiEndpoint, {
@@ -288,8 +335,8 @@ JSON; // End of prompt - ensure valid JSON output only`;
   /**
    * Call Google Gemini API
    */
-  private async callGemini(prompt: string, apiKey: string): Promise<string> {
-    let model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
+  public async callGemini(prompt: string, apiKey: string): Promise<string> {
+    let model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const body = JSON.stringify({
@@ -299,7 +346,7 @@ JSON; // End of prompt - ensure valid JSON output only`;
       }],
       generationConfig: {
         temperature: 0.1,
-        maxOutputTokens: 1000,
+        maxOutputTokens: 2048,
         response_mime_type: 'application/json',
       },
     });
@@ -311,9 +358,14 @@ JSON; // End of prompt - ensure valid JSON output only`;
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error('[Gemini] AI Processing Error:', response.status, error);
-      throw new Error(`Gemini API error: ${response.status} ${error}`);
+      const errorText = await response.text();
+      let errorDetail = errorText;
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorDetail = JSON.stringify(errorJson, null, 2);
+      } catch (e) { }
+      console.error(`[Gemini] FULL ERROR for ${model}:`, errorDetail);
+      throw new Error(`Gemini API error ${response.status}: ${errorDetail}`);
     }
 
     const data = await response.json() as any;
@@ -1453,3 +1505,4 @@ RESPOND IN JSON ONLY:
 }
 
 export const aiProcessingService = new AIProcessingService();
+export default aiProcessingService;

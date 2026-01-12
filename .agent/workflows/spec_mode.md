@@ -10,6 +10,10 @@ description: Strict Spec-Driven Development Workflow (Required for all tasks)
 1.  Analyze the user request.
 2.  Create/Update `implementation_plan.md` with:
     *   **Goal Description**
+    *   **Feature Wiring & Logic Mapping**:
+        *   **UI > Backend Mapping**: For every button/input, explicitly state which backend service/endpoint it triggers.
+        *   **2nd/3rd Order Effects**: List side effects (e.g., Notifications, Calendar sync, database updates).
+        *   **Connectivity Check**: Ask "What happens when I click this? Is it fully wired?".
     *   **Requirements Specification**: Detailed breakdown of what is needed.
     *   **Invariants/Properties**: Logic rules that must hold true (for `fast-check` testing).
     *   **Proposed Changes**: High-level architectural changes.
@@ -18,8 +22,9 @@ description: Strict Spec-Driven Development Workflow (Required for all tasks)
 
 ## Phase 2: Task Planning
 1.  Once requirements are approved, create/update `task.md` with a granular checklist (15-20 items if needed).
-    *   Include **Property-Based Tests** steps.
-    *   Include **Regression Tests** steps.
+    *   Include **Property-Based Tests** steps (Required).
+    *   Include **Wiring Tasks**: Explicit steps to connect UI components to Backend logic.
+    *   Include **Regression Tests**: Verify the *connection* works.
     *   Include **Implementation** steps.
 2.  **STOP**. Call `notify_user` to request approval for the Task Plan.
 3.  *Do not proceed until the user says "Approve".*
@@ -31,6 +36,9 @@ description: Strict Spec-Driven Development Workflow (Required for all tasks)
     *   Implement code.
     *   Verify locally.
 3.  **Mandatory Property Testing**:
-    *   Once implementation is complete, you MUST build/run Property Tests (`fast-check`) to verify invariants if not already done.
-    *   **Change Rule**: Any subsequent changes to the feature REQUIRE a new set of property tests or updates to existing ones to verify the new behavior.
-4.  Final Verification & Notification.
+    *   **Strict Enforcement**: You MUST build and run Property Tests (`fast-check`) to verify invariants.
+    *   **Show Proof**: You must show the output of the passing property tests.
+    *   **Change Rule**: Any feature update REQUIRES new or updated property tests.
+4.  **Final Connectivity Verification**:
+    *   Verify that buttons actually trigger the intended backend logic (Integration/E2E check).
+5.  Final Verification & Notification.

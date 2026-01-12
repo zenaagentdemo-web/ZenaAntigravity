@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
     X,
@@ -56,7 +56,8 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                 listingPrice: initialData.listingPrice ? String(initialData.listingPrice) : '',
                 bedrooms: initialData.bedrooms || 3,
                 bathrooms: initialData.bathrooms || 2,
-                landSize: initialData.landSize ? String(initialData.landSize) : '',
+                landSize: initialData.landSize || '',
+                floorSize: initialData.floorSize || '',
                 description: initialData.description || '',
                 vendorFirstName: vendor?.name?.split(' ')[0] || '',
                 vendorLastName: vendor?.name?.split(' ').slice(1).join(' ') || '',
@@ -75,6 +76,7 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
             bedrooms: 3,
             bathrooms: 2,
             landSize: '',
+            floorSize: '',
             description: '',
             // Vendor fields
             vendorFirstName: '',
@@ -87,6 +89,18 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
         };
     });
 
+    // GLOBAL PROACTIVITY INVARIANT 1: Sync form when initialData changes
+    useEffect(() => {
+        if (initialData) {
+            setFormData(prev => ({
+                ...prev,
+                address: initialData.address || prev.address,
+                type: (initialData.type as PropertyType) || prev.type,
+                // Only override if provided in initialData
+            }));
+        }
+    }, [initialData]);
+
     if (!isOpen) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -98,7 +112,8 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                 type: formData.type,
                 status: formData.status,
                 listingPrice: formData.listingPrice ? parseFloat(formData.listingPrice) : null,
-                landSize: formData.landSize ? parseFloat(formData.landSize) : null,
+                landSize: formData.landSize || null,
+                floorSize: formData.floorSize || null,
                 bedrooms: formData.bedrooms,
                 bathrooms: formData.bathrooms,
                 description: formData.description,
@@ -158,7 +173,8 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                 listingPrice: data.listingPrice ? String(data.listingPrice) : prev.listingPrice,
                 bedrooms: data.bedrooms || prev.bedrooms,
                 bathrooms: data.bathrooms || prev.bathrooms,
-                landSize: data.landSize ? String(data.landSize) : prev.landSize,
+                landSize: data.landSize || prev.landSize,
+                floorSize: data.floorSize || prev.floorSize,
                 description: data.description || prev.description,
                 // Vendor fields handling - updated to match backend structure
                 vendorFirstName: data.vendor?.firstName || prev.vendorFirstName,
@@ -184,6 +200,24 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                 <div className="apm-header">
                     <div className="apm-title">
                         <h2>{title}</h2>
+                        {initialData?.address && (
+                            <div className="zena-prefill-badge" style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(129, 140, 248, 0.1))',
+                                border: '1px solid rgba(56, 189, 248, 0.2)',
+                                borderRadius: '12px',
+                                padding: '4px 10px',
+                                fontSize: '11px',
+                                color: '#38bdf8',
+                                marginLeft: '12px',
+                                fontWeight: 500
+                            }}>
+                                <Sparkles size={12} />
+                                <span>Pre-filled from your search</span>
+                            </div>
+                        )}
                     </div>
                     <button className="apm-close-btn" onClick={onClose}>
                         <X size={20} />
@@ -307,13 +341,26 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                                     </div>
                                 </div>
                                 <div className="apm-field-group">
-                                    <label className="apm-label">Land Size (m²)</label>
+                                    <label className="apm-label">Floor Area (e.g. 180m²)</label>
                                     <div className="apm-input-wrapper">
                                         <Maximize size={16} className="apm-input-icon" />
                                         <input
-                                            type="number"
+                                            type="text"
                                             className="apm-input"
-                                            placeholder="e.g. 650"
+                                            placeholder="e.g. 180m²"
+                                            value={formData.floorSize}
+                                            onChange={e => setFormData({ ...formData, floorSize: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="apm-field-group">
+                                    <label className="apm-label">Land Area (e.g. 650m²)</label>
+                                    <div className="apm-input-wrapper">
+                                        <Maximize size={16} className="apm-input-icon" />
+                                        <input
+                                            type="text"
+                                            className="apm-input"
+                                            placeholder="e.g. 650m²"
                                             value={formData.landSize}
                                             onChange={e => setFormData({ ...formData, landSize: e.target.value })}
                                         />

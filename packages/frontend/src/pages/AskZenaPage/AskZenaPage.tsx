@@ -357,6 +357,23 @@ export const AskZenaPage: React.FC = () => {
     }
   }, []);
 
+  // NEW: Subscribe to interim agent messages (e.g. "Working on it...")
+  useEffect(() => {
+    const unsubscribe = realTimeDataService.onAgentMessage((payload) => {
+      console.log('[AskZena] Received interim agent message:', payload.message);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `agent-msg-${Date.now()}`,
+          role: 'assistant',
+          content: payload.message,
+          timestamp: new Date()
+        }
+      ]);
+    });
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     let unsubscribe: (() => void) | null = null;
     let unsubscribeUser: (() => void) | null = null;
