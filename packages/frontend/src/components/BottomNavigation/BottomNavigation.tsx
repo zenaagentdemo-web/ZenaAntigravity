@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { preloadRoute } from '../../hooks/useRoutePreloader';
+import { useGodmodeLogic } from '../../hooks/useGodmode';
 import './BottomNavigation.css';
 
 interface RippleState {
@@ -11,6 +12,7 @@ interface RippleState {
 
 export const BottomNavigation: React.FC = () => {
   const location = useLocation();
+  const { settings } = useGodmodeLogic();
   const [ripples, setRipples] = useState<{ [key: string]: RippleState[] }>({});
 
   const isActive = (path: string) => {
@@ -145,6 +147,10 @@ export const BottomNavigation: React.FC = () => {
                 className={`bottom-nav-ht__dealflow-orb ${active ? 'bottom-nav-ht__dealflow-orb--active' : ''}`}
                 aria-current={active ? 'page' : undefined}
                 aria-label="Go to Deal Flow"
+                style={
+                  settings.mode === 'demi_god' ? { color: '#A78BFA' } :
+                    settings.mode === 'full_god' ? { color: '#FCD34D' } : undefined
+                }
                 onMouseEnter={() => preloadRoute(item.path)}
                 onFocus={() => preloadRoute(item.path)}
                 onMouseDown={(e) => handleRipple(e, item.path)}
@@ -180,7 +186,15 @@ export const BottomNavigation: React.FC = () => {
               onTouchStart={(e) => handleRipple(e, item.path)}
             >
               {renderIcon(item.icon, active)}
-              <span className={`bottom-nav-ht__label ${active ? 'bottom-nav-ht__label--active' : ''}`}>
+              <span
+                className={`bottom-nav-ht__label ${active ? 'bottom-nav-ht__label--active' : ''}`}
+                style={
+                  (item.label === 'Properties' || item.label === 'Contacts') ? (
+                    settings.mode === 'demi_god' ? { color: '#A78BFA' } :
+                      settings.mode === 'full_god' ? { color: '#FCD34D' } : undefined
+                  ) : undefined
+                }
+              >
                 {item.label}
               </span>
               {/* Active glow indicator */}

@@ -60,4 +60,18 @@ router.post('/:id/tasks', (req, res) => dealsController.createTask(req, res));
 // GET /api/deals/:id/intelligence - Perform deep AI intelligence analysis on a deal
 router.get('/:id/intelligence', (req, res) => dealsController.analyzeDeal(req, res));
 
+// POST /api/deals/:id/offers - Record a formal offer
+router.post('/:id/offers', (req, res) => dealsController.recordOffer(req, res));
+
+// PUT /api/deals/:id/legal - Update legal details
+router.put('/:id/legal', (req, res) => dealsController.updateLegalDetails(req, res));
+
+// POST /api/deals/:id/deposit - Mark deposit as received
+router.get('/portfolio/summary', (req, res) => dealsController.summarizePortfolio(req, res));
+router.post('/:id/documents', (req, res) => dealsController.linkDocument(req, res));
+router.put('/:id/conditions/:condIndex/satisfy', (req, res) => dealsController.satisfyCondition(req, res));
+router.post('/:id/archive', (req, res) => dealsController.archiveDeal(req, res));
+router.post('/:id/deposit', (req, res) => dealsController.markDepositReceived(req, res));
+router.get('/:id/compare-offers', (req, res) => dealsController.compareOffers(req, res));
+
 export default router;

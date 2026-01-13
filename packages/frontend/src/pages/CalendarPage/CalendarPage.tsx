@@ -6,7 +6,11 @@ import { CalendarAppointment } from '../../components/CalendarWidget/CalendarWid
 import { ScheduleOpenHomeModal } from '../../components/ScheduleOpenHomeModal/ScheduleOpenHomeModal';
 import { CalendarMiniPicker } from '../../components/CalendarMiniPicker/CalendarMiniPicker';
 import { GodmodeToggle } from '../../components/GodmodeToggle/GodmodeToggle';
+import { useGodmode } from '../../hooks/useGodmode';
+import { ActionApprovalQueue } from '../../components/ActionApprovalQueue/ActionApprovalQueue';
 import { api } from '../../utils/apiClient';
+import { OptimiseProposalModal } from '../../components/CalendarOptimizationModal/OptimiseProposalModal';
+import { toast } from 'react-hot-toast';
 import './CalendarPage.css';
 
 interface Property {
@@ -25,6 +29,8 @@ export const CalendarPage: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [viewMode, setViewMode] = useState<'day' | 'week' | 'month'>('day');
+    const { pendingCount } = useGodmode();
+    const [isActionQueueOpen, setIsActionQueueOpen] = useState(false);
     const [appointments, setAppointments] = useState<CalendarAppointment[]>([]);
     const [properties, setProperties] = useState<Property[]>([]);
     const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
@@ -42,6 +48,10 @@ export const CalendarPage: React.FC = () => {
             console.error('Safe date formatting failed', e);
             return fallback;
         }
+    };
+
+    const sanitizeTitle = (title: string) => {
+        return title.replace(/\s*\/\s*Aotearoa/gi, '');
     };
 
     const navigateDate = (direction: number) => {
@@ -72,6 +82,11 @@ export const CalendarPage: React.FC = () => {
         actionLabel?: string;
         action?: () => void;
     }[]>([]);
+
+    // Optimise My Day State
+    const [isOptimiseModalOpen, setIsOptimiseModalOpen] = useState(false);
+    const [optimiseProposal, setOptimiseProposal] = useState(null);
+    const [isOptimising, setIsOptimising] = useState(false);
 
     // Parse URL params for AI suggestions
     useEffect(() => {
@@ -173,19 +188,16 @@ export const CalendarPage: React.FC = () => {
                 if (gapMinutes < 0) {
                     warnings.push({
                         id: `overlap-${current.id}-${next.id}`,
-                        message: `Schedule Conflict: ${next.title} starts before ${current.title} ends.`,
+                        message: `Schedule Conflict: ${sanitizeTitle(next.title)} starts before ${sanitizeTitle(current.title)} ends.`,
                         type: 'warning',
                         actionLabel: 'Reschedule',
-                        action: () => {
-                            const newTime = new Date(currentEndTime.getTime() + 30 * 60 * 1000); // Suggest 30 mins after current ends
-                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(next.location)}`, '_blank');
-                        }
+                        action: () => handleApptClick(next)
                     });
                 } else if (gapMinutes < 20) {
                     // Tight gap (0-20 mins)
                     warnings.push({
                         id: `travel-${current.id}-${next.id}`,
-                        message: `Tight Schedule: Only ${Math.round(gapMinutes)} mins travel time to ${next.title}. Traffic may cause delays.`,
+                        message: `Tight Schedule: Only ${Math.round(gapMinutes)} mins travel time to ${sanitizeTitle(next.title)}. Traffic may cause delays.`,
                         type: 'warning',
                         actionLabel: 'Optimize Route',
                         action: () => {
@@ -206,15 +218,16 @@ export const CalendarPage: React.FC = () => {
                 return {
                     id: t.id,
                     time: new Date(t.dueDate),
-                    title: t.label,
-                    location: property?.address || 'Personal Task',
+                    title: sanitizeTitle(t.label),
+                    location: sanitizeTitle(property?.address || 'Personal Task'),
                     property: property ? {
                         id: property.id,
-                        address: property.address,
+                        address: sanitizeTitle(property.address),
                         type: property.type
                     } : undefined,
                     type: t.label.toLowerCase().includes('call') ? 'call' : 'other',
-                    urgency: 'medium'
+                    urgency: 'medium',
+                    isTask: true
                 };
             });
     };
@@ -226,16 +239,17 @@ export const CalendarPage: React.FC = () => {
             return {
                 id: e.id,
                 time: new Date(e.timestamp),
-                title: e.summary,
-                location: property?.address || e.metadata?.location || '',
+                title: sanitizeTitle(e.summary),
+                location: sanitizeTitle(property?.address || e.metadata?.location || ''),
                 property: property ? {
                     id: property.id,
-                    address: property.address,
+                    address: sanitizeTitle(property.address),
                     type: property.type
                 } : undefined,
                 type: e.type === 'meeting' ? 'meeting' : 'other',
-                urgency: e.metadata?.urgency || 'low'
-            };
+                urgency: e.metadata?.urgency || 'low',
+                isTimelineEvent: true // Flag for deletion/update logic
+            } as any;
         });
     };
 
@@ -250,16 +264,18 @@ export const CalendarPage: React.FC = () => {
                         appts.push({
                             id: milestone.id,
                             time: date,
-                            title: formatTitle(milestone.type || milestone.title || 'Milestone', property.address),
-                            location: property.address,
+                            title: formatTitle(milestone.type || 'other', property.address, milestone.title),
+                            location: sanitizeTitle(property.address),
                             property: {
                                 id: property.id,
-                                address: property.address,
+                                address: sanitizeTitle(property.address),
                                 type: property.type
                             },
                             type: mapType(milestone.type || 'other'),
                             urgency: determineUrgency(milestone.type || 'low'),
-                        });
+                            isMilestone: true, // Flag for deletion/update logic
+                            notes: (milestone as any).notes
+                        } as any);
                     }
                 });
             }
@@ -268,14 +284,17 @@ export const CalendarPage: React.FC = () => {
         return appts.sort((a, b) => a.time.getTime() - b.time.getTime());
     };
 
-    const formatTitle = (type: string, address: string) => {
+    const formatTitle = (type: string, address: string, customTitle?: string) => {
+        if (customTitle) return `${customTitle}: ${sanitizeTitle(address)}`;
+
+        const cleanAddress = sanitizeTitle(address);
         switch (type) {
-            case 'open_home': return `Open Home: ${address}`;
-            case 'first_open': return `First Open Home: ${address}`;
-            case 'viewing': return `Private Viewing: ${address}`;
-            case 'auction': return `Auction: ${address}`;
-            case 'settlement': return `Settlement: ${address}`;
-            default: return `${type.charAt(0).toUpperCase() + type.slice(1)}: ${address}`;
+            case 'open_home': return `Open Home: ${cleanAddress}`;
+            case 'first_open': return `First Open Home: ${cleanAddress}`;
+            case 'viewing': return `Private Viewing: ${cleanAddress}`;
+            case 'auction': return `Auction: ${cleanAddress}`;
+            case 'settlement': return `Settlement: ${cleanAddress}`;
+            default: return `${type.charAt(0).toUpperCase() + type.slice(1)}: ${cleanAddress}`;
         }
     };
 
@@ -342,20 +361,91 @@ export const CalendarPage: React.FC = () => {
             id: appt.id,
             title: appt.title,
             date: appt.time.toISOString(),
-            notes: (appt as any).notes || '', // CalendarAppointment might need notes field
-            type: appt.type === 'viewing' ? 'viewing' : (appt.title.toLowerCase().includes('auction') ? 'auction' : 'open_home')
+            notes: (appt as any).notes || '',
+            type: appt.type === 'viewing' ? 'viewing' : (appt.title.toLowerCase().includes('auction') ? 'auction' : 'open_home'),
+            isTimelineEvent: (appt as any).isTimelineEvent,
+            isMilestone: (appt as any).isMilestone,
+            isTask: (appt as any).isTask
         });
         setIsScheduleModalOpen(true);
+        setIsScheduleModalOpen(true);
+    };
+
+    const handleOptimiseClick = async () => {
+        setIsOptimiseModalOpen(true);
+        setIsOptimising(true);
+        try {
+            const response = await api.post('/api/calendar-optimization/optimise', {
+                date: selectedAgendaDate || new Date(),
+                userId: 'user-123'
+            });
+
+            if (response.data.success) {
+                setOptimiseProposal(response.data.data);
+            } else {
+                toast.error('Could not generate optimization.');
+                setIsOptimiseModalOpen(false);
+            }
+        } catch (error) {
+            console.error('Optimise error:', error);
+            toast.error('Failed to optimise schedule.');
+            setIsOptimiseModalOpen(false);
+        } finally {
+            setIsOptimising(false);
+        }
+    };
+
+    const handleApplyOptimisation = async () => {
+        if (!optimiseProposal) return;
+
+        // Use local loading state to prevent UI flash or use distinct state if desired
+        // reusing isOptimising will verify if Modal handles it gracefully (it shows fulllscreen loader)
+        setIsOptimising(true);
+
+        try {
+            await api.post('/api/calendar-optimization/apply', {
+                userId: 'user-123',
+                schedule: (optimiseProposal as any).proposedSchedule
+            });
+
+            toast.success("Schedule optimised and saved successfully!");
+            setIsOptimiseModalOpen(false);
+            loadData();
+        } catch (error) {
+            console.error('Failed to apply schedule:', error);
+            toast.error("Failed to save schedule changes.");
+        } finally {
+            setIsOptimising(false);
+        }
     };
 
     return (
         <div className="calendar-page">
             <header className="calendar-page__header">
-                <button className="back-button" onClick={() => navigate(-1)}>
-                    ← Back
-                </button>
-                <div className="calendar-header-main">
-                    <h1 className="calendar-page__title">Your Schedule</h1>
+                {/* Top Row: Back, Title, Nav, Godmode Controls */}
+                <div className="calendar-header-top-row">
+                    <button className="back-button" onClick={() => navigate(-1)}>
+                        ← Back
+                    </button>
+                    <div className="calendar-header-main">
+                        <h1 className="calendar-page__title">Your Schedule</h1>
+                    </div>
+
+                    <div className="calendar-page__godmode-controls">
+                        <GodmodeToggle compact />
+                        {pendingCount > 0 && (
+                            <button
+                                className="calendar-page__pending-actions-btn"
+                                onClick={() => setIsActionQueueOpen(true)}
+                            >
+                                ⚡ {pendingCount} Pending Actions
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Bottom Row: Nav Controls (Left) and View Toggles (Right) */}
+                <div className="calendar-header-bottom-row">
                     <div className="calendar-nav-controls">
                         <button className="nav-btn" onClick={() => navigateDate(-1)}><ChevronLeft size={20} /></button>
                         <span className="current-date-display">
@@ -368,55 +458,53 @@ export const CalendarPage: React.FC = () => {
                         </span>
                         <button className="nav-btn" onClick={() => navigateDate(1)}><ChevronRight size={20} /></button>
                     </div>
-                </div>
-                <div className="calendar-page__godmode-area">
-                    <GodmodeToggle compact />
-                </div>
-                <div className="calendar-view-toggles">
-                    <button
-                        className="view-toggle today-btn"
-                        onClick={() => {
-                            const today = new Date();
-                            setSelectedAgendaDate(today);
-                            setViewMode('day');
-                            const todayKey = today.toISOString().split('T')[0];
-                            const element = document.getElementById(todayKey);
-                            if (element) {
-                                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }
-                        }}
-                    >
-                        Today
-                    </button>
-                    <button
-                        className={`view-toggle ${viewMode === 'day' ? 'active' : ''}`}
-                        onClick={() => setViewMode('day')}
-                    >
-                        Day
-                    </button>
-                    <button
-                        className={`view-toggle ${viewMode === 'week' ? 'active' : ''}`}
-                        onClick={() => setViewMode('week')}
-                    >
-                        Week
-                    </button>
-                    <button
-                        className={`view-toggle ${viewMode === 'month' ? 'active' : ''}`}
-                        onClick={() => setViewMode('month')}
-                    >
-                        Month
-                    </button>
-                    <div className="header-separator" style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)', margin: '0 8px' }}></div>
-                    <button
-                        className="calendar-page__add-btn"
-                        onClick={() => {
-                            setSelectedPropertyId('');
-                            setIsScheduleModalOpen(true);
-                        }}
-                    >
-                        <Plus size={18} />
-                        <span>Add Appointment</span>
-                    </button>
+
+                    <div className="calendar-view-toggles">
+                        <button
+                            className="view-toggle today-btn"
+                            onClick={() => {
+                                const today = new Date();
+                                setSelectedAgendaDate(today);
+                                setViewMode('day');
+                                const todayKey = today.toISOString().split('T')[0];
+                                const element = document.getElementById(todayKey);
+                                if (element) {
+                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                            }}
+                        >
+                            Today
+                        </button>
+                        <button
+                            className={`view-toggle ${viewMode === 'day' ? 'active' : ''}`}
+                            onClick={() => setViewMode('day')}
+                        >
+                            Day
+                        </button>
+                        <button
+                            className={`view-toggle ${viewMode === 'week' ? 'active' : ''}`}
+                            onClick={() => setViewMode('week')}
+                        >
+                            Week
+                        </button>
+                        <button
+                            className={`view-toggle ${viewMode === 'month' ? 'active' : ''}`}
+                            onClick={() => setViewMode('month')}
+                        >
+                            Month
+                        </button>
+                        <div className="header-separator" style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)', margin: '0 8px' }}></div>
+                        <button
+                            className="calendar-page__add-btn"
+                            onClick={() => {
+                                setSelectedPropertyId('');
+                                setIsScheduleModalOpen(true);
+                            }}
+                        >
+                            <Plus size={18} />
+                            <span>Add Appointment</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -704,10 +792,20 @@ export const CalendarPage: React.FC = () => {
                             <span className="suggestion-icon">💡</span>
                             <p>You have {appointments.filter(a => isValidDate(a.time) && a.time.toDateString() === new Date().toDateString()).length} events scheduled for today.</p>
                         </div>
-                        <button className="zena-action-btn">Optimize My Day</button>
+                        <button className="zena-action-btn" onClick={handleOptimiseClick} disabled={isOptimising}>
+                            {isOptimising ? 'Analysing...' : 'Optimise My Day'}
+                        </button>
                     </div>
                 </aside>
             </main>
+
+            <OptimiseProposalModal
+                isOpen={isOptimiseModalOpen}
+                onClose={() => setIsOptimiseModalOpen(false)}
+                onApply={handleApplyOptimisation}
+                proposal={optimiseProposal}
+                isLoading={isOptimising}
+            />
 
 
             {/* Removed FAB - Moved to Header */}
@@ -723,6 +821,14 @@ export const CalendarPage: React.FC = () => {
                 milestone={selectedMilestone}
                 onSuccess={() => {
                     loadData(); // Refresh calendar
+                }}
+            />
+
+            <ActionApprovalQueue
+                isOpen={isActionQueueOpen}
+                onClose={() => setIsActionQueueOpen(false)}
+                onActionTaken={() => {
+                    loadData();
                 }}
             />
         </div>

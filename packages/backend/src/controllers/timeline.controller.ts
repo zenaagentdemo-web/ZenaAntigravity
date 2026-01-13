@@ -284,17 +284,18 @@ export async function updateEvent(req: Request, res: Response) {
     }
 
     const { id } = req.params;
-    const { summary, content, metadata } = req.body;
+    const { summary, content, metadata, timestamp } = req.body;
 
     // Validate that at least one field is being updated
-    if (summary === undefined && content === undefined && metadata === undefined) {
+    if (summary === undefined && content === undefined && metadata === undefined && timestamp === undefined) {
       return res.status(400).json({ error: 'No update fields provided' });
     }
 
     await timelineService.updateEvent(userId, id, {
       summary,
       content,
-      metadata
+      metadata,
+      timestamp: timestamp ? new Date(timestamp) : undefined
     });
 
     res.json({ message: 'Event updated successfully' });

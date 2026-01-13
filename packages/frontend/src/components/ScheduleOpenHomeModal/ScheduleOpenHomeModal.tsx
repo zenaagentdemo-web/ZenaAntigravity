@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { X, Calendar, Clock, MapPin, Check, ExternalLink } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, Check, ExternalLink, Trash2, Sparkles, ChevronRight } from 'lucide-react';
 import { api } from '../../utils/apiClient';
 import { ZenaDatePicker } from '../ZenaDatePicker/ZenaDatePicker';
 import { ZenaTimePicker } from '../ZenaTimePicker/ZenaTimePicker';
@@ -26,7 +26,16 @@ interface ScheduleOpenHomeModalProps {
         date: string;
         notes?: string;
         type: string;
+        isTimelineEvent?: boolean;
+        isMilestone?: boolean;
+        isTask?: boolean;
     };
+}
+
+interface RescheduleSuggestion {
+    date: string;
+    time: string;
+    reasoning: string;
 }
 
 export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
@@ -48,6 +57,11 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
     const [error, setError] = useState<string | null>(null);
     const [isPropertyLinked, setIsPropertyLinked] = useState(false);
 
+    // Rescheduling Suggestions State
+    const [suggestions, setSuggestions] = useState<RescheduleSuggestion[]>([]);
+    const [suggestionIndex, setSuggestionIndex] = useState(0);
+    const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+
 
     useEffect(() => {
         if (isOpen) {
@@ -60,6 +74,15 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                 setNotes(milestone.notes || '');
                 setType(milestone.type);
                 // If it's edit mode, initialProperty should be passed or we find it from allProperties
+                if (initialProperty) {
+                    setSelectedPropertyId(initialProperty.id);
+                    setIsPropertyLinked(true);
+                } else if (!selectedPropertyId && allProperties.length > 0) {
+                    // Try to find property if we have an ID but no object (fallback)
+                }
+
+                // Fetch suggestions for rescheduling
+                fetchRescheduleSuggestions(milestone.id, milestone.isMilestone ? 'milestone' : (milestone.isTask ? 'task' : 'timeline_event'));
             } else {
                 // Create mode
                 if (initialProperty) {
@@ -80,45 +103,104 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                 setDate(today);
                 setTime('13:00'); // Default 1pm
                 setNotes('');
+                setSuggestions([]);
             }
             setError(null);
         }
     }, [isOpen, initialProperty, allProperties, milestone]);
 
+    const fetchRescheduleSuggestions = async (id: string, entityType: 'milestone' | 'timeline_event' | 'task') => {
+        setIsLoadingSuggestions(true);
+        try {
+            const res = await api.get(`/api/calendar/events/${id}/reschedule-suggestions?entityType=${entityType}`);
+            if (res.data.suggestions && res.data.suggestions.length > 0) {
+                setSuggestions(res.data.suggestions);
+                setSuggestionIndex(0);
+
+                // Automatically apply first suggestion
+                const first = res.data.suggestions[0];
+                setDate(first.date);
+                setTime(first.time);
+            }
+        } catch (err) {
+            console.error('Failed to fetch reschedule suggestions:', err);
+        } finally {
+            setIsLoadingSuggestions(false);
+        }
+    };
+
+    const handleNextSuggestion = () => {
+        if (suggestions.length === 0) return;
+        const nextIndex = (suggestionIndex + 1) % suggestions.length;
+        setSuggestionIndex(nextIndex);
+        const suggestion = suggestions[nextIndex];
+        setDate(suggestion.date);
+        setTime(suggestion.time);
+    };
+
     if (!isOpen) return null;
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const performSave = async (overrideDate?: string, overrideTime?: string) => {
         setError(null);
         setIsSubmitting(true);
+
+        // If overrides are provided, update the relevant states so the UI reflects the change (optional but good practice)
+        if (overrideDate) {
+            const cleanDate = overrideDate.includes('T') ? overrideDate.split('T')[0] : overrideDate;
+            setDate(cleanDate);
+        }
+        if (overrideTime) setTime(overrideTime);
 
         try {
             if (isPropertyLinked && !selectedPropertyId) {
                 throw new Error('Please select a property to link');
             }
 
-            // Construct ISO date string from date and time
-            // date might be an ISO string if from ZenaDatePicker, or YYYY-MM-DD
-            const datePart = date.includes('T') ? date.split('T')[0] : date;
-            const datetime = new Date(`${datePart}T${time}:00`);
+            // Use provided values or current state
+            // Handle if date is already a full ISO string (ZenaDatePicker behavior)
+            const datePart = (overrideDate || date).includes('T') ? (overrideDate || date).split('T')[0] : (overrideDate || date);
+
+            // Handle if time is a full ISO string or just HH:mm
+            let timePart = overrideTime || time;
+            if (timePart.includes('T')) {
+                const dt = new Date(timePart);
+                timePart = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            }
+
+            console.log(`[ScheduleModal] performSave: datePart=${datePart}, timePart=${timePart}`);
+            const datetime = new Date(`${datePart}T${timePart}:00`);
 
             if (isNaN(datetime.getTime())) {
+                console.error(`[ScheduleModal] Invalid datetime: ${datePart}T${timePart}:00`);
                 throw new Error('Invalid date or time provided');
             }
 
-            if (selectedPropertyId && isPropertyLinked) {
-                // LINKED PROPERTY EVENT (MILESTONE)
-                if (milestone) {
-                    // Update existing milestone
-                    await api.put(`/api/properties/${selectedPropertyId}/milestones/${milestone.id}`, {
-                        type,
-                        title,
-                        date: datetime.toISOString(),
-                        notes
+            console.log(`[ScheduleModal] Saving event to ${datetime.toISOString()} (Local: ${datetime.toString()})`);
+
+            if (milestone) {
+                // EDIT MODE
+                console.log(`[ScheduleModal] Edit Mode: milestoneId=${milestone.id}, isTimelineEvent=${milestone.isTimelineEvent}`);
+                if (milestone.isTimelineEvent) {
+                    await api.put(`/api/timeline/${milestone.id}`, {
+                        summary: title,
+                        content: notes,
+                        timestamp: datetime.toISOString(),
+                        metadata: {
+                            endTime: new Date(datetime.getTime() + 60 * 60 * 1000).toISOString(),
+                            type: type,
+                            location: isPropertyLinked ? allProperties.find(p => p.id === selectedPropertyId)?.address : 'TBD'
+                        }
+                    });
+                } else if (milestone.isTask) {
+                    await api.put(`/api/tasks/${milestone.id}`, {
+                        label: title,
+                        dueDate: datetime.toISOString(),
+                        propertyId: selectedPropertyId || undefined
                     });
                 } else {
-                    // Create new milestone
-                    await api.post(`/api/properties/${selectedPropertyId}/milestones`, {
+                    if (!selectedPropertyId) throw new Error('Property ID missing for milestone update');
+                    console.log(`[ScheduleModal] Updating milestone ${milestone.id} on property ${selectedPropertyId}`);
+                    await api.put(`/api/properties/${selectedPropertyId}/milestones/${milestone.id}`, {
                         type,
                         title,
                         date: datetime.toISOString(),
@@ -126,19 +208,29 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                     });
                 }
             } else {
-                // GENERIC TIMELINE EVENT
-                // Post to new /api/timeline/events endpoint
-                await api.post('/api/timeline/events', {
-                    summary: title,
-                    description: notes,
-                    startTime: datetime.toISOString(),
-                    endTime: new Date(datetime.getTime() + 60 * 60 * 1000).toISOString(), // Default 1h duration
-                    type: type === 'open_home' ? 'meeting' : type, // Map 'open_home' to 'meeting' if generic
-                    location: isPropertyLinked ? allProperties.find(p => p.id === selectedPropertyId)?.address : 'TBD',
-                    propertyId: isPropertyLinked ? selectedPropertyId : undefined
-                });
+                // CREATE MODE
+                console.log('[ScheduleModal] Create Mode');
+                if (selectedPropertyId && isPropertyLinked) {
+                    await api.post(`/api/properties/${selectedPropertyId}/milestones`, {
+                        type,
+                        title,
+                        date: datetime.toISOString(),
+                        notes
+                    });
+                } else {
+                    await api.post('/api/timeline/events', {
+                        summary: title,
+                        description: notes,
+                        startTime: datetime.toISOString(),
+                        endTime: new Date(datetime.getTime() + 60 * 60 * 1000).toISOString(),
+                        type: type === 'open_home' ? 'meeting' : type,
+                        location: isPropertyLinked ? allProperties.find(p => p.id === selectedPropertyId)?.address : 'TBD',
+                        propertyId: isPropertyLinked ? selectedPropertyId : undefined
+                    });
+                }
             }
 
+            console.log('[ScheduleModal] Save successful, refreshing data...');
             onSuccess();
             onClose();
         } catch (err: any) {
@@ -149,19 +241,32 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
         }
     };
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await performSave();
+    };
+
     const handleDelete = async () => {
-        if (!milestone || !selectedPropertyId) return;
+        if (!milestone) return;
 
         if (!window.confirm('Are you sure you want to delete this event?')) return;
 
         setIsSubmitting(true);
         try {
-            await api.delete(`/api/properties/${selectedPropertyId}/milestones/${milestone.id}`);
+            if (milestone.isTimelineEvent) {
+                await api.delete(`/api/timeline/${milestone.id}`);
+            } else if (milestone.isTask) {
+                await api.delete(`/api/tasks/${milestone.id}`);
+            } else if (selectedPropertyId) {
+                await api.delete(`/api/properties/${selectedPropertyId}/milestones/${milestone.id}`);
+            } else {
+                throw new Error('Could not determine how to delete this event');
+            }
             onSuccess();
             onClose();
         } catch (err: any) {
-            console.error('Failed to delete milestone:', err);
-            setError(err.response?.data?.error?.message || err.message || 'Failed to delete milestone');
+            console.error('Failed to delete event:', err);
+            setError(err.response?.data?.error?.message || err.message || 'Failed to delete event');
         } finally {
             setIsSubmitting(false);
         }
@@ -187,6 +292,60 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                         <div className="error-message">
                             <X size={16} />
                             {error}
+                        </div>
+                    )}
+
+                    {/* AI RESCHEDULING SUGGESTIONS */}
+                    {milestone && (
+                        <div className="ai-reschedule-banner">
+                            <div className="ai-reschedule-info">
+                                <div className="ai-badge">
+                                    <Sparkles size={14} />
+                                    <span>Zena Intelligence</span>
+                                </div>
+                                {isLoadingSuggestions ? (
+                                    <p className="ai-message">Finding best time for you...</p>
+                                ) : suggestions.length > 0 ? (
+                                    <div className="ai-suggestion-body">
+                                        <div className="suggested-slot-direct">
+                                            <div className="slot-item">
+                                                <Calendar size={14} />
+                                                <span>{new Date(suggestions[suggestionIndex].date).toLocaleDateString('en-NZ', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
+                                            </div>
+                                            <div className="slot-item">
+                                                <Clock size={14} />
+                                                <span>{suggestions[suggestionIndex].time}</span>
+                                            </div>
+                                        </div>
+                                        <p className="ai-message">
+                                            {suggestions[suggestionIndex].reasoning}
+                                        </p>
+                                        <div className="ai-actions">
+                                            <button
+                                                type="button"
+                                                className="accept-suggestion-btn"
+                                                onClick={() => {
+                                                    const suggestion = suggestions[suggestionIndex];
+                                                    performSave(suggestion.date, suggestion.time);
+                                                }}
+                                            >
+                                                <Check size={16} />
+                                                Reschedule to this time
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="next-suggestion-btn"
+                                                onClick={handleNextSuggestion}
+                                            >
+                                                Next suggested time
+                                                <ChevronRight size={14} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <p className="ai-message">I'm ready to help you reschedule if needed.</p>
+                                )}
+                            </div>
                         </div>
                     )}
 
@@ -342,7 +501,9 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                                 className="delete-btn"
                                 onClick={handleDelete}
                                 disabled={isSubmitting}
+                                title="Delete Event"
                             >
+                                <Trash2 size={18} />
                                 Delete
                             </button>
                         )}
@@ -385,8 +546,8 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>,
+            </div >
+        </div >,
         document.body
     );
 };

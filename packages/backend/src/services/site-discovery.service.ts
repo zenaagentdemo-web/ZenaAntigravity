@@ -293,73 +293,59 @@ class SiteDiscoveryService {
         const screenshotBase64 = screenshotBuffer.toString('base64');
 
         // Analyze with Gemini Vision
-        const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview' });
-
-        const prompt = `Analyze this web application screenshot and identify:
-
-1. **Navigation Elements**: All menu items, nav links, and navigation buttons
-2. **Search Capabilities**: Search bars, filter options, search buttons
-3. **Forms**: Any input forms with their fields
-4. **Action Buttons**: Important buttons (Submit, Search, Apply, etc.)
-5. **Data Display Areas**: Tables, lists, cards that show data
-6. **Key Interactive Elements**: Dropdowns, checkboxes, toggles
-
-Return a JSON object with this structure:
-{
-  "navigation": ["array of navigation item labels"],
-  "searchElements": [
-    { "type": "search_bar" | "filter" | "dropdown", "label": "string", "approximateLocation": "top/center/sidebar/etc" }
-  ],
-  "forms": [
-    { "name": "form purpose", "fields": ["field labels"] }
-  ],
-  "actionButtons": [
-    { "label": "button text", "purpose": "what it does" }
-  ],
-  "dataAreas": [
-    { "type": "table" | "list" | "cards", "description": "what data it shows" }
-  ],
-  "pageType": "search" | "listing" | "detail" | "form" | "dashboard" | "other"
-}
-
-Only return valid JSON, no markdown formatting.`;
-
+        const modelsToTry = ['gemini-3-flash-preview', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+        let lastError: any = null;
         try {
-            const result = await model.generateContent([
-                { text: prompt },
-                {
-                    inlineData: {
-                        mimeType: 'image/png',
-                        data: screenshotBase64
+            for (const modelName of modelsToTry) {
+                try {
+                    console.log(`[SiteDiscovery] Attempting analysis with model: ${modelName}`);
+                    const model = genAI.getGenerativeModel({ model: modelName });
+
+                    const result = await model.generateContent([
+                        { text: prompt },
+                        {
+                            inlineData: {
+                                mimeType: 'image/png',
+                                data: screenshotBase64
+                            }
+                        }
+                    ]);
+
+                    const responseText = result.response.text();
+                    // Clean the response - remove markdown code blocks if present
+                    const cleanJson = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+                    let analysis;
+                    try {
+                        analysis = JSON.parse(cleanJson);
+                    } catch (parseError) {
+                        console.error('[SiteDiscovery] Failed to parse vision response:', cleanJson);
+                        analysis = { navigation: [], searchElements: [], forms: [], actionButtons: [], dataAreas: [], pageType: 'other' };
                     }
+
+                    console.log(`[SiteDiscovery] Vision analysis complete - Type: ${analysis.pageType}`);
+
+                    // Convert analysis to PageMap
+                    return {
+                        url,
+                        title,
+                        screenshotPath,
+                        elements: this.convertAnalysisToElements(analysis),
+                        navigation: analysis.navigation || [],
+                        forms: (analysis.forms || []).map((f: any) => ({ name: f.name, fields: f.fields || [] })),
+                        searchCapabilities: (analysis.searchElements || []).map((s: any) => `${s.type}: ${s.label}`),
+                        dataDisplayAreas: (analysis.dataAreas || []).map((d: any) => `${d.type}: ${d.description}`)
+                    };
+                } catch (err: any) {
+                    lastError = err;
+                    if (err.status === 403 || err.status === 404 || (err.message && (err.message.includes('403') || err.message.includes('Forbidden')))) {
+                        console.warn(`[SiteDiscovery] Vision model ${modelName} failed with ${err.status || 'Forbidden'}. Retrying...`);
+                        continue;
+                    }
+                    throw err;
                 }
-            ]);
-
-            const responseText = result.response.text();
-            // Clean the response - remove markdown code blocks if present
-            const cleanJson = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
-            let analysis;
-            try {
-                analysis = JSON.parse(cleanJson);
-            } catch (parseError) {
-                console.error('[SiteDiscovery] Failed to parse vision response:', cleanJson);
-                analysis = { navigation: [], searchElements: [], forms: [], actionButtons: [], dataAreas: [], pageType: 'other' };
             }
-
-            console.log(`[SiteDiscovery] Vision analysis complete - Type: ${analysis.pageType}`);
-
-            // Convert analysis to PageMap
-            return {
-                url,
-                title,
-                screenshotPath,
-                elements: this.convertAnalysisToElements(analysis),
-                navigation: analysis.navigation || [],
-                forms: (analysis.forms || []).map((f: any) => ({ name: f.name, fields: f.fields || [] })),
-                searchCapabilities: (analysis.searchElements || []).map((s: any) => `${s.type}: ${s.label}`),
-                dataDisplayAreas: (analysis.dataAreas || []).map((d: any) => `${d.type}: ${d.description}`)
-            };
+            throw lastError;
 
         } catch (visionError: any) {
             console.error('[SiteDiscovery] Vision analysis failed:', visionError.message);

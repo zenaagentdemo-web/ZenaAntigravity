@@ -23,16 +23,39 @@ export interface MorningBriefContact {
     linkedPropertyAddress?: string;
 }
 
+export interface MorningBriefEmail {
+    threadId: string;
+    sender: string;
+    subject: string;
+    summary: string;
+    receivedAt: string;
+    suggestedAction: string;
+    draftSnippet?: string;
+}
+
+export interface AwaitingReply {
+    contactId: string;
+    contactName: string;
+    lastEmailSentAt: string;
+    subject: string;
+    suggestedFollowUp: string;
+}
+
 export interface MorningBrief {
     date: string;
     priorityContacts: MorningBriefContact[];
+    unreadEmails: MorningBriefEmail[];
+    awaitingReplies: AwaitingReply[];
+    tasksDueToday: any[];
+    dealEvents: any[]; // New: Auctions, settlements, conditions
     stats: {
         totalPriorityContacts: number;
         overdueTasks: number;
         nurtureTouchesDue: number;
         atRiskDeals: number;
+        unreadEmails: number;
     };
-    calendarSummary: string[];
+    calendarSummary: any[]; // Full objects including title, time, location
     aiGreeting: string;
 }
 
@@ -51,18 +74,26 @@ export class MorningBriefService {
         // Gather all priority signals in parallel
         const [
             overdueTasks,
+            tasksDueToday,
             nurtureTouches,
             highRiskContacts,
             highIntentContacts,
             staleContacts,
-            todayCalendar
+            todayCalendar,
+            unreadEmails,
+            awaitingReplies,
+            dealEvents
         ] = await Promise.all([
             this.getOverdueTaskContacts(userId),
+            this.getTasksDueToday(userId),
             this.getNurtureTouchesDue(userId),
             this.getHighChurnRiskContacts(userId),
             this.getHighIntentContacts(userId),
             this.getStaleContacts(userId),
-            this.getTodayCalendarEvents(userId, today, endOfDay)
+            this.getTodayCalendarEvents(userId, today, endOfDay),
+            this.getUnreadEmails(userId),
+            this.getAwaitingReplies(userId),
+            this.getDealEventTriggers(userId)
         ]);
 
         // Score and deduplicate contacts
@@ -169,19 +200,25 @@ export class MorningBriefService {
         const aiGreeting = await this.generateGreeting(
             priorityContacts.length,
             todayCalendar.length,
-            overdueTasks.length
+            overdueTasks.length + tasksDueToday.length,
+            unreadEmails.length
         );
 
         const brief: MorningBrief = {
             date: today.toISOString().split('T')[0],
             priorityContacts,
+            unreadEmails,
+            awaitingReplies,
+            tasksDueToday,
+            dealEvents,
             stats: {
                 totalPriorityContacts: priorityContacts.length,
                 overdueTasks: overdueTasks.length,
                 nurtureTouchesDue: nurtureTouches.length,
-                atRiskDeals: highRiskContacts.length
+                atRiskDeals: highRiskContacts.length,
+                unreadEmails: unreadEmails.length
             },
-            calendarSummary: todayCalendar.map(e => e.summary),
+            calendarSummary: todayCalendar,
             aiGreeting
         };
 
@@ -345,7 +382,7 @@ export class MorningBriefService {
     }
 
     /**
-     * Get today's calendar events
+     * Get today's calendar events (ALL events)
      */
     private async getTodayCalendarEvents(userId: string, start: Date, end: Date): Promise<any[]> {
         return prisma.timelineEvent.findMany({
@@ -354,7 +391,226 @@ export class MorningBriefService {
                 entityType: 'calendar_event',
                 timestamp: { gte: start, lte: end }
             },
+            select: {
+                summary: true,
+                timestamp: true,
+                content: true,
+                metadata: true
+            },
             orderBy: { timestamp: 'asc' }
+        });
+    }
+
+    /**
+     * Get critical deal flow triggers for today
+     */
+    private async getDealEventTriggers(userId: string): Promise<any[]> {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+
+        // Fetch deals with key dates today
+        const deals = await prisma.deal.findMany({
+            where: {
+                userId,
+                OR: [
+                    { auctionDate: { gte: startOfToday, lte: endOfToday } },
+                    { settlementDate: { gte: startOfToday, lte: endOfToday } },
+                    { tenderCloseDate: { gte: startOfToday, lte: endOfToday } },
+                    { goLiveDate: { gte: startOfToday, lte: endOfToday } }
+                ]
+            },
+            include: { property: true }
+        });
+
+        const events: any[] = [];
+        for (const deal of deals) {
+            if (deal.auctionDate && deal.auctionDate >= startOfToday && deal.auctionDate <= endOfToday) {
+                events.push({ type: 'auction', label: 'Auction', address: deal.property?.address, date: deal.auctionDate });
+            }
+            if (deal.settlementDate && deal.settlementDate >= startOfToday && deal.settlementDate <= endOfToday) {
+                events.push({ type: 'settlement', label: 'Settlement', address: deal.property?.address, date: deal.settlementDate });
+            }
+            if (deal.tenderCloseDate && deal.tenderCloseDate >= startOfToday && deal.tenderCloseDate <= endOfToday) {
+                events.push({ type: 'tender', label: 'Tender Close', address: deal.property?.address, date: deal.tenderCloseDate });
+            }
+            if (deal.goLiveDate && deal.goLiveDate >= startOfToday && deal.goLiveDate <= endOfToday) {
+                events.push({ type: 'go_live', label: 'Marketing Go-Live', address: deal.property?.address, date: deal.goLiveDate });
+            }
+        }
+
+        // Check for conditions due today
+        const dealsWithConditions = await prisma.deal.findMany({
+            where: {
+                userId,
+                stage: { notIn: ['settled', 'nurture'] }
+            },
+            include: { property: true }
+        });
+
+        for (const deal of dealsWithConditions) {
+            if (deal.conditions) {
+                const conditions = deal.conditions as any[];
+                for (const cond of conditions) {
+                    if (cond.dueDate && !cond.satisfied) {
+                        const dueDate = new Date(cond.dueDate);
+                        if (dueDate >= startOfToday && dueDate <= endOfToday) {
+                            events.push({
+                                type: 'condition',
+                                label: `Condition Due: ${cond.label || cond.title}`,
+                                address: deal.property?.address,
+                                date: dueDate
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        return events;
+    }
+
+    /**
+     * Get unread focus emails
+     */
+    private async getUnreadEmails(userId: string): Promise<MorningBriefEmail[]> {
+        const threads = await prisma.thread.findMany({
+            where: {
+                userId,
+                category: 'focus',
+                OR: [
+                    { lastReplyAt: null },
+                    { lastMessageAt: { gt: prisma.thread.fields.lastReplyAt } }
+                ]
+            },
+            include: {
+                messages: {
+                    orderBy: { sentAt: 'desc' },
+                    take: 1
+                }
+            },
+            take: 5
+        });
+
+        const result: MorningBriefEmail[] = [];
+        for (const thread of threads) {
+            const latestMessage = thread.messages[0];
+            if (latestMessage && !latestMessage.isFromUser) {
+                // Generate suggested action and draft via AI
+                const prompt = `You are Zena, an elite Real Estate Chief of Staff. Analyze this unread email and provide:
+1. A 1-sentence summary.
+2. The recommended next action.
+3. A brief draft response (1-2 sentences).
+
+EMAIL:
+From: ${JSON.stringify(latestMessage.from)}
+Subject: ${thread.subject}
+Body: ${latestMessage.body.substring(0, 500)}
+
+Respond with JSON:
+{
+  "summary": "...",
+  "suggestedAction": "...",
+  "draftSnippet": "..."
+}`;
+
+                try {
+                    const aiResult = await askZenaService.askBrain(prompt, { jsonMode: true });
+                    const parsed = JSON.parse(aiResult);
+                    // 🔥 ZENA INTEL: Persist the draft to the database so the user can "find" it in the UI
+                    await prisma.thread.update({
+                        where: { id: thread.id },
+                        data: { draftResponse: parsed.draftSnippet }
+                    });
+
+                    result.push({
+                        threadId: thread.id,
+                        sender: (latestMessage.from as any).name || (latestMessage.from as any).email || 'Unknown',
+                        subject: thread.subject,
+                        summary: parsed.summary,
+                        receivedAt: latestMessage.receivedAt.toISOString(),
+                        suggestedAction: parsed.suggestedAction,
+                        draftSnippet: parsed.draftSnippet
+                    });
+                } catch (e) {
+                    result.push({
+                        threadId: thread.id,
+                        sender: (latestMessage.from as any).name || 'Unknown',
+                        subject: thread.subject,
+                        summary: thread.summary,
+                        receivedAt: latestMessage.receivedAt.toISOString(),
+                        suggestedAction: 'Reply to client'
+                    });
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Get emails we sent but haven't received a reply for > 24h
+     */
+    private async getAwaitingReplies(userId: string): Promise<AwaitingReply[]> {
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+        const threads = await prisma.thread.findMany({
+            where: {
+                userId,
+                category: 'focus',
+                lastMessageAt: { lt: twentyFourHoursAgo },
+                messages: {
+                    some: {
+                        isFromUser: true,
+                        sentAt: { lt: twentyFourHoursAgo }
+                    }
+                }
+            },
+            include: {
+                messages: {
+                    orderBy: { sentAt: 'desc' },
+                    take: 1
+                }
+            },
+            take: 5
+        });
+
+        const result: AwaitingReply[] = [];
+        for (const thread of threads) {
+            const latestMessage = thread.messages[0];
+            if (latestMessage && latestMessage.isFromUser) {
+                // It's been > 24h since our last message and NO new message has arrived
+                result.push({
+                    contactId: '', // Would need to resolve contact from participants
+                    contactName: (thread.participants as any[])[0]?.name || 'Client',
+                    lastEmailSentAt: latestMessage.sentAt.toISOString(),
+                    subject: thread.subject,
+                    suggestedFollowUp: `Follow up on "${thread.subject}" (last sent ${Math.floor((Date.now() - latestMessage.sentAt.getTime()) / (1000 * 60 * 60 * 24))} days ago)`
+                });
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Get tasks due today
+     */
+    private async getTasksDueToday(userId: string): Promise<any[]> {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+
+        return prisma.task.findMany({
+            where: {
+                userId,
+                status: 'open',
+                dueDate: {
+                    gte: startOfToday,
+                    lte: endOfToday
+                }
+            },
+            orderBy: { dueDate: 'asc' }
         });
     }
 
@@ -411,19 +667,20 @@ Respond with JSON:
     private async generateGreeting(
         contactCount: number,
         meetingCount: number,
-        overdueCount: number
+        taskCount: number,
+        emailCount: number
     ): Promise<string> {
         const hour = new Date().getHours();
         const timeOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
 
-        if (overdueCount > 3) {
-            return `Good ${timeOfDay}! You've got ${overdueCount} overdue items—let's tackle them first.`;
+        if (emailCount > 0) {
+            return `Good ${timeOfDay}! You've got ${emailCount} new emails that need your attention. I've already drafted some replies for you.`;
+        } else if (taskCount > 3) {
+            return `Good ${timeOfDay}! Busy day with ${taskCount} tasks on your plate. Let's get through them.`;
         } else if (meetingCount > 2) {
-            return `Good ${timeOfDay}! Busy day ahead with ${meetingCount} meetings. Here's who to prioritise in between.`;
-        } else if (contactCount === 0) {
-            return `Good ${timeOfDay}! Your priority list is clear—great time to nurture your pipeline.`;
+            return `Good ${timeOfDay}! Packed schedule with ${meetingCount} meetings. I'll help you prep for each one.`;
         } else {
-            return `Good ${timeOfDay}! Here are your ${contactCount} priority contacts for today.`;
+            return `Good ${timeOfDay}! Everything looks under control. Here's a quick rundown for you.`;
         }
     }
 }

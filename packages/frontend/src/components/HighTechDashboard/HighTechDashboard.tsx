@@ -13,13 +13,14 @@ import { useNavigate } from 'react-router-dom';
 import { ZenaAvatarState } from '../ZenaAvatar/ZenaAvatar';
 import { HolographicAvatar } from '../HolographicAvatar/HolographicAvatar';
 import { FloatingMetricOrbs, MetricOrb } from '../FloatingMetricOrbs/FloatingMetricOrbs';
-
-import { QuickActionsCarousel, CarouselAction } from '../QuickActionsCarousel/QuickActionsCarousel';
+import { useGodmodeLogic } from '../../hooks/useGodmode';
+import './HighTechDashboard.css';
 import { AmbientBackground } from '../AmbientBackground/AmbientBackground';
 import { CalendarWidget, CalendarAppointment } from '../CalendarWidget/CalendarWidget';
 import { RecentActivityStream, ActivityItem } from '../RecentActivityStream/RecentActivityStream';
 import { NeuralBridgesWidget } from '../NeuralBridgesWidget/NeuralBridgesWidget';
 import { MorningBriefModal } from './MorningBriefModal';
+import { QuickActionsCarousel, CarouselAction } from '../QuickActionsCarousel/QuickActionsCarousel';
 
 import './HighTechDashboard.css';
 
@@ -91,6 +92,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
   testId = 'high-tech-dashboard',
 }) => {
   const navigate = useNavigate();
+  const { settings } = useGodmodeLogic();
   const [currentAiState, setCurrentAiState] = useState<ZenaAvatarState>(aiState);
   const [isBriefOpen, setIsBriefOpen] = useState(false);
 
@@ -143,7 +145,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
       id: 'tasks',
       label: 'Tasks',
       value: activeTasksCount,
-      color: 'green',
+      color: settings.mode === 'full_god' ? 'gold' : 'green',
       urgency: activeTasksCount > 5 ? 'medium' : 'low',
     },
   ];
@@ -169,7 +171,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
       label: 'Calendar',
       icon: '📅',
       iconImage: '/assets/icons/calendar-final.png',
-      color: 'magenta',
+      color: settings.mode === 'demi_god' ? 'purple' : settings.mode === 'full_god' ? 'gold' : 'magenta',
     },
     {
       id: 'add-deal',
@@ -334,7 +336,10 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
           <div className="high-tech-dashboard__quick-intel">
             <button
               className="intel-btn intel-btn--emails"
-              onClick={() => navigate(`/ask-zena?prompt=${encodeURIComponent("Triage my emails. Categorize by urgency, summarize important ones, and tell me which need immediate response.")}&mode=handsfree`)}
+              onClick={() => {
+                const prompt = encodeURIComponent("Let's triage my unread emails. I want the full breakdown using your super level intelligence. Brief me on each one, show me the drafts you've prepared, and let's get those subsequent actions like tasks and appointments sorted. I'm ready for some high-proactivity!");
+                navigate(`/ask-zena?mode=handsfree&prompt=${prompt}&context=triage_emails&t=${Date.now()}`);
+              }}
             >
               <img src="/assets/icons/triage-email-final.png" alt="" className="intel-btn__icon-img" />
               <span className="intel-btn__label">Triage Emails</span>
@@ -342,7 +347,10 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
 
             <button
               className="intel-btn intel-btn--brief"
-              onClick={() => navigate(`/ask-zena?prompt=${encodeURIComponent("Give me my morning brief. Include today's schedule, any urgent messages, and key tasks I need to focus on.")}&mode=handsfree`)}
+              onClick={() => {
+                const prompt = encodeURIComponent("Give me my morning brief. I want a high-energy, proactive update. Tell me about my new emails, at-risk deals, and today's priorities. I know you've already prepared some drafts for me—let's hear your plan!");
+                navigate(`/ask-zena?mode=handsfree&prompt=${prompt}&context=morning_brief&t=${Date.now()}`);
+              }}
             >
               <img src="/assets/icons/morning-brief-final.png" alt="" className="intel-btn__icon-img" />
               <span className="intel-btn__label">Morning Brief</span>

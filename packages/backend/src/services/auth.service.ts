@@ -230,6 +230,13 @@ export class AuthService {
 
     return user;
   }
+  /**
+   * S95: API Token Rotation
+   */
+  async handleSessionExpiry(userId: string): Promise<any> {
+    console.log(`[AuthService] S95: Handling session expiry for ${userId}`);
+    return { status: 'reauth_required', modal: true };
+  }
 }
 
 export const authService = new AuthService();

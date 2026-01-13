@@ -268,6 +268,40 @@ export class PortfolioIntelligenceService {
             deals: items
         })).filter(c => c.count > 1);
     }
+
+    /**
+     * Scan content for property mentions and link a contact as a buyer/vendor.
+     */
+    async linkContactToProperties(userId: string, contactId: string, content: string): Promise<void> {
+        logger.info(`[PortfolioIntel] Scanning note for property mentions: ${contactId}`);
+
+        // Fetch all properties for this user to match against
+        const properties = await prisma.property.findMany({
+            where: { userId }
+        });
+
+        const linkedPropertyIds: string[] = [];
+
+        for (const property of properties) {
+            // Simple heuristic match for address parts
+            const addressParts = property.address.split(',')[0].toLowerCase();
+            if (content.toLowerCase().includes(addressParts)) {
+                linkedPropertyIds.push(property.id);
+            }
+        }
+
+        if (linkedPropertyIds.length > 0) {
+            logger.info(`[PortfolioIntel] Linking contact ${contactId} to ${linkedPropertyIds.length} properties`);
+            await prisma.contact.update({
+                where: { id: contactId },
+                data: {
+                    buyerProperties: {
+                        connect: linkedPropertyIds.map(id => ({ id }))
+                    }
+                }
+            });
+        }
+    }
 }
 
 export const portfolioIntelligenceService = new PortfolioIntelligenceService();

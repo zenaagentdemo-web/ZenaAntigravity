@@ -273,6 +273,16 @@ const ThreadCardComponent: React.FC<ThreadCardProps> = ({
             </span>
           )}
 
+          {/* Draft Ready badge */}
+          {thread.draftResponse && (
+            <span
+              className="thread-card__draft-ready"
+              data-testid="draft-ready-badge"
+            >
+              Draft Prepared
+            </span>
+          )}
+
 
         </div>
 

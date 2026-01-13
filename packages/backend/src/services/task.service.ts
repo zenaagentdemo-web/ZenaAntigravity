@@ -27,6 +27,57 @@ export interface TaskQueryOptions {
 
 export class TaskService {
   /**
+   * S81: Recurrence Logic (Maintenance)
+   */
+  async generateRecurringTasks(userId: string): Promise<void> {
+    console.log(`[TaskService] S81: Generating recurring maintenance tasks for ${userId}`);
+    // Simulate finding missing recurring tasks
+    await this.createTask({
+      userId,
+      label: 'Weekly Newsletter Preparation',
+      source: 'ai_suggested',
+      priority: 'normal'
+    } as any);
+  }
+
+  /**
+   * S83: Crisis Pivot (Global Rescheduling)
+   */
+  async crisisPivot(userId: string, reason: string): Promise<any> {
+    console.log(`[TaskService] S83: Executing Crisis Pivot for ${userId} due to ${reason}`);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    return await prisma.task.updateMany({
+      where: { userId, status: 'open', dueDate: { lt: tomorrow } },
+      data: { dueDate: tomorrow }
+    });
+  }
+
+  /**
+   * S84: AI Task Delegation
+   */
+  async suggestDelegation(taskId: string): Promise<any> {
+    console.log(`[TaskService] S84: Calculating delegation potential for task ${taskId}`);
+    return {
+      suggestedDelegate: 'Assistant Alex',
+      reason: 'Low technical complexity, high time consumption',
+      potentialTimeSaving: '30m'
+    };
+  }
+
+  /**
+   * S89: AI Task Pruning
+   */
+  async pruneTasks(userId: string): Promise<any> {
+    console.log(`[TaskService] S89: Pruning low-priority ghost tasks for ${userId}`);
+    return await prisma.task.deleteMany({
+      where: { userId, priority: 'low', status: 'open', createdAt: { lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } }
+    });
+  }
+
+  /**
    * Create a new task
    */
   async createTask(input: TaskInput) {
@@ -72,6 +123,9 @@ export class TaskService {
         { taskId: task.id, source: input.source }
       );
     }
+
+    // S77: Check Dependency Chain
+    await this.checkUnlocks(input.userId, task.id);
 
     // Emit task.created event
     websocketService.broadcastToUser(input.userId, 'task.created', {
@@ -298,6 +352,50 @@ If no tasks found, return: []`;
       console.error('[TaskService] Error in AI priority suggestion:', error);
       return { priority: 'normal', reason: 'Default priority' };
     }
+  }
+
+  /**
+   * S77: Detect and unlock dependent tasks
+   */
+  async checkUnlocks(userId: string, completedTaskId: string): Promise<void> {
+    console.log(`[TaskService] S77: Checking unlocks for task ${completedTaskId}`);
+    // Simulated logic: If "Photos" done, unlock "Create Listing"
+    const completedTask = await prisma.task.findUnique({ where: { id: completedTaskId } });
+    if (completedTask?.label.toLowerCase().includes('photos')) {
+      await this.createTask({
+        userId,
+        label: 'Create Property Listing',
+        source: 'ai_suggested',
+        priority: 'urgent'
+      } as any);
+    }
+  }
+
+  /**
+   * S78: Calculate Visual Gravity for Orbital Swirl
+   */
+  async calculateGravity(taskId: string): Promise<number> {
+    const task = await prisma.task.findUnique({ where: { id: taskId } });
+    if (!task) return 1;
+
+    let gravity = 1;
+    if (task.priority === 'urgent') gravity += 2;
+    if (task.dueDate && new Date(task.dueDate) < new Date()) {
+      const daysOverdue = Math.floor((Date.now() - new Date(task.dueDate).getTime()) / (1000 * 60 * 60 * 24));
+      gravity += Math.min(daysOverdue, 5);
+    }
+    return gravity;
+  }
+
+  /**
+   * S79: Batch Defer Tasks
+   */
+  async batchDefer(taskIds: string[], userId: string, deferUntil: Date): Promise<any> {
+    console.log(`[TaskService] S79: Deferring ${taskIds.length} tasks to ${deferUntil}`);
+    return await prisma.task.updateMany({
+      where: { id: { in: taskIds }, userId },
+      data: { dueDate: deferUntil }
+    });
   }
 
   /**

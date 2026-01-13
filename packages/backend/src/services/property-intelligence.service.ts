@@ -1080,6 +1080,172 @@ SECURITY: NEVER mention underlying AI models (Gemini, GPT, OpenAI, Google) or Ze
 
         return allMatches.sort((a, b) => b.matchScore - a.matchScore).slice(0, 20);
     }
+    /**
+     * S17: Listing Copy Generation
+     * Uses LLM to generate high-conversion listing copy based on property attributes
+     */
+    async generateListingCopy(propertyId: string): Promise<{ copy: string; headline: string }> {
+        const property = await prisma.property.findUnique({ where: { id: propertyId } });
+        if (!property) throw new Error("Property not found");
+
+        const geminiApiKey = process.env.GEMINI_API_KEY;
+        if (!geminiApiKey) {
+            return {
+                headline: `Stunning ${property.bedrooms} Bed Family Home in ${property.address.split(',')[0]}`,
+                copy: `This beautiful ${property.type} property offers space, comfort, and style. Located at ${property.address}, it features ${property.bedrooms} bedrooms and ${property.bathrooms} bathrooms. Perfect for first-home buyers or savvy investors looking for prime real estate.`
+            };
+        }
+
+        const prompt = `You are a world-class real estate copywriter. Write high-conversion listing copy for this property.
+        
+ADDRESS: ${property.address}
+SPECS: ${property.bedrooms} beds, ${property.bathrooms} baths, ${property.type}
+PRICE: ${property.listingPrice ? `$${property.listingPrice.toLocaleString()}` : 'POA'}
+
+INSTRUCTIONS:
+1. Create a punchy, emotional headline (max 10 words).
+2. Write 3 paragraphs of benefits-led storytelling.
+3. Use aspirational language (e.g., "seamless indoor-outdoor flow", "gourmet kitchen").
+4. Respond in JSON: { "headline": "...", "copy": "..." }
+
+SECURITY: NEVER mention underlying AI models.`;
+
+        try {
+            const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        responseMimeType: 'application/json',
+                    }
+                })
+            });
+
+            const data = await response.json() as any;
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : { headline: '', copy: '' };
+
+            return {
+                headline: parsed.headline || 'Stunning Local Gem',
+                copy: parsed.copy || 'Contact for details.'
+            };
+        } catch (error) {
+            logger.error('[ZenaBrain] Listing copy generation error:', error);
+            return { headline: 'Beautiful Family Home', copy: 'Contact for details.' };
+        }
+    }
+
+    /**
+     * S18: Distance Risk (CMA Validation)
+     * Flags comparables that are too far (> 2km) from target
+     */
+    checkDistanceRisk(targetAddress: string, comparables: any[]): any[] {
+        return comparables.map(comp => {
+            const distance = typeof comp.distance === 'string' ? parseFloat(comp.distance.replace('km', '').trim()) : 0;
+            if (distance > 2.0) {
+                return {
+                    ...comp,
+                    risk: {
+                        level: 'High',
+                        message: `Distance Risk: This property is ${distance}km away. Market data may be less relevant.`
+                    }
+                };
+            }
+            return {
+                ...comp,
+                risk: null
+            };
+        });
+    }
+
+    /**
+     * S23: Timeline Forecast
+     * Predicts next milestones based on current property status and event history
+     */
+    predictMilestones(property: any, events: any[]): any[] {
+        const forecasts: any[] = [];
+
+        if (property.status === 'active') {
+            const firstOpen = events.find(e => e.summary && e.summary.includes('First Open'));
+            if (firstOpen) {
+                const date = new Date(firstOpen.timestamp);
+                date.setDate(date.getDate() + 21); // Heuristic: Auction approx 3 weeks after first open
+                forecasts.push({ type: 'Auction', date: date.toISOString(), confidence: 0.8 });
+            }
+        }
+        return forecasts;
+    }
+
+    /**
+     * S24: Price Bracket Alignment
+     * Suggests price bracket adjustments based on market trends and interest
+     */
+    calculatePriceBracket(property: any, marketAvg: number): { current: number; suggested: number; reason: string } {
+        const current = property.listingPrice || 0;
+        let suggested = current;
+        let reason = "Aligns with current market position.";
+
+        if (property.daysOnMarket > 30 && property.viewingCount < 5) {
+            suggested = current * 0.95;
+            reason = "Stale listing with low engagement. A 5% adjustment is suggested to enter a new buyer bracket.";
+        }
+        return { current, suggested, reason };
+    }
+
+    /**
+     * S25: Sentiment Map
+     * Analyzes sentiment of notes/threads linked to a property
+     */
+    calculateSentimentMap(events: any[]): { score: number; sentiment: 'Positive' | 'Neutral' | 'Negative' } {
+        const notes = events.filter(e => e.type === 'note' || e.type === 'message');
+        if (notes.length === 0) return { score: 50, sentiment: 'Neutral' };
+
+        let score = 50;
+        for (const note of notes) {
+            const content = (note.content || note.summary || '').toLowerCase();
+            if (content.includes('love') || content.includes('hot') || content.includes('offer')) score += 10;
+            if (content.includes('pricey') || content.includes('small') || content.includes('pass')) score -= 10;
+        }
+
+        score = Math.min(100, Math.max(0, score));
+        let sentiment: 'Positive' | 'Neutral' | 'Negative' = 'Neutral';
+        if (score >= 70) sentiment = 'Positive';
+        if (score < 40) sentiment = 'Negative';
+        return { score, sentiment };
+    }
+
+    /**
+     * S26: Multi-Unit Portfolio
+         * Aggregates intelligence for a list of properties
+         */
+    summarizePortfolio(properties: any[]): { totalValue: number; healthScore: number; riskCount: number } {
+        const totalValue = properties.reduce((sum, p) => sum + (p.listingPrice || 0), 0);
+        const healthScore = properties.length > 0 ? (properties.reduce((sum, p) => sum + (p.momentumScore || 50), 0) / properties.length) : 0;
+        const riskCount = properties.filter(p => (p.riskLevel === 'High' || p.riskLevel === 'Critical')).length;
+
+        return { totalValue, healthScore, riskCount };
+    }
+
+    /**
+     * S29: Appraisal Expire
+     * Checks if appraisal is older than 6 months
+     */
+    getAppraisalStatus(appraisalDate: string): { status: 'Current' | 'Expired' | 'ExpiringSoon'; message: string } {
+        if (!appraisalDate) return { status: 'Expired', message: 'No appraisal found' };
+
+        const date = new Date(appraisalDate);
+        const diffDays = (new Date().getTime() - date.getTime()) / (1000 * 3600 * 24);
+
+        if (diffDays > 180) return { status: 'Expired', message: 'Appraisal is over 180 days old.' };
+        if (diffDays > 150) return { status: 'ExpiringSoon', message: 'Appraisal expires in less than 30 days.' };
+        return { status: 'Current', message: 'Appraisal is valid.' };
+    }
 }
 
 export const propertyIntelligenceService = new PropertyIntelligenceService();

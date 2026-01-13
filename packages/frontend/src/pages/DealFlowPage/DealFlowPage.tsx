@@ -448,7 +448,7 @@ export const DealFlowPage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [pipelineType, deals]);
+    }, [pipelineType]);
 
     useEffect(() => {
         fetchPipeline();

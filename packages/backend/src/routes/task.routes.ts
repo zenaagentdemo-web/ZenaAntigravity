@@ -9,6 +9,12 @@ import {
   getOverdueTasks,
   reopenTask,
   detectCompletions,
+  getGravity,
+  batchDefer,
+  syncRecurring,
+  pivotTasks,
+  getDelegationSuggestion,
+  pruneTasks,
 } from '../controllers/task.controller.js';
 
 const router = Router();
@@ -37,8 +43,26 @@ router.put('/:id', updateTask);
 // Reopen a completed task (undo)
 router.patch('/:id/reopen', reopenTask);
 
+// Batch Defer
+router.post('/batch-defer', batchDefer);
+
+// Crisis Pivot
+router.post('/crisis-pivot', pivotTasks);
+
+// Recurring Sync
+router.post('/recurring-sync', syncRecurring);
+
 // Delete a task
 router.delete('/:id', deleteTask);
+
+// Orbital Gravity
+router.get('/:id/gravity', getGravity);
+
+// Delegation Suggestion
+router.get('/:id/delegate', getDelegationSuggestion);
+
+// Prune Tasks
+router.delete('/prune', pruneTasks);
 
 export default router;
 

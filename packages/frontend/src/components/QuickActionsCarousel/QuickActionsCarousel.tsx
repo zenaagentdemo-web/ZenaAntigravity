@@ -9,7 +9,7 @@
 import React, { useRef, useState, useCallback } from 'react';
 import './QuickActionsCarousel.css';
 
-export type ActionColor = 'cyan' | 'magenta' | 'purple' | 'green' | 'orange';
+export type ActionColor = 'cyan' | 'magenta' | 'purple' | 'green' | 'orange' | string;
 
 export interface CarouselAction {
   /** Unique identifier */

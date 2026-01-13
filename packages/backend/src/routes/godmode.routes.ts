@@ -11,11 +11,14 @@ import {
     getActionHistory,
     approveAction,
     dismissAction,
-    bulkApprove,
     suggestActions,
+    shiftPersona,
+    getAudit,
+    getCleanupSuggestions,
     triggerHeartbeat,
     seedMockActions,
     simulateStress,
+    bulkApprove,
 } from '../controllers/godmode.controller.js';
 
 const router = Router();
@@ -39,6 +42,9 @@ router.post('/bulk-approve', bulkApprove);
 
 // Suggestions
 router.post('/suggest/:contactId', suggestActions);
+router.post('/persona', shiftPersona);
+router.get('/audit', getAudit);
+router.get('/cleanup', getCleanupSuggestions);
 
 // Dev/Testing - Seed mock pending actions
 router.post('/seed-mock', seedMockActions);

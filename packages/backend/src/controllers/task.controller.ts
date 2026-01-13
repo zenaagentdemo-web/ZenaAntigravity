@@ -342,3 +342,89 @@ export async function detectCompletions(req: Request, res: Response) {
   }
 }
 
+/**
+ * GET /api/tasks/:id/gravity
+ * S78: Orbital Swirl Priority
+ */
+export async function getGravity(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const gravity = await taskService.calculateGravity(id);
+    res.json({ gravity });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed' });
+  }
+}
+
+/**
+ * POST /api/tasks/batch-defer
+ * S79: Batch Task Deference
+ */
+export async function batchDefer(req: Request, res: Response) {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { taskIds, deferUntil } = req.body;
+    const result = await taskService.batchDefer(taskIds, userId, new Date(deferUntil));
+    res.json({ success: true, count: result.count });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed' });
+  }
+}
+
+/**
+ * POST /api/tasks/recurring-sync
+ * S81: Recurring Logic
+ */
+export async function syncRecurring(req: Request, res: Response) {
+  try {
+    const userId = req.user?.userId || (req as any).user?.id;
+    await taskService.generateRecurringTasks(userId);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed' });
+  }
+}
+
+/**
+ * POST /api/tasks/crisis-pivot
+ * S83: Crisis Pivot
+ */
+export async function pivotTasks(req: Request, res: Response) {
+  try {
+    const userId = req.user?.userId || (req as any).user?.id;
+    const { reason } = req.body;
+    const result = await taskService.crisisPivot(userId, reason);
+    res.json({ success: true, count: result.count });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed' });
+  }
+}
+
+/**
+ * GET /api/tasks/:id/delegate
+ * S84: AI Delegation
+ */
+export async function getDelegationSuggestion(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const suggestion = await taskService.suggestDelegation(id);
+    res.json(suggestion);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed' });
+  }
+}
+/**
+ * DELETE /api/tasks/prune
+ * S89: AI Task Pruning
+ */
+export async function pruneTasks(req: Request, res: Response) {
+  try {
+    const userId = req.user?.userId || (req as any).user?.id;
+    const result = await taskService.pruneTasks(userId);
+    res.json({ success: true, count: result.count });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to prune tasks' });
+  }
+}

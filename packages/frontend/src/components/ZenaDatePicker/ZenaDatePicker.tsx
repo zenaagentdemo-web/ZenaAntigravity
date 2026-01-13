@@ -31,6 +31,19 @@ export const ZenaDatePicker: React.FC<ZenaDatePickerProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    // Sync state with props
+    useEffect(() => {
+        if (value) {
+            const newDate = new Date(value);
+            if (!isNaN(newDate.getTime())) {
+                setSelectedDate(newDate);
+                setCurrentDate(newDate);
+            }
+        } else {
+            setSelectedDate(null);
+        }
+    }, [value]);
+
     // Center the dropdown on the screen
     useEffect(() => {
         if (isOpen) {

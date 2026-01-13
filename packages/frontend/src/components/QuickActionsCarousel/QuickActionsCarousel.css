@@ -269,6 +269,35 @@
     inset 0 0 30px rgba(255, 107, 53, 0.2);
 }
 
+/* Gold */
+.carousel-action--gold {
+  border-color: var(--neon-gold-dim);
+}
+
+.carousel-action--gold .carousel-action__glow {
+  background: radial-gradient(ellipse at center, var(--neon-gold-dim) 0%, transparent 70%);
+}
+
+.carousel-action--gold:hover,
+.carousel-action--gold:focus-visible {
+  border-color: var(--neon-gold);
+  box-shadow:
+    0 0 20px var(--neon-gold-dim),
+    inset 0 0 20px rgba(252, 211, 77, 0.1);
+}
+
+.carousel-action--gold:hover .carousel-action__glow,
+.carousel-action--gold:focus-visible .carousel-action__glow {
+  opacity: 0.3;
+}
+
+.carousel-action--gold.carousel-action--active {
+  box-shadow:
+    0 0 30px var(--neon-gold),
+    0 0 60px var(--neon-gold-dim),
+    inset 0 0 30px rgba(252, 211, 77, 0.2);
+}
+
 /* ============================================
    Active State (Click Flash)
    ============================================ */

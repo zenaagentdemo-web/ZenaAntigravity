@@ -1,5 +1,6 @@
 // Export Prisma client
-export { default as prisma } from '../config/database.js';
+import prisma from '../config/database.js';
+export { prisma };
 
 // Export all types
 export * from './types.js';

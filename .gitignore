@@ -88,3 +88,6 @@ ngrok.log
 # local tooling / scratch
 brain/
 check_*.ts
+
+# Ignore large datasets
+/data/personality-datasets/

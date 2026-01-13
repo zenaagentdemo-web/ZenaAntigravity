@@ -234,4 +234,57 @@ describe('TasksPage Clickable Links (Property Tests)', () => {
             { numRuns: 5 }
         );
     }, 30000);
+    it('should render as non-clickable span and NOT navigate when ID is missing', async () => {
+        await fc.assert(
+            fc.asyncProperty(
+                fc.record({
+                    id: fc.uuid(),
+                    label: fc.string({ minLength: 1 }),
+                    status: fc.constant('open'),
+                    priority: fc.constant('normal'),
+                    // Force both IDs to be missing
+                    contactId: fc.constant(undefined),
+                    clientName: fc.string({ minLength: 1 }),
+                    contact: fc.record({
+                        name: fc.string({ minLength: 1 }),
+                        id: fc.constant(undefined)
+                    }),
+                    createdAt: fc.date().map(d => d.toISOString())
+                }),
+                async (taskData) => {
+                    // Setup
+                    mockNavigate.mockClear();
+                    (api.get as any).mockImplementation((url: string) => {
+                        if (url === '/api/tasks') {
+                            return Promise.resolve({ data: { tasks: [taskData] } });
+                        }
+                        if (url === '/api/godmode/settings') {
+                            return Promise.resolve({ data: { mode: 'demi_god', enabledActionTypes: [] } });
+                        }
+                        return Promise.resolve({ data: {} });
+                    });
+
+                    // Render
+                    render(
+                        <BrowserRouter>
+                            <TasksPage />
+                        </BrowserRouter>
+                    );
+
+                    // Wait for badge to appear (by name)
+                    const contactBadge = await screen.findByText(taskData.contact.name);
+
+                    // Verify it is a SPAN, not a BUTTON
+                    expect(contactBadge.tagName).toBe('SPAN');
+
+                    // Click
+                    fireEvent.click(contactBadge);
+
+                    // Assert NO navigation
+                    expect(mockNavigate).not.toHaveBeenCalled();
+                }
+            ),
+            { numRuns: 1 }
+        );
+    }, 30000);
 });

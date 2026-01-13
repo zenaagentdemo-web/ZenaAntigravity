@@ -10,7 +10,7 @@
 import React from 'react';
 import './FloatingMetricOrbs.css';
 
-export type OrbColor = 'cyan' | 'magenta' | 'purple' | 'green' | 'orange';
+export type OrbColor = 'cyan' | 'magenta' | 'purple' | 'green' | 'orange' | string;
 export type UrgencyLevel = 'low' | 'medium' | 'high';
 
 export interface MetricOrb {

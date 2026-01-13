@@ -114,6 +114,33 @@ class ThreadLinkingService {
   }
 
   /**
+   * Suggest contacts for a thread based on participant names/emails (Scenario S52)
+   */
+  async findSuggestedContacts(userId: string, participants: Participant[]): Promise<any[]> {
+    try {
+      const participantNames = participants.map(p => p.name.toLowerCase());
+      const participantEmails = participants.map(p => p.email.toLowerCase());
+
+      // Search for contacts with matching names or similar emails
+      const suggested = await prisma.contact.findMany({
+        where: {
+          userId,
+          OR: [
+            { name: { in: participantNames, mode: 'insensitive' } },
+            { emails: { hasSome: participantEmails } }
+          ]
+        },
+        take: 5
+      });
+
+      return suggested;
+    } catch (error) {
+      console.error('Error finding suggested contacts:', error);
+      return [];
+    }
+  }
+
+  /**
    * Automatically link a thread when it's created or updated
    * This is the main entry point for automatic linking
    */

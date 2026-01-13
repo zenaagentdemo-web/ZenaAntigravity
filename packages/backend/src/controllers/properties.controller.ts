@@ -245,6 +245,7 @@ export class PropertiesController {
 
       // Handle vendor contact creation if vendor object is provided
       let vendorIdsToConnect = [...vendorContactIds];
+      const propertyMilestones: any[] = [];
 
       if (vendor && vendor.firstName && vendor.lastName && vendor.email && vendor.phone) {
         // Create a new vendor contact
@@ -260,6 +261,26 @@ export class PropertiesController {
           },
         });
         vendorIdsToConnect.push(vendorContact.id);
+      }
+
+      // --- SCENARIO S28: Occupancy Risk ---
+      // If property is tenanted, add a compliance milestone
+      if (req.body.tenanted) {
+        const tenancyMilestone = {
+          id: randomUUID(),
+          type: 'custom',
+          title: 'Tenancy Compliance Check',
+          date: new Date().toISOString(),
+          notes: 'Property is tenanted. Verify healthy homes compliance and notice periods.'
+        };
+        propertyMilestones.push(tenancyMilestone);
+        console.log(`[Properties] S28: Tenancy risk flagged for ${address.trim()}`);
+      }
+
+      // --- SCENARIO S30: Lead Source Attribution ---
+      // Track where the listing came from (e.g. Realestate.co.nz, TradeMe)
+      if (req.body.leadSource) {
+        console.log(`[Properties] S30: Lead source attributed to ${req.body.leadSource}`);
       }
 
       // Create property
@@ -278,7 +299,7 @@ export class PropertiesController {
           rateableValue: rateableValue != null ? parseInt(rateableValue) : null,
           viewingCount: viewingCount != null ? parseInt(viewingCount) : 0,
           inquiryCount: inquiryCount != null ? parseInt(inquiryCount) : 0,
-          milestones: [],
+          milestones: propertyMilestones,
           vendors: {
             connect: vendorIdsToConnect.map((id: string) => ({ id })),
           },
@@ -318,6 +339,44 @@ export class PropertiesController {
 
       // Link relevant threads to this property
       await threadLinkingService.linkThreadsToProperty(property.id, address.trim());
+
+      // --- SCENARIO S16: Address Extraction ---
+      // Auto-enrich new property records with market data if available
+      marketScraperService.getPropertyDetails(address.trim()).then(async (details) => {
+        if (details) {
+          console.log(`[Properties] S16: Auto-enriched ${address} with market details`);
+          await prisma.property.update({
+            where: { id: property.id },
+            data: {
+              bedrooms: property.bedrooms || details.bedrooms,
+              bathrooms: property.bathrooms || details.bathrooms,
+              type: property.type === 'residential' && details.type ? details.type : property.type,
+              landSize: property.landSize || details.landArea,
+              floorSize: property.floorSize || details.floorArea,
+            }
+          });
+        }
+      }).catch(err => console.error('[Properties] S16 enrichment failed:', err));
+
+      // --- SCENARIO S22: Geo-Fenced Alert ---
+      // If listing is active, notify buyers matching the criteria
+      if (status === 'active') {
+        propertyIntelligenceService.findSmartMatches(property.id).then(async (matches) => {
+          for (const match of matches.filter(m => m.matchScore > 80)) {
+            console.log(`[Properties] S22: Geo-Fenced match found! Notifying ${match.name}`);
+            await prisma.timelineEvent.create({
+              data: {
+                userId: req.user.userId,
+                type: 'alert',
+                entityType: 'contact',
+                entityId: match.contactId,
+                summary: `Geo-Fenced Match: New listing at ${address.trim()} aligns with this buyer's profile (Score: ${match.matchScore})`,
+                timestamp: new Date()
+              }
+            });
+          }
+        }).catch(err => console.error('[Properties] S22 match pulse failed:', err));
+      }
 
       res.status(201).json({
         property,
@@ -637,6 +696,39 @@ export class PropertiesController {
           },
         },
       });
+
+      // Link relevant threads to this property
+      if (address) {
+        await threadLinkingService.linkThreadsToProperty(id, address.trim());
+      }
+
+      // --- SCENARIO S19: Owner Linkage ---
+      // If vendors are being connected, update their intelligence snippet
+      if (vendorContactIds && vendorContactIds.length > 0) {
+        const prop = await prisma.property.findUnique({ where: { id } });
+        if (prop) {
+          await Promise.all(vendorContactIds.map(vId =>
+            prisma.contact.update({
+              where: { id: vId },
+              data: {
+                role: 'vendor',
+                intelligenceSnippet: `Sole vendor for ${prop.address}. Identified via owner linkage logic.`
+              }
+            })
+          ));
+          console.log(`[Properties] S19: Cross-updated ${vendorContactIds.length} vendor contacts for ${prop.address}`);
+        }
+      }
+
+      // --- SCENARIO S27: Listing Status (Sold) ---
+      // If sold, archive all linked threads
+      if (status === 'sold') {
+        const threads = await threadLinkingService.getThreadsForProperty(id);
+        for (const thread of threads) {
+          await neuralScorerService.archiveThread(thread.id);
+        }
+        console.log(`[Properties] S27: Property sold. Archived ${threads.length} threads.`);
+      }
 
       res.status(200).json({
         property: updatedProperty,
@@ -1248,9 +1340,20 @@ export class PropertiesController {
       const bedrooms = property.bedrooms || 3;
 
       console.log(`[PropertiesController] Generating comparables for ${property.address} (${suburb})`);
-      const comparables = await marketScraperService.findComparableSales(suburb, bedrooms);
+      const result = await marketScraperService.findComparableSales({
+        targetAddress: property.address,
+        suburb,
+        city: 'Auckland',
+        bedrooms
+      });
 
-      res.status(200).json({ comparables });
+      // S18: Distance Risk Flagging
+      const comparablesWithRisk = propertyIntelligenceService.checkDistanceRisk(property.address, result.comparables);
+
+      res.status(200).json({
+        comparables: comparablesWithRisk,
+        sourceUrls: result.sourceUrls
+      });
     } catch (error) {
       console.error('Generate Comparables error:', error);
       res.status(500).json({ error: 'Failed to generate report' });
@@ -1346,6 +1449,21 @@ export class PropertiesController {
   }
 
   /**
+   * POST /api/properties/:id/generate-copy
+   * S17: Generate AI Listing Copy
+   */
+  async generateListingCopy(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const result = await propertyIntelligenceService.generateListingCopy(id);
+      res.status(200).json(result);
+    } catch (error) {
+      console.error('Generate copy error:', error);
+      res.status(500).json({ error: 'Failed to generate listing copy' });
+    }
+  }
+
+  /**
    * GET /api/properties/:id/milestones
    * Get milestones for a property
    */
@@ -1380,6 +1498,36 @@ export class PropertiesController {
     } catch (error) {
       console.error('Get milestones error:', error);
       res.status(500).json({ error: 'Failed to get milestones' });
+    }
+  }
+
+  /**
+   * POST /api/properties/bulk-analyze
+   * S21: Batch Market Analysis / Positioning
+   */
+  async bulkAnalyzeProperties(req: Request, res: Response): Promise<void> {
+    try {
+      const { ids } = req.body;
+      if (!ids || !Array.isArray(ids)) {
+        res.status(400).json({ error: 'ids array required' });
+        return;
+      }
+
+      console.log(`[Properties] S21: Running batch analysis for ${ids.length} properties`);
+
+      const results = await Promise.all(ids.map(async (id) => {
+        try {
+          const intel = await propertyIntelligenceService.refreshIntelligence(id, req.user.userId, true);
+          return { id, status: 'success', momentum: intel.momentumScore };
+        } catch (err) {
+          return { id, status: 'failed', error: String(err) };
+        }
+      }));
+
+      res.status(200).json({ results });
+    } catch (error) {
+      console.error('Batch analyze error:', error);
+      res.status(500).json({ error: 'Batch analysis failed' });
     }
   }
 }

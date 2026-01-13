@@ -12,61 +12,65 @@
    * HIGH-TECH DARK BACKGROUND SYSTEM
    * Deep, rich dark backgrounds that make neon elements pop
    * ============================================ */
-  
+
   /* Primary Background Gradients */
   --bg-primary: #0A0A0F;
   --bg-secondary: #12121A;
   --bg-tertiary: #1A1A2E;
-  
+
   /* Elevated/Glass Backgrounds */
   --bg-elevated: rgba(26, 26, 46, 0.8);
   --bg-glass: rgba(255, 255, 255, 0.05);
   --bg-glass-hover: rgba(255, 255, 255, 0.08);
   --bg-glass-border: rgba(255, 255, 255, 0.1);
-  
+
   /* ============================================
    * NEON ACCENT COLOR SYSTEM
    * Vibrant colors for highlights and interactions
    * ============================================ */
-  
+
   /* Primary Neon Colors */
   --neon-cyan: #00D4FF;
   --neon-cyan-dim: rgba(0, 212, 255, 0.5);
   --neon-cyan-subtle: rgba(0, 212, 255, 0.2);
-  
+
   --neon-magenta: #FF00FF;
   --neon-magenta-dim: rgba(255, 0, 255, 0.5);
   --neon-magenta-subtle: rgba(255, 0, 255, 0.2);
-  
+
   --neon-purple: #8B5CF6;
   --neon-purple-dim: rgba(139, 92, 246, 0.5);
   --neon-purple-subtle: rgba(139, 92, 246, 0.2);
-  
+
   /* Secondary Neon Colors */
   --neon-orange: #FF6B35;
   --neon-orange-dim: rgba(255, 107, 53, 0.5);
-  
+
   --neon-green: #00FF88;
   --neon-green-dim: rgba(0, 255, 136, 0.5);
-  
+
+  --neon-gold: #FCD34D;
+  --neon-gold-dim: rgba(252, 211, 77, 0.5);
+  --neon-gold-subtle: rgba(252, 211, 77, 0.2);
+
   /* ============================================
    * HIGH-TECH TEXT COLOR SYSTEM
    * High-contrast text for dark backgrounds
    * ============================================ */
-  
+
   --text-primary-ht: #FFFFFF;
   --text-secondary-ht: rgba(255, 255, 255, 0.7);
   --text-tertiary-ht: rgba(255, 255, 255, 0.5);
   --text-muted-ht: rgba(255, 255, 255, 0.3);
-  
+
   /* Text Glow Effect */
   --text-glow: 0 0 10px currentColor;
   --text-glow-strong: 0 0 20px currentColor;
-  
+
   /* ============================================
    * STATUS COLORS (High-Tech Variants)
    * ============================================ */
-  
+
   --status-urgent: #FF4444;
   --status-urgent-dim: rgba(255, 68, 68, 0.5);
   --status-warning: #FFAA00;
@@ -75,30 +79,32 @@
   --status-success-dim: rgba(0, 255, 136, 0.5);
   --status-info: #00D4FF;
   --status-info-dim: rgba(0, 212, 255, 0.5);
-  
+
   /* ============================================
    * GLOW EFFECTS SYSTEM
    * Luminous visual effects using CSS box-shadow
    * ============================================ */
-  
+
   /* Glow Intensities */
   --glow-subtle: 0 0 10px;
   --glow-medium: 0 0 20px;
   --glow-strong: 0 0 30px;
   --glow-intense: 0 0 40px, 0 0 80px;
-  
+
   /* Pre-defined Glow Colors */
   --glow-cyan: 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan-dim);
   --glow-magenta: 0 0 20px var(--neon-magenta), 0 0 40px var(--neon-magenta-dim);
   --glow-purple: 0 0 20px var(--neon-purple), 0 0 40px var(--neon-purple-dim);
   --glow-orange: 0 0 20px var(--neon-orange), 0 0 40px var(--neon-orange-dim);
+  --glow-orange: 0 0 20px var(--neon-orange), 0 0 40px var(--neon-orange-dim);
   --glow-green: 0 0 20px var(--neon-green), 0 0 40px var(--neon-green-dim);
-  
+  --glow-gold: 0 0 20px var(--neon-gold), 0 0 40px var(--neon-gold-dim);
+
   /* Status Glows */
   --glow-urgent: 0 0 20px var(--status-urgent), 0 0 40px var(--status-urgent-dim);
   --glow-warning: 0 0 20px var(--status-warning), 0 0 40px var(--status-warning-dim);
   --glow-success: 0 0 20px var(--status-success), 0 0 40px var(--status-success-dim);
-  
+
   /* Border Glow */
   --border-glow: 1px solid rgba(0, 212, 255, 0.3);
   --border-glow-hover: 1px solid rgba(0, 212, 255, 0.6);
@@ -122,7 +128,7 @@
   --glass-blur: blur(20px);
   --glass-blur-strong: blur(40px);
   --glass-blur-subtle: blur(10px);
-  
+
   /* Fallback for browsers without backdrop-filter */
   --glass-fallback-bg: rgba(26, 26, 46, 0.95);
 }
@@ -146,7 +152,7 @@
   .glass-card {
     background: var(--glass-fallback-bg);
   }
-  
+
   .glass-card:hover {
     background: rgba(30, 30, 50, 0.98);
   }
@@ -192,7 +198,7 @@
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   --ease-glow: cubic-bezier(0.4, 0, 0.6, 1);
   --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
-  
+
   /* Durations */
   --duration-fast: 150ms;
   --duration-normal: 300ms;
@@ -210,10 +216,13 @@
 
 /* Pulse Glow - For AI avatar and interactive elements */
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.7;
     transform: scale(1.05);
@@ -222,12 +231,16 @@
 
 /* Breathe - Color-shifting glow for idle states */
 @keyframes breathe {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: var(--glow-cyan);
   }
+
   33% {
     box-shadow: var(--glow-magenta);
   }
+
   66% {
     box-shadow: var(--glow-purple);
   }
@@ -239,6 +252,7 @@
     transform: scale(0.8);
     opacity: 1;
   }
+
   100% {
     transform: scale(2);
     opacity: 0;
@@ -250,6 +264,7 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -260,6 +275,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -271,9 +287,11 @@
     transform: scale(0);
     opacity: 0;
   }
+
   50% {
     transform: scale(1.2);
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -282,9 +300,12 @@
 
 /* Pulse Border - For urgent notifications */
 @keyframes pulse-border {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 10px var(--status-urgent);
   }
+
   50% {
     box-shadow: 0 0 25px var(--status-urgent), 0 0 50px var(--status-urgent-dim);
   }
@@ -292,9 +313,12 @@
 
 /* Glow Pulse - Subtle glow intensity variation */
 @keyframes glow-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     filter: brightness(1);
   }
+
   50% {
     filter: brightness(1.2);
   }
@@ -302,9 +326,12 @@
 
 /* Float - Subtle floating animation for cards */
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-4px);
   }
@@ -316,6 +343,7 @@
  * ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -323,7 +351,7 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   .glass-card,
   .glass-panel,
   .glass-nav {
@@ -348,11 +376,11 @@
   --color-text-secondary: var(--text-secondary-ht);
   --color-text-tertiary: var(--text-tertiary-ht);
   --color-text-muted: var(--text-muted-ht);
-  
+
   /* Override primary colors with neon cyan */
   --color-primary: var(--neon-cyan);
   --color-primary-hover: var(--neon-cyan-dim);
-  
+
   /* Override semantic colors */
   --color-success: var(--status-success);
   --color-warning: var(--status-warning);
@@ -409,7 +437,7 @@
   .widget-card-ht {
     background: var(--glass-fallback-bg);
   }
-  
+
   .widget-card-ht:hover {
     background: rgba(30, 30, 50, 0.98);
   }
@@ -560,10 +588,13 @@
 
 /* Status Pulse Animation */
 @keyframes status-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.7;
     transform: scale(1.1);
@@ -572,10 +603,13 @@
 
 /* Urgent Status Pulse - Faster */
 @keyframes status-pulse-urgent {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.6;
     transform: scale(1.2);
@@ -700,6 +734,7 @@
 
 /* Fallback for browsers without backdrop-filter */
 @supports not (backdrop-filter: blur(20px)) {
+
   [data-theme="high-tech"] .smart-summary-widget,
   [data-theme="high-tech"] .calendar-widget,
   [data-theme="high-tech"] .weather-time-widget,
@@ -798,6 +833,7 @@
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+
   .widget-card-ht,
   .status-dot-ht,
   [data-theme="high-tech"] .smart-summary-widget,
@@ -809,7 +845,7 @@
     transition: none;
     animation: none;
   }
-  
+
   .status-dot-ht {
     animation: none;
   }
@@ -821,15 +857,15 @@
     padding: 16px;
     border-radius: 16px;
   }
-  
+
   .metric-value-ht {
     font-size: 36px;
   }
-  
+
   .metric-value-ht--large {
     font-size: 48px;
   }
-  
+
   .metric-value-ht--small {
     font-size: 24px;
   }

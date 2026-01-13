@@ -5,8 +5,9 @@ import { websocketService } from '../services/websocket.service.js';
 import { askZenaService } from '../services/ask-zena.service.js';
 import { neuralScorerService } from '../services/neural-scorer.service.js';
 import prisma from '../config/database.js';
-import { portfolioIntelligenceService } from '../services/portfolio-intelligence.service.js'; // New import
-import logger from '../utils/logger.js'; // New import
+import { portfolioIntelligenceService } from '../services/portfolio-intelligence.service.js';
+import { actionScannerService } from '../services/action-scanner.service.js';
+import logger from '../utils/logger.js';
 
 export class ContactsController {
   /**
@@ -33,6 +34,26 @@ export class ContactsController {
           error: {
             code: 'VALIDATION_FAILED',
             message: 'First name, last name, and email are required',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // --- SCENARIO S07: Duplicate Block ---
+      const existingContact = await prisma.contact.findFirst({
+        where: {
+          userId: req.user.userId,
+          emails: { has: email.toLowerCase() }
+        }
+      });
+
+      if (existingContact) {
+        res.status(409).json({
+          error: {
+            code: 'DUPLICATE_FOUND',
+            message: `A contact with email ${email} already exists: ${existingContact.name}`,
+            existingContactId: existingContact.id,
             retryable: false,
           },
         });
@@ -288,16 +309,32 @@ export class ContactsController {
         dealStage: c.deals?.[0]?.stage || undefined
       }));
 
+      // --- SCENARIO S15: Contextual Add ---
+      let suggestion = undefined;
+      if (total === 0 && search && typeof search === 'string') {
+        const nameParts = (search as string).trim().split(' ');
+        if (nameParts.length >= 2) {
+          suggestion = {
+            type: 'add_contact',
+            name: search,
+            firstName: nameParts[0],
+            lastName: nameParts.slice(1).join(' '),
+            message: `Zena couldn't find "${search}". Would you like to add them as a new contact?`
+          };
+        }
+      }
+
       res.status(200).json({
         contacts: mappedContacts,
         total,
         displayed: contacts.length,
+        suggestion,
         pagination: {
           total,
           limit: parseInt(limit as string),
           offset: parseInt(offset as string),
-          hasMore: total > parseInt(offset as string) + contacts.length,
-        },
+          hasMore: total > parseInt(offset as string) + contacts.length
+        }
       });
     } catch (error) {
       console.error('List contacts error:', error);
@@ -1001,6 +1038,11 @@ export class ContactsController {
       // This implements "Active Intel Digestion" - Zena re-analyzes immediately after a note is added
       askZenaService.runDiscovery(req.user.userId, id).catch(err =>
         console.error(`[Active Intel] Failed to refresh intelligence for contact ${id}: `, err)
+      );
+
+      // Trigger action scanner to extract tasks/actions from the note
+      actionScannerService.onNoteAdded(content.trim(), id, req.user.userId).catch(err =>
+        console.error(`[ActionScanner] Failed to scan note for contact ${id}: `, err)
       );
 
       res.status(201).json({

@@ -102,7 +102,7 @@ function App() {
       }}
     >
       <ThemeProvider>
-        <Router>
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <div className="app" role="application" aria-label="Zena AI Real Estate Assistant">
             {/* Skip links for keyboard navigation - WCAG 2.1 AA */}
             <SkipLink

@@ -15,7 +15,7 @@ import prisma from '../config/database.js';
 export interface TaskActionSuggestion {
     featureKey: string;
     sourceId: string;
-    sourceType: 'email' | 'deal' | 'voice_note';
+    sourceType: 'email' | 'deal' | 'voice_note' | 'note';
     title: string;
     description: string;
     suggestedDueDate?: Date;
@@ -216,6 +216,58 @@ If no clear action, respond with: { "hasTask": false }`;
             };
         } catch (error) {
             console.error('[TasksActions] Failed to extract task from voice note:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Generate tasks from a manual note
+     */
+    async generateTaskFromNote(content: string, contactId: string, userId: string): Promise<TaskActionSuggestion | null> {
+        const featureKey = 'tasks:create_from_note';
+        const mode = await godmodeService.getFeatureMode(userId, featureKey);
+
+        if (mode === 'off') {
+            return null;
+        }
+
+        // Use AI to extract action items from note content
+        const prompt = `Analyze this note and extract any action items or tasks for the real estate agent.
+        
+Note Content: ${content.substring(0, 1000)}
+
+If there's a clear action item, respond with JSON:
+{ "hasTask": true, "title": "short task title", "description": "what needs to be done", "priority": "urgent|high|normal|low", "daysUntilDue": 1-7 }
+
+If no clear action, respond with: { "hasTask": false }`;
+
+        try {
+            const result = await askZenaService.askBrain(prompt, {
+                jsonMode: true,
+                systemPrompt: 'You are a task extraction AI. Respond only with the JSON format specified.'
+            });
+
+            const parsed = JSON.parse(result);
+
+            if (!parsed.hasTask) {
+                return null;
+            }
+
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + (parsed.daysUntilDue || 3));
+
+            return {
+                featureKey,
+                sourceId: contactId,
+                sourceType: 'note',
+                title: parsed.title,
+                description: parsed.description,
+                suggestedDueDate: dueDate,
+                priority: parsed.priority || 'normal',
+                reasoning: `Task extracted from contact note.`,
+            };
+        } catch (error) {
+            console.error('[TasksActions] Failed to extract task from note:', error);
             return null;
         }
     }

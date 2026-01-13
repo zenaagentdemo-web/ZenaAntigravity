@@ -189,6 +189,39 @@ class ActionScannerService {
     }
 
     /**
+     * Called when a manual note is added to a contact.
+     */
+    async onNoteAdded(content: string, contactId: string, userId: string): Promise<ScanResult> {
+        const result: ScanResult = { actionsCreated: 0, actionIds: [] };
+
+        try {
+            console.log(`[ActionScanner] Manual note added for contact: ${contactId} for user ${userId}`);
+
+            const taskMode = await godmodeService.getFeatureMode(userId, 'tasks:create_from_note');
+
+            if (taskMode !== 'off') {
+                const taskSuggestion = await tasksActionsService.generateTaskFromNote(content, contactId, userId);
+                if (taskSuggestion) {
+                    const action = await this.queueTaskAction(userId, taskSuggestion, taskMode);
+                    if (action) {
+                        result.actionsCreated++;
+                        result.actionIds.push(action.id);
+                    }
+                }
+            }
+
+            if (result.actionsCreated > 0) {
+                this.broadcastNewActions(userId, result.actionsCreated);
+            }
+
+            return result;
+        } catch (error) {
+            console.error(`[ActionScanner] Error processing manual note:`, error);
+            return result;
+        }
+    }
+
+    /**
      * Called when a property milestone is created/updated.
      */
     async onPropertyMilestone(propertyId: string, milestoneType: string, userId: string): Promise<ScanResult> {

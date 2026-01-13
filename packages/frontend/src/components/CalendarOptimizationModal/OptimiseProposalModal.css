@@ -1,0 +1,224 @@
+.optimise-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.optimise-modal-content {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.optimise-modal-content.loading {
+    padding: 3rem;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    color: #94a3b8;
+}
+
+.optimise-header {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1e293b;
+    background: #0f172a;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-left h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #f1f5f9;
+}
+
+.ai-badge {
+    background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+    color: white;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #f1f5f9;
+}
+
+.optimise-metrics-banner {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #1e293b;
+}
+
+.metric-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.metric-card .value {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+.metric-card .label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.optimise-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+.timeline-view h3 {
+    margin: 0 0 1rem 0;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: #1e293b;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+}
+
+.timeline-item.moved {
+    border-left-color: #f97316;
+    /* Orange */
+    background: rgba(249, 115, 22, 0.1);
+}
+
+.timeline-item.added {
+    border-left-color: #22c55e;
+    /* Green */
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.time-col {
+    font-family: monospace;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    padding-top: 2px;
+}
+
+.content-col {
+    flex: 1;
+}
+
+.item-title {
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 0.25rem;
+}
+
+.item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.change-reason {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.moved .change-reason {
+    color: #fdba74;
+    background: rgba(249, 115, 22, 0.1);
+}
+
+.added .change-reason {
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.optimise-footer {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    border-top: 1px solid #1e293b;
+    background: #0f172a;
+}
+
+.cancel-btn {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: 1px solid #334155;
+    color: #94a3b8;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.apply-btn {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.apply-btn:hover {
+    filter: brightness(1.1);
+}

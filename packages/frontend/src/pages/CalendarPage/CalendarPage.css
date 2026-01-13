@@ -8,21 +8,40 @@
 }
 
 .calendar-page {
-    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
     background: radial-gradient(circle at top right, #1a0b2e, #050208);
     color: #fff;
-    padding: 2rem;
+    padding: 2rem 2rem 0 2rem;
     font-family: 'Inter', sans-serif;
+    overflow: hidden;
 }
 
 /* Calendar Header & Toggles */
 .calendar-page__header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 1.5rem;
     padding: 2rem 0;
     margin-bottom: 2rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.calendar-header-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.calendar-header-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    /* Changed from flex-end to space-between */
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
 }
 
 .calendar-header-main {
@@ -236,8 +255,22 @@
     display: grid;
     grid-template-columns: 1fr 380px;
     gap: 3rem;
-    align-items: flex-start;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
+    /* Crucial for nested scrollbars */
+    overflow: hidden;
 }
+
+.calendar-main-view {
+    overflow-y: auto;
+    height: 100%;
+    padding-bottom: 250px;
+    /* Increased clearance for floating widgets */
+    padding-right: 12px;
+    /* Avoid scrollbar hugging content */
+}
+
 
 /* Agenda Grouping & Sticky Headers */
 .calendar-agenda-container {
@@ -464,8 +497,11 @@
     display: flex;
     flex-direction: column;
     gap: 2.5rem;
-    position: sticky;
-    top: 2rem;
+    overflow-y: auto;
+    height: 100%;
+    padding-bottom: 250px;
+    /* Increased clearance for floating widgets */
+    padding-right: 4px;
 }
 
 .sidebar-section {
@@ -712,12 +748,35 @@
 
 /* Responsive */
 @media (max-width: 1200px) {
+    .calendar-page {
+        height: auto;
+        overflow: visible;
+        padding-bottom: 100px;
+    }
+
     .calendar-page__content {
         grid-template-columns: 1fr;
+        height: auto;
+        overflow: visible;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .calendar-main-view {
+        overflow: visible;
+        height: auto;
+        padding-bottom: 0;
     }
 
     .calendar-sidebar {
         order: -1;
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        overflow: visible;
+        height: auto;
+        padding-bottom: 0;
     }
 }
 
@@ -735,11 +794,52 @@
     }
 }
 
-@media (max-width: 1200px) {
-    .calendar-sidebar {
-        position: static;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
+/* --- Godmode Controls --- */
+.calendar-page__godmode-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.calendar-page__pending-actions-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid #f59e0b;
+    border-radius: 100px;
+    color: #fbbf24;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: mythic-radar 3s ease-in-out infinite;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+    margin-left: 12px;
+}
+
+.calendar-page__pending-actions-btn:hover {
+    background: rgba(245, 158, 11, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
+}
+
+@keyframes mythic-radar {
+
+    0%,
+    100% {
+        border-color: rgba(245, 158, 11, 0.4);
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+        transform: scale(1);
+    }
+
+    50% {
+        border-color: #f59e0b;
+        box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
+        transform: scale(1.05);
     }
 }

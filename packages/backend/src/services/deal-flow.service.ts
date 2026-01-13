@@ -272,6 +272,86 @@ export class DealFlowService {
      * Calculate commission using tiered formula
      * Commission is calculated cumulatively across tiers
      */
+    async checkStagnation(dealId: string, userId: string): Promise<void> {
+        const deal = await prisma.deal.findUnique({ where: { id: dealId } });
+        if (!deal || !deal.updatedAt) return;
+
+        const lastUpdate = new Date(deal.updatedAt);
+        const now = new Date();
+        const diffDays = Math.ceil((now.getTime() - lastUpdate.getTime()) / (1000 * 60 * 60 * 24));
+
+        // --- SCENARIO S47: Deal Stagnation ---
+        if (diffDays >= 21) {
+            console.log(`[Deals] S47: Deal ${dealId} has stagnated for ${diffDays} days. alerting AI.`);
+            await prisma.timelineEvent.create({
+                data: {
+                    userId,
+                    type: 'note',
+                    entityType: 'deal',
+                    entityId: dealId,
+                    summary: 'Deal Stagnation: No progress for 21 days',
+                    content: 'This deal is currently marked as "Cold". Consider a re-engagement strategy.',
+                    timestamp: new Date()
+                }
+            });
+        }
+    }
+
+    async monitorConditions(dealId: string, userId: string): Promise<void> {
+        const deal = await prisma.deal.findUnique({ where: { id: dealId } });
+        if (!deal || !deal.conditions) return;
+
+        const conditions = deal.conditions as any[];
+        const now = new Date();
+
+        // --- SCENARIO S44: Condition Watchdog ---
+        for (const cond of conditions) {
+            if (cond.dueDate && !cond.satisfied) {
+                const dueDate = new Date(cond.dueDate);
+                const diffHours = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+                if (diffHours < 48 && diffHours > 0) {
+                    console.log(`[Deals] S44: Condition ${cond.title} expires in ${Math.round(diffHours)} hours. Alerting.`);
+                    await prisma.timelineEvent.create({
+                        data: {
+                            userId,
+                            type: 'note',
+                            entityType: 'deal',
+                            entityId: dealId,
+                            summary: `URGENT: Condition "${cond.title}" expires soon!`,
+                            timestamp: new Date()
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    async checkSettlementAutomation(dealId: string, userId: string): Promise<void> {
+        const deal = await prisma.deal.findUnique({ where: { id: dealId } });
+        if (!deal || !deal.settlementDate) return;
+
+        const settlementDate = new Date(deal.settlementDate);
+        const now = new Date();
+        const diffDays = Math.ceil((settlementDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+        // --- SCENARIO S41: Settlement Tracker ---
+        if (diffDays <= 7 && diffDays > 0) {
+            console.log(`[Deals] S41: Settlement approaching for deal ${dealId} (${diffDays} days). Creating task.`);
+            await prisma.task.create({
+                data: {
+                    userId,
+                    dealId,
+                    propertyId: deal.propertyId,
+                    label: 'Pre-settlement walkthrough',
+                    dueDate: new Date(settlementDate.getTime() - (2 * 1000 * 60 * 60 * 24)), // 2 days before
+                    priority: 'high',
+                    status: 'pending'
+                }
+            });
+        }
+    }
+
     calculateCommission(dealValue: number, tiers: CommissionTier[]): number {
         if (!tiers || tiers.length === 0 || dealValue <= 0) {
             return 0;
@@ -428,6 +508,15 @@ export class DealFlowService {
                 updateRisk('medium', `No contact for ${daysSinceContact} days`);
             } else if (daysSinceContact > 5) {
                 updateRisk('low', `Last contact ${daysSinceContact} days ago`);
+            }
+        }
+
+        // --- SCENARIO S33: High Condition Risk ---
+        // If more than 3 pending/total conditions, increase risk
+        if (deal.conditions) {
+            const conditions = deal.conditions as unknown as any[];
+            if (conditions.length > 3) {
+                updateRisk('medium', `High condition count (${conditions.length}) increases fall-through risk`);
             }
         }
 

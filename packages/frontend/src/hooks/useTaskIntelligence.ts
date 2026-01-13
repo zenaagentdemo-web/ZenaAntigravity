@@ -36,7 +36,7 @@ export function useTaskIntelligence() {
             // In a real app, we might need pagination or specific "active" filters
             const [dealsRes, contactsRes] = await Promise.all([
                 api.get('/api/deals'),
-                api.get('/contacts') // Note: frontend usually uses /contacts for list
+                api.get('/api/contacts') // Fixed: correct endpoint is /api/contacts
             ]);
 
             const deals: Deal[] = dealsRes.data.deals || [];

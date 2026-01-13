@@ -109,7 +109,7 @@ const MOCK_SUGGESTIONS: Task[] = [];
 
 
 // Helper functions
-const getTimelineSection = (dueDate?: Date): TimelineSection => {
+export const getTimelineSection = (dueDate?: Date): TimelineSection => {
     if (!dueDate) return 'later';
 
     const now = new Date();
@@ -127,7 +127,7 @@ const getTimelineSection = (dueDate?: Date): TimelineSection => {
     return 'later';
 };
 
-const formatDueDate = (dueDate?: Date): string => {
+export const formatDueDate = (dueDate?: Date): string => {
     if (!dueDate) return 'No due date';
 
     // Helper to get ordinal suffix
@@ -493,6 +493,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onSubmit, properti
 
 export const TasksPage: React.FC = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const [viewFilter, setViewFilter] = useState<ViewFilter>('timeline');
     const [statusFilter, setStatusFilter] = useState<StatusFilter>('current');
     const [tasks, setTasks] = useState<Task[]>(MOCK_TASKS);
@@ -1076,33 +1077,43 @@ export const TasksPage: React.FC = () => {
                         )}
 
                         {task.clientName && (
-                            <button
-                                className="task-card__tag task-card__tag--client task-card__tag--clickable"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (task.clientId) {
+                            task.clientId ? (
+                                <button
+                                    className="task-card__tag task-card__tag--client task-card__tag--clickable"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
                                         navigate(`/contacts/${task.clientId}`, { state: { from: '/tasks', label: 'Tasks' } });
-                                    }
-                                }}
-                            >
-                                <User size={12} />
-                                {task.clientName}
-                            </button>
+                                    }}
+                                >
+                                    <User size={12} />
+                                    {task.clientName}
+                                </button>
+                            ) : (
+                                <span className="task-card__tag task-card__tag--client">
+                                    <User size={12} />
+                                    {task.clientName}
+                                </span>
+                            )
                         )}
 
                         {task.propertyName && (
-                            <button
-                                className="task-card__tag task-card__tag--property task-card__tag--clickable"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (task.propertyId) {
+                            task.propertyId ? (
+                                <button
+                                    className="task-card__tag task-card__tag--property task-card__tag--clickable"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
                                         navigate(`/properties/${task.propertyId}`, { state: { from: '/tasks', label: 'Tasks' } });
-                                    }
-                                }}
-                            >
-                                <Home size={12} />
-                                {task.propertyName}
-                            </button>
+                                    }}
+                                >
+                                    <Home size={12} />
+                                    {task.propertyName}
+                                </button>
+                            ) : (
+                                <span className="task-card__tag task-card__tag--property">
+                                    <Home size={12} />
+                                    {task.propertyName}
+                                </span>
+                            )
                         )}
 
                         {expandedTaskId === task.id ? <ChevronUp size={14} /> : <ChevronDown size={14} />}

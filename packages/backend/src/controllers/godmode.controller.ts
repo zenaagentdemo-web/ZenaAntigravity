@@ -222,28 +222,39 @@ export async function bulkApprove(req: Request, res: Response): Promise<void> {
             return;
         }
 
-        const results: { id: string; success: boolean }[] = [];
-
-        for (const actionId of actionIds) {
-            try {
-                await godmodeService.approveAction(actionId, req.user.userId);
-                results.push({ id: actionId, success: true });
-            } catch (err) {
-                results.push({ id: actionId, success: false });
-            }
-        }
-
-        const succeeded = results.filter(r => r.success).length;
-        const failed = results.filter(r => !r.success).length;
+        const result = await godmodeService.processBatchApproval(actionIds, req.user.userId);
 
         res.status(200).json({
             success: true,
-            results,
-            message: `${succeeded} approved, ${failed} failed`,
+            ...result
         });
     } catch (error) {
         console.error('Error in bulk approve:', error);
         res.status(500).json({ error: 'Failed to bulk approve' });
+    }
+}
+
+/**
+ * POST /api/godmode/persona
+ * S80: Godmode Persona Shift
+ */
+export async function shiftPersona(req: Request, res: Response): Promise<void> {
+    try {
+        if (!req.user) {
+            res.status(401).json({ error: 'Authentication required' });
+            return;
+        }
+
+        const { persona } = req.body;
+        const result = await godmodeService.applyPersona(req.user.userId, persona);
+
+        res.status(200).json({
+            success: true,
+            ...result
+        });
+    } catch (error) {
+        console.error('Error in shift persona:', error);
+        res.status(500).json({ error: 'Failed' });
     }
 }
 
@@ -268,6 +279,32 @@ export async function suggestActions(req: Request, res: Response): Promise<void>
     } catch (error) {
         console.error('Error generating suggestions:', error);
         res.status(500).json({ error: 'Failed to generate suggestions' });
+    }
+}
+
+/**
+ * GET /api/godmode/audit
+ * S82: Performance Audit
+ */
+export async function getAudit(req: Request, res: Response): Promise<void> {
+    try {
+        const result = await godmodeService.runPerformanceAudit(req.user!.userId);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed' });
+    }
+}
+
+/**
+ * GET /api/godmode/cleanup
+ * S85: CRM Cleanup
+ */
+export async function getCleanupSuggestions(req: Request, res: Response): Promise<void> {
+    try {
+        const result = await godmodeService.suggestCrmCleanup(req.user!.userId);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed' });
     }
 }
 

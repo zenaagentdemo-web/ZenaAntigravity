@@ -220,6 +220,38 @@ If no event is mentioned, respond with:
             reasoning: `Thread risk level: ${thread.riskLevel}. May contain deadline or critical information.`,
         }));
     }
+
+    /**
+     * Extract tasks from email content (Scenario S53)
+     */
+    async extractTasks(threadId: string, userId: string): Promise<InboxActionSuggestion | null> {
+        const featureKey = 'inbox:create_task';
+        const mode = await godmodeService.getFeatureMode(userId, featureKey);
+
+        if (mode === 'off') return null;
+
+        const thread = await prisma.thread.findUnique({
+            where: { id: threadId },
+            include: { messages: { orderBy: { receivedAt: 'desc' }, take: 1 } }
+        });
+
+        if (!thread || thread.messages.length === 0) return null;
+
+        const content = thread.messages[0].body || '';
+        if (!content.toLowerCase().includes('follow up') && !content.toLowerCase().includes('task')) {
+            return null;
+        }
+
+        return {
+            featureKey,
+            threadId,
+            actionType: 'create_task',
+            title: `Create Task: Follow up on "${thread.subject}"`,
+            description: `AI detected a task request in this email.`,
+            priority: 8,
+            reasoning: `Keywords "follow up" detected in email body.`
+        };
+    }
 }
 
 export const inboxActionsService = new InboxActionsService();

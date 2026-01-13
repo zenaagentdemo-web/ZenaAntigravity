@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Sparkles,
@@ -49,7 +50,7 @@ export const MorningBriefModal: React.FC<MorningBriefModalProps> = ({
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <AnimatePresence>
             <div className="morning-brief-overlay">
                 <motion.div
@@ -116,13 +117,17 @@ export const MorningBriefModal: React.FC<MorningBriefModalProps> = ({
                         <button className="morning-brief-btn--secondary" onClick={onClose}>
                             Dismiss
                         </button>
-                        <button className="morning-brief-btn--primary" onClick={onStartLive}>
+                        <button className="morning-brief-btn--primary" onClick={() => {
+                            const prompt = encodeURIComponent("Give me my morning brief. I want a high-energy, proactive update. Tell me about my new emails, at-risk deals, and today's priorities. I know you've already prepared some drafts for me—let's hear your plan!");
+                            window.location.href = `/ask-zena?mode=handsfree&prompt=${prompt}&context=morning_brief&t=${Date.now()}`;
+                        }}>
                             <Play size={14} fill="currentColor" />
                             Start Zena Live
                         </button>
                     </footer>
                 </motion.div>
             </div>
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 };

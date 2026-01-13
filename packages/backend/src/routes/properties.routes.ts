@@ -66,4 +66,10 @@ router.get('/:id/intelligence', (req, res) => propertiesController.getIntelligen
 // POST /api/properties/:id/comparables - Generate Comparable Sales Report (Market Scraper)
 router.post('/:id/comparables', (req, res) => propertiesController.generateComparables(req, res));
 
+// POST /api/properties/:id/generate-copy - Generate AI Listing Copy (S17)
+router.post('/:id/generate-copy', (req, res) => propertiesController.generateListingCopy(req, res));
+
+// POST /api/properties/bulk-analyze - Batch Market Analysis (S21)
+router.post('/bulk-analyze', (req, res) => propertiesController.bulkAnalyzeProperties(req, res));
+
 export default router;

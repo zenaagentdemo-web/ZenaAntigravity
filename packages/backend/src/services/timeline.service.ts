@@ -279,6 +279,7 @@ export class TimelineService {
       summary?: string;
       content?: string;
       metadata?: Record<string, any>;
+      timestamp?: Date;
     }
   ) {
     const result = await prisma.timelineEvent.updateMany({

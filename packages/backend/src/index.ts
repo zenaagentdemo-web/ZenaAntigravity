@@ -13,6 +13,7 @@ import contactsRoutes from './routes/contacts.routes.js';
 import propertiesRoutes from './routes/properties.routes.js';
 import dealsRoutes from './routes/deals.routes.js';
 import timelineRoutes from './routes/timeline.routes.js';
+import calendarActionsRoutes from './routes/calendar-actions.routes.js';
 import taskRoutes from './routes/task.routes.js';
 import voiceNoteRoutes from './routes/voice-note.routes.js';
 import askZenaRoutes from './routes/ask-zena.routes.js';
@@ -129,6 +130,13 @@ app.use('/api/deals', dealsRoutes);
 
 // Timeline routes
 app.use('/api/timeline', timelineRoutes);
+
+// Calendar Action routes (Pillar E)
+app.use('/api/calendar', calendarActionsRoutes);
+
+// Calendar Optimization routes
+import calendarRoutes from './routes/calendar.routes.js';
+app.use('/api/calendar-optimization', calendarRoutes);
 
 // Task routes
 app.use('/api/tasks', taskRoutes);

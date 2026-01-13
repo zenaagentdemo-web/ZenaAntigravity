@@ -1,0 +1,520 @@
+[2025-12-20T02:24:22.255Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-20T02:24:26.059Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Testing 1 2 3, can you hear me, Zena?","thoughtSignature":"EvkBCvYBAXLI2nzV5nj+w3R+QSmGEzfq4i2Tj6IKzML4pRYi60tmkzRpKo8DJHFkLo4YD9AmGdnb+cBUZpZ31h6uf+YqcsUom69kScW/2po+6VEu4dwZpgIHO9aKqyoD0Q10ifVxNoaPGo0Gk1Do1yroDcdy5yP1T7yU2ky1VojJ+4G+ZCoKa56u4d7QRG78e9Gzh9pqRX0PgLKHvltuhXuaV0Xio6o0uSNxffG5/AcYwB304JDhlb1vMkdlaFLIW8ts6PzRNKoeq27uY8m8MP4nyw+eaZ20vbmHJ1+uzZV/xynFkFB8jElzQDM7CwTCsmyv9vPQAsRgZp8Y"}],"role":"model"},"finishReason":"STOP","index":0}],"usage
+[2025-12-20T02:32:04.068Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-20T02:32:07.700Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Hi Zena, just testing the dictate function, do you hear me okay?","thoughtSignature":"EsoDCscDAXLI2nyYoizX7ZNvB89Fzm6JzebzM9BDU7JqCkv7eLSZEt1ZeYHuKda/0MN1k/VX2MfwBvXa7K7dteY2+KJDqRNYKyoTcRlAzyXgrOSDzZJ4eiUYwl4Js2VD5Blkpu8i52b0GVvQY+kdNNCAYmU4lj2jmN9NkqW65+3YmPhkqHNOqRhXr30PewoP5enSnurg3HyeSHe9MCTNRieoV7G9LfQiFCQXAeoYw4SzzvDCFWKHvCb1YgMw6d6dbGPUdKl3zWBmqrijqwSt/ou4S+uC5ogEpc3z7VRVOvnVVMkHwkrInI/T7q3EdZtycYnlaXRMREuCxZCrcGgumwVVPL9+8r6S48n0K01Em/38AFR6X
+[2025-12-20T02:32:14.345Z] Generating TTS for text: Loud and clear! Your dictation is coming through p...
+[2025-12-20T02:32:14.920Z] Google TTS error: 403 {
+  "error": {
+    "code": 403,
+    "message": "Requests to this API texttospeech.googleapis.com method google.cloud.texttospeech.v1.TextToSpeech.SynthesizeSpeech are blocked.",
+    "status": "PERMISSION_DENIED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "API_KEY_SERVICE_BLOCKED",
+        "domain": "googleapis.com",
+        "metadata": {
+          "consumer": "projects/529322068632",
+          "apiName": "texttospeech.googleapis.com",
+          "service": "texttospeech.googleapis.com",
+          "methodName": "google.cloud.texttospeech.v1.TextToSpeech.SynthesizeSpeech"
+        }
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.LocalizedMessage",
+        "locale": "en-US",
+        "message": "Requests to this API texttospeech.googleapis.com method google.cloud.texttospeech.v1.TextToSpeech.SynthesizeSpeech are blocked."
+      }
+    ]
+  }
+}
+
+[2025-12-20T02:32:47.271Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-20T02:32:51.299Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Testing dictator, how does it sound?","thoughtSignature":"EvgDCvUDAXLI2nzwRMkPL9M4+Ich/3wdJMn0yCbRm9QcE0qqkNBL52Fxk28jNW1nfTnSZbR31lhftMZ2KfpF+UG8MY0gJbkne11oKvLP4PMJ8dg8VUUuxG4D1JUVbHJ9L+p9lnrc9y4nWgEzfwRAzLVRZ34HnhRo8yKkQAdGePWEzBpPCpzmE0qOTxeaIboAfZpm6w80YhCrbKTAMjpRFcs5MFsmS9bNCQtIB7V1r8K6FU2wtw+8JL+5AuPsdK3mW8BIrQNOdMGFlTerWI8vtfFKyS/b8MIKZ87u4ttFCQsUR9tKDpH2nNmMZNuzNSVUKY9Xbw1JO1zNFCGrhH0lRnmTdHJR8HPd/oEpJSns1wuUp4aKCMFu5yjg0oaR7ddcb6m2RDB8Pb22j
+[2025-12-20T02:32:57.443Z] Generating TTS for text: It sounds a bit... authoritarian, don't you think?...
+[2025-12-20T02:32:57.960Z] Google TTS error: 403 {
+  "error": {
+    "code": 403,
+    "message": "Requests to this API texttospeech.googleapis.com method google.cloud.texttospeech.v1.TextToSpeech.SynthesizeSpeech are blocked.",
+    "status": "PERMISSION_DENIED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "API_KEY_SERVICE_BLOCKED",
+        "domain": "googleapis.com",
+        "metadata": {
+          "consumer": "projects/529322068632",
+          "methodName": "google.cloud.texttospeech.v1.TextToSpeech.SynthesizeSpeech",
+          "service": "texttospeech.googleapis.com",
+          "apiName": "texttospeech.googleapis.com"
+        }
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.LocalizedMessage",
+        "locale": "en-US",
+        "message": "Requests to this API texttospeech.googleapis.com method google.cloud.texttospeech.v1.TextToSpeech.SynthesizeSpeech are blocked."
+      }
+    ]
+  }
+}
+
+[2025-12-20T02:41:48.263Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-20T02:41:52.929Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Hi Zena, I'm just testing your new voice out, what do you sound like?","thoughtSignature":"EtkECtYEAXLI2nzqTiguOfByalA880w7JvnpfhOC5Gd3zMMGfDwnMkZjW7Px/ViMne6rha2j1WAKZlwIRj1Wxkmysk9mnguoqFuJNNVMm78m7xPY1TqMR6Mol1zYHsBfFGaBBCpXcdN8g2lkkz/Flxa/F/kA3w6Quc2LpVNbmVL0oDkkjuy4SXdE6q2u4Qav73cgRPj5rAwl7BHCEo935eoJcEV6E1H92kHp7wfkvUKUfXgQ34Wg3xodjnzk2tcAIyT8z1cdfXbBh+1ud94cDBnS3cU4lYf0bLPnYpoV272Em00vrZdbQ2n9GtsydeN0g0R1kjtk0xxCETEk2lmkNiIMvAHxflTKdm5BPvul7FAK
+[2025-12-20T02:41:58.157Z] Generating TTS for text: Well, if I had to describe it, think of a blend be...
+[2025-12-20T02:42:01.273Z] TTS generated successfully
+[2025-12-20T02:46:02.876Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-20T02:46:07.609Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Hi Zeena, just doing a test, what do you sound like? Away you go.","thoughtSignature":"EpUFCpIFAXLI2nxVHMx3BRgweq5QjKDsBYsOm87szlY2HrKf91l+36t17UYbxBKroV3OxQFuxsWp2JKqFf+Iaxd0bTYG2VuGEq4KYLz8DVGc8NB5gjkyli/C/7SSnolWmDK5GU+dchG8jmnEcz0xyqpoJkcdEyrnSbY8P0e1rLDMv6l0ItadzFaSgOg/muJeoBTxIpM8nPTvSuNNT/jtrNlS3ItNJencLrNRFDLG/BS/WK6U7Ug5nLF208WEyekcwAGUox54zZohqSca8ljU4Q96qMPMpGSgs0PrQB2PN0dXG169m+VBqMTybHdvjeaLkDtILui2dDq0sFawYf1ed5qVIiY3Ryvt9QQ4ZAZNhLY3yXfg
+[2025-12-20T02:46:13.345Z] Generating TTS for text: I sound like the smartest person in the room, but ...
+[2025-12-20T02:46:16.247Z] TTS generated successfully
+[2025-12-20T03:03:49.904Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-20T03:03:53.746Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Testing one two three.","thoughtSignature":"EtMCCtACAXLI2nxJxT9BLRqdUyU4NU+T7Y0TGcrU0GJi2vBYu7Yl2u3lfPyoSEVgyHqSRsGzsXyhHtAXds2Lu79kO3RkHx24DE2XoCYOsa56Zr2njx0Dc5IiM01d8TPbzazfYPMYkdwi6SD2Xf8j3NGJhLs6IXVBLUEgr2/eyGxGFnI8+m3aDjm/oCm9HeR9kgL/J5lsxMcM7sqYV8bZ/9hiiqr3G7mzIkANoLk+1d8dsUjdJ6J1SB8r+a3ZJ9+Y5OyiTshBvRQYt2OIE21rLxHY4dm1NWHzbaoQ03+qeb9jF567gGSzXd2ip+h4W2/9X9MH6B++fyYzxFS5Wm8wq/q6wyMNfFlQZldvvl26cAuVzcCPZYyPh2UyYf6nrotOxafXlf3BiptEtGU4QaHNFMEIvYU
+[2025-12-20T03:03:59.598Z] Generating TTS for text: Loud and clear. I've run a full diagnostic on my s...
+[2025-12-20T03:04:02.208Z] TTS generated successfully
+[2025-12-20T06:18:06.469Z] Generating TTS for text: Loud and clear. I've run a full diagnostic on my s...
+[2025-12-20T06:18:08.951Z] TTS generated successfully
+[2025-12-20T07:20:19.521Z] Generating TTS for text: Loud and clear. I've run a full diagnostic on my s...
+[2025-12-20T09:35:11.314Z] Generating TTS for text: Well, it appears your calendar is looking remarkab...
+[2025-12-20T09:35:14.238Z] TTS generated successfully
+[2025-12-20T18:07:10.289Z] Generating TTS for text: Loud and clear. I assume you're checking to see if...
+[2025-12-20T18:07:13.072Z] TTS generated successfully
+[2025-12-20T18:09:11.607Z] Generating TTS for text: I am powered by the Gemini family of models, speci...
+[2025-12-20T18:09:14.386Z] TTS generated successfully
+[2025-12-20T18:10:04.339Z] Generating TTS for text: Gemini 3? You’re certainly living in the future, e...
+[2025-12-20T18:10:07.255Z] TTS generated successfully
+[2025-12-20T18:18:47.392Z] Generating TTS for text: {
+  "answer": "Since we don't have a specific prop...
+[2025-12-20T18:18:50.542Z] TTS generated successfully
+[2025-12-20T18:20:42.933Z] Generating TTS for text: {
+  "answer": "My apologies. It seems a momentary ...
+[2025-12-20T18:20:46.172Z] TTS generated successfully
+[2025-12-21T06:40:46.255Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-21T06:40:51.808Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"The quick brown fox jumps over the lazy dog.\nThe quick brown fox jumps over the lazy dog.\nThe quick brown fox jumps over the lazy dog.\nThe quick brown fox jumps over the lazy dog.","thoughtSignature":"EtQKCtEKAXLI2nw+kj1Hx7b8foASHIm4JwQ8FaFIFy8UZBOqC5B0Lgyarh06dETnUgoGobKDoYjDVGPvUPjlADX7F2LY+JnYC2oadpeq6QYDnuAIWTSf69G5WS0ukvc5iPkonSgxvYF6dCtr+td5h6XVpT4liOOYqpKtL17Lkc4x32N1ABF9wLnC/zNF47LK6P05GEIEIGqxAFdpBTM3WALGR/SL7tflpzByfxP/ie/Y5up6hk+TsUSfbR3
+[2025-12-21T19:54:03.091Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T19:54:04.967Z] TTS generated successfully
+[2025-12-21T19:55:28.962Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T19:55:29.465Z] TTS generated successfully
+[2025-12-21T20:13:09.785Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T20:13:10.399Z] TTS generated successfully
+[2025-12-21T20:14:41.751Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T20:14:42.294Z] TTS generated successfully
+[2025-12-21T20:22:29.666Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T20:22:30.324Z] TTS generated successfully
+[2025-12-21T20:22:43.664Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T20:22:44.148Z] TTS generated successfully
+[2025-12-21T20:29:50.371Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T20:29:50.941Z] TTS generated successfully
+[2025-12-21T20:31:02.342Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T20:31:02.833Z] TTS generated successfully
+[2025-12-21T22:43:20.662Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T22:43:21.642Z] TTS generated successfully
+[2025-12-21T22:45:17.697Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T22:45:18.165Z] TTS generated successfully
+[2025-12-21T22:49:42.279Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T22:49:42.986Z] TTS generated successfully
+[2025-12-21T22:49:56.279Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T22:49:56.729Z] TTS generated successfully
+[2025-12-21T22:50:04.277Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T22:50:04.772Z] TTS generated successfully
+[2025-12-21T22:50:20.277Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T22:50:20.749Z] TTS generated successfully
+[2025-12-21T22:53:17.111Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T22:53:17.588Z] TTS generated successfully
+[2025-12-21T22:54:08.009Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T22:54:08.478Z] TTS generated successfully
+[2025-12-21T22:54:36.059Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T22:54:36.548Z] TTS generated successfully
+[2025-12-21T22:55:02.060Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T22:55:02.575Z] TTS generated successfully
+[2025-12-21T22:59:51.839Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T23:00:19.984Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T23:00:20.456Z] TTS generated successfully
+[2025-12-21T23:14:38.002Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T23:14:38.593Z] TTS generated successfully
+[2025-12-21T23:14:47.002Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T23:14:47.456Z] TTS generated successfully
+[2025-12-21T23:15:16.999Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T23:15:17.501Z] TTS generated successfully
+[2025-12-21T23:25:13.035Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T23:25:13.679Z] TTS generated successfully
+[2025-12-21T23:25:26.030Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T23:25:26.695Z] TTS generated successfully
+[2025-12-21T23:25:58.028Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T23:25:58.528Z] TTS generated successfully
+[2025-12-21T23:35:33.622Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-21T23:35:34.400Z] TTS generated successfully
+[2025-12-22T01:17:40.097Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:17:40.748Z] TTS generated successfully
+[2025-12-22T01:17:59.101Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:17:59.609Z] TTS generated successfully
+[2025-12-22T01:18:13.100Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:18:13.632Z] TTS generated successfully
+[2025-12-22T01:26:29.226Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:26:29.882Z] TTS generated successfully
+[2025-12-22T01:37:00.504Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:37:01.074Z] TTS generated successfully
+[2025-12-22T01:37:21.511Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:37:21.973Z] TTS generated successfully
+[2025-12-22T01:39:05.867Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:39:06.342Z] TTS generated successfully
+[2025-12-22T01:39:53.571Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:39:54.050Z] TTS generated successfully
+[2025-12-22T01:40:11.573Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:40:12.320Z] TTS generated successfully
+[2025-12-22T01:42:30.971Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:42:31.469Z] TTS generated successfully
+[2025-12-22T01:44:47.708Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:44:48.266Z] TTS generated successfully
+[2025-12-22T01:45:13.712Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:45:14.276Z] TTS generated successfully
+[2025-12-22T01:49:04.732Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:49:05.219Z] TTS generated successfully
+[2025-12-22T01:52:01.106Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:52:01.731Z] TTS generated successfully
+[2025-12-22T01:52:27.107Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:52:27.731Z] TTS generated successfully
+[2025-12-22T01:52:39.107Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:52:39.606Z] TTS generated successfully
+[2025-12-22T01:58:08.049Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:58:08.572Z] TTS generated successfully
+[2025-12-22T01:58:41.106Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:58:43.022Z] TTS generated successfully
+[2025-12-22T01:59:06.054Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T01:59:06.525Z] TTS generated successfully
+[2025-12-22T02:28:54.352Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T02:28:54.879Z] TTS generated successfully
+[2025-12-22T02:29:42.353Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T02:29:42.895Z] TTS generated successfully
+[2025-12-22T02:52:16.531Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T02:52:17.189Z] TTS generated successfully
+[2025-12-22T03:02:12.358Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T03:02:12.909Z] TTS generated successfully
+[2025-12-22T03:02:53.355Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T03:02:53.903Z] TTS generated successfully
+[2025-12-22T03:07:28.405Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T03:07:29.061Z] TTS generated successfully
+[2025-12-22T03:16:54.249Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T03:16:54.754Z] TTS generated successfully
+[2025-12-22T03:27:20.768Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T03:27:21.447Z] TTS generated successfully
+[2025-12-22T03:39:06.806Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T03:39:07.376Z] TTS generated successfully
+[2025-12-22T03:42:16.440Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T03:42:16.925Z] TTS generated successfully
+[2025-12-22T03:59:34.885Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T03:59:35.466Z] TTS generated successfully
+[2025-12-22T04:11:13.013Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T04:11:15.220Z] TTS generated successfully
+[2025-12-22T04:12:10.476Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T04:12:11.204Z] TTS generated successfully
+[2025-12-22T04:23:11.042Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T04:23:11.570Z] TTS generated successfully
+[2025-12-22T06:00:30.071Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T06:00:30.715Z] TTS generated successfully
+[2025-12-22T06:04:50.061Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-22T06:04:50.536Z] TTS generated successfully
+[2025-12-23T21:56:38.490Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-23T21:56:53.841Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"It's a bit cold out now before Christmas, eh?\nRight size.\nProbably.\nOkay, cock.","thoughtSignature":"EtkmCtYmAXLI2nyGLJzUrXEnBNut8yk4OzuU6TEtxjzrN+/BQYb+W8RMIrYuhnSZO11z2ycsIyiIfwTSEIUnP99SYi6yCWpft4iiOSRzn21gD+ZHrf4pF6saM8xnJR86cMmbsI3uAceTW7HU19TJ5A4Zvupf9RtFy2hHHkzcK2TEZ6jBdZJqz2/9nxdO+2OEQv4gCi4MID7D74d4rzNfJdOHBnp/KZkbtUi8QkRVaLdAclYzfGOmzXgxvQezQHSeDA/Lg0SKmQ5ZZhkz+z8qnmleRJJM48oqcYNPQE09pUB0JT/RdfWOoCk/br0EbNhaOtvTw8K3Rferb/NhjHKXQo2dr1ddKxb
+[2025-12-24T01:24:24.192Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-24T01:24:30.375Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"This time of year we get so busy with preparing for Christmas and shopping for all those gifts that we often forget about our health. But you can't be at your best if you're not taking care of your own body. So making some good food choices, getting some extra sleep, taking a walk, all those can help keep your body and your immune system strong. So try to make some of those choices during this Christmas season and be the best that you can be.","though
+[2025-12-24T02:43:54.876Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-24T02:44:00.435Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"- Alright, do you want some more briefing?\n- Yeah.\n- Okay, cool.","thoughtSignature":"EswNCskNAXLI2nyJvw1/5YLtzdvxvDXq9ZOEXBXC4dvu09Bt7OGP7NgOMD/G8MHqeK5wm4/M2+ZK6oMKX4AHi2q6r5OrIknQy2YrI9ASwcgRFg4DHkCflFG6+d+SDH1uAb+38bkvSIGd37CUL59HuOfM7zMJ/19hgNcGuOeQF//UBXNh8moV0IfOTWoaVmhVnM9Oq9UOTr/nLRBJLeV5N7JMIuoG+jT3LT9OIOWo3QkUpn8MbM8qreYkhbjFM/RvTl+UQDvyrJyY0ee9kDEtorNPy9B0j050IR9FTbOvpAneoNKjsxpYhV/87Ifu7ErXR/LWAOcFaPVo2D7iBasfYEIcmL0+kXroX6ZaszF3X8qmYPQ
+[2025-12-24T03:06:14.131Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-24T03:06:19.462Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Is this thing on? Can you hear me?\nYeah, yeah, it's on.\nOkay, perfect. So I was thinking about what you said yesterday, about the whole project management situation.\nMhm.\nAnd I think you're right. We need to streamline the communication channel. It's just too cluttered right now.","thoughtSignature":"EuAPCt0PAXLI2nyAJGJn7OLb+GNVmq9S6t79Fi8Tq/9esZxLR2RYaqsZ0OP3D0MxfX5T56nrmQRvhvACVwVK64NL45djKKN/L9T5zXptA93VZtsEps2WDmVyw5im9rcf/AlG5Qzbo9ub8/49fPU77
+[2025-12-24T03:11:52.767Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-24T03:11:57.302Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Champs did bring a couple...","thoughtSignature":"EpEHCo4HAXLI2nyzEPbpC0+RQr7+Ys2QK6bo6gJPzjfp7tr81jTaPDUqxDD1LJ0xs/iIB+cJgo7X9DbdAncdQS7/iH0Q3u5c/iZWEPJ+SH2bXx/eXrY1/8TJlABHosLiktPOC0uY1XpsNVaiIFHijFP088Bdi1pV17jCXsRvkHIwhp88wZ6LP34A2cnRU3OelFh5Km7ka3MMiOmzuBD5eoYyCaqGUPTZwMIDOTWYiepPkD5ZJ8TDZJa2NzhTlUDbv2jvbZXKnUXNUQVYSvWn4ZbFYk6MdXzjhrdurf7gRAKlZ3GqKB/W/z18k3DAnevC7hedfkhhhWLgJs7pXD6VyM7K+3YHB6CZBk0BH++vTOsrM/0LWEFHrh6gaNzoHL9DkQIrGjEOMB6GdPYlLuTvC
+[2025-12-25T23:07:29.191Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-25T23:07:32.367Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Wait, wait, wait, wait.","thoughtSignature":"Er8DCrwDAXLI2ny3xRXAQfhlXdphTELsKLSbbT7fFv11/dnwXBEQmNBpdl+QgU3Llh2noz+JRYuVpk/VLAmADHAn7P0lNZ4QwG8DpyJoo+cUl72DRk3Ru1u2pb0q+R0oD8h2X6H1Fi++mTTBfQbKEACVY06TO6wB1jiBIqR198j0960QpB/PIUYOKirUVpBPCQhMXpPQdff1/++lWlMdLYkhi5BVaiOzrDPtyO86EHZFadqknnGcO2OhVXae/wn5veLIfRjyR5l4jlhytPuC7wurYtSIJ0t6omct65kpeO36vmxGbZXAJBatLZ7C9PsP3Da/IzXqVIIHNJFGnUt0yHFc3I5HO/8KwkyBQr199O2B1XgUpHyoGaAWk+6E5yjNBuQcMJ/1jyvvr4kYUigde3nH5/
+[2025-12-26T02:32:23.975Z] Generating TTS for text: Hey, 15 Marine Parade hasn't had much activity lat...
+[2025-12-26T02:32:26.078Z] TTS generated successfully
+[2025-12-26T02:33:10.582Z] Generating TTS for text: Hey, 42 Kohimarama Road hasn't had much activity l...
+[2025-12-26T02:33:12.643Z] TTS generated successfully
+[2025-12-26T02:45:43.309Z] Generating TTS for text: Hey, 15 Marine Parade hasn't had much activity lat...
+[2025-12-26T02:45:44.072Z] TTS generated successfully
+[2025-12-26T02:46:07.222Z] Generating TTS for text: I love the momentum. Since I'm currently working w...
+[2025-12-26T02:46:09.134Z] TTS generated successfully
+[2025-12-26T02:46:15.792Z] Generating TTS for text: Hey, 42 Kohimarama Road hasn't had much activity l...
+[2025-12-26T02:46:17.694Z] TTS generated successfully
+[2025-12-26T02:46:46.344Z] Generating TTS for text: Hey, 15 Marine Parade hasn't had much activity lat...
+[2025-12-26T02:46:46.834Z] TTS generated successfully
+[2025-12-26T02:47:05.833Z] Generating TTS for text: {
+  "answer": "Blank slates are for amateurs. To s...
+[2025-12-26T02:47:07.917Z] TTS generated successfully
+[2025-12-26T02:47:38.946Z] Generating TTS for text: Hey, 15 Marine Parade hasn't had much activity lat...
+[2025-12-26T02:47:39.456Z] TTS generated successfully
+[2025-12-26T02:47:59.599Z] Generating TTS for text: Blank slates are just playgrounds for brilliance. ...
+[2025-12-26T02:48:01.587Z] TTS generated successfully
+[2025-12-26T02:48:15.154Z] Generating TTS for text: Hey, 42 Kohimarama Road hasn't had much activity l...
+[2025-12-26T02:48:15.723Z] TTS generated successfully
+[2025-12-26T02:49:11.537Z] Generating TTS for text: Hey, 15 Marine Parade hasn't had much activity lat...
+[2025-12-26T02:49:11.991Z] TTS generated successfully
+[2025-12-26T02:56:44.068Z] Generating TTS for text: Hey, 15 Marine Parade hasn't had much activity lat...
+[2025-12-26T02:56:44.104Z] Generating TTS for text: Hey, 15 Marine Parade hasn't had much activity lat...
+[2025-12-26T02:56:44.685Z] TTS generated successfully
+[2025-12-26T02:56:44.697Z] TTS generated successfully
+[2025-12-26T02:57:01.608Z] Generating TTS for text: 15 Marine Parade is currently in the ICU with a 35...
+[2025-12-26T02:57:04.214Z] TTS generated successfully
+[2025-12-26T02:57:51.024Z] Generating TTS for text: Hey, 108 Remuera Road hasn't had much activity lat...
+[2025-12-26T02:57:51.062Z] Generating TTS for text: Hey, 108 Remuera Road hasn't had much activity lat...
+[2025-12-26T02:57:52.977Z] TTS generated successfully
+[2025-12-26T02:57:52.988Z] TTS generated successfully
+[2025-12-26T02:58:34.420Z] Generating TTS for text: 108 Remuera Road is far too prestigious to be lang...
+[2025-12-26T02:58:37.086Z] TTS generated successfully
+[2025-12-26T03:00:44.783Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-26T03:00:52.848Z] Generating TTS for text: Hey, 42 Kohimarama Road hasn't had much activity l...
+[2025-12-26T03:00:52.872Z] Generating TTS for text: Hey, 42 Kohimarama Road hasn't had much activity l...
+[2025-12-26T03:00:53.285Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"They're absolutely brilliant. Like they have so much energy. They're just so full of it. They're just very positive people.","thoughtSignature":"EqsZCqgZAXLI2nxjbyf1u/ZZ5hnziGPk9w8HKImyWr7hOyWiMsshzvSsOPXzWxu2LRg/ZDSDr0J4cgG5Wy2uYUFEu8DyIPIKo8v0tTg8xKvHHqlO1oh6hg9YuEKCbTq34fepBCqxV8ZGYICkOZ5kmrFwyDNkwJGcSMqoYdyGuE7DXjpPy/OktgT0tmS5O1FJKC+u0PS0MoKVE6LpWnogH5mLrAw9nWx4Q6wOAMFiptAJn/CBk2pA8kU5SPhPiaFtFXV/L8554NwcGs4YgI7u1VL44K/eyactZx/SgcEv79fXbMXOIygmyj
+[2025-12-26T03:00:53.293Z] TTS generated successfully
+[2025-12-26T03:00:53.375Z] TTS generated successfully
+[2025-12-26T03:01:03.459Z] Generating TTS for text: Energy is fantastic for a Saturday morning HIIT cl...
+[2025-12-26T03:01:06.828Z] TTS generated successfully
+[2025-12-26T03:01:27.635Z] Generating TTS for text: Eight days of radio silence is a red flag. At a 48...
+[2025-12-26T03:01:30.394Z] TTS generated successfully
+[2025-12-26T03:11:40.964Z] Generating TTS for text: Hey, 42 Kohimarama Road hasn't had much activity l...
+[2025-12-26T03:11:41.002Z] Generating TTS for text: Hey, 42 Kohimarama Road hasn't had much activity l...
+[2025-12-26T03:11:41.683Z] TTS generated successfully
+[2025-12-26T03:11:41.728Z] TTS generated successfully
+[2025-12-26T03:12:57.944Z] Generating TTS for text: Hey, 108 Remuera Road hasn't had much activity lat...
+[2025-12-26T03:12:57.963Z] Generating TTS for text: Hey, 108 Remuera Road hasn't had much activity lat...
+[2025-12-26T03:12:58.435Z] TTS generated successfully
+[2025-12-26T03:12:58.485Z] TTS generated successfully
+[2025-12-26T03:22:41.108Z] Generating TTS for text: 108 Remuera Road is currently in the 'danger zone'...
+[2025-12-26T03:22:44.695Z] TTS generated successfully
+[2025-12-26T03:24:20.624Z] Generating TTS for text: You're very welcome. Now, let's stop the clock on ...
+[2025-12-26T03:24:22.779Z] TTS generated successfully
+[2025-12-26T03:27:42.645Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2025-12-26T03:28:04.928Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"[No speech]","thoughtSignature":"EpU9CpI9AXLI2nxOnSTxqmpFQo+j+cYxsnQDCkp7BPTbaP7Hs3RrIVpgeLeZk6gUbqscq0Gs0gcibRLJCTw8eu9yeByxyRL2F9xGq7Dj/iD5LQWTFKnWiHrncc5rb0o6MI4dpkpJ8HZSZTZGivzaLinklMQGsgDRGWnLEI+c3ylYdav1SeGzGX0ExMDMdQdol04RQV5gYw7J6+91l5LPJrK2bsoRD0kG5BPBADvKXiSrSryB/jbnPrHi9wN/dLCuoHof0uZWyQVhms17DTL/yPKn99dL6r71N8aRuRwQzhd0Aey5J2922Wjol1QmvQezIMYqDfWwKoDMGP+9SphjiSuSQDZfUMoMvGwo5dwBmgOZ1d75b+sQROQ3IzETaVF9z48Y+e+aIlNMMLor0bxgqJxYU/EqHEg3Je6w1I
+[2025-12-26T03:28:23.138Z] Generating TTS for text: 108 Remuera Road is currently in the 'danger zone'...
+[2025-12-26T03:28:43.526Z] TTS generated successfully
+[2025-12-26T03:47:15.633Z] Generating TTS for text: 15 Marine Parade is currently on life support with...
+[2025-12-26T03:47:18.538Z] TTS generated successfully
+[2025-12-26T03:48:22.733Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-26T03:48:24.465Z] TTS generated successfully
+[2025-12-26T03:57:10.118Z] Generating TTS for text: 15 Marine Parade is currently on life support with...
+[2025-12-26T03:57:13.869Z] TTS generated successfully
+[2025-12-26T03:59:17.776Z] Generating TTS for text: 42 Kohimarama Road is far too premium to let slide...
+[2025-12-26T03:59:21.482Z] TTS generated successfully
+[2025-12-26T04:00:24.638Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-26T04:00:25.342Z] TTS generated successfully
+[2025-12-26T08:41:18.827Z] Generating TTS for text: James is drifting, and at $2.8M, we cannot let 42 ...
+[2025-12-26T08:41:21.603Z] TTS generated successfully
+[2025-12-26T08:42:20.790Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-26T08:42:21.178Z] TTS generated successfully
+[2025-12-26T08:43:21.408Z] Generating TTS for text: 112 Victoria Avenue is officially across the line,...
+[2025-12-26T08:43:24.333Z] TTS generated successfully
+[2025-12-26T08:45:46.651Z] Generating TTS for text: 112 Victoria Avenue has officially settled, but a ...
+[2025-12-26T08:45:49.357Z] TTS generated successfully
+[2025-12-26T08:46:00.690Z] Generating TTS for text: Zena is checking if you need anything else......
+[2025-12-26T08:46:01.081Z] TTS generated successfully
+[2025-12-26T08:48:01.173Z] Generating TTS for text: 112 Victoria Avenue is a Remuera classic, but a 50...
+[2025-12-26T08:48:04.219Z] TTS generated successfully
+[2025-12-31T19:22:23.807Z] Generating TTS for text: Eight days of silence on a $2.8M Kohimarama deal i...
+[2025-12-31T19:22:26.777Z] TTS generated successfully
+[2026-01-01T21:32:38.604Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-01T21:32:44.482Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Hey what's up guys? Check this out. New whip. You already know how we do. You already know what time it is. Stop playing with me. Stop playing with me.","thoughtSignature":"EpgMCpUMAXLI2nzWsn6jvqIZE/q9M8WwDHOw4Iai8ZHi0Vh/KdLwmfdXN/zCeWJV2UPepnWsEvFZcc20+Pscgce2WkuOzxfYBVwsIHGAQRRpPr2nt0p+QLf1qPr/Rn7/Bp+ELzuMr4c9eB1CktoJHT33abyHu9CX8hXeFZpUmNQV1gZ1f38YsJf8zGbIld8Tq2REASoWiWDmfuqjXT9KWlZChrPjJI2Zs3W+/CPC3gGofBi9g18EWxz68V3AQVTJ5TRgKZC6DAZKWbfDuG/oj/QI4D
+[2026-01-01T21:33:06.317Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-01T21:33:10.525Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Welcome back. Welcome back to our 10-minute masterclass. I'm excited you're here today because we're talking about lead generation.","thoughtSignature":"EoAGCv0FAXLI2nxWAfTDoAMFlV1/ZiuhAf8JV1cskJdal/4ASFfBErt/Snk5QoiRpRPdbPfTfM027ZHxSeuvLMI4y/zZMpFJrcKLxliU25i+lROxsJauF3zmFvRWe35jDe6smT7DzqjvrulXcULFJFedJ5UATpBVnF7PM0sgZ8IM76FE64pLmV+k2E6Wi27djgNmar4oR84u3K6fOunD3LNbiJRA7gWfXQ8DcevvZYnGnomwvAh6w3FxPhd3mg5LLAqrSS+2t5FS7rfwqTufsSwd7063ppA5dZUlQQWrmGLlI9
+[2026-01-01T21:33:16.363Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-01T21:33:20.365Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Hi.","thoughtSignature":"EroDCrcDAXLI2nyX2ybx2UDgIHLpUZ6DwTuw12c/SuycLHWzUg+jVV5aybAd3Bxr4u5NoQ/sabxfoBzsO9vPm6m9YUMN2H5tIQ474T7iPZRxQGihTjy2lV7iJJVNmHSywrhmH3f+lzZ1zSjQIV91kbUY1Yx/sYlsJ/4uvKG5vN21UVHDSbAlBj8NGfilJEqP9mEW6m57UcRjTL8wx4vhZaJ3uNcPlWUFIM+TI3UqtIP5SXLmiHLeh0Ocrk/C4hyD9rOQM9I0N+ylZZHPD1iTW6bgIo4SothOeCZcmOBN60spiZsN9uvLRT0SvuWMSKdKDQYxX0nokrpjR8ijxyaI7dFgrLsoI71fYwFXzDqB2NaKh0ZG5dx9HPAGLv8Sardq63ynzhiFDwp9wTMz1ko1tbtzIikJAKs6ndiD2GeUtymSjG
+[2026-01-01T21:33:26.180Z] Generating TTS for text: Kia ora! I'm Zena, your high-octane real estate st...
+[2026-01-01T21:33:28.321Z] TTS generated successfully
+[2026-01-01T21:37:28.279Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-01T21:37:32.599Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-01T21:37:35.933Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"This is a recording. I hope you like it.","thoughtSignature":"EoEECv4DAXLI2nwPeluzbVd8d9ej65HBuGsoHSNjfmg3Gs/yyQYExO4wVIJ9lOfVz50wwH66FywlhCp9yOn+4Oky8s8R5iSl1PMVoEp/wPYSpPSec9MEVSO7F834zUrXzymdz+Nsl7bpB9qogf4SL4loII4M+NuvmCGcoRIGsJwNFIL/TRK9kNZZesCXFjPsk0Mcho217ulIfEYVTtQSif9ll2ivOQjNg5VJ62btSX8DD8AC70XOkQm657k5vNbb2uUR5sk7smZKMJwa7TQZH90qZehJp8niUHrnP6fWL8y6ZJbwx2sK+8BOfQSOwhcwPdifNhaXzN4l3Q3DazwcjlDsQ2fjJSjJQM5m5cXFpioxRNJRnVwD8Uv3daNP4DIp4+gYg2h4Q
+[2026-01-01T21:38:18.260Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Hi Zinni, can you hear me?\nYep.\nHello.\nHi. Are you able to measure the hallway that runs from... is it a straight line there? Or is it quite angled? The one where the nursery is to the main bedroom.\nOh, so past the toilet and bathroom?\nYeah, is it a straight line? I thought it might not go straight there, or has it got a bend?\nUh, so pretty much from the nursery to our room, it’s a straight line, but not for that. It would go from about the nurs
+[2026-01-01T21:43:44.544Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-01T21:43:48.626Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"One, two, three, go.","thoughtSignature":"Et8DCtwDAXLI2nx0Td0OCuPWmlkfVGRV3SxBLHzqmIeI2aneLAUpDTI3vSod4RCo8GmaJcicvVZv31Gv6A4AytcwpSzMsbMYqQB3EqsLsf824qWZZN9F4THfq2iK5fxZnbUT95C998AC4MChK1UfSOL5VC32PE1MdphrJh99U3dUF0M3l7wzpddYYmp3mv3sF7Huvab2A30hYIULdk/aE23Ci/i5LvcYl58LYFwC+yrzHXz7da3UqQZRW/AQR11JQ9skE+ZUkvh2ZPZXpq2vHDA/BkCfkXhpPv1cxb8sPrKHmMSRrhstntI/hvyHMdFDhuPnoXP4r7wPyewM8xiWuPGuY72QAEtsfJ8hEm6IDACBFZ9gZ4dTfAzt7ECTaqf/nomLpF5x8IwRZ6kDV2yU9L4SY8dhc
+[2026-01-01T21:59:10.284Z] Generating TTS for text: Zena is checking if you need anything else......
+[2026-01-01T21:59:12.196Z] TTS generated successfully
+[2026-01-01T22:00:21.271Z] Generating TTS for text: Zena is checking if you need anything else......
+[2026-01-01T22:00:21.779Z] TTS generated successfully
+[2026-01-01T22:00:53.264Z] Generating TTS for text: Zena is checking if you need anything else......
+[2026-01-01T22:00:53.806Z] TTS generated successfully
+[2026-01-01T22:02:55.897Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-01T22:03:06.625Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Um, who are the top three buyers at the moment, from what you can tell? Maybe just the top buyer will do, one person. Yeah, let's focus on one person at a time. \n\nSure, let's do that, please. \n\nUm, where's the buyer's details? You said you're pulling up the details, where are they?","thoughtSignature":"EugcCuUcAXLI2nymToEZZOXkMWn7gWEiRDAR8taEr37NX48ZXpSmL8PA/SYeJvzLqa1ilna+mdeLwciLQU2qAd3Yqt9BSqu3mvkHhMY1iNZuJjsyC+gL7mBEh6VGQkqnEmEmt4vbFPyTsdiQAty
+[2026-01-01T22:03:14.942Z] Generating TTS for text: My digital archives are currently emptier than a h...
+[2026-01-01T22:03:17.267Z] TTS generated successfully
+[2026-01-01T22:03:53.669Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-01T22:03:58.011Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Find me a property on our database that has been taking very long to sell and create a strategy for me to get some buyer interest in it.","thoughtSignature":"EuIFCt8FAXLI2nxYW346H4gQxCNu+rxbhM+sgraT3glDjuA/IX2WGLdoQpmsoknLU1exdr8Qi4nhSb4tNEmnfB93uL1JayrqNkPq0oH2DrmTaf1nxPycHlthDSJEvF7UIQVePBsTE7otp9V/DCUy5fy6XIumBI5zTkq8zU3cASIpl/UHLQblwVGj1D5YGnZdHhqdUJIaP2HTiw/2G4gBYxCJR/mDTRjxi+eZVzoaE7YFWxo6qHo+Hmd+ey0f49IWriNSaudCMC/U9GPiZ3nbd7VYAwZ7emLkL6k+dfCzA
+[2026-01-01T22:04:09.047Z] Generating TTS for text: The database is currently a ghost town—no listings...
+[2026-01-01T22:04:11.673Z] TTS generated successfully
+[2026-01-01T22:20:14.725Z] Generating TTS for text: Zena is checking if you need anything else......
+[2026-01-01T22:20:15.492Z] TTS generated successfully
+[2026-01-01T22:20:39.399Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-01T22:20:58.162Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"How many contacts can you see, Zina?\n\nYou currently have one contact listed on the platform.\n\nThat's weird. I see a lot of contacts, so I'm not too sure why you only see one. What's their details? Name and everything else on them. Pull me a full intelligence report on this buyer you can see.\n\nThere are currently 15 contacts listed in the system, however, you have limited the access to only one. Do you want me to update the system to see the rest
+[2026-01-01T22:21:04.386Z] Generating TTS for text: Understood. I'll be back in the digital vault unti...
+[2026-01-01T22:21:06.298Z] TTS generated successfully
+[2026-01-01T22:56:59.665Z] Generating TTS for text: Zena is checking if you need anything else......
+[2026-01-01T22:57:00.325Z] TTS generated successfully
+[2026-01-01T23:09:44.032Z] Generating TTS for text: Zena is checking if you need anything else......
+[2026-01-01T23:09:44.625Z] TTS generated successfully
+[2026-01-01T23:30:12.281Z] Generating TTS for text: Zena is checking if you need anything else......
+[2026-01-01T23:30:12.833Z] TTS generated successfully
+[2026-01-01T23:38:56.398Z] Generating TTS for text: Zena is checking if you need anything else......
+[2026-01-01T23:38:56.967Z] TTS generated successfully
+[2026-01-02T00:03:07.962Z] Generating TTS for text: Zena is checking if you need anything else......
+[2026-01-02T00:03:08.669Z] TTS generated successfully
+[2026-01-02T00:04:36.186Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T00:04:43.101Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Okay, let's see here. I think that's it. Wait, one more thing. Okay, now it's done. Okay, sending now. Done!","thoughtSignature":"EooMCocMAXLI2nzYWHSf5kmf/uYzmRGblac0m8v2iOkZ2vKlFnnGu3DS83SCMIjeT14gyU/6FOYj++C6p1JGgRCSUkIIJ8YXh0uC3MzUhUZvIaLNu1X9YfMAuSKFlZTYnwPwssA908gVuMUGpdY9Zb+HhnPA+REUZWR1avdSLrCHJMujDqGLtE1wt1qrPxMBTubCm9zMQk5XSgYWoXITgW8eOmKnS1PN9uNjp5sbYmUMfQbV7CFrWfsUZWfVr+P050aikckMrzV1M2M/wpkPwKpqFdivCocmtAeDcvgEk9/IUcEeLZ4lwzXBJ7oVuKhE8NrnL
+[2026-01-02T00:04:50.571Z] Generating TTS for text: Efficiency looks good on you. Since you've cleared...
+[2026-01-02T00:04:52.552Z] TTS generated successfully
+[2026-01-02T00:10:52.602Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T00:11:12.670Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Okay, but look at how cool these candles are that I just found on Amazon. They're tiny candles and tea sandwiches. Like, how cute are these? They look so realistic. I literally want to eat them.","thoughtSignature":"ErpWCrdWAXLI2nwMxn2Ujcu72rasNRd6BO224hTk6XiAUPy7AoTo5kSu/ZDxic5SvWtaTS9dOcNyQMGnZvVP6VLrSdI873XV17TQE4bbZSW5eU8II3sMt46or2pRj4Yd5ZQ9tWyy2OWo00dKIUjJc+b9zN+cGwC+XbPRoQ1qGW/V1ZXi8TVPkx6VKjM9EilhtPnObs2QfUW8XMyfCfkbYLkUZSYIfzSywHsZiSobcf+80Lj
+[2026-01-02T00:11:12.977Z] Generating TTS for text: Zena is checking if you need anything else......
+[2026-01-02T00:11:13.633Z] TTS generated successfully
+[2026-01-02T00:11:18.883Z] Generating TTS for text: They look convincing enough to warrant a medical d...
+[2026-01-02T00:11:21.000Z] TTS generated successfully
+[2026-01-02T00:13:41.738Z] Generating TTS for text: Zena is checking if you need anything else......
+[2026-01-02T00:13:42.282Z] TTS generated successfully
+[2026-01-02T00:14:20.138Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T00:14:24.673Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Cool, can you hear me at all?","thoughtSignature":"EuAFCt0FAXLI2nxYXJ1jjK5YXzOcZe2QDKEg8/n6uwNFv5X/HUqWl/Ze9vXE18TCfL0G+28PB9cGEoqF4fooyJMubETnFksf2BZ1BRS9y090UlGgJz8rucmrMd/fovxz9oMjsSiQufslSy2D3ke9p8wz4Z23o+mWO7OlBRaZ2x0NAAhgjK/7qoeUjRrNTblFfTFBCty4Pqy1nkEUz+YSGCbh68QZUtIFUasOuI7SZo+Mf/JPjOGiwP4y7WWt+0nyEpdKvg9ciD4WEj6UTf2eLRjZyL8FylceQmYm5Tne1J1DqsuMZDD/r09suYghzeDQ0PceZM2NN541WOpzN18UKEYv/U0dgUolE84h1Al/+fldYUmVo664KGogYmPxOm4+vJKbXicFl/AQFejTKW3S
+[2026-01-02T00:14:28.899Z] Generating TTS for text: Loud and clear. I'm sharper than a freshly staged ...
+[2026-01-02T00:14:31.167Z] TTS generated successfully
+[2026-01-02T00:24:07.154Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T00:24:15.725Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"(No speech detected. Only the sound of typing is present in the audio.)","thoughtSignature":"EuEWCt4WAXLI2nwcXLlYEraTTHyRlnvz8CssSlSXYMt9B53aAD2/ktaQXxp/ZCSQn22enCt5UgdpAkBrkayG3VwrHInHfbRfIzqFeR+FZ6MJH+vChNUQb6m+DnZgcRUf3vHL49S3NbMZL69u/1IkC0+ND1unQik34/MIXW/G/kM5lcHl/7K9JVLKFLCpDjtXfoOF6p6qw1q3ysqJtMs2nZM+Ois38luWj1232Yks+1Ks6albrW0YEQp1Ez5NqVTGycNMqBM3PS/5zyWrbTntoB7jz8KqKmKMMeOOZq3+MQ4S8KpY/hj2kdC2YhajtkAWpEWFqyyuqAItubFe0tanHtwABgYc9LLJ9QqEkoqJI6
+[2026-01-02T00:24:19.465Z] Generating TTS for text: I hear the keys clicking, but I'm not a mind reade...
+[2026-01-02T00:24:21.741Z] TTS generated successfully
+[2026-01-02T00:24:33.963Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T00:24:44.984Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Can you hear me testing testing\nOh yeah\nNo\nYeah\nIt's not\nYeah\nI don't know\nYou can see it\nYeah\nOkay","thoughtSignature":"EoIhCv8gAXLI2nyKKqPkB6hhhGYO7TOaBENWGkZ6Vj6+tQAryig3SXzU77JIAza5KS4f3mb9F4BbYKljpABBzerTaPOsrYxpOablsLihYqakYQ0FUVnckuAbqs5439shUJsL5AnH0l2EybS/wIFBMXgitougqcCXphlT0I+OH4NV1+BPrmY/gF56N+H5HUrmooWFGCwtAM3mRdf0ZaohfQ7eGyVOogGPMg3QjycKBGf+7GqcCudmHfdXJ+bKodfA7vJypx/K/4gQKbyoq5/2y9puuVvKuvLKTQjx3hgAwHhb+PQbWTxuydZ14C8G8mnOjTL23
+[2026-01-02T00:31:14.023Z] Generating TTS for text: Is there anything else I can help you with?...
+[2026-01-02T00:31:16.006Z] TTS generated successfully
+[2026-01-02T00:33:07.704Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T00:33:19.449Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"- So surely it doesn't even have a car right.\n- And you see this whole area here?\n- Yeah.\n- That's my old garage.\n- Yeah, it would be. Oh, really? Is it garage that goes way back?\n- Yeah, so that's the garage, I walked into the garage and the motorbike was here. So that's been an addition there.\n- Oh, shit.\n- So that was a garage and split it. So that's how...\n- That must be a garage.\n- ...that's how you increase the value of a property.\n- G
+[2026-01-02T00:33:27.562Z] Generating TTS for text: That garage conversion is a total power move. Swap...
+[2026-01-02T00:33:31.011Z] TTS generated successfully
+[2026-01-02T01:24:39.227Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T01:24:49.956Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"- Are you having drinks?\n- I’m not having a drink!\n- Think about the baby.\n- I’m not pregnant!\n- That’s how you do it.\n- Do it just like that.\n- Shake it right down.","thoughtSignature":"EpYeCpMeAXLI2nz25wklMQXwjUW6BCYMc4qtTStIUBUH/6AhpHfbrA998yzvY2LnZ3vjz1XM/mwQV63ojul72reC8DlVWd+5mKX022dp63FjPLgYqgz6G9i78BSG+cSGtGp3+SJRhyZgZNrtOYxYT/+MJyesP189LZEWiwjcbPVhIuE0NiiHRUYI4mz66TB7MNuDBJtFXYAgHAjS0qIWJgZ9Xmnd2g6NSvnrXpZQTFd0CA8FiqlfpnwHOjDdmTsK8UEayv
+[2026-01-02T01:24:58.699Z] Generating TTS for text: Channeling *The Wolf of Wall Street*? High energy,...
+[2026-01-02T01:25:01.136Z] TTS generated successfully
+[2026-01-02T01:34:25.984Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T01:34:32.067Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"She was done with love. Here's your favorite song. No more, no more. She was done with love.","thoughtSignature":"EvcLCvQLAXLI2nwsi2n/da1LWgAuuJ/gvPtFcykpdVMtmnNi4N9P7d2YyjK2hmCKg9nBWF7EjJ/IlOncxcx9FIYX8dJoVFvQzkHjkcKFWGCXwOZhN1vv4LL5z06SV2dbxR1rCC4HyxFr4IgXps7XCQ1fJgrGx4MiuZYZWH1MtrTcPWwOx2fG0NslKEkyZJwyNtV95enc/u9IZkVltvoByKOC1xgllDcd6+ZI6ZMUsw3ikMgFzpAimnzaXDvpFhiWNZHQJMZ9A0rjMwHl/EjM4zjFkw8LIdJIoZzNVCeECG7v1sfJQFA8BoTQQ5PfV3ewJBkB4QH9JL6AHJU3z0Q05
+[2026-01-02T01:34:39.124Z] Generating TTS for text: A dramatic soundtrack for a Tuesday. Unless 'Done ...
+[2026-01-02T01:34:41.702Z] TTS generated successfully
+[2026-01-02T03:54:44.667Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T03:54:53.732Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Auckland property trends. Tell me about it.\n\nWhat are the trends?\n\nThey're interesting. I mean, we look at where we've come from. You know, you go back two years ago, when interest rates were around about two, two point two five percent. And now they're sort of hovering around seven or slightly higher.","thoughtSignature":"EuUaCuIaAXLI2nyuwV5H3jzPABhBXHLLBLR0VNKaVQVJ2PN7Fff0Pt8EAstBnOccx0f5Y3KBt1OMphZQ+clHaCD5j3kjSlJbwmPD4Db7O6h4UQGV6NicM1Q3lJzVTZ
+[2026-01-02T03:54:57.851Z] Generating TTS for text: Auckland's property market has traded the 'cheap m...
+[2026-01-02T03:55:00.328Z] TTS generated successfully
+[2026-01-02T04:09:58.632Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T04:10:14.077Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Tell me about the Auckland market trends for apartments.\nAccording to recent reports, the Auckland apartment market has shown resilience despite economic headwinds. There’s been a notable shift towards high-quality, larger apartments in well-connected areas. Investors and owner-occupiers are looking for properties with modern amenities and sustainable features. For more detailed data, I recommend visiting websites like REINZ or Barfoot and Thompson.\
+[2026-01-02T04:10:30.675Z] Generating TTS for text: Auckland's apartment market is currently in a stat...
+[2026-01-02T04:10:35.937Z] TTS generated successfully
+[2026-01-02T04:12:12.932Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T04:12:19.357Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"But my life is so much more than just a model and it's nice that I can share it with people.","thoughtSignature":"EusJCugJAXLI2nwcYK0vit0iIsCayI+x3tN8v90zU06AL6GO8aCv8VSrX78LGtm07MkGn26Sr7W2QtrbXsP/dPqnH7kkrJSEs+AxJT6aii+NYhwHCSe4ZmW5oc24zJbh3YrP+4tE0/42j+jof9adQ1cQf/olHi72xnSGdKI5LWUJHuM17HrFlBy/H3T1OlxFq+NT88Q7n+smGHYF+UYvEirCL+ssSFlZEivOlMiX4v1IwxpRx9Ev7IQYyUKih7+Nb8c9viKfaCmHfL4lu9x5Wq5vkPNYGMPsD1yhxDYtzBX3qvXjF6WL0h24vtDHQcCrMiCabM68+VsP7D583Z7Ot
+[2026-01-02T04:12:26.189Z] Generating TTS for text: Agreed. Authenticity is the ultimate currency in N...
+[2026-01-02T04:12:28.359Z] TTS generated successfully
+[2026-01-02T04:45:44.078Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T04:45:47.773Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Hello, testing one two three.","thoughtSignature":"EoADCv0CAXLI2nx6o1ux11vmRAIYNvFOMa1Rt8dksZHm/pOGLWddgl3ZaFpygconfSQIQJ/rfbhmryvHqj5NTP1EZamPBxA2eaoScIHHKSDHEzmcXdijwLjWL08QAwnL4rrS7IpddVoSycpAcXuSLyyWgJZRnSfW5+HPzmfFEEDa695i1rpOC3nHH2QnGWwgdIlChDN2ehSoklrLcPROMWqsly4T9wWzvDjCSf7f1VSOLdedtC16seppGmtld38BH2oKQv58LukO7+FdyVzfuc4myD9l4B0/93q02h7f3iUViKlf9h+zqsHYbnH0tkLkEB9ZpGfQs11Lxj4OIP7v/vIIQyGJUSqa6KMDDaF+JabUFBjAene6sIEvdxDTqN6nTwQbULGsns81ngAUY+Tn
+[2026-01-02T04:45:50.602Z] Generating TTS for text: Loud and clear. I'm online, calibrated, and ready ...
+[2026-01-02T04:45:52.676Z] TTS generated successfully
+[2026-01-02T04:47:53.102Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T04:48:08.027Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"We're starting this tomorrow and we've got some broccolini for a whole other raised garden bed full of broccoli.","thoughtSignature":"EuEzCt4zAXLI2nwEEyjOtOssh+ax5cemQwo/5hPJ/2Pe/4C71FdRwdz7orBgg/a8aXsGTdaV9QAubPFt+7F0DjfF8ivnXjy24qUlHJgK203F+7vIiNzlFrCpY4m+AeFUrZO26KcKlEuizH4t08C/NesYc+sTjJPx5qYe2lRrZ6afpHhTFJLgYob+/BceBuKwG/6NEQ8yd5rG1jESIopRdEw8wlkGIxlJpkBG+4ZENnWsWHAUszjXjLWzZT+Gi9fItBjOdND9q9qmz06mfGhkx1q0T7V+tXdOWrCHPVSkpht9gL2EZdrfInlX9Ul0n3GBM
+[2026-01-02T04:48:19.268Z] Generating TTS for text: Nothing says 'premium listing' like a bespoke broc...
+[2026-01-02T04:48:21.495Z] TTS generated successfully
+[2026-01-02T04:50:33.997Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T04:50:39.532Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Okay. Ready? In three, two, one... let's go!","thoughtSignature":"EtoGCtcGAXLI2nx985ED5irtnLk7xtTWKgMXKKM2Q7BJtpVJU61IHefS6jBZWerM3ZMHNLvVnM/VF4VOV0bE4TEylxDzfFgvHOl4ZjawPzr0TLy26ZtV8uSItHD6l7DngC4zu2+7a/QKYGoNY76xhYjZ7INimvT0ueFLSBGbuUKFv0vB0FLHoQ9j8RPdBWAZaOcx5n4y/m5ITgmfbeV3pZZhTdXnrgs7F3gmejvW5Q+j2tVoSeuvxY1gv+06I8rjICV0+SIp7RaThSX4fNQ5Bjdx4LKjGv3kta1PdikXFTkKW+KrZt/YFdeLMsBakdXUMFAD4r1VPel2uCa/UWv4JqrDSI1b4p1W53OO1FtPmW4Yof3RfIPahMQ9oJFTP/h0ExG0n
+[2026-01-02T04:50:52.414Z] Generating TTS for text: I'm locked, loaded, and ready to dominate. Here is...
+[2026-01-02T04:50:55.153Z] TTS generated successfully
+[2026-01-02T05:03:03.786Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T05:03:09.887Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"The following text is the transcription of the video:\nOne of the best to ever do it. Super Bowl 50 MVP and everything he did in between. Von Miller's a Buffalo Bill. Bill's Mafia, you've got a good one. \nI've already seen that he's a phenomenal person off the field. I mean, he's always had a passion for giving back to those in need and it's reflected in the many charities he's involved in. \nI met Von when I was about 15. We've stayed in contact for
+[2026-01-02T05:03:34.694Z] Generating TTS for text: {
+  "answer": "Von Miller might be the MVP in Buff...
+[2026-01-02T05:03:37.014Z] TTS generated successfully
+[2026-01-02T05:12:08.347Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T05:12:20.697Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Tell me about the Hamilton housing market. What's... what are its current trends?\n\nYeah, okay. So the Hamilton market at the moment, um, houses aren't selling as quickly as they were, um, and there's definitely quite a few listings sitting there. Um, house prices have definitely plateaued, but probably dipped slightly in the last sort of, I would say, six to twelve months. Um, but I guess that's sort of a direct response to, um, interest rate rises 
+[2026-01-02T05:12:42.179Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T05:12:48.640Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"My wife and I love a good puzzle. Every Christmas we get one. It keeps our brain moving, keeps us interactive. There's a sense of pride as you watch a picture come together. If you're stuck, you walk away for five or ten minutes, come back, and see something different. Puzzles are more than pieces of cardboard. They bring families together.","thoughtSignature":"EpURCpIRAXLI2nz27X6Nj+TgvcHKq0zAo7eNxqcDuXn3rAb5kISlI5kPX8gxmiz5Z2LhfuuY0bekqmVz2qGWn+lxggN
+[2026-01-02T10:11:40.357Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T10:11:53.021Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Need to go to work tomorrow on Saturday. \nYeah I know. \nNow Cozzy, what's Auckland apartment market doing trend-wise? \nAccording to CoreLogic's latest report, the Auckland apartment market is experiencing some price stabilization, with the average apartment price rising slightly by 1.2% in the last quarter to $745,000. However, rental yields for apartments are still high at around 5.5% on average, making them a popular investment choice. \nWhat's t
+[2026-01-02T10:18:52.260Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T10:18:58.880Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What are the Auckland apartment market trends?\n\nSo, on average in 2023, the apartment market across the region was flat. There were definitely pockets though where things were down slightly and others where things actually crept up. I anticipate that prices will remain flat through 2024 as well, purely because on average wages have risen over the last year and interest rates have also reached the peak. So, buyers can't borrow more and sellers are un
+[2026-01-02T10:24:58.726Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T10:25:02.752Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What's the latest in the Auckland apartment market?","thoughtSignature":"EswECskEAXLI2ny8s5JhK7MmCb0LYSuOlLswHTwqkGLjYF/Y++L79pb/xb5ravlzfSL9VZS6IgesLnBwXdmwsufxudbjxUCPEeFC3mQ1IrrbS4AEcp9JAoZkz8onmoFoS86FfIbt+FKtg8MA5TVltqILxjGK7xiSvszL0ohaPgwCcMXwGlzXpZWHNYdkJlkf9G5oFu935sHV0+Yp2DVU3I6gEbHTDgOUtI7KjRZqglFOGohJC9YVktJoLrUvmpbFou/d1ND5h3jTiX/9TVTOA8/Xqv7cOBQasbcMvYQBPJBMkD/42U/BYGWQzrzxIs8gcheLcGSJDKxxOMR3vJr+cGxYBhmqhwGT4S8eA0JsLxx2Hl36OE3T/V0QtlEfpF
+[2026-01-02T18:21:41.068Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T18:21:49.447Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"\"What is the Wellington housing market doing?\"\n\n\"Wellington is leading the recovery in terms of value growth in the main centers across the country. Average values across the region increased by about 1.2% over the last three months. What we're finding is that there is quite a lot of listing stock sitting on the market at the moment. So buyers have quite a lot of choice at the moment. But we're still seeing demand being relatively stable. And tho
+[2026-01-02T19:58:21.386Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T19:58:25.015Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Can you confirm you can hear me?","thoughtSignature":"ErsFCrgFAXLI2nzsrkHTStXbjG0IGKgz57uHtblUX24uQgqcAGpw4wgZFWZoHHY1NKSJ5SzaoI3WzA9fGP31mJ4WmI9KiObjyZnZzzZyXJSEkWrEbRodHN035ly9Nh4Jl9/XGcveTkExywqFSijodtZZxttUG9NngzXg31riED3Nn1X/vUbBPFEIjfMgB/3yoKJ4SEPBosgRR0Rtz96oSpwW/7AbX7tQR0lbtip89IhPOx5xeG8ROi/3TiqKScLHNmNucy02pefuv29moWGn7qX5KO0utFLcVje3ld+wPWI5yMpdJwERgJ4MzN+vSP/yzCTi6f/xf4FjGU+NJgB95ymWeIaiH1TyoHcbBxT3dBOciu3+LZZTuUwMSBf/9qc5kyk9NOxeInEkIQQQ6
+[2026-01-02T20:07:28.662Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T20:07:32.730Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"EuMFCuAFAXLI2nx9wmpcbBVVhOD1uPSH1D3RpjFFC68flefnjH/tPW4UPmF1LwN1rT5P6f2vAYVleBDuCd7DvTcABt4RP/ax/cv2bqlFlUltJ0u8LrS9BWHY2gOC1emGfw2hGNqyYAwTSNg+yNYRgp3Eo/kSt8coiwIRMyzGIRARKwA90/g9sMczZWnDBpguNPT+DXcTNzZDQ9ROo9fyWKhGRBxqC5RN2bkWZVwaWijdpr0Hdk96zwy1TqBKewg9jD7mGPNCTbtQCPNt3zKMM50cCZMBbU3wXWApMsw76uyiAONAn0mqj+ReOL2WnpSHuxLz94r6ujN0rPDZFjPfzcETBRiLWb1nHw6otmG8SpF1LV7YerhIr73N+AD/FLlWAN/jvZZS12wU/
+[2026-01-02T20:07:40.083Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T20:07:44.372Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"So, the big focus this quarter is really going to be the internal tools team. They are the ones that are building all of the software and applications for our logistics people to use.","thoughtSignature":"ErEHCq4HAXLI2nwddfDFQO84Qmf+GqvHsRmFKNL6+lXSvJXIHYxvRnLewFfkbcDmRrA++I32LT1D+e55j4QRWKxC9F8f+1HfiGv8mwMIIRzy385z079egTVY8+Q8qV4rWLDgVCkEBS+6sz3etlMPI7XRm+tA4xxKmBe+vFVYMm23lMZvON4NMAv6S6FyVDUjJ2emU3Mmo9RvcY9qm+MvN/RHypqdeh/0vhbJatWndU5DZnp2Z5M9ugIYBy
+[2026-01-02T20:09:59.283Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T20:10:03.337Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"EpUFCpIFAXLI2nyBL4kYTcZAUaHSANfLxpnt63jQ/Yg14dmiWYuP96Zzup08AWacwIWeVWxOwFkmg9BvsUK62Nmx86b+cb4orPn02JdNYEgmK+485efrUezpyPR9mZdKafSzO3MWJnsJ8qnqZ5SnSqJIeI5/PFlVGRHl904cNDn/RFa2wD/t+qSbodyX/DoMfnXkM2vufKIQgmB4j0pyM1SFbF5+KcljFlW7YJg9NUcJAp8QVzr1V0+46HFDoKdSMnh7+PytZmwPaE9tdx6tJVQm/LGJvTmkzn0hpQZQ+IQRwHRvsQ5o4S5andJhjAMDCX/xAPwXT81Ys8lLvo16TxdPP09ZoF273mySSE9qEEZvm1/FZBPO2jdmVLMRljs4pTRytcdoyjD9E
+[2026-01-02T20:13:01.577Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T20:13:08.045Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"- What is the Wellington market doing?\n- It's quite tough for first-home buyers right now. There's about 30% fewer listings than what there were this time last year. So it means people are having to search really hard and really wide.","thoughtSignature":"EpgSCpUSAXLI2nxD3mvtKFtX26g1tFNNf1E4wNb/yJ2OrkawrT462S92ix79OhCsvIHFTJyeH/bZSn88ANMdboEilLqAS4vO1oIpRTolDKH8RKYLXG3+zP8tp08Wu04N66BmByeJ+YK6iNjJWt2rExOxXOGVbfpBvxDS6d2iS6+utj2sngqqnxLTctTpo2AY72656o
+[2026-01-02T20:23:43.858Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T20:23:46.699Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Okay, that's fine.","thoughtSignature":"Es8CCswCAXLI2nyXD5Hm21WUTcPcmZenACaW6Oa66lt9tFgyY1FFS0VQQJkWpc3N+UmQlGV3jjbL1drv/j7m4HHc1pYbVR/jlXWHiChzVesSwQ6QVbkdMRMZxbo4fZJS/NNue91Si93YZqr/TPFUweNGFgJF6k84kdb7neNbQcKBnJYPwyXoEzFH5LJwDe31FGytFzmaS8WSLz2Lyzo95A4BvIyw++ooI3xz1SnxBLCOD6uNzgtPEITK/KI4NrXtUtN8dt0+Tp0UYU7FaSNVtM2sI5GUAXXNkfWUwXII81jd6HheuZEBwCgIaWsireA/Y+HjYQGb5y7cD+sAr0VgotwNWls/an2vbzkF2cA/zN9Vn7KJ7NTD03DA/3TtqK1/UTJctACMpnFr40GuT14RlMRSet6Y6WA
+[2026-01-02T20:29:22.100Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T20:29:28.730Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"- What is the Wellington market doing?\n- Yeah, it's actually been quite busy lately. Last month we saw sales volumes increase about seven percent on the same month last year. We've seen a five percent rise in median sale price. But the most interesting thing we're seeing at the moment is there are about 25 percent less homes for sale than there were at the same time last year. So, more people are out looking, buying, yet there's fewer homes available
+[2026-01-02T20:43:36.064Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T20:43:40.379Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"EroECrcEAXLI2nzo7KhAl+wi/uRnzHq2miXK4vRMzblzjId0z7XH/xRow7sXB3GdNbqZ1VyjuTna9Gk9ywq3ZYatbWsNZMtjtMNHuCizBfyjl9ddNbYLu7BsuGdWaJFa0J02+8saba39h6oWYZXv0VCTJRKgP92X8fGKPNXPp1TohGU+4He+7AymKtd4mh9k4J2BMTr0UzlAbdB1bgw+bVsXTJzuYFkVUty4O5L7uTcAMXaizpSWzTyjcY5VbaHXmOKaaFT0crgjzo4CQnQby59wvq1PJJNrW1qR+7BxNz4kkDbHz+A5b/QF6nW2g4tnnpyuBon83JpbT5aliOl7MdoaftCkIhB5qxDl+ZPAZclfPW2G4A/WaWO8XEY3S9L7P6C4gTfDpFzI6
+[2026-01-02T20:46:00.498Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T20:46:10.388Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Hello, my name is David. Today is Monday, January 1st, 2024.","thoughtSignature":"Eq4iCqsiAXLI2nzCRMF+t+5Ai/XIeRdHpMZWehauZlKM7Xx3GfAE84HXpZestI8EMOEypcTCgfBMa4lWGe8X8wuaF0GmH8bqBmox8wxcJKrHNQBmBphrXEgocmC0ieT6JVJkxzrYTtXverN+WW6vB0Btn0/NlsQTDiKjpeglQ/YPbRIDp+PTNGeQL3kzKlJdVexi8QSifL83SxIZ2jwgZGutpZe4wtbJx/b6NllwQK2qo9rJNWJYEvux/zGGSnAknc1YJLBp7ewXWupeDcAAdOCTiGLA2Fzccq65nPpHLJmjIdnBs9CiQgZjR7EtIl/Xl66zcUWYk4nTqCvC4oNlPeA+gx3w0ZPw5N3KNLGVRzqyeS8Muu0W7
+[2026-01-02T20:52:50.057Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T20:52:54.526Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"EowDCokDAXLI2nww1/lmvip7VIdVhleR/HijrvlthvNEfQC2YUCoydDuFa1OQPCgTKbJZmMOf9l72gBpcJMOv1tmebE1NsN92yGyANVOSkKiOYQSi7/JZUWFM64o628SN3ivI4wu7IC+r8HaZEoy/c9ecbjQMaNbJLjapjY2aFZd7UTlLG6bpdh/2aazEwqejoPe9SKF2ukliiqod9j6gpFkrbH2L7j4Uqc1WOxldDJouNgR0Ps4KI/fjy0YDzbvo7pB1Zekvo1/4mf/6aRdq725a/yfYNM8JWTSPWZYSKb4eu0FBBHDVbbXA8bCVgv4x9FDmyxCTW/VozA0EDWeVUtDbt1jV123HyMk6qcVnOY+acWV7D44sA40v46sJ+9L8oT6TysgXHLi6
+[2026-01-02T21:09:38.424Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T21:09:43.368Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"EowECokEAXLI2ny4eWHzCmRlfcKYizznYN4l3oDB1oz24ew8sWZBRnyKzoqZ+MelAm+syDiksQIptRFSEbDvCTnP79woM6YgJknE10+cd0Q9KOVaG13EcRqVkepUplIMHP39Llt4hInaCwoWI6RVVi8g1XslsCDtOV/uxwlUN3YLNRFjajih2Fu27H8KA1dPBJfTLPGKRUwxVXxP53ZQhxM+kCl3Xnj/+DQptH3Td9tYkx3OIkERShgIMJYioHptm5g85muYfhdFtvikiv72vo7Yk6CV5ulJBQPmyYfa/BVh1H38SzWsdfwWuYJ7ujZOApXvFaJj1HuuBVxcid1g1QrqEVb5oTkOnSi5R3RzV1z7djUr9a5WIKVvXyZoFsJF5VJcW6I2T1ZfI
+[2026-01-02T23:28:19.534Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T23:28:22.909Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"Es8CCswCAXLI2nxjZ/c4dHoNX8IQISXS0ueUHPuNivHMqNHA+OdYrUH0nHP/msEQFrua0ePt8Mb8RQE9Zh9W7UN6KNuslTLubCYfoWgTw67Y8Zmeua3PkjES8HBz7rDPb2RO79btLGDSjAJQLq2RWs7sbxO0yqgTMbErANg2DyW8xcihovalQikijb80b2L/73TAET/qsoG7C5iQH5kak215m34hcymEex92iMzKFtmW7d2lQXz8oHQ1Q+mjqH8gbLQBozd6/6+0wqe8r0xqNny9UkYN3vGNjrDxfuLcDC2sdvmdj+QYtcwxMfc9hRIzSqHc5NlVZBrzVsUm3wVSumzb+k0+9J+LN2h0o+wd4SJMlaKnyQcWTRN2RO2cjQnq889rhc/a6koES
+[2026-01-02T23:32:55.176Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T23:32:59.218Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"ErsECrgEAXLI2nx0kUbETDmA4PE5/3SV60fTJq6ns80c6M2PXumpyu/JcOT+c5IExNrIinTA3+VMOY5lLEXKGWBddzVYsgb7zM2WCY1iJMikR/x+lPWLTueqG65TZDHwCoup8ckTqEARgVj2hUwmXqTZ6G/h8GdFZPj0Ldhwe+yEwohudMzsPPl61/LpkiHDdzMCKFqBm3ZOKmYKfM3LQptfTgjGVTXszHEZ9x8dUzSpSgCuEEhixWSMHAQBcF7QvWJLoZfMUI3Kp4G+4Cv0iV+T7sun5IxyKEm7z93C72SfPZa9A7/Xz5E+NXXuKtB99nZxo3dQqdixLSXrPaPZ5IAUGe6pdAGAvUcZXJpiDdTE/OH7X4g/mEYdAVsJ0oI0w48dUzivJiGEC
+[2026-01-02T23:48:00.031Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T23:48:03.892Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"EqkECqYEAXLI2nwiuffi9qUoYWNFIA0xlZINggBPYaTvjKl+7Dqw38SowByp+hnDUI2NF+F9FrZJDO8D97knG5ffd9laGCW7PANoA3Ku1LvfyI78DOHxaCCjZlZTwLBO0b05j/d+YGmirA4t4n29JxsC5W00k2ExsU5vmxqDiVHnVNdaaLNiwxnWr/bi3Z4+rDidzN9SI17TtRhEDmiaG4RecwpRNMwYQMC12Psc/1gKOCX90op8DyErciczL9yu8YYBdDSOnR6zMKggVzQudL3P9+uX4YFY4A2R+eiaz/zP2+Pct/fW8A9pViYKmyEEW3/YjxyzjnLpX6pPvIbub18d1ep4gUZZCjQuXob1eiDDRN+Lqt1cyGKXPURjK6KFRe6OKToQRTSxk
+[2026-01-02T23:54:24.923Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-02T23:54:28.354Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"ErgCCrUCAXLI2nyvk+mT200AuNclDNFwuTJArOO/ZNHu+FfunWOmNlwScsFFuaJOP+Cfj6t+tHzRNgqeIqwUtfRXJOnb623Zt3Hn1dCvVxSQHf73Q3Yjbo2r5ot1K4h/SUWyo8WWijqkfKACNxPCBZxRRnZHafUiw5ATvBlxoc6RL2CLCH7tmMGSBfZylXmAJDHuFTz0FaQvBbkofA5Uf+6xu38cSPyDtXBco+TeHqV0tJSPDh/joaKDxgRakWX70PYZZ575uhpGSTCyr611CErz+Zmsbj30QAqJhNMEZYdwWUC2axq/Zo3y4wE8/ot0SIvh0aJOM++TniZDl1aET0NOa5lpqrHwTEckEMKfthgflnGdanJ7i0HSzrU2DvZNJTskF8RCdw0pq
+[2026-01-03T00:23:39.857Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-03T00:23:43.683Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"EqkDCqYDAXLI2nyuH3/56nHjW+vJQZ6zC+PW+GIL0zzi0+UKvvPfF3p1kxwRimMuDnnf/J1Gm9keO8K6NDfwTt38H2y4kLdjTp1NOKF7/hVEBx+fGLY907nR/SSc/VW56jfqF/RLnzeTknta6wjUuehlfY+grZc6cnf2HJntRLPADJy7BnN/+1Qwnr7YvGlKv9DZnj3kxg6FLDRSigt/y+fleBI5mgFzOamGF0lVsXC+tAM7Zv/JYFGRa2EweSxCBlHu64TkAr9lAngCrpor0neBUDdY7oBCHb2snzfugx61kW/DmgM/Yrc03//7LTZ1pQlNdgjd60bwwn+HoaIc9rMmW0JHQYdcA2xNVv27HiQ2BMBB050Y1PdRzzCrgQwTtIre9YMCeaNbX
+[2026-01-03T00:28:42.004Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-03T00:28:45.728Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"What is the Wellington market doing?","thoughtSignature":"Eu8DCuwDAXLI2nzXZRoP7LX4Dyvv53ys27h+w5KBoqIXbTvDmagyO5JaN5gBJDY9J0zJu3hXZm13z8NqpW64kK7TKoMpCsRt95ux0eV0RGwB1zPLC6dlrYdrIW42Tsk2FC4QoW8fAETxnsG9jhhczpJBTSQOwvtPhW6TxWFBVjr0FYlRVeeVJsUoMajvTOkrDnAAomG1aNfhiWbjLsRqaMCkklFVZhthClr8NTUnuuIJ0AtBnGMIwI1uUtSBmewx8WPJfRokPVyPZzRJAQysRlj74XlbZ7PbADNTAwJcp94kvuiJxTrmi/0EFsOI8tJ236drhoJcGptvw7dpPMMgXSIHCkc/IS/niU9o+2L9W9XHAifwYEeYwrYeFha92UlY5jMf2k1d4+yns
+[2026-01-06T18:16:48.605Z] Generating TTS for text: 15 Marine Parade is in the red zone, and with the ...
+[2026-01-06T18:16:53.055Z] TTS generated successfully
+[2026-01-06T19:31:08.549Z] Generating TTS for text: 108 Remuera Road is currently sitting at a 50% hea...
+[2026-01-06T19:31:13.553Z] TTS generated successfully
+[2026-01-06T19:38:51.250Z] Generating TTS for text: 108 Remuera Road is currently a coin toss. A 50% h...
+[2026-01-06T19:38:55.901Z] TTS generated successfully
+[2026-01-06T19:57:56.229Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-06T19:57:59.659Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"Hello, good morning! My name is Lucy and I'm very excited to meet you.","thoughtSignature":"EpoGCpcGAXLI2nwsYcQ0TTnTlw2jhpqfq0sYTUL5CzMD0Bf6GPwzXjZL90Ps+T0YqmQcBTBIYu7LMCHYg/s1SampDTpCXCzjmUYjtsfnjWWJR9d7lUWPWqTbcxcLm8TKUVKfrJvQq58nxwo64R11eOQaRarEXjhKjUpp2bc1hoB25P7qkDa+dRaXE1cp459mvAaYU3qumR35QYaInE9D8LOh32XS8ieckhagIZmSZ9pFAAhFkElglP2ySsvCZqr8TvgKYm5bk3D0wEJGkkmfHupUPA4ZmSsxDoiPDtAXBZVeIS+h8lDNRjbfSyvMWSEn9Rn0fKHtk8QW0KPR3QxJF9+mHxiKdIZqpVDbjy8Q89d
+[2026-01-06T19:58:19.544Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-06T19:58:23.335Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"I like that idea.","thoughtSignature":"Er4ECrsEAXLI2nxfLL5LldYxMT6KgtVVuDBm+ulIgg+j7MkCvxh/Jq6d5WwOtsgcOQP6+AczBr8/PIt9nBoDNpxAst7GkpJB/mbDAh/3heSdDpsLiCn9CTdsezbzzDfztEgRdGaWylqRcVSSjX7UQIJ2b9PN9ELGI+1kQIJWz4fQ9TAIg+k1SWWXnmlKYISwXReYRYflxNtMmmBCqJiwhK4D46/lHrcoNSn+CZaQ2F2rnjx5hx7OypZGiRDzZdn9US0jEE7mvXT98HZJeoOU768JYpOrFg3CCTtIgc6awm3KzkLAjJwOH92XmQJeyrS73CY9K0z/GuzCIc5XsleOM7GMMZSYwD+xNa5GSRceDJaJv7c4PsXuWU7+ONxgq11qcF5H4z3P5TXwZf3d3hmkNfLYkLsloCbp
+[2026-01-06T20:02:44.862Z] Generating TTS for text: Let's start a strategy session! How can I help? Wh...
+[2026-01-06T20:02:47.001Z] TTS generated successfully
+[2026-01-06T20:03:06.039Z] Generating TTS for text: Let's start a strategy session! How can I help? Wh...
+[2026-01-06T20:03:06.495Z] TTS generated successfully
+[2026-01-06T20:03:17.470Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-06T20:03:21.660Z] Gemini Response: {"candidates":[{"content":{"parts":[{"text":"The special instructions will be given inside the terminal.","thoughtSignature":"ErkFCrYFAXLI2nyOO/6KHSkRCsCtMKwTW82UZZjRFId/mNMnY8ytzVxTDqfxmgmZyHEOiu+91nuJHx+5rPpZmsfafiUQFL8uMwH9EneKIKCT+wzggUf1Y/qMyWVabxUhQSUglPVrI7J917618SWtw68EqMnp+lclEECF5oX0bfYDTan/smb7LOJbkl/ZjRrhMU9mA6EHNPlfxixc+febuGNI4VwG+yVFXte/NNtiJEOYvri+lfPsm8kkXXGHg7JMEcWkF4J0woxLFH57WsjtM2SSo4g/2mP8CAyMFhSk2F2QyntTq9bpzJ4Og+A8Hg0HFRnhqbEMAPLtomBx0rj3xmoXKqZxhIER+fEw8T6351HJGE3fCIbp6Z
+[2026-01-07T02:44:14.638Z] Generating TTS for text: James Chen is drifting, and at $2.8 million, we ca...
+[2026-01-07T02:44:19.564Z] TTS generated successfully
+[2026-01-12T18:39:24.373Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-12T18:39:26.942Z] Gemini STT error: 403 {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-01-12T18:48:49.629Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-12T18:48:51.039Z] Gemini STT error: 403 {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-01-12T18:49:40.322Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-12T18:49:41.496Z] Gemini STT error: 403 {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-01-12T21:46:43.524Z] Transcribing with model: gemini-3-flash-preview, mimeType: audio/webm
+[2026-01-12T21:46:44.614Z] Gemini STT error: 403 {
+  "error": {
+    "code": 403,
+    "message": "Your API key was reported as leaked. Please use another API key.",
+    "status": "PERMISSION_DENIED"
+  }
+}
+

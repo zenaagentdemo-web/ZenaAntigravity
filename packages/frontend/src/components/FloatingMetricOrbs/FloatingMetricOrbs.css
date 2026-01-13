@@ -292,6 +292,29 @@
   border-color: var(--neon-orange);
 }
 
+/* Gold */
+.metric-orb--gold {
+  border-color: var(--neon-gold-dim);
+  box-shadow: 0 0 15px var(--neon-gold-dim);
+}
+
+.metric-orb--gold .metric-orb__glow {
+  background: radial-gradient(circle, var(--neon-gold-dim) 0%, transparent 70%);
+}
+
+.metric-orb--gold .metric-orb__value {
+  background: linear-gradient(135deg, var(--neon-gold), #FFFACD);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px var(--neon-gold-dim);
+}
+
+.metric-orb--gold:hover {
+  box-shadow: var(--glow-gold);
+  border-color: var(--neon-gold);
+}
+
 /* ============================================
    Urgency Variants
    ============================================ */
