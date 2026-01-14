@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { authService } from '../services/auth.service.js';
+import { fileLogger } from '../utils/fileLogger.js';
 
 export class AuthController {
   /**
@@ -67,6 +68,8 @@ export class AuthController {
       }
 
       console.error('Registration error:', error);
+      fileLogger.log(`[AuthController] Registration error for email ${req.body.email}: ${error instanceof Error ? error.message : String(error)}`);
+      if (error instanceof Error) fileLogger.log(error.stack || 'No stack');
       res.status(500).json({
         error: {
           code: 'INTERNAL_ERROR',
@@ -97,9 +100,7 @@ export class AuthController {
         return;
       }
 
-      console.log(`[AuthController] Login attempt for: ${email}`);
-
-      console.log(`[AuthController] Login attempt for: ${email}`);
+      console.log(`[AuthController] Login attempt for: ${email} `);
 
       // REMOVED: Demo bypass logic. We now use the real seeded user in the database.
       // This ensures the token contains the correct User ID matching the seeded data.
@@ -208,7 +209,9 @@ export class AuthController {
 
       res.status(200).json({ user });
     } catch (error) {
-      console.error('Get user error:', error);
+      console.error('Auth check error:', error);
+      fileLogger.log(`[AuthController] me error: ${error instanceof Error ? error.message : String(error)}`);
+      if (error instanceof Error) fileLogger.log(error.stack || 'No stack');
       res.status(500).json({
         error: {
           code: 'INTERNAL_ERROR',

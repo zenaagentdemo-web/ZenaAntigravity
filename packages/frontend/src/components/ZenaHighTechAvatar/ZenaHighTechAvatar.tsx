@@ -292,7 +292,7 @@ export const ZenaHighTechAvatar: React.FC<ZenaHighTechAvatarProps> = memo(({
             positions[iy] += dy + noiseY;
             positions[iz] += dz + noiseZ;
 
-            if (dist > 220 || dist < 50) {
+            if (isNaN(dist) || dist > 220 || dist < 50) {
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.acos(2 * Math.random() - 1);
                 const r = 100 + Math.random() * 60;

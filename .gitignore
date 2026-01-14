@@ -91,3 +91,6 @@ check_*.ts
 
 # Ignore large datasets
 /data/personality-datasets/
+
+# Ignore large datasets
+/data/personality-datasets/

@@ -33,6 +33,14 @@
     color: #94a3b8;
 }
 
+.optimise-modal-content.error {
+    padding: 3rem;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    color: #ef4444;
+}
+
 .optimise-header {
     padding: 1.5rem;
     display: flex;
@@ -81,6 +89,44 @@
     gap: 1rem;
     padding: 1.5rem;
     background: #1e293b;
+}
+
+.legend-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 1.5rem 1rem 1.5rem;
+    /* slightly less top padding, visually connected to banner */
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.legend-label {
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+}
+
+.chip {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.chip.moved {
+    background: rgba(249, 115, 22, 0.15);
+    color: #fb923c;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.chip.unchanged {
+    background: rgba(148, 163, 184, 0.1);
+    color: #cbd5e1;
+    border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 .metric-card {
@@ -221,4 +267,16 @@
 
 .apply-btn:hover {
     filter: brightness(1.1);
+}
+
+.task-pill {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 9999px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    text-transform: uppercase;
 }

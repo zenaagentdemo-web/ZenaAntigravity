@@ -86,9 +86,9 @@ export class PortfolioIntelligenceService {
         let aiResponse = '';
         try {
             if (aiProcessingService.apiEndpoint === 'google') {
-                aiResponse = await aiProcessingService.callGemini(prompt, aiProcessingService.apiKey);
+                aiResponse = await aiProcessingService.callGemini(prompt, aiProcessingService.apiKey, 'portfolio-intelligence');
             } else {
-                aiResponse = await aiProcessingService.callLLM(prompt);
+                aiResponse = await aiProcessingService.callLLM(prompt, 'portfolio-intelligence');
             }
 
             // Robust JSON parsing
@@ -182,7 +182,7 @@ export class PortfolioIntelligenceService {
         `;
 
         try {
-            const aiResponse = await aiProcessingService.callGemini(prompt, aiProcessingService.apiKey);
+            const aiResponse = await aiProcessingService.callGemini(prompt, aiProcessingService.apiKey, 'portfolio-global-intelligence');
             const jsonText = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
             const analysis = JSON.parse(jsonText);
 

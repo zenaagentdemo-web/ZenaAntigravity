@@ -33,10 +33,10 @@ class ErrorHandlingService {
     // Listen for online/offline events
     window.addEventListener('online', this.handleOnline);
     window.addEventListener('offline', this.handleOffline);
-    
+
     // Listen for unhandled promise rejections
     window.addEventListener('unhandledrejection', this.handleUnhandledRejection);
-    
+
     // Listen for global errors
     window.addEventListener('error', this.handleGlobalError);
   }
@@ -152,7 +152,7 @@ class ErrorHandlingService {
    */
   submitUserFeedback(feedback: UserFeedback): void {
     console.log('User feedback submitted:', feedback);
-    
+
     // In a real app, this would send feedback to the backend
     if (this.isOnline) {
       this.sendUserFeedback(feedback);
@@ -217,6 +217,20 @@ class ErrorHandlingService {
   }
 
   /**
+   * Safely stringify objects that might have circular references
+   */
+  private safeStringify(obj: any): string {
+    const cache = new Set();
+    return JSON.stringify(obj, (key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        if (cache.has(value)) return '[Circular]';
+        cache.add(value);
+      }
+      return value;
+    });
+  }
+
+  /**
    * Store error in memory and local storage
    */
   private storeError(errorReport: ErrorReport): void {
@@ -232,22 +246,51 @@ class ErrorHandlingService {
 
     // Store in local storage for persistence
     try {
-      const storedErrors = JSON.parse(localStorage.getItem('zena_errors') || '[]');
-      storedErrors.push({
-        ...errorReport,
+      const storedErrorsRaw = localStorage.getItem('zena_errors') || '[]';
+      let storedErrors = [];
+      try {
+        storedErrors = JSON.parse(storedErrorsRaw);
+      } catch (e) {
+        storedErrors = [];
+      }
+
+      // Truncate fields for local storage to prevent quota issues
+      const truncatedReport = {
+        id: errorReport.id,
+        timestamp: errorReport.timestamp,
+        severity: errorReport.severity,
+        handled: errorReport.handled,
         error: {
           name: errorReport.error.name,
-          message: errorReport.error.message,
-          stack: errorReport.error.stack
+          message: errorReport.error.message.substring(0, 500),
+          stack: errorReport.error.stack?.substring(0, 1000)
+        },
+        context: {
+          route: errorReport.context?.route,
+          component: errorReport.context?.component,
+          // Only store a summary of props/info in local storage
+          hasProps: !!errorReport.context?.props,
+          hasErrorInfo: !!errorReport.errorInfo
         }
-      });
-      
-      // Keep only the last 50 errors in storage
-      if (storedErrors.length > 50) {
-        storedErrors.splice(0, storedErrors.length - 50);
+      };
+
+      storedErrors.push(truncatedReport);
+
+      // Keep only the last 20 errors in storage (reduced from 50 to be even safer)
+      if (storedErrors.length > 20) {
+        storedErrors.splice(0, storedErrors.length - 20);
       }
-      
-      localStorage.setItem('zena_errors', JSON.stringify(storedErrors));
+
+      try {
+        localStorage.setItem('zena_errors', this.safeStringify(storedErrors));
+      } catch (storageError) {
+        if (storageError instanceof DOMException && storageError.name === 'QuotaExceededError') {
+          // If still failing, clear half and try again or just keep a few
+          console.warn('LocalStorage quota exceeded, clearing old errors');
+          const lastFew = storedErrors.slice(-5);
+          localStorage.setItem('zena_errors', this.safeStringify(lastFew));
+        }
+      }
     } catch (e) {
       console.warn('Failed to store error in localStorage:', e);
     }
@@ -265,7 +308,7 @@ class ErrorHandlingService {
     try {
       // In a real app, this would send to your error tracking service
       console.log('Sending error report:', errorReport);
-      
+
       // Example API call (commented out for now)
       /*
       await fetch('/api/errors', {
@@ -297,7 +340,7 @@ class ErrorHandlingService {
     try {
       // In a real app, this would send to your feedback service
       console.log('Sending user feedback:', feedback);
-      
+
       // Example API call (commented out for now)
       /*
       await fetch('/api/feedback', {
@@ -319,7 +362,7 @@ class ErrorHandlingService {
   private handleOnline = (): void => {
     this.isOnline = true;
     console.log('Connection restored, sending queued error reports');
-    
+
     // Send queued error reports
     this.errorQueue.forEach(errorReport => {
       this.sendErrorReport(errorReport);
@@ -396,7 +439,7 @@ class ErrorHandlingService {
 export const errorHandlingService = new ErrorHandlingService();
 
 // Export utility functions
-export const reportError = (error: Error, context?: any, severity?: ErrorReport['severity']) => 
+export const reportError = (error: Error, context?: any, severity?: ErrorReport['severity']) =>
   errorHandlingService.reportError(error, context, severity);
 
 export const reportWidgetError = (widgetName: string, error: Error, props?: any) =>

@@ -77,10 +77,11 @@
 }
 
 .mini-day.selected {
-    background: var(--neon-cyan);
-    color: #000;
+    background: transparent;
+    border: 2px solid var(--neon-green);
+    color: #fff;
     font-weight: 700;
-    box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
 }
 
 .mini-day.selected .event-indicator {

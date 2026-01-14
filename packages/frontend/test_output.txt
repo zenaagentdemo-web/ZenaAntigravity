@@ -1,0 +1,260 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend[39m
+
+Error: Uncaught [Error: useGodmode must be used within a GodmodeProvider]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useGodmode must be used within a GodmodeProvider
+    at useGodmode (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useGodmode.ts:53:15)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:34:30)
+    at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+Error: Uncaught [Error: useGodmode must be used within a GodmodeProvider]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useGodmode must be used within a GodmodeProvider
+    at useGodmode (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useGodmode.ts:53:15)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:34:30)
+    at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mloads and aggregates events from all sources
+[22m[39mThe above error occurred in the <CalendarPage> component:
+
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+Error: Uncaught [Error: useGodmode must be used within a GodmodeProvider]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useGodmode must be used within a GodmodeProvider
+    at useGodmode (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useGodmode.ts:53:15)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:34:30)
+    at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+Error: Uncaught [Error: useGodmode must be used within a GodmodeProvider]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useGodmode must be used within a GodmodeProvider
+    at useGodmode (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useGodmode.ts:53:15)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:34:30)
+    at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+Error: Uncaught [Error: useGodmode must be used within a GodmodeProvider]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useGodmode must be used within a GodmodeProvider
+    at useGodmode (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useGodmode.ts:53:15)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:34:30)
+    at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mhandles view mode switching
+[22m[39mThe above error occurred in the <CalendarPage> component:
+
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+Error: Uncaught [Error: useGodmode must be used within a GodmodeProvider]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useGodmode must be used within a GodmodeProvider
+    at useGodmode (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useGodmode.ts:53:15)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:34:30)
+    at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mopens "Add Appointment" modal
+[22m[39mThe above error occurred in the <CalendarPage> component:
+
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+Error: Uncaught [Error: useGodmode must be used within a GodmodeProvider]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useGodmode must be used within a GodmodeProvider
+    at useGodmode (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useGodmode.ts:53:15)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:34:30)
+    at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+Error: Uncaught [Error: useGodmode must be used within a GodmodeProvider]
+    at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useGodmode must be used within a GodmodeProvider
+    at useGodmode (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/hooks/useGodmode.ts:53:15)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:34:30)
+    at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mhandles AI suggestions from URL params
+[22m[39mThe above error occurred in the <CalendarPage> component:
+
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+ [31m×[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mloads and aggregates events from all sources[32m 55[2mms[22m[39m
+[31m   → useGodmode must be used within a GodmodeProvider[39m
+ [31m×[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mhandles view mode switching[32m 7[2mms[22m[39m
+[31m   → useGodmode must be used within a GodmodeProvider[39m
+ [31m×[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mopens "Add Appointment" modal[32m 6[2mms[22m[39m
+[31m   → useGodmode must be used within a GodmodeProvider[39m
+ [31m×[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mhandles AI suggestions from URL params[32m 13[2mms[22m[39m
+[31m   → useGodmode must be used within a GodmodeProvider[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mloads and aggregates events from all sources
+[41m[1m FAIL [22m[49m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mhandles view mode switching
+[41m[1m FAIL [22m[49m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mopens "Add Appointment" modal
+[41m[1m FAIL [22m[49m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mhandles AI suggestions from URL params
+[31m[1mError[22m: useGodmode must be used within a GodmodeProvider[39m
+[36m [2m❯[22m useGodmode src/hooks/useGodmode.ts:[2m53:15[22m[39m
+    [90m 51| [39m    [35mconst[39m context [33m=[39m [34museContext[39m([33mGodmodeContext[39m)[33m;[39m
+    [90m 52| [39m    [35mif[39m ([33m![39mcontext) {
+    [90m 53| [39m        throw new Error('useGodmode must be used within a GodmodeProvi…
+    [90m   | [39m              [31m^[39m
+    [90m 54| [39m    }
+    [90m 55| [39m    [35mreturn[39m context[33m;[39m
+[90m [2m❯[22m CalendarPage src/pages/CalendarPage/CalendarPage.tsx:[2m34:30[22m[39m
+[90m [2m❯[22m renderWithHooks ../../node_modules/react-dom/cjs/react-dom.development.js:[2m15486:18[22m[39m
+[90m [2m❯[22m mountIndeterminateComponent ../../node_modules/react-dom/cjs/react-dom.development.js:[2m20103:13[22m[39m
+[90m [2m❯[22m beginWork ../../node_modules/react-dom/cjs/react-dom.development.js:[2m21626:16[22m[39m
+[90m [2m❯[22m beginWork$1 ../../node_modules/react-dom/cjs/react-dom.development.js:[2m27465:14[22m[39m
+[90m [2m❯[22m performUnitOfWork ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26599:12[22m[39m
+[90m [2m❯[22m workLoopSync ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26505:5[22m[39m
+[90m [2m❯[22m renderRootSync ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26473:7[22m[39m
+[90m [2m❯[22m recoverFromConcurrentError ../../node_modules/react-dom/cjs/react-dom.development.js:[2m25889:20[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[90m (4)[39m
+[2m   Start at [22m 16:59:21
+[2m   Duration [22m 3.43s[2m (transform 767ms, setup 429ms, import 1.38s, tests 83ms, environment 1.09s)[22m
+

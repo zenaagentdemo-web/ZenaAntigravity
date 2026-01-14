@@ -318,9 +318,9 @@ export const DealFlowPage: React.FC = () => {
         }
     }, [location.search]);
 
-    // Handle openDealId state from navigation (Deep linking from Ask Zena)
+    // Handle openDealId or openAddDealModal state from navigation
     useEffect(() => {
-        const state = location.state as { openDealId?: string } | null;
+        const state = location.state as { openDealId?: string, openAddDealModal?: boolean } | null;
         if (state?.openDealId) {
             console.log('[DealFlowPage] Opening deal from nav state:', state.openDealId);
             const targetDeal = deals.find(d => d.id === state.openDealId);
@@ -335,6 +335,11 @@ export const DealFlowPage: React.FC = () => {
                 // Clear state to prevent re-opening on refresh
                 window.history.replaceState({}, document.title);
             }
+        } else if (state?.openAddDealModal) {
+            console.log('[DealFlowPage] Opening Add Deal modal from nav state');
+            setShowNewDealModal(true);
+            // Clear state to prevent re-opening on refresh
+            window.history.replaceState({}, document.title);
         }
     }, [location.state, deals, pipelineType]);
 

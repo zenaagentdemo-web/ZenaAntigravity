@@ -1,9 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { PipelineType, SaleMethod, BuyerStage, SellerStage, DealCondition } from './types';
 import { Sparkles } from 'lucide-react';
+import { Portal } from '../Portal/Portal';
 import './NewDealModal.css';
 
-// ... (fetchWithAuth ...)
+const API_BASE = '/api';
+
+interface Property {
+    id: string;
+    address: string;
+}
+
+interface Contact {
+    id: string;
+    name: string;
+    email?: string;
+}
+
+interface AddressSuggestion {
+    id: string;
+    fullAddress: string;
+}
+
+// Fetch function with auth token
+async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
+    const token = localStorage.getItem('authToken');
+    return fetch(url, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...(options.headers || {})
+        }
+    });
+}
 
 interface NewDealModalProps {
     isOpen: boolean;
@@ -19,7 +49,53 @@ interface NewDealModalProps {
     };
 }
 
-// ... (constants ...)
+// Sale Methods
+const SALE_METHODS: { value: SaleMethod; label: string }[] = [
+    { value: 'auction', label: 'Auction' },
+    { value: 'tender', label: 'Tender' },
+    { value: 'deadline_sale', label: 'Deadline Sale' },
+    { value: 'negotiation', label: 'Negotiation' },
+    { value: 'asking_price', label: 'Asking Price' },
+    { value: 'poa', label: 'POA' },
+    { value: 'beo', label: 'BEO' },
+    { value: 'set_date', label: 'Set Date of Sale' },
+    { value: 'custom', label: 'Custom' }
+];
+
+// Pipeline Stages
+const BUYER_STAGES: { value: BuyerStage; label: string }[] = [
+    { value: 'buyer_consult', label: 'Buyer consult' },
+    { value: 'shortlisting', label: 'Shortlisting' },
+    { value: 'viewings', label: 'Viewings' },
+    { value: 'offer_made', label: 'Offer made' },
+    { value: 'conditional', label: 'Conditional' },
+    { value: 'unconditional', label: 'Unconditional' },
+    { value: 'pre_settlement', label: 'Pre-Settlement' },
+    { value: 'settled', label: 'Settled' },
+    { value: 'nurture', label: 'Nurture' }
+];
+
+const SELLER_STAGES: { value: SellerStage; label: string }[] = [
+    { value: 'appraisal', label: 'Appraisal' },
+    { value: 'listing_signed', label: 'Listing signed' },
+    { value: 'marketing', label: 'Marketing' },
+    { value: 'offers_received', label: 'Offers received' },
+    { value: 'conditional', label: 'Conditional' },
+    { value: 'unconditional', label: 'Unconditional' },
+    { value: 'pre_settlement', label: 'Pre-Settlement' },
+    { value: 'settled', label: 'Settled' },
+    { value: 'nurture', label: 'Nurture' }
+];
+
+// Default Conditions
+const DEFAULT_CONDITIONS: Partial<DealCondition>[] = [
+    { type: 'finance', label: 'Finance' },
+    { type: 'building_report', label: 'Building Report' },
+    { type: 'lim', label: 'LIM' },
+    { type: 'solicitor', label: 'Solicitor Approval' },
+    { type: 'insurance', label: 'Insurance' },
+    { type: 'other', label: 'Other' }
+];
 
 export const NewDealModal: React.FC<NewDealModalProps> = ({
     isOpen,
@@ -44,7 +120,17 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
     const [tenderCloseDate, setTenderCloseDate] = useState('');
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
 
-    // ... (rest of state)
+    // Search results and dropdown states
+    const [properties, setProperties] = useState<Property[]>([]);
+    const [contacts, setContacts] = useState<Contact[]>([]);
+    const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
+    const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
+    const [showContactDropdown, setShowContactDropdown] = useState(false);
+    const [isManualEntry, setIsManualEntry] = useState(false);
+
+    // UI state
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     // Reset form when modal opens
     useEffect(() => {
@@ -295,7 +381,7 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
     const showConditions = saleMethod !== 'auction'; // Auctions are unconditional
 
     return (
-        <>
+        <Portal>
             {/* Backdrop */}
             <div className="new-deal-modal__backdrop" onClick={onClose} />
 
@@ -328,6 +414,27 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
                 </div>
 
                 <form className="new-deal-modal__form" onSubmit={handleSubmit}>
+                    {/* Pipeline Type Selection */}
+                    <div className="new-deal-modal__field">
+                        <label className="new-deal-modal__label">Deal Type</label>
+                        <div className="new-deal-modal__toggle">
+                            <button
+                                type="button"
+                                className={`new-deal-modal__toggle-btn ${pipelineType === 'buyer' ? 'new-deal-modal__toggle-btn--active' : ''}`}
+                                onClick={() => setPipelineType('buyer')}
+                            >
+                                Buyer
+                            </button>
+                            <button
+                                type="button"
+                                className={`new-deal-modal__toggle-btn ${pipelineType === 'seller' ? 'new-deal-modal__toggle-btn--active' : ''}`}
+                                onClick={() => setPipelineType('seller')}
+                            >
+                                Seller
+                            </button>
+                        </div>
+                    </div>
+
                     {/* Sale Method */}
                     <div className="new-deal-modal__field">
                         <label className="new-deal-modal__label">Sale Method</label>
@@ -585,7 +692,7 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
                     </div>
                 </form>
             </div>
-        </>
+        </Portal>
     );
 };
 

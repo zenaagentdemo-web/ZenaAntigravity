@@ -3,6 +3,7 @@ import { websocketService } from './websocket.service.js';
 import { contactCategorizationService } from './contact-categorization.service.js';
 import { askZenaService } from './ask-zena.service.js';
 import prisma from '../config/database.js';
+import { tokenTrackingService } from './token-tracking.service.js';
 
 export interface ThreadData {
   id: string;
@@ -281,6 +282,7 @@ JSON; // End of prompt - ensure valid JSON output only`;
       },
     });
 
+    const startTime = Date.now();
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -293,17 +295,30 @@ JSON; // End of prompt - ensure valid JSON output only`;
     }
 
     const data = await response.json() as any;
+
+    // Log token usage
+    if (data.usageMetadata) {
+      tokenTrackingService.log({
+        source: 'voice-transcription', // Specific source for audio
+        model: model,
+        inputTokens: data.usageMetadata.promptTokenCount,
+        outputTokens: data.usageMetadata.candidatesTokenCount,
+        durationMs: Date.now() - startTime
+      }).catch(() => { });
+    }
+
     return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   }
 
   /**
    * Call LLM API - supports both OpenAI and Google Gemini
    */
-  public async callLLM(prompt: string): Promise<string> {
+  public async callLLM(prompt: string, source: string = 'email-triage'): Promise<string> {
     if (this.apiEndpoint === 'google') {
-      return this.callGemini(prompt, this.apiKey);
+      return this.callGemini(prompt, this.apiKey, source);
     }
 
+    const startTime = Date.now();
     const response = await fetch(this.apiEndpoint, {
       method: 'POST',
       headers: {
@@ -329,13 +344,25 @@ JSON; // End of prompt - ensure valid JSON output only`;
     }
 
     const data = await response.json();
+
+    // Log token usage
+    if (data.usage) {
+      tokenTrackingService.log({
+        source,
+        model: this.model,
+        inputTokens: data.usage.prompt_tokens,
+        outputTokens: data.usage.completion_tokens,
+        durationMs: Date.now() - startTime
+      }).catch(() => { });
+    }
+
     return data.choices[0]?.message?.content || '';
   }
 
   /**
    * Call Google Gemini API
    */
-  public async callGemini(prompt: string, apiKey: string): Promise<string> {
+  public async callGemini(prompt: string, apiKey: string, source: string = 'email-triage'): Promise<string> {
     let model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
@@ -351,6 +378,7 @@ JSON; // End of prompt - ensure valid JSON output only`;
       },
     });
 
+    const startTime = Date.now();
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -369,6 +397,18 @@ JSON; // End of prompt - ensure valid JSON output only`;
     }
 
     const data = await response.json() as any;
+
+    // Log token usage
+    if (data.usageMetadata) {
+      tokenTrackingService.log({
+        source,
+        model: model,
+        inputTokens: data.usageMetadata.promptTokenCount,
+        outputTokens: data.usageMetadata.candidatesTokenCount,
+        durationMs: Date.now() - startTime
+      }).catch(() => { });
+    }
+
     return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   }
 

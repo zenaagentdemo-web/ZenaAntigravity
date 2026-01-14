@@ -811,7 +811,7 @@ export class PropertiesController {
   async addMilestone(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const { type, date, notes } = req.body;
+      const { type, date, notes, endTime, reminder } = req.body;
 
       if (!req.user) {
         res.status(401).json({
@@ -841,6 +841,18 @@ export class PropertiesController {
           error: {
             code: 'VALIDATION_FAILED',
             message: 'date is required and must be a valid date string',
+            retryable: false,
+          },
+        });
+        return;
+      }
+
+      // Validate endTime if provided
+      if (endTime && isNaN(new Date(endTime).getTime())) {
+        res.status(400).json({
+          error: {
+            code: 'VALIDATION_FAILED',
+            message: 'endTime must be a valid date string',
             retryable: false,
           },
         });
@@ -888,7 +900,9 @@ export class PropertiesController {
         type: type as string,
         title: req.body.title || type,
         date: new Date(date).toISOString(),
+        endTime: endTime ? new Date(endTime).toISOString() : undefined,
         notes: notes || undefined,
+        reminder
       };
 
       // Get existing milestones and add the new one
@@ -953,6 +967,12 @@ export class PropertiesController {
           summary: `Milestone added: ${type} — Scheduled for ${formattedScheduledDate}`,
           content: notes || undefined,
           timestamp: new Date(),
+          metadata: {
+            endTime: endTime ? new Date(endTime).toISOString() : undefined,
+            date: new Date(date).toISOString(),
+            type,
+            title: req.body.title
+          }
         },
       });
 
@@ -1233,7 +1253,7 @@ export class PropertiesController {
   async updateMilestone(req: Request, res: Response): Promise<void> {
     try {
       const { id, milestoneId } = req.params;
-      const { title, date, notes, type } = req.body;
+      const { title, date, notes, type, endTime, reminder } = req.body;
 
       if (!req.user) {
         res.status(401).json({ error: { code: 'AUTH_TOKEN_MISSING', message: 'Authentication required' } });
@@ -1263,12 +1283,20 @@ export class PropertiesController {
         return;
       }
 
+      // Validate endTime if provided
+      if (endTime && isNaN(new Date(endTime).getTime())) {
+        res.status(400).json({ error: { code: 'VALIDATION_FAILED', message: 'Invalid endTime format' } });
+        return;
+      }
+
       // Update milestone
       milestones[milestoneIndex] = {
         ...milestones[milestoneIndex],
         title: title || milestones[milestoneIndex].title,
         type: type || milestones[milestoneIndex].type,
         date: date ? new Date(date).toISOString() : milestones[milestoneIndex].date,
+        endTime: endTime !== undefined ? (endTime ? new Date(endTime).toISOString() : undefined) : milestones[milestoneIndex].endTime,
+        reminder: reminder !== undefined ? reminder : milestones[milestoneIndex].reminder,
         notes: notes !== undefined ? notes : milestones[milestoneIndex].notes
       };
 

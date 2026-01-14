@@ -1,3 +1,5 @@
+import { tokenTrackingService } from './token-tracking.service.js';
+
 export interface SearchResult {
     title: string;
     link: string;
@@ -33,6 +35,7 @@ export class LiveSearchService {
         const prompt = `What is the property listing URL for ${address} in New Zealand? Prefer homes.co.nz or trademe.co.nz for stability. Return ONLY the raw URL.`;
 
         try {
+            const startTime = Date.now();
             const response = await fetch(
                 `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`,
                 {
@@ -52,6 +55,18 @@ export class LiveSearchService {
             }
 
             const data = await response.json();
+
+            // Log token usage
+            if (data.usageMetadata) {
+                tokenTrackingService.log({
+                    source: 'live-search',
+                    model: this.model,
+                    inputTokens: data.usageMetadata.promptTokenCount,
+                    outputTokens: data.usageMetadata.candidatesTokenCount,
+                    durationMs: Date.now() - startTime
+                }).catch(() => { });
+            }
+
             const url = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
             console.timeEnd(`[LiveSearch] Discovery for "${address}"`);

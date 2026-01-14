@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../config/database.js';
 import { logger } from './logger.service.js';
+import v8 from 'v8';
 
 /**
  * Health check status
@@ -55,19 +56,25 @@ class HealthCheckService {
    */
   private checkMemory(): CheckResult {
     const memUsage = process.memoryUsage();
+    const heapStats = v8.getHeapStatistics();
+
     const heapUsedMB = Math.round(memUsage.heapUsed / 1024 / 1024);
     const heapTotalMB = Math.round(memUsage.heapTotal / 1024 / 1024);
-    const heapUsagePercent = (memUsage.heapUsed / memUsage.heapTotal) * 100;
+    const heapLimitMB = Math.round(heapStats.heap_size_limit / 1024 / 1024);
+
+    // Percentage relative to absolute heap limit (usually ~4GB)
+    const heapUsagePercent = (memUsage.heapUsed / heapStats.heap_size_limit) * 100;
 
     let status: 'pass' | 'warn' | 'fail' = 'pass';
     let message = 'Memory usage normal';
 
-    if (heapUsagePercent > 98) {
+    // Warnings are now based on total system limit
+    if (heapUsagePercent > 90) {
       status = 'fail';
-      message = 'Critical memory usage';
-    } else if (heapUsagePercent > 90) {
+      message = 'Critical memory usage (Total Limit)';
+    } else if (heapUsagePercent > 70) {
       status = 'warn';
-      message = 'High memory usage';
+      message = 'High memory usage (Total Limit)';
     }
 
     return {
@@ -75,7 +82,8 @@ class HealthCheckService {
       message,
       details: {
         heapUsed: `${heapUsedMB}MB`,
-        heapTotal: `${heapTotalMB}MB`,
+        heapTotal_Allocated: `${heapTotalMB}MB`,
+        heapLimit: `${heapLimitMB}MB`,
         heapUsagePercent: `${heapUsagePercent.toFixed(2)}%`,
         rss: `${Math.round(memUsage.rss / 1024 / 1024)}MB`,
       },

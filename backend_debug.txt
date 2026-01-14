@@ -1,0 +1,6 @@
+
+> @zena/backend@1.0.0 dev
+> tsx watch src/index.ts
+
+8:28:39 PM [tsx] rerunning
+c

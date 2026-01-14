@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Sparkles, Calendar, CheckCircle2, MapPin, ArrowRight, Clock, ChevronLeft, ChevronRight, AlertTriangle, X, Plus } from 'lucide-react';
+import { Sparkles, Calendar, CheckCircle2, MapPin, ArrowRight, Clock, ChevronLeft, ChevronRight, AlertTriangle, X, Plus, Brain } from 'lucide-react';
 import { CalendarAppointment } from '../../components/CalendarWidget/CalendarWidget';
 import { ScheduleOpenHomeModal } from '../../components/ScheduleOpenHomeModal/ScheduleOpenHomeModal';
 import { CalendarMiniPicker } from '../../components/CalendarMiniPicker/CalendarMiniPicker';
@@ -9,6 +9,7 @@ import { GodmodeToggle } from '../../components/GodmodeToggle/GodmodeToggle';
 import { useGodmode } from '../../hooks/useGodmode';
 import { ActionApprovalQueue } from '../../components/ActionApprovalQueue/ActionApprovalQueue';
 import { api } from '../../utils/apiClient';
+import { getLocalISODate } from '../../utils/dateUtils';
 import { OptimiseProposalModal } from '../../components/CalendarOptimizationModal/OptimiseProposalModal';
 import { toast } from 'react-hot-toast';
 import './CalendarPage.css';
@@ -21,11 +22,14 @@ interface Property {
         id: string;
         type: string;
         date: string;
+        endTime?: string;
         notes?: string;
+        reminder?: string;
     }>;
 }
 
 export const CalendarPage: React.FC = () => {
+    console.log('[DEBUG] CalendarPage component rendering');
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [viewMode, setViewMode] = useState<'day' | 'week' | 'month'>('day');
@@ -34,7 +38,18 @@ export const CalendarPage: React.FC = () => {
     const [appointments, setAppointments] = useState<CalendarAppointment[]>([]);
     const [properties, setProperties] = useState<Property[]>([]);
     const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
-    const [selectedPropertyId, setSelectedPropertyId] = useState<string>('');
+    const [selectedPropId, setSelectedPropId] = useState<string | null>(null);
+    const [currentTime, setCurrentTime] = useState(new Date());
+    const scrollTargetRef = useRef<HTMLDivElement>(null);
+    const mainViewRef = useRef<HTMLElement>(null);
+    const hasInitialScrolled = useRef(false);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 60000); // Update every minute
+        return () => clearInterval(timer);
+    }, []);
     const [selectedMilestone, setSelectedMilestone] = useState<any>(null);
     const [selectedAgendaDate, setSelectedAgendaDate] = useState<Date | null>(new Date());
 
@@ -75,13 +90,7 @@ export const CalendarPage: React.FC = () => {
     const [isConfirming, setIsConfirming] = useState(false);
 
     // Route Optimization State
-    const [routeWarnings, setRouteWarnings] = useState<{
-        id: string;
-        message: string;
-        type: 'warning' | 'optimization';
-        actionLabel?: string;
-        action?: () => void;
-    }[]>([]);
+    const [routeWarnings, setRouteWarnings] = useState<any[]>([]);
 
     // Optimise My Day State
     const [isOptimiseModalOpen, setIsOptimiseModalOpen] = useState(false);
@@ -106,16 +115,76 @@ export const CalendarPage: React.FC = () => {
         if (property) setPropertyAddress(property);
         if (propId) setPropertyId(propId);
         if (selected) setSelectedSuggestion(selected);
-    }, [searchParams]);
+
+        // Check for openEventId parameter
+        const openEventId = searchParams.get('openEventId');
+        if (openEventId && appointments.length > 0 && !isScheduleModalOpen) {
+            const appt = appointments.find(a => a.id === openEventId);
+            if (appt) {
+                setSelectedPropId(appt.property?.id || null);
+                setSelectedMilestone({
+                    id: appt.id,
+                    title: appt.title,
+                    date: appt.time.toISOString(),
+                    notes: (appt as any).notes || '',
+                    type: appt.type === 'viewing' ? 'viewing' : (appt.title.toLowerCase().includes('auction') ? 'auction' : 'open_home'),
+                    isTimelineEvent: (appt as any).isTimelineEvent,
+                    isMilestone: (appt as any).isMilestone,
+                    isTask: (appt as any).isTask,
+                    endTime: appt.endTime ? appt.endTime.toISOString() : undefined,
+                    contactId: (appt as any).contactId,
+                    propertyId: appt.property?.id
+                });
+                setIsScheduleModalOpen(true);
+            }
+        }
+    }, [searchParams, appointments]); // Added appointments dependency
+
+    const [dailyBriefing, setDailyBriefing] = useState<string>('');
+    const [briefingLoading, setBriefingLoading] = useState(true);
+
+    const [isScheduling, setIsScheduling] = useState(false);
+    const [selectedSlot, setSelectedSlot] = useState<{ start: Date; end: Date } | null>(null);
+
+    // Fetch Daily Briefing
+    useEffect(() => {
+        const fetchBriefing = async () => {
+            try {
+                const response = await api.get('/api/calendar-optimization/briefing');
+                if (response.data.success) {
+                    setDailyBriefing(response.data.briefing);
+                }
+            } catch (error) {
+                console.error('Failed to fetch briefing:', error);
+            } finally {
+                setBriefingLoading(false);
+            }
+        };
+        fetchBriefing();
+    }, []);
+
+    // Analyze routes with backend intelligence
+    const analyzeRoutes = async (appts: CalendarAppointment[]) => {
+        try {
+            const response = await api.post('/api/calendar-optimization/analyze-intelligence', {
+                appointments: appts
+            });
+            if (response.data.success) {
+                setRouteWarnings(response.data.warnings);
+            }
+        } catch (error) {
+            console.error('Failed to analyze intelligence:', error);
+            setRouteWarnings([]);
+        }
+    };
 
     // Check for search param to pre-select property
     useEffect(() => {
         const searchAddress = searchParams.get('search');
         if (searchAddress && properties.length > 0) {
-            // Find property by address and open modal
             const found = properties.find(p => p.address === searchAddress);
             if (found) {
-                setSelectedPropertyId(found.id);
+                setSelectedPropId(found.id);
                 setIsScheduleModalOpen(true);
             }
         }
@@ -123,15 +192,29 @@ export const CalendarPage: React.FC = () => {
 
     useEffect(() => {
         loadData();
+        // Reset scroll flag on load
+        hasInitialScrolled.current = false;
     }, []);
+
+    // Auto-scroll to NOW line when appointments are loaded
+    useEffect(() => {
+        const isViewingToday = selectedAgendaDate && getLocalISODate(selectedAgendaDate) === getLocalISODate(currentTime);
+
+        if (isViewingToday && appointments.length > 0 && !hasInitialScrolled.current && mainViewRef.current && scrollTargetRef.current) {
+            console.log('[DEBUG] CLICKING SCROLL');
+            scrollTargetRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            hasInitialScrolled.current = true;
+        }
+    }, [appointments, viewMode, selectedAgendaDate, currentTime]);
 
     const loadData = async () => {
         try {
             const [propRes, taskRes, timelineRes] = await Promise.all([
-                api.get('/api/properties'),
-                api.get('/api/tasks?status=open'),
-                api.get('/api/timeline?entityType=calendar_event')
+                api.get(`/api/properties?_t=${Date.now()}`),
+                api.get(`/api/tasks?status=open&_t=${Date.now()}`),
+                api.get(`/api/timeline?entityType=calendar_event&_t=${Date.now()}`)
             ]);
+
 
             const loadedProps = propRes.data?.properties || [];
             const loadedTasks = taskRes.data?.tasks || [];
@@ -143,81 +226,31 @@ export const CalendarPage: React.FC = () => {
             const taskAppts = generateAppointmentsFromTasks(loadedTasks, loadedProps);
             const timelineAppts = generateAppointmentsFromTimeline(loadedTimeline, loadedProps);
 
-            const allAppts = [...propAppts, ...taskAppts, ...timelineAppts]
+            // Deduplicate: If a timeline event shadows a milestone (via linkedEntityId), hide the milestone
+            const shadowIds = new Set(timelineAppts.map(t => t.linkedEntityId).filter(Boolean));
+            const filteredPropAppts = propAppts.filter(p => !shadowIds.has(p.id));
+
+            const allAppts = [...filteredPropAppts, ...taskAppts, ...timelineAppts]
                 .sort((a, b) => a.time.getTime() - b.time.getTime());
 
             setAppointments(allAppts);
-
-            // ANALYZE ROUTES
             analyzeRoutes(allAppts);
         } catch (err) {
             console.error('Failed to load combined calendar data', err);
         }
     };
 
-    const analyzeRoutes = (appts: CalendarAppointment[]) => {
-        const warnings: any[] = [];
-        const todayStr = new Date().toDateString();
-        const now = new Date();
-        const todayAppts = appts
-            .filter(a => a.time.toDateString() === todayStr)
-            .sort((a, b) => a.time.getTime() - b.time.getTime());
-
-        for (let i = 0; i < todayAppts.length - 1; i++) {
-            const current = todayAppts[i];
-            const next = todayAppts[i + 1];
-
-            // Only analyze if the *next* appointment is consistent with the current schedule order
-            // AND the next appointment is starting within the next 3 hours (not "ages away")
-            const timeUntilNextStart = (next.time.getTime() - now.getTime()) / (1000 * 60);
-
-            if (timeUntilNextStart < 0 || timeUntilNextStart > 180) continue; // Skip past events or far future events (3h+)
-
-            // Assuming 1 hour duration for 'current' if not specified
-            const currentEndTime = new Date(current.time.getTime() + 60 * 60 * 1000);
-            const gapMinutes = (next.time.getTime() - currentEndTime.getTime()) / (1000 * 60);
-
-            // Simple Distance Estimate (Manhattan distance approx if coords existed, else random mock for demo)
-            // In reality, we'd use Google Maps API here. 
-            // For now, let's assume a "Critical Alert" only if the gap is remarkably tight (< 30 mins)
-            // and we rely on the heuristic that most property drives are ~15-30 mins.
-
-            if (gapMinutes < 30) {
-                // If gap is less than 30 mins, it's a potential rush.
-                // We refine this: if gap is NEGATIVE, it's an overlap.
-                if (gapMinutes < 0) {
-                    warnings.push({
-                        id: `overlap-${current.id}-${next.id}`,
-                        message: `Schedule Conflict: ${sanitizeTitle(next.title)} starts before ${sanitizeTitle(current.title)} ends.`,
-                        type: 'warning',
-                        actionLabel: 'Reschedule',
-                        action: () => handleApptClick(next)
-                    });
-                } else if (gapMinutes < 20) {
-                    // Tight gap (0-20 mins)
-                    warnings.push({
-                        id: `travel-${current.id}-${next.id}`,
-                        message: `Tight Schedule: Only ${Math.round(gapMinutes)} mins travel time to ${sanitizeTitle(next.title)}. Traffic may cause delays.`,
-                        type: 'warning',
-                        actionLabel: 'Optimize Route',
-                        action: () => {
-                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(next.location)}`, '_blank');
-                        }
-                    });
-                }
-            }
-        }
-        setRouteWarnings(warnings);
-    };
 
     const generateAppointmentsFromTasks = (tasks: any[], props: Property[]): CalendarAppointment[] => {
         return tasks
             .filter(t => t.dueDate)
             .map(t => {
                 const property = props.find(p => p.id === t.propertyId);
+                const startTime = new Date(t.dueDate);
                 return {
                     id: t.id,
-                    time: new Date(t.dueDate),
+                    time: startTime,
+                    endTime: new Date(startTime.getTime() + (t.estimatedDuration || 60) * 60000),
                     title: sanitizeTitle(t.label),
                     location: sanitizeTitle(property?.address || 'Personal Task'),
                     property: property ? {
@@ -234,11 +267,17 @@ export const CalendarPage: React.FC = () => {
 
     const generateAppointmentsFromTimeline = (events: any[], props: Property[]): CalendarAppointment[] => {
         return events.map(e => {
-            const propertyId = e.metadata?.propertyId;
+            // Check all possible locations for propertyId (metadata.propertyId, metadata.propertyReference, or entityId if type is property)
+            const propertyId = e.metadata?.propertyId || e.metadata?.propertyReference || (e.entityType === 'property' ? e.entityId : undefined);
+
+            // Check all locations for contactId
+            const contactId = e.metadata?.contactId || e.metadata?.contactReference || (e.entityType === 'contact' ? e.entityId : undefined);
+
             const property = props.find(p => p.id === propertyId);
+            const startTime = new Date(e.timestamp);
             return {
                 id: e.id,
-                time: new Date(e.timestamp),
+                time: startTime,
                 title: sanitizeTitle(e.summary),
                 location: sanitizeTitle(property?.address || e.metadata?.location || ''),
                 property: property ? {
@@ -248,7 +287,12 @@ export const CalendarPage: React.FC = () => {
                 } : undefined,
                 type: e.type === 'meeting' ? 'meeting' : 'other',
                 urgency: e.metadata?.urgency || 'low',
-                isTimelineEvent: true // Flag for deletion/update logic
+                isTimelineEvent: true, // Flag for deletion/update logic
+                linkedEntityId: e.entityId, // ID of the shadowed entity (e.g. property milestone)
+                endTime: e.metadata?.endTime ? new Date(e.metadata.endTime) : new Date(startTime.getTime() + 60 * 60000),
+                contactId: contactId,
+                reminder: e.metadata?.reminder,
+                notes: e.content
             } as any;
         });
     };
@@ -274,7 +318,9 @@ export const CalendarPage: React.FC = () => {
                             type: mapType(milestone.type || 'other'),
                             urgency: determineUrgency(milestone.type || 'low'),
                             isMilestone: true, // Flag for deletion/update logic
-                            notes: (milestone as any).notes
+                            notes: (milestone as any).notes,
+                            endTime: milestone.endTime ? new Date(milestone.endTime) : new Date(date.getTime() + 60 * 60000),
+                            reminder: (milestone as any).reminder
                         } as any);
                     }
                 });
@@ -353,10 +399,10 @@ export const CalendarPage: React.FC = () => {
         }
     };
 
-    const selectedProperty = properties.find(p => p.id === selectedPropertyId);
+    const selectedProperty = properties.find(p => p.id === selectedPropId);
 
     const handleApptClick = (appt: CalendarAppointment) => {
-        setSelectedPropertyId(appt.property?.id || '');
+        setSelectedPropId(appt.property?.id || null);
         setSelectedMilestone({
             id: appt.id,
             title: appt.title,
@@ -365,10 +411,25 @@ export const CalendarPage: React.FC = () => {
             type: appt.type === 'viewing' ? 'viewing' : (appt.title.toLowerCase().includes('auction') ? 'auction' : 'open_home'),
             isTimelineEvent: (appt as any).isTimelineEvent,
             isMilestone: (appt as any).isMilestone,
-            isTask: (appt as any).isTask
+            isTask: (appt as any).isTask,
+            endTime: appt.endTime ? appt.endTime.toISOString() : undefined,
+            contactId: (appt as any).contactId,
+            propertyId: appt.property?.id,
+            reminder: (appt as any).reminder
         });
         setIsScheduleModalOpen(true);
-        setIsScheduleModalOpen(true);
+        // Set URL param for persistence
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set('openEventId', appt.id);
+        navigate({ search: newParams.toString() }, { replace: true });
+    };
+
+    const handleCloseScheduleModal = () => {
+        setIsScheduleModalOpen(false);
+        setSelectedMilestone(null);
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('openEventId');
+        navigate({ search: newParams.toString() }, { replace: true });
     };
 
     const handleOptimiseClick = async () => {
@@ -466,7 +527,7 @@ export const CalendarPage: React.FC = () => {
                                 const today = new Date();
                                 setSelectedAgendaDate(today);
                                 setViewMode('day');
-                                const todayKey = today.toISOString().split('T')[0];
+                                const todayKey = getLocalISODate(today);
                                 const element = document.getElementById(todayKey);
                                 if (element) {
                                     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -497,7 +558,7 @@ export const CalendarPage: React.FC = () => {
                         <button
                             className="calendar-page__add-btn"
                             onClick={() => {
-                                setSelectedPropertyId('');
+                                setSelectedPropId(null);
                                 setIsScheduleModalOpen(true);
                             }}
                         >
@@ -509,10 +570,54 @@ export const CalendarPage: React.FC = () => {
             </header>
 
             <main className="calendar-page__content">
-                <section className="calendar-main-view">
+                <section ref={mainViewRef} className="calendar-main-view">
+
+                    {/* Daily Briefing Banner */}
+                    {dailyBriefing && (
+                        <div className="calendar-daily-briefing" style={{
+                            marginBottom: '20px',
+                            background: 'rgba(124, 58, 237, 0.1)',
+                            border: '1px solid rgba(124, 58, 237, 0.3)',
+                            borderRadius: '16px',
+                            padding: '16px 20px',
+                            display: 'flex',
+                            gap: '16px',
+                            alignItems: 'center',
+                            boxShadow: '0 8px 32px rgba(124, 58, 237, 0.1)',
+                            borderLeft: '4px solid #7c3aed'
+                        }}>
+                            <div className="briefing-icon" style={{
+                                width: '40px',
+                                height: '40px',
+                                background: 'rgba(124, 58, 237, 0.2)',
+                                borderRadius: '12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyCenter: 'center',
+                                color: '#a78bfa',
+                                flexShrink: 0
+                            }}>
+                                <Brain size={24} style={{ margin: 'auto' }} />
+                            </div>
+                            <div className="briefing-content" style={{ flex: 1 }}>
+                                <h4 style={{ margin: 0, fontSize: '13px', color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>Daily Strategy Briefing</h4>
+                                <p style={{ margin: '4px 0 0 0', fontSize: '15px', color: 'rgba(255,255,255,0.9)', lineHeight: 1.5 }}>
+                                    {dailyBriefing}
+                                </p>
+                            </div>
+                            <button
+                                className="briefing-close"
+                                onClick={() => setDailyBriefing('')}
+                                style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: '4px' }}
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                    )}
+
                     {/* Route Intelligence Banner */}
                     {routeWarnings.length > 0 && (
-                        <div className="calendar-route-intelligence">
+                        <div className="calendar-route-intelligence" style={{ marginBottom: '20px' }}>
                             {routeWarnings.map(warning => (
                                 <div key={warning.id} className={`route-warning route-warning--${warning.type}`}>
                                     <div className="route-warning__icon">
@@ -521,7 +626,16 @@ export const CalendarPage: React.FC = () => {
                                     <div className="route-warning__content">
                                         <p>{warning.message}</p>
                                         {warning.actionLabel && (
-                                            <button className="route-warning__btn" onClick={warning.action}>
+                                            <button
+                                                className="route-warning__btn"
+                                                onClick={() => {
+                                                    if (typeof warning.action === 'function') {
+                                                        warning.action();
+                                                    } else if (warning.action === 'optimise_day') {
+                                                        handleOptimiseClick();
+                                                    }
+                                                }}
+                                            >
                                                 <Sparkles size={12} />
                                                 {warning.actionLabel}
                                             </button>
@@ -603,7 +717,7 @@ export const CalendarPage: React.FC = () => {
                         <div className="agenda-header-info">
                             <h2 className="section-title">
                                 {viewMode === 'day' ? (
-                                    selectedAgendaDate?.toLocaleDateString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric' }) === new Date().toLocaleDateString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric' })
+                                    selectedAgendaDate?.toLocaleDateString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric' }) === currentTime.toLocaleDateString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric' })
                                         ? "Today's Agenda"
                                         : `Agenda for ${selectedAgendaDate?.toLocaleDateString('en-NZ', { day: 'numeric', month: 'long' })}`
                                 ) : viewMode === 'week' ? (
@@ -615,35 +729,37 @@ export const CalendarPage: React.FC = () => {
                         </div>
 
                         {(() => {
-                            const filteredGroups = Object.entries(
-                                appointments.reduce((groups, appt) => {
-                                    const dateKey = appt.time.toISOString().split('T')[0];
-                                    if (!groups[dateKey]) groups[dateKey] = [];
-                                    groups[dateKey].push(appt);
-                                    return groups;
-                                }, {} as Record<string, CalendarAppointment[]>)
-                            ).filter(([dateKey]) => {
-                                const date = new Date(dateKey);
+                            const reducedAppointments = appointments.reduce((groups, appt) => {
+                                const dateKey = getLocalISODate(appt.time);
+                                if (!groups[dateKey]) groups[dateKey] = [];
+                                groups[dateKey].push(appt);
+                                return groups;
+                            }, {} as Record<string, CalendarAppointment[]>);
+                            const filteredGroups = Object.entries(reducedAppointments).filter(([dateKey]) => {
                                 const anchor = selectedAgendaDate || new Date();
+                                const anchorKey = getLocalISODate(anchor);
 
                                 if (viewMode === 'day') {
-                                    return date.toDateString() === anchor.toDateString();
+                                    return dateKey === anchorKey;
                                 }
+
+                                const date = new Date(dateKey + 'T00:00:00'); // Use local time for week/month checks
                                 if (viewMode === 'week') {
                                     const startOfWeek = new Date(anchor);
-                                    startOfWeek.setDate(anchor.getDate() - anchor.getDay() + (anchor.getDay() === 0 ? -6 : 1));
                                     startOfWeek.setHours(0, 0, 0, 0);
+                                    startOfWeek.setDate(anchor.getDate() - anchor.getDay() + (anchor.getDay() === 0 ? -6 : 1));
+
                                     const endOfWeek = new Date(startOfWeek);
                                     endOfWeek.setDate(startOfWeek.getDate() + 6);
                                     endOfWeek.setHours(23, 59, 59, 999);
+
                                     return date >= startOfWeek && date <= endOfWeek;
                                 }
                                 if (viewMode === 'month') {
                                     return date.getMonth() === anchor.getMonth() && date.getFullYear() === anchor.getFullYear();
                                 }
                                 return true;
-                            })
-                                .sort(([a], [b]) => a.localeCompare(b));
+                            });
 
                             if (filteredGroups.length === 0) {
                                 return (
@@ -664,8 +780,22 @@ export const CalendarPage: React.FC = () => {
 
                             return filteredGroups.map(([dateKey, dayAppts]) => {
                                 const dateObj = new Date(dateKey);
-                                const isToday = dateObj.toDateString() === new Date().toDateString();
-                                const isPreSelection = selectedSuggestion && dateKey === new Date(selectedSuggestion).toISOString().split('T')[0];
+                                const isToday = dateKey === getLocalISODate(currentTime);
+                                const isPreSelection = selectedSuggestion && dateKey === getLocalISODate(new Date(selectedSuggestion));
+                                let nowLineInjected = false;
+                                const appointmentsWithNow = [];
+
+                                for (let i = 0; i < dayAppts.length; i++) {
+                                    const appt = dayAppts[i];
+                                    if (isToday && !nowLineInjected && appt.time > currentTime) {
+                                        appointmentsWithNow.push(<div key="now-line" className="calendar-now-line" />);
+                                        nowLineInjected = true;
+                                    }
+                                    appointmentsWithNow.push(appt);
+                                }
+                                if (isToday && !nowLineInjected) {
+                                    appointmentsWithNow.push(<div key="now-line-end" className="calendar-now-line" />);
+                                }
 
                                 return (
                                     <div key={dateKey} id={dateKey} className={`calendar-day-group ${isToday ? 'is-today' : ''} ${isPreSelection ? 'is-suggestion' : ''}`}>
@@ -682,48 +812,81 @@ export const CalendarPage: React.FC = () => {
 
                                         <div className="appointment-list">
                                             <div className="timeline-trail"></div>
-                                            {dayAppts.map(appt => (
-                                                <div
-                                                    key={appt.id}
-                                                    className={`appt-card appt-card--${appt.urgency || 'low'} appt-card--${appt.type}`}
-                                                    onClick={() => handleApptClick(appt)}
-                                                >
-                                                    <div className="appt-time-column">
-                                                        <div className="appt-time">
-                                                            {appt.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                            {appointmentsWithNow.map((item, index) => {
+                                                const isNowLine = React.isValidElement(item) && (item.key === "now-line" || item.key === "now-line-end");
+
+                                                if (isNowLine) {
+                                                    return (
+                                                        <div
+                                                            key={(item as any).key}
+                                                            ref={(el) => {
+                                                                // @ts-ignore
+                                                                scrollTargetRef.current = el;
+                                                            }}
+                                                            className="calendar-now-line"
+                                                        />
+                                                    );
+                                                }
+
+                                                const appt = item as CalendarAppointment;
+                                                const isPast = appt.time < currentTime;
+                                                return (
+                                                    <div
+                                                        key={appt.id}
+                                                        className={`appt-card appt-card--${appt.urgency || 'low'} appt-card--${appt.type} ${isPast ? 'appt-card--past' : ''}`}
+                                                        onClick={() => handleApptClick(appt)}
+                                                    >
+                                                        <div className="appt-time-column">
+                                                            <div className="appt-time">
+                                                                {appt.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}{appt.endTime ? ' - ' + appt.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : ''}
+                                                            </div>
+                                                            <div className="appt-dot"></div>
                                                         </div>
-                                                        <div className="appt-dot"></div>
-                                                    </div>
-                                                    <div className="appt-main-info">
-                                                        <div className="appt-type-tag">{appt.type.replace('_', ' ')}</div>
-                                                        <div className="appt-title">{appt.title}</div>
-                                                        {appt.location && (
-                                                            <div className="appt-location">
-                                                                <MapPin size={12} />
-                                                                {appt.location}
+                                                        <div className="appt-main-info">
+                                                            <div className="appt-type-tag">{appt.type.replace('_', ' ')}</div>
+                                                            <div className="appt-title">{appt.title}</div>
+                                                            {appt.location && (
+                                                                <div className="appt-location">
+                                                                    <MapPin size={12} />
+                                                                    {appt.location}
+                                                                </div>
+                                                            )}
+                                                            {appt.property?.type && (
+                                                                <div className="appt-prop-type">
+                                                                    {appt.property.type}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {(appt.property?.id || appt.contactId) && (
+                                                            <div className="appt-actions">
+                                                                {appt.property?.id && (
+                                                                    <button
+                                                                        className="appt-btn"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            navigate(`/properties/${appt.property.id}`, { state: { fromCalendar: true, eventId: appt.id } });
+                                                                        }}
+                                                                    >
+                                                                        View Property
+                                                                    </button>
+                                                                )}
+                                                                {appt.contactId && (
+                                                                    <button
+                                                                        className="appt-btn appt-btn--contact"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            navigate(`/contacts/${appt.contactId}`, { state: { fromCalendar: true, eventId: appt.id } });
+                                                                        }}
+                                                                        style={{ marginTop: appt.property?.id ? '4px' : '0' }}
+                                                                    >
+                                                                        View Contact
+                                                                    </button>
+                                                                )}
                                                             </div>
                                                         )}
-                                                        {appt.property?.type && (
-                                                            <div className="appt-prop-type">
-                                                                {appt.property.type}
-                                                            </div>
-                                                        )}
                                                     </div>
-                                                    {appt.property?.id && (
-                                                        <div className="appt-actions">
-                                                            <button
-                                                                className="appt-btn"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    navigate(`/properties/${appt.property.id}`);
-                                                                }}
-                                                            >
-                                                                View Property
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 );
@@ -735,7 +898,7 @@ export const CalendarPage: React.FC = () => {
                 <aside className="calendar-sidebar">
                     {/* Focus: Next Up - TOP of sidebar for immediate attention */}
                     <div className="sidebar-section">
-                        <h2 className="section-title"><span className="focus-title-highlight">Focus:</span> Next Up</h2>
+                        <h2 className="section-title focus-section-title">Focus: Next Up</h2>
                         {appointments.filter(a => isValidDate(a.time) && a.time > new Date()).length > 0 ? (
                             (() => {
                                 const nextAppt = appointments
@@ -745,8 +908,14 @@ export const CalendarPage: React.FC = () => {
                                 return (
                                     <div className="high-tech-card next-event-spotlight" onClick={() => handleApptClick(nextAppt)}>
                                         <div className="spotlight-header">
-                                            <Clock size={16} />
-                                            <span>Starts in {Math.round((nextAppt.time.getTime() - Date.now()) / (1000 * 60))} mins</span>
+                                            <div className="spotlight-time-info">
+                                                <Clock size={16} />
+                                                <span>Starts in {Math.round((nextAppt.time.getTime() - Date.now()) / (1000 * 60))} mins</span>
+                                            </div>
+                                            <div className="spotlight-time-range">
+                                                {nextAppt.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase()}
+                                                {nextAppt.endTime && ` - ${nextAppt.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase()}`}
+                                            </div>
                                         </div>
                                         <div className="spotlight-title">{nextAppt.title}</div>
                                         <div className="spotlight-footer">
@@ -766,9 +935,24 @@ export const CalendarPage: React.FC = () => {
                         )}
                     </div>
 
+                    {/* Zena's Intelligence - Between Focus and Navigation */}
+                    <div className="high-tech-card zena-suggestions sidebar-section">
+                        <h2 className="section-title">Zena's Intelligence</h2>
+                        <div className="suggestion-item">
+                            <span className="suggestion-icon">💡</span>
+                            <p>You have {appointments.filter(a => isValidDate(a.time) && a.time.toDateString() === new Date().toDateString()).length} events scheduled for today.</p>
+                        </div>
+                        <button
+                            className={`zena-action-btn zena-optimise-btn--pulsating ${isOptimising ? 'is-loading' : ''}`}
+                            onClick={handleOptimiseClick}
+                            disabled={isOptimising}
+                        >
+                            {isOptimising ? 'Analysing...' : 'Optimise My Day'}
+                        </button>
+                    </div>
+
                     {/* Navigation Calendar */}
                     <div className="sidebar-section">
-                        <h2 className="section-title">Navigation</h2>
                         <CalendarMiniPicker
                             selectedDate={isValidDate(selectedAgendaDate) ? selectedAgendaDate : new Date()}
                             appointments={appointments}
@@ -776,7 +960,7 @@ export const CalendarPage: React.FC = () => {
                                 if (!isValidDate(date)) return;
                                 setSelectedAgendaDate(date);
                                 // Scroll to date section
-                                const dateKey = date.toISOString().split('T')[0];
+                                const dateKey = getLocalISODate(date);
                                 const element = document.getElementById(dateKey);
                                 if (element) {
                                     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -785,17 +969,7 @@ export const CalendarPage: React.FC = () => {
                         />
                     </div>
 
-                    {/* Zena's Intelligence */}
-                    <div className="high-tech-card zena-suggestions sidebar-section">
-                        <h2 className="section-title">Zena's Intelligence</h2>
-                        <div className="suggestion-item">
-                            <span className="suggestion-icon">💡</span>
-                            <p>You have {appointments.filter(a => isValidDate(a.time) && a.time.toDateString() === new Date().toDateString()).length} events scheduled for today.</p>
-                        </div>
-                        <button className="zena-action-btn" onClick={handleOptimiseClick} disabled={isOptimising}>
-                            {isOptimising ? 'Analysing...' : 'Optimise My Day'}
-                        </button>
-                    </div>
+
                 </aside>
             </main>
 
@@ -812,10 +986,7 @@ export const CalendarPage: React.FC = () => {
 
             <ScheduleOpenHomeModal
                 isOpen={isScheduleModalOpen}
-                onClose={() => {
-                    setIsScheduleModalOpen(false);
-                    setSelectedMilestone(null);
-                }}
+                onClose={handleCloseScheduleModal}
                 property={selectedProperty as any}
                 allProperties={properties as any}
                 milestone={selectedMilestone}

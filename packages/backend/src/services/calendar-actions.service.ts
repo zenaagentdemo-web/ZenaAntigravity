@@ -11,6 +11,7 @@ import { askZenaService } from './ask-zena.service.js';
 import { godmodeService } from './godmode.service.js';
 import { getNZDateTime } from '../utils/date-utils.js';
 import prisma from '../config/database.js';
+import { fileLogger } from '../utils/fileLogger.js';
 
 interface OpenHomeSlotSuggestion {
     date: string;
@@ -437,12 +438,14 @@ Weekend afternoons or weekday mornings are typically preferred for real estate u
 
 CRITICAL RULES:
 1. All suggestions MUST be in the FUTURE relative to the ${nzTime.full}.
-2. Your "reasoning" MUST start by explicitly stating the proposed date and time in a clear, active voice, like "I suggest moving this to Thursday, 14th Jan at 10:00 AM because...". Do NOT just describe why a time is good without explicitly stating it at the start of the reasoning.
-
+2. Your "reasoning" MUST start by explicitly stating the proposed date and time in a clear, active voice, like "I suggest moving this to Thursday, 14th Jan at 10:00 AM because...".
+3. CRITICAL: The time mentioned in "reasoning" MUST EXACTLY MATCH the "time" field in the JSON. If "time" is "10:00", reasoning MUST say "10:00 AM". Do NOT hallucinate a different time in the text.
 Return a JSON array of suggestions:
 [{"date": "YYYY-MM-DD", "time": "HH:MM", "reasoning": "..."}]`;
 
+            fileLogger.log(`[CalendarActions] Prompt for ${eventId}:`, prompt);
             const response = await askZenaService.askBrain(prompt, { jsonMode: true });
+            fileLogger.log(`[CalendarActions] Response for ${eventId}:`, response);
 
             try {
                 return JSON.parse(response);

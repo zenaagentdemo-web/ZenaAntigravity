@@ -132,6 +132,23 @@
     box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
 }
 
+select.high-tech-input {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+select.high-tech-input option {
+    background: #0a1628;
+    color: #fff;
+    padding: 10px;
+}
+
 .readonly-value {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -453,4 +470,77 @@
 .slot-item span {
     color: #fff;
     font-weight: 600;
+}
+
+/* Checkbox Styling */
+.checkbox-group {
+    margin-top: -8px;
+    margin-bottom: 8px;
+}
+
+.custom-checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    width: fit-content;
+}
+
+.custom-checkbox-container:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.custom-checkbox-container.checked {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: rgba(0, 212, 255, 0.3);
+}
+
+.custom-checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    height: 20px;
+    width: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #0a1628;
+}
+
+.custom-checkbox-container:hover .checkmark {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.custom-checkbox-container.checked .checkmark {
+    background-color: #00d4ff;
+    border-color: #00d4ff;
+}
+
+.checkbox-label {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.custom-checkbox-container.checked .checkbox-label {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
 }

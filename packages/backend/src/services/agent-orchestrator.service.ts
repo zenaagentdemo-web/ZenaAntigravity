@@ -16,6 +16,7 @@ import { websocketService } from './websocket.service.js';
 import { logger } from './logger.service.js';
 import prisma from '../config/database.js';
 import { proactiveContextService } from './proactive-context.service.js';
+import { tokenTrackingService } from './token-tracking.service.js';
 import { getNZDateTime } from '../utils/date-utils.js';
 // Node 25 has built-in fetch
 
@@ -454,6 +455,7 @@ class AgentOrchestratorService {
             fullRequest: body // 🧠 LOG EVERYTHING
         });
 
+        const startTime = Date.now();
         const response = await fetch(this.GEMINI_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -469,6 +471,17 @@ class AgentOrchestratorService {
         }
 
         const responseJson = await response.json();
+
+        // Log token usage
+        if (responseJson.usageMetadata) {
+            tokenTrackingService.log({
+                source: 'agent-orchestrator',
+                model: this.GEMINI_MODEL,
+                inputTokens: responseJson.usageMetadata.promptTokenCount,
+                outputTokens: responseJson.usageMetadata.candidatesTokenCount,
+                durationMs: Date.now() - startTime
+            }).catch(() => { });
+        }
 
         if (responseJson.error) {
             logger.error(`[AgentOrchestrator] Gemini internal error: ${JSON.stringify(responseJson.error)}`);

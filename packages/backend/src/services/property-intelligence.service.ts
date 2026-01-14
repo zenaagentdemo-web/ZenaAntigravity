@@ -387,6 +387,7 @@ SECURITY: NEVER mention underlying AI models (Gemini, GPT, OpenAI, Google) or Ze
             const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
 
+            const startTime = Date.now();
             const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -408,6 +409,18 @@ SECURITY: NEVER mention underlying AI models (Gemini, GPT, OpenAI, Google) or Ze
             }
 
             const data = await response.json() as any;
+
+            // Log token usage
+            if (data.usageMetadata) {
+                tokenTrackingService.log({
+                    source: 'property-intelligence',
+                    model: model,
+                    inputTokens: data.usageMetadata.promptTokenCount,
+                    outputTokens: data.usageMetadata.candidatesTokenCount,
+                    durationMs: Date.now() - startTime
+                }).catch(() => { });
+            }
+
             const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
             const jsonMatch = text.match(/\{[\s\S]*\}/);

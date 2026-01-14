@@ -29,6 +29,9 @@ router.post('/draft', askZenaController.generateDraft);
 // This connects ZenaBatchComposeModal to Zena's high intelligence brain
 router.post('/compose-email', askZenaController.composeEmail);
 
+// POST /api/ask/rewrite-draft - Rewrite a draft (email/note/report) with feedback
+router.post('/rewrite-draft', askZenaController.rewriteDraft);
+
 // POST /api/ask/improvement-actions - Generate AI-powered improvement actions
 // This powers the IntelScoreTooltip "Improve Now" feature
 router.post('/improvement-actions', askZenaController.getImprovementActions);

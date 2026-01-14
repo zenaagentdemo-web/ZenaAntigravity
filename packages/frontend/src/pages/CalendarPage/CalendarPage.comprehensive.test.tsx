@@ -37,6 +37,19 @@ vi.mock('../../components/GodmodeToggle/GodmodeToggle', () => ({
     GodmodeToggle: () => <div data-testid="godmode-toggle">GodMode</div>
 }));
 
+vi.mock('../../hooks/useGodmode', () => ({
+    useGodmode: () => ({
+        pendingCount: 0,
+        isGodmode: false,
+        toggleGodmode: vi.fn(),
+        pendingActions: [],
+        isLoading: false,
+        approveAction: vi.fn(),
+        dismissAction: vi.fn(),
+        settings: {}
+    })
+}));
+
 // Mock Lucide Icons to avoid rendering issues if any
 vi.mock('lucide-react', async () => {
     const actual = await vi.importActual('lucide-react');
@@ -63,26 +76,34 @@ describe('CalendarPage Integration Tests', () => {
             address: '123 Test St',
             type: 'residential',
             milestones: [
-                { id: 'm-1', type: 'open_home', date: '2024-01-01T10:00:00Z', title: 'Open Home' }
+                { id: 'm-1', type: 'open_home', date: '2024-01-01T01:00:00Z', title: 'Open Home' }
             ]
         }
     ];
 
     const mockTasks = [
-        { id: 'task-1', label: 'Call Vendor', dueDate: '2024-01-01T11:00:00Z', propertyId: 'prop-1' }
+        { id: 'task-1', label: 'Call Vendor', dueDate: '2024-01-01T02:00:00Z', propertyId: 'prop-1' }
     ];
 
     const mockTimeline = [
-        { id: 'event-1', summary: 'Meeting with Buyer', timestamp: '2024-01-01T14:00:00Z', type: 'meeting', metadata: { location: 'Office' } }
+        { id: 'event-1', summary: 'Meeting with Buyer', timestamp: '2024-01-01T03:00:00Z', type: 'meeting', metadata: { location: 'Office' } }
     ];
 
     beforeEach(() => {
         vi.clearAllMocks();
         // Setup default API responses
         mockGet.mockImplementation((url) => {
-            if (url === '/api/properties') return Promise.resolve({ data: { properties: mockProperties } });
-            if (url === '/api/tasks?status=open') return Promise.resolve({ data: { tasks: mockTasks } });
-            if (url === '/api/timeline?entityType=calendar_event') return Promise.resolve({ data: { events: mockTimeline } });
+            if (url.startsWith('/api/properties')) return Promise.resolve({ data: { properties: mockProperties } });
+            if (url.startsWith('/api/tasks?status=open')) return Promise.resolve({ data: { tasks: mockTasks } });
+            if (url.startsWith('/api/timeline?entityType=calendar_event')) return Promise.resolve({ data: { events: mockTimeline } });
+            if (url === '/api/calendar-optimization/briefing') return Promise.resolve({ data: { success: true, briefing: 'Test Briefing' } });
+            return Promise.resolve({ data: {} });
+        });
+
+        mockPost.mockImplementation((url) => {
+            if (url === '/api/calendar-optimization/analyze-intelligence') {
+                return Promise.resolve({ data: { success: true, warnings: [] } });
+            }
             return Promise.resolve({ data: {} });
         });
     });
@@ -109,7 +130,7 @@ describe('CalendarPage Integration Tests', () => {
 
         // Wait for data loading
         await waitFor(() => {
-            expect(mockGet).toHaveBeenCalledTimes(3);
+            expect(mockGet).toHaveBeenCalledTimes(4);
         });
 
         // Check if events derived from different sources are rendered

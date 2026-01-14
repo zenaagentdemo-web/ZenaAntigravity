@@ -103,7 +103,7 @@ export const ContactDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const backState = location.state as { from?: string; label?: string } | null;
+  const backState = location.state as { from?: string; label?: string; fromCalendar?: boolean; eventId?: string } | null;
   const [contact, setContact] = useState<Contact | null>(null);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
@@ -514,8 +514,14 @@ export const ContactDetailPage: React.FC = () => {
       <div className="contact-detail-page__container">
         <header className="contact-detail-page__header">
           <div className="contact-detail-page__header-left">
-            <button className="contact-detail-page__back" onClick={() => navigate(backState?.from || '/contacts')}>
-              <ArrowLeft size={18} /> {backState?.label || 'Contacts'}
+            <button className="contact-detail-page__back" onClick={() => {
+              if (backState?.fromCalendar) {
+                navigate(`/calendar?openEventId=${backState.eventId || ''}`);
+              } else {
+                navigate(backState?.from || '/contacts');
+              }
+            }}>
+              <ArrowLeft size={18} /> {backState?.fromCalendar ? 'Back to Calendar' : (backState?.label || 'Contacts')}
             </button>
             <button className="contact-detail-page__delete-contact-btn" onClick={handleDeleteContact} title="Delete Contact">
               <Trash2 size={16} /> Delete Contact

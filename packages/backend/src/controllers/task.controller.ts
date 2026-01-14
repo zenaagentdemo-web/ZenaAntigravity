@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { taskService } from '../services/task.service.js';
+import { fileLogger } from '../utils/fileLogger.js';
 
 /**
  * Get tasks with filters
@@ -213,6 +214,8 @@ export async function updateTask(req: Request, res: Response) {
     });
   } catch (error) {
     console.error('Error updating task:', error);
+    fileLogger.log(`[TaskController] Error updating task ${req.params.id}: ${error instanceof Error ? error.message : String(error)}`);
+    if (error instanceof Error) fileLogger.log(error.stack || 'No stack');
     if (error instanceof Error && error.message === 'Task not found') {
       return res.status(404).json({ error: 'Task not found' });
     }

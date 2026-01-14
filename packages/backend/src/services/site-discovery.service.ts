@@ -15,6 +15,7 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import prisma from '../config/database.js';
+import { tokenTrackingService } from './token-tracking.service.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -301,6 +302,7 @@ class SiteDiscoveryService {
                     console.log(`[SiteDiscovery] Attempting analysis with model: ${modelName}`);
                     const model = genAI.getGenerativeModel({ model: modelName });
 
+                    const startTime = Date.now();
                     const result = await model.generateContent([
                         { text: prompt },
                         {
@@ -312,6 +314,17 @@ class SiteDiscoveryService {
                     ]);
 
                     const responseText = result.response.text();
+
+                    // Log token usage
+                    if (result.response.usageMetadata) {
+                        tokenTrackingService.log({
+                            source: 'site-discovery-vision',
+                            model: modelName,
+                            inputTokens: result.response.usageMetadata.promptTokenCount,
+                            outputTokens: result.response.usageMetadata.candidatesTokenCount,
+                            durationMs: Date.now() - startTime
+                        }).catch(() => { });
+                    }
                     // Clean the response - remove markdown code blocks if present
                     const cleanJson = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 

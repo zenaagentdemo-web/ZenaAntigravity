@@ -5,6 +5,7 @@ import './CalendarWidget.css';
 export interface CalendarAppointment {
   id: string;
   time: Date;
+  endTime?: Date;
   title: string;
   location?: string;
   property?: {
@@ -12,9 +13,12 @@ export interface CalendarAppointment {
     address: string;
     type?: string;
   };
+  notes?: string;
   type: 'viewing' | 'meeting' | 'call' | 'other';
   urgency?: 'low' | 'medium' | 'high';
   conflictsWith?: string[]; // IDs of conflicting appointments
+  linkedEntityId?: string; // ID of the entity this appointment shadows (e.g. a milestone)
+  reminder?: string;
 }
 
 export interface CalendarWidgetProps {

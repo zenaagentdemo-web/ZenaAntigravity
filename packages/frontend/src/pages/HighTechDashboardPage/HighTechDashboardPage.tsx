@@ -179,6 +179,7 @@ export const HighTechDashboardPage: React.FC = () => {
       case 'voice-note': navigate('/voice-note'); break;
       case 'search': navigate('/search'); break;
       case 'calendar': navigate('/calendar'); break;
+      case 'add-deal': navigate('/deal-flow', { state: { openAddDealModal: true } }); break;
       case 'contacts': navigate('/contacts'); break;
       case 'properties': navigate('/properties'); break;
     }

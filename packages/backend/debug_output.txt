@@ -1,18 +1,185 @@
-{"timestamp":"2026-01-08T00:07:35.130Z","level":"info","message":"[NavigationPlanner] Initialized with Gemini model: gemini-3-flash-preview"}
-{"timestamp":"2026-01-08T00:07:35.170Z","level":"info","message":"[AskZenaService] Initializing Ask Zena..."}
-{"timestamp":"2026-01-08T00:07:35.171Z","level":"info","message":"[AskZenaService] OPENAI_API_KEY set:"}
-{"timestamp":"2026-01-08T00:07:35.171Z","level":"info","message":"[AskZenaService] GEMINI_API_KEY set:","context":true}
-{"timestamp":"2026-01-08T00:07:35.171Z","level":"info","message":"[AskZenaService] GEMINI_MODEL:","context":"gemini-3-flash-preview"}
+✅ [database.ts] Prisma initialized: true
+{"timestamp":"2026-01-13T08:28:30.281Z","level":"info","message":"[NavigationPlanner] Initialized with Gemini model: gemini-3-flash-preview"}
+[ToolRegistry] ✅ Registered tool: inbox.list_threads
+[ToolRegistry] ✅ Registered tool: inbox.get_thread
+[ToolRegistry] ✅ Registered tool: inbox.get_messages
+[ToolRegistry] ✅ Registered tool: inbox.archive_thread
+[ToolRegistry] ✅ Registered tool: inbox.unarchive_thread
+[ToolRegistry] ✅ Registered tool: inbox.snooze_thread
 [AIProcessingService] Initialized with Gemini: gemini-3-flash-preview
---- Phase 6: Portfolio Intelligence Verification ---
-✅ Created simulation for Sarah Jenkins (Portfolio Test) with 2f724ba7-4ef2-473f-9e49-75303dceca05
-   - Seller Deal: 302d83f1-2841-4448-acc3-6843b8437829
-   - Buyer Deal: 0eea3c38-7ce9-49f0-a26b-f98e14719038
---- Triggering AI Portfolio Synthesis ---
-{"timestamp":"2026-01-08T00:07:35.201Z","level":"info","message":"[PortfolioIntel] Analyzing portfolio for contact 2f724ba7-4ef2-473f-9e49-75303dceca05"}
-{"timestamp":"2026-01-08T00:07:41.902Z","level":"error","message":"[PortfolioIntel] AI Synthesis failed for contact 2f724ba7-4ef2-473f-9e49-75303dceca05:","error":{"name":"SyntaxError","message":"Unterminated string in JSON at position 91 (line 3 column 54)","stack":"SyntaxError: Unterminated string in JSON at position 91 (line 3 column 54)\n    at JSON.parse (<anonymous>)\n    at PortfolioIntelligenceService.analyzePortfolio (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/src/services/portfolio-intelligence.service.ts:93:35)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at verifyPortfolioIntelligence (file:///Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend/scripts/verify-portfolio.ts:69:23)"}}
-✅ PORTFOLIO BRIEF GENERATED:
-   Strategy: SELLING_TO_BUY
-   Summary: [HEURISTIC] Managing 29 active transactions. AI synthesis failed.
-   Next Step: Verify dependency between active deals manually.
-⚠️ No dependencies detected (Expected for Selling-to-Buy).
+[ToolRegistry] ✅ Registered tool: inbox.classify_thread
+[ToolRegistry] ✅ Registered tool: inbox.move_to_awaiting
+[ToolRegistry] ✅ Registered tool: inbox.link_to_property
+[ToolRegistry] ✅ Registered tool: inbox.link_to_contact
+[ToolRegistry] ✅ Registered tool: inbox.draft_reply
+[ToolRegistry] ✅ Registered tool: inbox.send_reply
+[ToolRegistry] ✅ Registered tool: inbox.regenerate_draft
+[ToolRegistry] ✅ Registered tool: inbox.search
+[ToolRegistry] ✅ Registered tool: deal.list
+[ToolRegistry] ✅ Registered tool: deal.get
+[ToolRegistry] ✅ Registered tool: deal.create
+[ToolRegistry] ✅ Registered tool: deal.update
+[ToolRegistry] ✅ Registered tool: deal.delete
+[ToolRegistry] ✅ Registered tool: deal.update_stage
+[ToolRegistry] ✅ Registered tool: deal.update_conditions
+[ToolRegistry] ✅ Registered tool: deal.assign_contact
+[ToolRegistry] ✅ Registered tool: deal.remove_contact
+[ToolRegistry] ✅ Registered tool: deal.analyze
+[ToolRegistry] ✅ Registered tool: deal.archive
+[ToolRegistry] ✅ Registered tool: deal.unarchive
+[ToolRegistry] ✅ Registered tool: deal.add_note
+[ToolRegistry] ✅ Registered tool: deal.get_brief
+[ToolRegistry] ✅ Registered tool: deal.bulk_archive
+[ToolRegistry] ✅ Registered tool: deal.bulk_delete
+[ToolRegistry] ✅ Registered tool: deal.search
+[ToolRegistry] ✅ Registered tool: deal.generate_report
+[ToolRegistry] ✅ Registered tool: deal.update_risk
+[ToolRegistry] ✅ Registered tool: contact.list
+[ToolRegistry] ✅ Registered tool: contact.get
+[ToolRegistry] ✅ Registered tool: contact.create
+[ToolRegistry] ✅ Registered tool: contact.update
+[ToolRegistry] ✅ Registered tool: contact.delete
+[ToolRegistry] ✅ Registered tool: contact.archive
+[ToolRegistry] ✅ Registered tool: contact.add_relationship_note
+[ToolRegistry] ✅ Registered tool: contact.get_brief
+[ToolRegistry] ✅ Registered tool: contact.run_discovery
+[ToolRegistry] ✅ Registered tool: contact.recategorize
+[ToolRegistry] ✅ Registered tool: contact.bulk_delete
+[ToolRegistry] ✅ Registered tool: contact.bulk_update
+[ToolRegistry] ✅ Registered tool: contact.search
+[ToolRegistry] ✅ Registered tool: contact.link_to_property
+[ToolRegistry] ✅ Registered tool: task.list
+[ToolRegistry] ✅ Registered tool: task.get
+[ToolRegistry] ✅ Registered tool: task.create
+[ToolRegistry] ✅ Registered tool: task.update
+[ToolRegistry] ✅ Registered tool: task.delete
+[ToolRegistry] ✅ Registered tool: task.complete
+[ToolRegistry] ✅ Registered tool: task.reschedule
+[ToolRegistry] ✅ Registered tool: task.get_overdue
+[ToolRegistry] ✅ Registered tool: task.process_voice_note
+[ToolRegistry] ✅ Registered tool: task.search
+[ToolRegistry] ✅ Registered tool: property.list
+[ToolRegistry] ✅ Registered tool: property.get
+[ToolRegistry] ✅ Registered tool: property.create
+[ToolRegistry] ✅ Registered tool: property.update
+[ToolRegistry] ✅ Registered tool: property.delete
+[ToolRegistry] ✅ Registered tool: property.add_milestone
+[ToolRegistry] ✅ Registered tool: property.update_milestone
+[ToolRegistry] ✅ Registered tool: property.delete_milestone
+[ToolRegistry] ✅ Registered tool: property.refresh_intelligence
+[ToolRegistry] ✅ Registered tool: property.generate_comparables
+[ToolRegistry] ✅ Registered tool: property.link_vendor
+[ToolRegistry] ✅ Registered tool: property.generate_report
+[ToolRegistry] ✅ Registered tool: property.bulk_delete
+[ToolRegistry] ✅ Registered tool: property.bulk_archive
+[ToolRegistry] ✅ Registered tool: property.get_smart_matches
+[ToolRegistry] ✅ Registered tool: property.search
+[ToolRegistry] ✅ Registered tool: calendar.list
+[ToolRegistry] ✅ Registered tool: calendar.get
+[ToolRegistry] ✅ Registered tool: calendar.create
+[ToolRegistry] ✅ Registered tool: calendar.update
+[ToolRegistry] ✅ Registered tool: calendar.delete
+[ToolRegistry] ✅ Registered tool: calendar.suggest_slots
+[ToolRegistry] ✅ Registered tool: calendar.optimize_day
+[ToolRegistry] ✅ Registered tool: calendar.search
+[ToolRegistry] ✅ Registered tool: portfolio.get_brief
+[ToolRegistry] ✅ Registered tool: portfolio.get_global_brief
+[ToolRegistry] ✅ Registered tool: search_memory
+[ToolRegistry] ✅ Registered tool: export.contacts
+[ToolRegistry] ✅ Registered tool: export.properties
+[ToolRegistry] ✅ Registered tool: export.deals
+[ActionRegistry] Registered strategy for generate_weekly_report
+[ActionRegistry] Registered strategy for buyer_match_intro
+[ActionRegistry] Registered strategy for schedule_viewing
+[ToolRegistry] ✅ Registered tool: godmode.get_pending
+[ToolRegistry] ✅ Registered tool: godmode.approve
+[ToolRegistry] ✅ Registered tool: godmode.dismiss
+[ToolRegistry] ✅ Registered tool: voice_note.list
+[ToolRegistry] ✅ Registered tool: voice_note.get
+[ToolRegistry] ✅ Registered tool: voice_note.upload
+[ToolRegistry] 📦 Registered bundle: inbox (11 tools)
+[ToolRegistry] 📦 Registered bundle: deals (15 tools)
+[ToolRegistry] 📦 Registered bundle: contacts (13 tools)
+[ToolRegistry] 📦 Registered bundle: properties (13 tools)
+[ToolRegistry] 📦 Registered bundle: tasks (9 tools)
+[ToolRegistry] 📦 Registered bundle: calendar (7 tools)
+[ToolRegistry] 📦 Registered bundle: core (2 tools)
+[ToolRegistry] 📦 Registered bundle: export (3 tools)
+[ToolRegistry] 📦 Registered bundle: godmode (3 tools)
+[ToolRegistry] 📦 Registered bundle: voice_notes (3 tools)
+[ToolBundles] Registered 10 tool bundles
+[ToolRegistry] ✅ Registered tool: core.get_dashboard
+[ToolRegistry] ✅ Registered tool: core.search
+[ToolRegistry] Tool deal.generate_report already registered, overwriting
+[ToolRegistry] ✅ Registered tool: deal.generate_report
+[ToolRegistry] Tool deal.update_risk already registered, overwriting
+[ToolRegistry] ✅ Registered tool: deal.update_risk
+[ToolRegistry] ✅ Registered tool: calendar.list_events
+[ToolRegistry] ✅ Registered tool: calendar.get_event
+[ToolRegistry] ✅ Registered tool: calendar.create_event
+[ToolRegistry] ✅ Registered tool: calendar.update_event
+[ToolRegistry] ✅ Registered tool: calendar.delete_event
+[ToolRegistry] ✅ Registered tool: calendar.reschedule
+[ToolRegistry] ✅ Registered tool: task.list_tasks
+[ToolRegistry] ✅ Registered tool: task.create_task
+[ToolRegistry] ✅ Registered tool: task.update_task
+[ToolRegistry] ✅ Registered tool: task.link_to_deal
+[ToolRegistry] ✅ Registered tool: contact.list_contacts
+[ToolRegistry] ✅ Registered tool: contact.create_contact
+[ToolRegistry] ✅ Registered tool: contact.update_contact
+[ToolRegistry] ✅ Registered tool: property.list_properties
+[ToolRegistry] ✅ Registered tool: property.create_property
+[ToolRegistry] ✅ Registered tool: property.update_property
+[Tools] Agent tool system initialized: 111 tools across 13 domains
+{"timestamp":"2026-01-13T08:28:30.666Z","level":"info","message":"[AskZenaService] Initializing Ask Zena..."}
+{"timestamp":"2026-01-13T08:28:30.810Z","level":"info","message":"[AskZenaService] OPENAI_API_KEY set:"}
+{"timestamp":"2026-01-13T08:28:30.811Z","level":"info","message":"[AskZenaService] GEMINI_API_KEY set:","context":true}
+{"timestamp":"2026-01-13T08:28:30.811Z","level":"info","message":"[AskZenaService] GEMINI_MODEL:","context":"gemini-3-flash-preview"}
+Finding a suitable event...
+Testing suggestions for event: 963a0368-59bd-4837-97c1-b0b78937d4bc (Meeting at Wed Jan 14 2026 08:30:00 GMT+1300 (New Zealand Daylight Time))
+[CalendarActions] Getting reschedule suggestions for timeline_event 963a0368-59bd-4837-97c1-b0b78937d4bc
+[AskBrain] Prompt: You are a real estate scheduling assistant. Assist in rescheduling the following event:
+Event: "Meet...
+
+========================================
+[Gemini] 🚀 CALL GEMINI INITIATED
+========================================
+[Gemini] API Key Present: true
+[Gemini] API Key Length: 39
+[Gemini] Model: gemini-3-flash-preview
+[Gemini] Source: unknown
+[Gemini] Prompt Length: 1139
+[Gemini] Prompt Preview: You are a real estate scheduling assistant. Assist in rescheduling the following event:
+Event: "Meeting"
+Current Time of Event: 1/14/2026, 8:30:00 AM
+Location: TBD
+
+CURRENT LOCAL TIME (New Zealand): 1...
+[Gemini] Conversation History Count: 0
+[Gemini] Attachments: 0
+========================================
+
+[Gemini] ✅ API Response OK, status: 200
+[Gemini] Response Time: 13475 ms
+[Gemini] Grounding Debug: { hasMetadata: false, chunks: 0, mode: 'json' }
+[AskBrain] Response: [{"date":"2026-01-14","time":"10:00","reasoning":"I suggest moving this to Wednesday, 14th Jan at 10...
+--- SUGGESTIONS RESULT ---
+[
+  {
+    "date": "2026-01-14",
+    "time": "10:00",
+    "reasoning": "I suggest moving this to Wednesday, 14th Jan at 10:00 AM because this is the golden hour for real estate brilliance, allowing you to dominate the morning market while your competitors are still on their first coffee."
+  },
+  {
+    "date": "2026-01-14",
+    "time": "11:30",
+    "reasoning": "I suggest moving this to Wednesday, 14th Jan at 11:30 AM because it provides a perfect buffer to crush your morning admin, ensuring you walk into this meeting with the focus of a top-tier closer."
+  },
+  {
+    "date": "2026-01-15",
+    "time": "09:00",
+    "reasoning": "I suggest moving this to Thursday, 15th Jan at 09:00 AM because a fresh start on a new day is a power move that keeps your momentum high and your schedule impeccably organised."
+  }
+]
+--------------------------
+[TokenTracker] ask-zena: ~285 input / ~186 output tokens (gemini-3-flash-preview) [13482ms]

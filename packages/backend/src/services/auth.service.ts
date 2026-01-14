@@ -119,8 +119,6 @@ export class AuthService {
 
     console.log(`[AuthService] Attempting login for: ${email}`);
 
-    console.log(`[AuthService] Attempting login for: ${email}`);
-
     // REMOVED: Demo bypass logic. We use the real seeded user in the database now.
     // This ensures token User ID matches the data owner User ID.
 

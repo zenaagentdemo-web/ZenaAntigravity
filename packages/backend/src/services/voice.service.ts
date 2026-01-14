@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { tokenTrackingService } from './token-tracking.service.js';
 
 export class VoiceService {
     private apiKey: string;
@@ -38,6 +39,7 @@ export class VoiceService {
         const logPath = 'gemini_debug.log';
         fs.appendFileSync(logPath, `[${new Date().toISOString()}] Transcribing with model: ${model}, mimeType: ${cleanMimeType}\n`);
 
+        const startTime = Date.now();
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -52,6 +54,18 @@ export class VoiceService {
         }
 
         const data = await response.json() as any;
+
+        // Log token usage
+        if (data.usageMetadata) {
+            tokenTrackingService.log({
+                source: 'voice-stt',
+                model: model,
+                inputTokens: data.usageMetadata.promptTokenCount,
+                outputTokens: data.usageMetadata.candidatesTokenCount,
+                durationMs: Date.now() - startTime
+            }).catch(() => { });
+        }
+
         fs.appendFileSync(logPath, `[${new Date().toISOString()}] Gemini Response: ${JSON.stringify(data).substring(0, 500)}\n`);
 
         const transcript = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
@@ -118,6 +132,15 @@ export class VoiceService {
         }
 
         const data = await response.json() as { audioContent: string };
+
+        // Log TTS usage (characters as tokens for tracking)
+        tokenTrackingService.log({
+            source: 'voice-tts',
+            model: 'google-tts',
+            inputTokens: cleanedText.length,
+            durationMs: Date.now() - startTime
+        }).catch(() => { });
+
         fs.appendFileSync(logPath, `[${new Date().toISOString()}] TTS generated successfully\n`);
         return Buffer.from(data.audioContent, 'base64');
     }

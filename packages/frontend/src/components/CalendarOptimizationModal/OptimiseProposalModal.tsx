@@ -24,8 +24,10 @@ interface OptimiseProposalModalProps {
             oldTotalDurationMinutes: number;
             newTotalDurationMinutes: number;
             tasksAdded: number;
+            totalProposedTasks: number;
         };
         changes: Change[];
+        aiReasoning?: string;
     } | null;
     isLoading: boolean;
 }
@@ -33,13 +35,25 @@ interface OptimiseProposalModalProps {
 export const OptimiseProposalModal: React.FC<OptimiseProposalModalProps> = ({ isOpen, onClose, onApply, proposal, isLoading }) => {
     if (!isOpen) return null;
 
-    if (isLoading || !proposal) {
+    if (isLoading) {
         return (
             <div className="optimise-modal-overlay">
                 <div className="optimise-modal-content loading">
                     <Loader2 className="animate-spin text-cyan-400" size={48} />
                     <h3>Zena is analysing routes...</h3>
                     <p>Calculating traffic, gaps, and optimal sequences.</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!proposal) {
+        return (
+            <div className="optimise-modal-overlay">
+                <div className="optimise-modal-content error">
+                    <h3>Unable to Generate Proposal</h3>
+                    <p>Zena could not optimize the schedule at this time.</p>
+                    <button className="cancel-btn" onClick={onClose}>Close</button>
                 </div>
             </div>
         );
@@ -69,10 +83,38 @@ export const OptimiseProposalModal: React.FC<OptimiseProposalModalProps> = ({ is
                     <div className="metric-card info">
                         <Check className="text-cyan-400" />
                         <div>
-                            <span className="value">{metrics.tasksAdded}</span>
-                            <span className="label">Tasks Filled</span>
+                            <span className="value">{metrics.totalProposedTasks || metrics.tasksAdded}</span>
+                            <span className="label" style={{ fontSize: '0.65rem', lineHeight: '1.2', display: 'block', maxWidth: '140px' }}>
+                                <span style={{ color: '#4ade80', fontWeight: 600 }}>Tasks</span> intended to be completed during travel/gaps
+                            </span>
                         </div>
                     </div>
+                </div>
+
+                {proposal.aiReasoning && (
+                    <div className="optimise-ai-reasoning" style={{
+                        marginTop: '16px',
+                        padding: '12px 16px',
+                        background: 'rgba(139, 92, 246, 0.1)',
+                        border: '1px solid rgba(139, 92, 246, 0.2)',
+                        borderRadius: '12px',
+                        fontSize: '14px',
+                        color: '#ddd6fe',
+                        display: 'flex',
+                        gap: '12px',
+                        alignItems: 'center'
+                    }}>
+                        <div style={{ background: 'rgba(139, 92, 246, 0.2)', padding: '8px', borderRadius: '8px', color: '#a78bfa', flexShrink: 0 }}>
+                            <Clock size={16} />
+                        </div>
+                        <p style={{ margin: 0, lineHeight: 1.5 }}>{proposal.aiReasoning}</p>
+                    </div>
+                )}
+
+                <div className="legend-row">
+                    <span className="legend-label">Legend:</span>
+                    <div className="chip moved">Start/Moved</div>
+                    <div className="chip unchanged">Not Changed</div>
                 </div>
 
                 <div className="optimise-body">
@@ -92,7 +134,12 @@ export const OptimiseProposalModal: React.FC<OptimiseProposalModalProps> = ({ is
                                                 {new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </div>
                                             <div className="content-col">
-                                                <div className="item-title">{item.title}</div>
+                                                <div className="item-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    {item.title}
+                                                    {(item.type === 'task' || item.source === 'task' || item.isTask) && (
+                                                        <span className="task-pill">TASK</span>
+                                                    )}
+                                                </div>
                                                 <div className="item-meta">
                                                     <MapPin size={12} /> {item.location}
                                                 </div>

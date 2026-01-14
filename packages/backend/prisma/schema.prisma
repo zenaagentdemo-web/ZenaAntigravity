@@ -162,6 +162,7 @@ model Contact {
   buyerProperties     Property[]         @relation("BuyerContacts")
   deals               Deal[]             @relation("DealContacts")
   vendorProperties    Property[]         @relation("VendorContacts")
+  appointmentParticipants AppointmentParticipant[]
 
   @@index([userId])
   @@index([emails])
@@ -261,24 +262,43 @@ model TimelineEvent {
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  participants AppointmentParticipant[]
+  
   @@index([userId])
   @@index([entityType, entityId])
   @@index([timestamp])
 }
 
+model AppointmentParticipant {
+  id                  String        @id @default(uuid())
+  timelineEventId     String
+  contactId           String
+  role                String        // 'vendor', 'buyer', 'tenant', 'agent'
+  status              String        @default("pending") // 'confirmed', 'pending', 'declined'
+  communicationChannel String?      // 'sms', 'email'
+  
+  timelineEvent       TimelineEvent @relation(fields: [timelineEventId], references: [id], onDelete: Cascade)
+  contact             Contact       @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([timelineEventId])
+  @@index([contactId])
+}
+
 model Task {
-  id          String    @id @default(uuid())
-  userId      String
-  label       String
-  status      String    @default("open")
-  dueDate     DateTime?
-  dealId      String?
-  propertyId  String?
-  contactId   String?
-  source      String
-  createdAt   DateTime  @default(now())
-  completedAt DateTime?
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String    @id @default(uuid())
+  userId            String
+  label             String
+  status            String    @default("open")
+  dueDate           DateTime?
+  dealId            String?
+  propertyId        String?
+  contactId         String?
+  source            String
+  context           String?   // 'drive', 'desk', 'site'
+  estimatedDuration Int?      // in minutes
+  createdAt         DateTime  @default(now())
+  completedAt       DateTime?
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])

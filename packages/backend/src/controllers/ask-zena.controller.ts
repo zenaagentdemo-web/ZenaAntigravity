@@ -1159,3 +1159,34 @@ export async function analyzeContactRole(req: Request, res: Response): Promise<v
     });
   }
 }
+
+/**
+ * POST /api/ask/rewrite-draft
+ * Rewrite a draft with feedback
+ */
+export async function rewriteDraft(req: Request, res: Response): Promise<void> {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { originalContent, feedback } = req.body;
+
+    if (!originalContent || !feedback) {
+      res.status(400).json({ error: 'originalContent and feedback are required' });
+      return;
+    }
+
+    const rewrittenContent = await askZenaService.rewriteDraft(userId, originalContent, feedback);
+
+    res.status(200).json({ rewrittenContent });
+  } catch (error) {
+    console.error('Error in rewriteDraft:', error);
+    res.status(500).json({
+      error: 'Failed to rewrite draft',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}

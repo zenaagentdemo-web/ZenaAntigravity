@@ -21,6 +21,7 @@ import { RecentActivityStream, ActivityItem } from '../RecentActivityStream/Rece
 import { NeuralBridgesWidget } from '../NeuralBridgesWidget/NeuralBridgesWidget';
 import { MorningBriefModal } from './MorningBriefModal';
 import { QuickActionsCarousel, CarouselAction } from '../QuickActionsCarousel/QuickActionsCarousel';
+import { DriveModeModal } from '../DriveModeModal/DriveModeModal';
 
 import './HighTechDashboard.css';
 
@@ -74,7 +75,7 @@ const formatAppointmentTime = (timestamp: string): string => {
 
 
 export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
-  userName = 'there', // Default to 'there' if undefined
+  userName = 'there', // Default to 'there'
   focusThreadsCount = 0,
   waitingThreadsCount = 0,
   atRiskDealsCount = 0,
@@ -95,6 +96,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
   const { settings } = useGodmodeLogic();
   const [currentAiState, setCurrentAiState] = useState<ZenaAvatarState>(aiState);
   const [isBriefOpen, setIsBriefOpen] = useState(false);
+  const [isDriveModeOpen, setIsDriveModeOpen] = useState(false);
 
   // Auto-show Morning Brief on first mount if there are urgent items
   useEffect(() => {
@@ -365,6 +367,14 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
             </button>
 
             <button
+              className="intel-btn intel-btn--drive"
+              onClick={() => setIsDriveModeOpen(true)}
+            >
+              <img src="/assets/icons/start-drive-final.png" alt="" className="intel-btn__icon-img" />
+              <span className="intel-btn__label">Start Drive</span>
+            </button>
+
+            <button
               className="intel-btn intel-btn--recap"
               onClick={() => navigate(`/ask-zena?prompt=${encodeURIComponent("Give me my end of day recap. Summarize what I accomplished, highlight any deals needing attention, and suggest priorities for tomorrow.")}&mode=handsfree`)}
             >
@@ -373,6 +383,8 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
             </button>
           </div>
         </section>
+
+        <DriveModeModal isOpen={isDriveModeOpen} onClose={() => setIsDriveModeOpen(false)} />
 
         {/* Dynamic Contextual Sections */}
         {(() => {

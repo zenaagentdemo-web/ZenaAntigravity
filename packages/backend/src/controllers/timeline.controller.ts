@@ -1,5 +1,7 @@
+
 import { Request, Response } from 'express';
 import { timelineService } from '../services/timeline.service.js';
+import { fileLogger } from '../utils/fileLogger.js';
 
 /**
  * Get timeline events with filters
@@ -188,7 +190,7 @@ export async function createGeneralEvent(req: Request, res: Response) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { summary, description, startTime, endTime, location, attendees, type, propertyId, contactId } = req.body;
+    const { summary, description, startTime, endTime, location, attendees, type, propertyId, contactId, reminder } = req.body;
 
     if (!summary || !startTime) {
       return res.status(400).json({ error: 'Summary and Start Time are required' });
@@ -196,7 +198,7 @@ export async function createGeneralEvent(req: Request, res: Response) {
 
     // Determine entity type/id based on context, or default to generic 'calendar_event'
     let entityType: any = 'calendar_event';
-    let entityId = `evt_${Date.now()}`; // Generic ID if not linked
+    let entityId = 'evt_' + Date.now(); // Generic ID if not linked
 
     if (propertyId) {
       entityType = 'property';
@@ -219,7 +221,8 @@ export async function createGeneralEvent(req: Request, res: Response) {
         location,
         attendees,
         propertyReference: propertyId,
-        contactReference: contactId
+        contactReference: contactId,
+        reminder
       }
     });
 
@@ -291,14 +294,18 @@ export async function updateEvent(req: Request, res: Response) {
       return res.status(400).json({ error: 'No update fields provided' });
     }
 
-    await timelineService.updateEvent(userId, id, {
+    console.log('[TimelineController] Updating event ' + id + ' for user ' + userId);
+    fileLogger.log('[TimelineController] Updating event ' + id, { summary, content, metadata, timestamp });
+
+    const result = await timelineService.updateEvent(userId, id, {
       summary,
       content,
       metadata,
       timestamp: timestamp ? new Date(timestamp) : undefined
     });
 
-    res.json({ message: 'Event updated successfully' });
+    fileLogger.log('[TimelineController] Update result: ', result);
+    res.json({ message: 'Event updated successfully', result });
   } catch (error) {
     console.error('Error updating event:', error);
     res.status(500).json({

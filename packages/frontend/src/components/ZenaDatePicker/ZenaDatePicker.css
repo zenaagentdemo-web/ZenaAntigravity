@@ -133,14 +133,16 @@
 }
 
 .zena-datepicker-day.selected {
-    background: #00D4FF;
-    color: #0d1929;
+    background: transparent;
+    border: 2px solid var(--neon-green);
+    color: #fff;
     font-weight: 600;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
 }
 
 .zena-datepicker-day.today {
-    border: 1px solid rgba(0, 212, 255, 0.5);
-    color: #00D4FF;
+    border: 1px solid rgba(0, 255, 136, 0.5);
+    color: var(--neon-green);
 }
 
 .zena-datepicker-time-section {
@@ -301,7 +303,7 @@
     width: 100%;
     margin-top: 16px;
     padding: 10px 16px;
-    background: #00D4FF;
+    background: var(--neon-green);
     border: none;
     border-radius: 8px;
     color: #0d1929;
@@ -312,9 +314,9 @@
 }
 
 .zena-datepicker-ok-btn:hover {
-    background: #00b8e6;
+    background: #00e676;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
 }
 
 .zena-conflict-message {

@@ -35,6 +35,7 @@ import { websocketService } from './services/websocket.service.js';
 import { dealSchedulerService } from './services/deal-scheduler.service.js';
 import { godmodeSchedulerService } from './services/godmode-scheduler.service.js';
 import { intelligenceHeartbeatService } from './services/intelligence-heartbeat.service.js';
+import { reminderSchedulerService } from './services/reminder-scheduler.service.js';
 import { logger } from './services/logger.service.js';
 import { healthCheckService } from './services/health-check.service.js';
 import {
@@ -138,6 +139,10 @@ app.use('/api/calendar', calendarActionsRoutes);
 import calendarRoutes from './routes/calendar.routes.js';
 app.use('/api/calendar-optimization', calendarRoutes);
 
+// Drive Mode Routes
+import driveModeRoutes from './routes/drive-mode.routes.js';
+app.use('/api/drive-mode', driveModeRoutes);
+
 // Task routes
 app.use('/api/tasks', taskRoutes);
 
@@ -218,14 +223,23 @@ if (process.env.NODE_ENV !== 'test') {
   // Restore sessions from disk (safe initialization)
   restoreSessions();
 
-  // Start sync engines
+  // Start background engines with staggered delays to reduce startup resource spike
   syncEngineService.start();
-  calendarSyncEngineService.start();
 
-  // Start deal scheduler (Phase 2b)
-  dealSchedulerService.start();
-  godmodeSchedulerService.start();
-  intelligenceHeartbeatService.start();
+  // Stagger subsequent services
+  setTimeout(() => {
+    calendarSyncEngineService.start();
+  }, 5000);
+
+  setTimeout(() => {
+    dealSchedulerService.start();
+    godmodeSchedulerService.start();
+  }, 15000);
+
+  setTimeout(() => {
+    intelligenceHeartbeatService.start();
+    reminderSchedulerService.start();
+  }, 30000);
 }
 
 // Graceful shutdown
@@ -240,6 +254,7 @@ const shutdown = async (signal: string) => {
     dealSchedulerService.stop();
     godmodeSchedulerService.stop();
     intelligenceHeartbeatService.stop();
+    reminderSchedulerService.stop();
     websocketService.shutdown();
 
     // 2. Stop accepting new connections

@@ -282,6 +282,7 @@ export class TimelineService {
       timestamp?: Date;
     }
   ) {
+    console.log(`[TimelineService] Executing updateMany for eventId=${eventId}, userId=${userId}`);
     const result = await prisma.timelineEvent.updateMany({
       where: {
         id: eventId,
@@ -289,10 +290,12 @@ export class TimelineService {
       },
       data: updates,
     });
+    console.log(`[TimelineService] updateMany result count:`, result.count);
 
     const event = await prisma.timelineEvent.findFirst({
       where: { id: eventId, userId }
     });
+    console.log(`[TimelineService] Event after update:`, event ? { id: event.id, summary: event.summary, timestamp: event.timestamp } : 'NOT FOUND');
 
     if (event && event.entityType === 'contact') {
       const { aiProcessingService } = await import('./ai-processing.service.js');

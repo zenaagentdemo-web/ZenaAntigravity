@@ -130,19 +130,35 @@ export const ActionApprovalQueue: React.FC<ActionApprovalQueueProps> = ({
 
     const handleRegenerate = async (type: 'quick' | 'detailed') => {
         if (!selectedAction) return;
+
+        // Ask user for feedback to guide the regeneration
+        const feedback = window.prompt(
+            type === 'detailed'
+                ? "What specific improvements or details should I add?"
+                : "How should I rewrite this? (e.g. 'make it shorter', 'be more aggressive')",
+            type === 'detailed' ? "Add more professional context and market insights." : "Make it more concise and punchy."
+        );
+
+        if (feedback === null) return; // User cancelled
+
         setIsRegenerating(true);
-        // Mock regeneration for now - in real app, call API
-        console.log(`Regenerating ${type} draft for action ${selectedAction.id}`);
+        console.log(`Regenerating ${type} draft for action ${selectedAction.id} with feedback: ${feedback}`);
 
         try {
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            const response = await api.post('/api/ask/rewrite-draft', {
+                originalContent: editedBody,
+                feedback: feedback
+            });
 
-            if (type === 'detailed') {
-                setEditedBody(`[DETAILED DRAFT GENERATED]\n\nHi ${selectedAction.contact?.name || 'there'},\n\nI hope you're having a great week.\n\nRegarding ${selectedAction.property?.address || 'the property'}, I've done a deep dive into the recent market activity and I believe we have a unique opportunity here.\n\nThe engagement metrics are showing strong signals...\n\nLet's discuss this further when you have a moment.\n\nBest,\nHamish`);
-            } else {
-                setEditedBody(`[REGENERATED DRAFT]\n\nHi ${selectedAction.contact?.name || 'there'},\n\nJust checking in on ${selectedAction.property?.address}. I have some new updates that align perfectly with what we discussed.\n\nFree for a chat?\n\nBest,\nHamish`);
+            if (response.data.rewrittenContent) {
+                setEditedBody(response.data.rewrittenContent);
+                // Also update subject if it's the first time
+                if (type === 'detailed' && feedback.toLowerCase().includes('subject')) {
+                    // LLM might have included a subject, or we can just stick to body
+                }
             }
+        } catch (err) {
+            console.error('Regeneration failed', err);
         } finally {
             setIsRegenerating(false);
         }

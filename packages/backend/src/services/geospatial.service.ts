@@ -99,8 +99,16 @@ export class GeospatialService {
 
             // Find nearest unvisited neighbor
             // In a real production app with N > 10, we'd use a Matrix API request to batch this
-            for (const index of unvisited) {
+            // Parallel execute all route checks for this step
+            const candidates = Array.from(unvisited);
+            /* console.log(`[Geospatial] Optimizing step. Current: ${currentLocation}, Candidates: ${candidates.join(',')}`); */
+
+            const results = await Promise.all(candidates.map(async (index) => {
                 const metrics = await this.getRouteMetrics(currentLocation, stops[index]);
+                return { index, metrics };
+            }));
+
+            for (const { index, metrics } of results) {
                 if (metrics && metrics.durationSeconds < minDuration) {
                     minDuration = metrics.durationSeconds;
                     bestNextIndex = index;
@@ -118,8 +126,10 @@ export class GeospatialService {
                 // Should not happen unless API fails completely, just picking next available
                 const fallback = unvisited.values().next().value;
                 if (typeof fallback !== 'undefined') {
+                    console.warn(`[Geospatial] Fallback used for step. Moving to index ${fallback}`);
                     sequence.push(fallback);
                     unvisited.delete(fallback);
+                    currentLocation = stops[fallback]; // Fix: Update current location
                 } else {
                     break;
                 }
@@ -131,21 +141,28 @@ export class GeospatialService {
 
     private getMockMetrics(origin: string, destination: string) {
         if (origin === destination) {
-            return { distanceMeters: 0, durationSeconds: 0 };
+            return { distanceMeters: 0, durationSeconds: 0, simulation_mode: true };
         }
 
-        // Fallback: Use randomness to simulate varied locations for the demo
-        // This ensures the greedy algorithm finds "better" paths than the default sequence
-        // resulting in visible reordering in the UI.
+        // Fallback: Use string hashing to simulate deterministic locations for the demo
+        // This ensures the greedy algorithm finds consistent paths and reorders repeatably.
+        const combined = origin + destination;
+        let hash = 0;
+        for (let i = 0; i < combined.length; i++) {
+            hash = ((hash << 5) - hash) + combined.charCodeAt(i);
+            hash |= 0; // Convert to 32bit integer
+        }
+
         const baseDistance = 3000; // 3km minimum
-        const variance = Math.floor(Math.random() * 10000); // 0-10km variance
+        const variance = Math.abs(hash % 10000); // 0-10km variance
 
         const distanceMeters = baseDistance + variance;
         const durationSeconds = Math.round(distanceMeters / 13); // Approx 50km/h average speed in m/s
 
         return {
             distanceMeters,
-            durationSeconds
+            durationSeconds,
+            simulation_mode: true
         };
     }
 }

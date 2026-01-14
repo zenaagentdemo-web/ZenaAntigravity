@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import { liveSearchService } from './live-search.service.js';
+import { tokenTrackingService } from './token-tracking.service.js';
 
 export interface ComparableSale {
     address: string;
@@ -119,6 +120,7 @@ Example: {"bedrooms": 3, "bathrooms": 2, "landArea": "809m²", "floorArea": "170
 If you cannot find property data for this specific address, return: {"found": false}`;
 
             console.time(`[MarketScraper] Direct Grounding for "${address}"`);
+            const startTime = Date.now();
             const response = await fetch(
                 `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
                 {
@@ -139,6 +141,17 @@ If you cannot find property data for this specific address, return: {"found": fa
             }
 
             const data = await response.json();
+
+            // Log token usage
+            if (data.usageMetadata) {
+                tokenTrackingService.log({
+                    source: 'market-scraper-details',
+                    model: model,
+                    inputTokens: data.usageMetadata.promptTokenCount,
+                    outputTokens: data.usageMetadata.candidatesTokenCount,
+                    durationMs: Date.now() - startTime
+                }).catch(() => { });
+            }
             const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
 
             // Extract JSON from the response (may be wrapped in markdown code block)
@@ -294,6 +307,7 @@ If you cannot find property data for this specific address, return: {"found": fa
 
 
         console.log(`[MarketScraper] Triggering search grounding for ${suburb}, ${city}...`);
+        const startTime = Date.now();
         try {
             const response = await fetch(
                 `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`,
@@ -317,6 +331,18 @@ If you cannot find property data for this specific address, return: {"found": fa
             }
 
             const data = await response.json();
+
+            // Log token usage
+            if (data.usageMetadata) {
+                tokenTrackingService.log({
+                    source: 'market-scraper-cma',
+                    model: model,
+                    inputTokens: data.usageMetadata.promptTokenCount,
+                    outputTokens: data.usageMetadata.candidatesTokenCount,
+                    durationMs: Date.now() - startTime
+                }).catch(() => { });
+            }
+
             const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
 
             // Handle cases where Gemini might return markdown-wrapped JSON or just JSON

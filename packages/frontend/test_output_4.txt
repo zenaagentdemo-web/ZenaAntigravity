@@ -1,0 +1,1040 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend[39m
+
+[90mstdout[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mloads and aggregates events from all sources
+[22m[39m[ActionApprovalQueue] selectedAction changed [90mundefined[39m
+
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mloads and aggregates events from all sources
+[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+[90mstdout[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mloads and aggregates events from all sources
+[22m[39m[CalendarPage] Loaded timeline events: [90mundefined[39m
+
+[90mstdout[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mhandles view mode switching
+[22m[39m[ActionApprovalQueue] selectedAction changed [90mundefined[39m
+
+[90mstdout[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mhandles view mode switching
+[22m[39m[CalendarPage] Loaded timeline events: [90mundefined[39m
+
+[90mstdout[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mopens "Add Appointment" modal
+[22m[39m[ActionApprovalQueue] selectedAction changed [90mundefined[39m
+
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mopens "Add Appointment" modal
+[22m[39mWarning: An update to CalendarPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
+
+[90mstdout[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mopens "Add Appointment" modal
+[22m[39m[CalendarPage] Loaded timeline events: [90mundefined[39m
+
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mopens "Add Appointment" modal
+[22m[39mWarning: An update to CalendarPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
+Warning: An update to CalendarPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
+Warning: An update to CalendarPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
+
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mopens "Add Appointment" modal
+[22m[39mWarning: An update to CalendarPage inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
+    at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
+    at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
+
+[90mstdout[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mhandles AI suggestions from URL params
+[22m[39m[ActionApprovalQueue] selectedAction changed [90mundefined[39m
+
+[90mstdout[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mhandles AI suggestions from URL params
+[22m[39m[CalendarPage] Loaded timeline events: [90mundefined[39m
+
+ [31m×[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mloads and aggregates events from all sources[33m 1109[2mms[22m[39m
+[31m   → Unable to find an element with the text: /Open Home: 123 Test St/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"calendar-page"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"calendar-page__header"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"calendar-header-top-row"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mclass[31m=[32m"back-button"[31m
+          [36m>[31m
+            [0m← Back[0m
+          [36m</button>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"calendar-header-main"[31m
+          [36m>[31m
+            [36m<h1[31m
+              [33mclass[31m=[32m"calendar-page__title"[31m
+            [36m>[31m
+              [0mYour Schedule[0m
+            [36m</h1>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"calendar-page__godmode-controls"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mdata-testid[31m=[32m"godmode-toggle"[31m
+            [36m>[31m
+              [0mGodMode[0m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"calendar-header-bottom-row"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"calendar-nav-controls"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"nav-btn"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mdata-testid[31m=[32m"icon-chevron-left"[31m
+              [36m/>[31m
+            [36m</button>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"current-date-display"[31m
+            [36m>[31m
+              [0m1 Jan 2024[0m
+            [36m</span>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"nav-btn"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mdata-testid[31m=[32m"icon-chevron-right"[31m
+              [36m/>[31m
+            [36m</button>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"calendar-view-toggles"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"view-toggle today-btn"[31m
+            [36m>[31m
+              [0mToday[0m
+            [36m</button>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"view-toggle active"[31m
+            [36m>[31m
+              [0mDay[0m
+            [36m</button>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"view-toggle "[31m
+            [36m>[31m
+              [0mWeek[0m
+            [36m</button>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"view-toggle "[31m
+            [36m>[31m
+              [0mMonth[0m
+            [36m</button>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"header-separator"[31m
+              [33mstyle[31m=[32m"width: 1px; height: 20px; background: rgba(255, 255, 255, 0.1); margin: 0px 8px;"[31m
+            [36m/>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"calendar-page__add-btn"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mdata-testid[31m=[32m"icon-plus"[31m
+              [36m/>[31m
+              [36m<span>[31m
+                [0mAdd Appointment[0m
+              [36m</span>[31m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<main[31m
+        [33mclass[31m=[32m"calendar-page__content"[31m
+      [36m>[31m
+        [36m<section[31m
+          [33mclass[31m=[32m"calendar-main-view"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"high-tech-card zena-suggestions"[31m
+            [33mstyle[31m=[32m"margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mstyle[31m=[32m"display: flex; flex-direction: column; gap: 8px;"[31m
+            [36m>[31m
+              [36m<h2[31m
+                [33mclass[31m=[32m"section-title"[31m
+                [33mstyle[31m=[32m"margin: 0px;"[31m
+              [36m>[31m
+                [0mZena's Intelligence[0m
+              [36m</h2>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"suggestion-item"[31m
+                [33mstyle[31m=[32m"margin: 0px;"[31m
+              [36m>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"suggestion-icon"[31m
+                [36m>[31m
+                  [0m💡[0m
+                [36m</span>[31m
+                [36m<p>[31m
+                  [0mYou have [0m
+                  [0m0[0m
+                  [0m events scheduled for today.[0m
+                [36m</p>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"zena-action-btn"[31m
+            [36m>[31m
+              [0mOptimise My Day[0m
+            [36m</button>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"calendar-agenda-container"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"agenda-header-info"[31m
+            [36m>[31m
+              [36m<h2[31m
+                [33mclass[31m=[32m"section-title"[31m
+              [36m>[31m
+                [0mToday's Agenda[0m
+              [36m</h2>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"high-tech-card empty-state"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"zena-intelligence-badge"[31m
+              [36m>[31m
+                [36m<span[31m
+                  [33mdata-testid[31m=[32m"icon-sparkles"[31m
+                [36m/>[31m
+                [0m No Events Found[0m
+              [36m</div>[31m
+              [36m<p>[31m
+                [0mThere are no appointments scheduled for this [0m
+                [0mday[0m
+                [0m.[0m
+              [36m</p>[31m
+              [36m<button[31m
+                [33mclass[31m=[32m"zena-action-btn"[31m
+              [36m>[31m
+                [0mView Full Month[0m
+              [36m</button>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</section>[31m
+        [36m<aside[31m
+          [33mclass[31m=[32m"calendar-sidebar"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"sidebar-section"[31m
+          [36m>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"section-title"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"focus-title-highlight"[31m
+              [36m>[31m
+                [0mFocus:[0m
+              [36m</span>[31m
+              [0m Next Up[0m
+            [36m</h2>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"high-tech-card spotlight-empty"[31m
+            [36m>[31m
+              [36m<p>[31m
+                [0mNo more events today. Time to catch up on admin![0m
+              [36m</p>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"sidebar-section"[31m
+          [36m>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"section-title"[31m
+            [36m>[31m
+              [0mNavigation[0m
+            [36m</h2>[31m
+            [36m<div[31m
+              [33mdata-testid[31m=[32m"mini-picker"[31m
+            [36m>[31m
+              [36m<button>[31m
+                [0mSelect Jan 1[0m
+              [36m</button>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</aside>[31m
+      [36m</main>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"calendar-page"[31m
+    [36m>[31m
+      [36m<header[31m
+        [33mclass[31m=[32m"calendar-page__header"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"calendar-header-top-row"[31m
+        [36m>[31m
+          [36m<button[31m
+            [33mclass[31m=[32m"back-button"[31m
+          [36m>[31m
+            [0m← Back[0m
+          [36m</button>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"calendar-header-main"[31m
+          [36m>[31m
+            [36m<h1[31m
+              [33mclass[31m=[32m"calendar-page__title"[31m
+            [36m>[31m
+              [0mYour Schedule[0m
+            [36m</h1>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"calendar-page__godmode-controls"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mdata-testid[31m=[32m"godmode-toggle"[31m
+            [36m>[31m
+              [0mGodMode[0m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"calendar-header-bottom-row"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"calendar-nav-controls"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"nav-btn"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mdata-testid[31m=[32m"icon-chevron-left"[31m
+              [36m/>[31m
+            [36m</button>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"current-date-display"[31m
+            [36m>[31m
+              [0m1 Jan 2024[0m
+            [36m</span>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"nav-btn"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mdata-testid[31m=[32m"icon-chevron-right"[31m
+              [36m/>[31m
+            [36m</button>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"calendar-view-toggles"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"view-toggle today-btn"[31m
+            [36m>[31m
+              [0mToday[0m
+            [36m</button>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"view-toggle active"[31m
+            [36m>[31m
+              [0mDay[0m
+            [36m</button>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"view-toggle "[31m
+            [36m>[31m
+              [0mWeek[0m
+            [36m</button>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"view-toggle "[31m
+            [36m>[31m
+              [0mMonth[0m
+            [36m</button>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"header-separator"[31m
+              [33mstyle[31m=[32m"width: 1px; height: 20px; background: rgba(255, 255, 255, 0.1); margin: 0px 8px;"[31m
+            [36m/>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"calendar-page__add-btn"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mdata-testid[31m=[32m"icon-plus"[31m
+              [36m/>[31m
+              [36m<span>[31m
+                [0mAdd Appointment[0m
+              [36m</span>[31m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</header>[31m
+      [36m<main[31m
+        [33mclass[31m=[32m"calendar-page__content"[31m
+      [36m>[31m
+        [36m<section[31m
+          [33mclass[31m=[32m"calendar-main-view"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"high-tech-card zena-suggestions"[31m
+            [33mstyle[31m=[32m"margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mstyle[31m=[32m"display: flex; flex-direction: column; gap: 8px;"[31m
+            [36m>[31m
+              [36m<h2[31m
+                [33mclass[31m=[32m"section-title"[31m
+                [33mstyle[31m=[32m"margin: 0px;"[31m
+              [36m>[31m
+                [0mZena's Intelligence[0m
+              [36m</h2>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"suggestion-item"[31m
+                [33mstyle[31m=[32m"margin: 0px;"[31m
+              [36m>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"suggestion-icon"[31m
+                [36m>[31m
+                  [0m💡[0m
+                [36m</span>[31m
+                [36m<p>[31m
+                  [0mYou have [0m
+                  [0m0[0m
+                  [0m events scheduled for today.[0m
+                [36m</p>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"zena-action-btn"[31m
+            [36m>[31m
+              [0mOptimise My Day[0m
+            [36m</button>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"calendar-agenda-container"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"agenda-header-info"[31m
+            [36m>[31m
+              [36m<h2[31m
+                [33mclass[31m=[32m"section-title"[31m
+              [36m>[31m
+                [0mToday's Agenda[0m
+              [36m</h2>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"high-tech-card empty-state"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"zena-intelligence-badge"[31m
+              [36m>[31m
+                [36m<span[31m
+                  [33mdata-testid[31m=[32m"icon-sparkles"[31m
+                [36m/>[31m
+                [0m No Events Found[0m
+              [36m</div>[31m
+              [36m<p>[31m
+                [0mThere are no appointments scheduled for this [0m
+                [0mday[0m
+                [0m.[0m
+              [36m</p>[31m
+              [36m<button[31m
+                [33mclass[31m=[32m"zena-action-btn"[31m
+              [36m>[31m
+                [0mView Full Month[0m
+              [36m</button>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</section>[31m
+        [36m<aside[31m
+          [33mclass[31m=[32m"calendar-sidebar"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"sidebar-section"[31m
+          [36m>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"section-title"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"focus-title-highlight"[31m
+              [36m>[31m
+                [0mFocus:[0m
+              [36m</span>[31m
+              [0m Next Up[0m
+            [36m</h2>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"high-tech-card spotlight-empty"[31m
+            [36m>[31m
+              [36m<p>[31m
+                [0mNo more events today. Time to catch up on admin![0m
+              [36m</p>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"sidebar-section"[31m
+          [36m>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"section-title"[31m
+            [36m>[31m
+              [0mNavigation[0m
+            [36m</h2>[31m
+            [36m<div[31m
+              [33mdata-testid[31m=[32m"mini-picker"[31m
+            [36m>[31m
+              [36m<button>[31m
+                [0mSelect Jan 1[0m
+              [36m</button>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+        [36m</aside>[31m
+      [36m</main>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+ [32m✓[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mhandles view mode switching[32m 50[2mms[22m[39m
+ [32m✓[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mopens "Add Appointment" modal[32m 28[2mms[22m[39m
+ [32m✓[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mhandles AI suggestions from URL params[32m 40[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mloads and aggregates events from all sources
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: /Open Home: 123 Test St/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"calendar-page"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"calendar-page__header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"calendar-header-top-row"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"back-button"[39m
+          [36m>[39m
+            [0m← Back[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"calendar-header-main"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"calendar-page__title"[39m
+            [36m>[39m
+              [0mYour Schedule[0m
+            [36m</h1>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"calendar-page__godmode-controls"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mdata-testid[39m=[32m"godmode-toggle"[39m
+            [36m>[39m
+              [0mGodMode[0m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"calendar-header-bottom-row"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"calendar-nav-controls"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mdata-testid[39m=[32m"icon-chevron-left"[39m
+              [36m/>[39m
+            [36m</button>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"current-date-display"[39m
+            [36m>[39m
+              [0m1 Jan 2024[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mdata-testid[39m=[32m"icon-chevron-right"[39m
+              [36m/>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"calendar-view-toggles"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"view-toggle today-btn"[39m
+            [36m>[39m
+              [0mToday[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"view-toggle active"[39m
+            [36m>[39m
+              [0mDay[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"view-toggle "[39m
+            [36m>[39m
+              [0mWeek[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"view-toggle "[39m
+            [36m>[39m
+              [0mMonth[0m
+            [36m</button>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"header-separator"[39m
+              [33mstyle[39m=[32m"width: 1px; height: 20px; background: rgba(255, 255, 255, 0.1); margin: 0px 8px;"[39m
+            [36m/>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"calendar-page__add-btn"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mdata-testid[39m=[32m"icon-plus"[39m
+              [36m/>[39m
+              [36m<span>[39m
+                [0mAdd Appointment[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"calendar-page__content"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"calendar-main-view"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"high-tech-card zena-suggestions"[39m
+            [33mstyle[39m=[32m"margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mstyle[39m=[32m"display: flex; flex-direction: column; gap: 8px;"[39m
+            [36m>[39m
+              [36m<h2[39m
+                [33mclass[39m=[32m"section-title"[39m
+                [33mstyle[39m=[32m"margin: 0px;"[39m
+              [36m>[39m
+                [0mZena's Intelligence[0m
+              [36m</h2>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"suggestion-item"[39m
+                [33mstyle[39m=[32m"margin: 0px;"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"suggestion-icon"[39m
+                [36m>[39m
+                  [0m💡[0m
+                [36m</span>[39m
+                [36m<p>[39m
+                  [0mYou have [0m
+                  [0m0[0m
+                  [0m events scheduled for today.[0m
+                [36m</p>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"zena-action-btn"[39m
+            [36m>[39m
+              [0mOptimise My Day[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"calendar-agenda-container"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"agenda-header-info"[39m
+            [36m>[39m
+              [36m<h2[39m
+                [33mclass[39m=[32m"section-title"[39m
+              [36m>[39m
+                [0mToday's Agenda[0m
+              [36m</h2>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"high-tech-card empty-state"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"zena-intelligence-badge"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mdata-testid[39m=[32m"icon-sparkles"[39m
+                [36m/>[39m
+                [0m No Events Found[0m
+              [36m</div>[39m
+              [36m<p>[39m
+                [0mThere are no appointments scheduled for this [0m
+                [0mday[0m
+                [0m.[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"zena-action-btn"[39m
+              [36m>[39m
+                [0mView Full Month[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+        [36m<aside[39m
+          [33mclass[39m=[32m"calendar-sidebar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"sidebar-section"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"section-title"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"focus-title-highlight"[39m
+              [36m>[39m
+                [0mFocus:[0m
+              [36m</span>[39m
+              [0m Next Up[0m
+            [36m</h2>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"high-tech-card spotlight-empty"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mNo more events today. Time to catch up on admin![0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"sidebar-section"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"section-title"[39m
+            [36m>[39m
+              [0mNavigation[0m
+            [36m</h2>[39m
+            [36m<div[39m
+              [33mdata-testid[39m=[32m"mini-picker"[39m
+            [36m>[39m
+              [36m<button>[39m
+                [0mSelect Jan 1[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</aside>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"calendar-page"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"calendar-page__header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"calendar-header-top-row"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"back-button"[39m
+          [36m>[39m
+            [0m← Back[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"calendar-header-main"[39m
+          [36m>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"calendar-page__title"[39m
+            [36m>[39m
+              [0mYour Schedule[0m
+            [36m</h1>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"calendar-page__godmode-controls"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mdata-testid[39m=[32m"godmode-toggle"[39m
+            [36m>[39m
+              [0mGodMode[0m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"calendar-header-bottom-row"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"calendar-nav-controls"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mdata-testid[39m=[32m"icon-chevron-left"[39m
+              [36m/>[39m
+            [36m</button>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"current-date-display"[39m
+            [36m>[39m
+              [0m1 Jan 2024[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"nav-btn"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mdata-testid[39m=[32m"icon-chevron-right"[39m
+              [36m/>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"calendar-view-toggles"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"view-toggle today-btn"[39m
+            [36m>[39m
+              [0mToday[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"view-toggle active"[39m
+            [36m>[39m
+              [0mDay[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"view-toggle "[39m
+            [36m>[39m
+              [0mWeek[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"view-toggle "[39m
+            [36m>[39m
+              [0mMonth[0m
+            [36m</button>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"header-separator"[39m
+              [33mstyle[39m=[32m"width: 1px; height: 20px; background: rgba(255, 255, 255, 0.1); margin: 0px 8px;"[39m
+            [36m/>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"calendar-page__add-btn"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mdata-testid[39m=[32m"icon-plus"[39m
+              [36m/>[39m
+              [36m<span>[39m
+                [0mAdd Appointment[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"calendar-page__content"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"calendar-main-view"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"high-tech-card zena-suggestions"[39m
+            [33mstyle[39m=[32m"margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mstyle[39m=[32m"display: flex; flex-direction: column; gap: 8px;"[39m
+            [36m>[39m
+              [36m<h2[39m
+                [33mclass[39m=[32m"section-title"[39m
+                [33mstyle[39m=[32m"margin: 0px;"[39m
+              [36m>[39m
+                [0mZena's Intelligence[0m
+              [36m</h2>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"suggestion-item"[39m
+                [33mstyle[39m=[32m"margin: 0px;"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"suggestion-icon"[39m
+                [36m>[39m
+                  [0m💡[0m
+                [36m</span>[39m
+                [36m<p>[39m
+                  [0mYou have [0m
+                  [0m0[0m
+                  [0m events scheduled for today.[0m
+                [36m</p>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"zena-action-btn"[39m
+            [36m>[39m
+              [0mOptimise My Day[0m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"calendar-agenda-container"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"agenda-header-info"[39m
+            [36m>[39m
+              [36m<h2[39m
+                [33mclass[39m=[32m"section-title"[39m
+              [36m>[39m
+                [0mToday's Agenda[0m
+              [36m</h2>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"high-tech-card empty-state"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"zena-intelligence-badge"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mdata-testid[39m=[32m"icon-sparkles"[39m
+                [36m/>[39m
+                [0m No Events Found[0m
+              [36m</div>[39m
+              [36m<p>[39m
+                [0mThere are no appointments scheduled for this [0m
+                [0mday[0m
+                [0m.[0m
+              [36m</p>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"zena-action-btn"[39m
+              [36m>[39m
+                [0mView Full Month[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+        [36m<aside[39m
+          [33mclass[39m=[32m"calendar-sidebar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"sidebar-section"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"section-title"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"focus-title-highlight"[39m
+              [36m>[39m
+                [0mFocus:[0m
+              [36m</span>[39m
+              [0m Next Up[0m
+            [36m</h2>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"high-tech-card spotlight-empty"[39m
+            [36m>[39m
+              [36m<p>[39m
+                [0mNo more events today. Time to catch up on admin![0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"sidebar-section"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"section-title"[39m
+            [36m>[39m
+              [0mNavigation[0m
+            [36m</h2>[39m
+            [36m<div[39m
+              [33mdata-testid[39m=[32m"mini-picker"[39m
+            [36m>[39m
+              [36m<button>[39m
+                [0mSelect Jan 1[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</aside>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m waitForWrapper ../../node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m ../../node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx:[2m138:45[22m[39m
+    [90m136| [39m        [90m// Check if events derived from different sources are rendered[39m
+    [90m137| [39m        // 1. Property Milestone (Open Home) - Appears in Agenda AND N…
+    [90m138| [39m        const openHomeEvents = await screen.findAllByText(/Open Home: …
+    [90m   | [39m                                            [31m^[39m
+    [90m139| [39m        [34mexpect[39m(openHomeEvents[33m.[39mlength)[33m.[39m[34mtoBeGreaterThanOrEqual[39m([34m1[39m)[33m;[39m
+    [90m140| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 17:03:46
+[2m   Duration [22m 3.77s[2m (transform 506ms, setup 270ms, import 1.01s, tests 1.23s, environment 890ms)[22m
+

@@ -142,6 +142,7 @@ export const PropertyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const backState = location.state as { fromCalendar?: boolean; eventId?: string } | null;
   const [property, setProperty] = useState<Property | null>(null);
   const [deal, setDeal] = useState<Deal | null>(null);
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -693,8 +694,14 @@ export const PropertyDetailPage: React.FC = () => {
       <div className="property-detail-page__container">
         <header className="property-detail-page__header">
           <div className="property-detail-page__header-left">
-            <button className="property-detail-page__back" onClick={() => navigate(-1)}>
-              <ArrowLeft size={18} /> Properties
+            <button className="property-detail-page__back" onClick={() => {
+              if (backState?.fromCalendar) {
+                navigate(`/calendar?openEventId=${backState.eventId || ''}`);
+              } else {
+                navigate(-1);
+              }
+            }}>
+              <ArrowLeft size={18} /> {backState?.fromCalendar ? 'Back to Calendar' : 'Properties'}
             </button>
             <button className="property-detail-page__delete-btn" onClick={handleDeleteProperty} title="Delete Property">
               <Trash2 size={16} /> Delete Property

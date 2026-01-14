@@ -1,18 +1,7 @@
 
-> @zena/frontend@1.0.0 test
-> vitest --run src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx
-
-
 [1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend[39m
 
-[90mstdout[2m | src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22m[2mDealFlowPage Integration Tests[2m > [22m[2mloads and displays pipeline columns
-[22m[39m[ActionApprovalQueue] selectedAction changed [90mundefined[39m
-
-[90mstderr[2m | src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22m[2mDealFlowPage Integration Tests[2m > [22m[2mloads and displays pipeline columns
-[22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
-Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice')]
+Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'find')]
     at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
@@ -22,18 +11,18 @@ Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice'
     at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
     at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
     at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
-    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'slice')
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:105:44)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'find')
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:73:36)
     at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
-    at updateFunctionComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:19617:20)
-    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21640:16)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
     at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
     at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
     at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
     at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice')]
+Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'find')]
     at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
@@ -43,34 +32,32 @@ Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice'
     at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
     at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
     at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
-    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'slice')
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:105:44)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'find')
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:73:36)
     at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
-    at updateFunctionComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:19617:20)
-    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21640:16)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
     at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
     at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
     at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
     at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-[90mstderr[2m | src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22m[2mDealFlowPage Integration Tests[2m > [22m[2mloads and displays pipeline columns
-[22m[39mThe above error occurred in the <PortfolioInsightsCard> component:
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mloads and aggregates events from all sources
+[22m[39mThe above error occurred in the <ActionApprovalQueue> component:
 
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:11:61)
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:82:3)
     at div
-    at div
-    at DealFlowPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/DealFlowPage/DealFlowPage.tsx:216:57)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
     at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
     at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
 
 Consider adding an error boundary to your tree to customize error handling behavior.
 Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
 
-[90mstdout[2m | src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22m[2mDealFlowPage Integration Tests[2m > [22m[2mopens "New Deal" modal on button click
-[22m[39m[ActionApprovalQueue] selectedAction changed [90mundefined[39m
-
-Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice')]
+Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'find')]
     at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
@@ -80,18 +67,18 @@ Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice'
     at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
     at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
     at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
-    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'slice')
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:105:44)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'find')
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:73:36)
     at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
-    at updateFunctionComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:19617:20)
-    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21640:16)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
     at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
     at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
     at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
     at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice')]
+Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'find')]
     at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
@@ -101,34 +88,32 @@ Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice'
     at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
     at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
     at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
-    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'slice')
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:105:44)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'find')
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:73:36)
     at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
-    at updateFunctionComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:19617:20)
-    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21640:16)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
     at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
     at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
     at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
     at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-[90mstderr[2m | src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22m[2mDealFlowPage Integration Tests[2m > [22m[2mopens "New Deal" modal on button click
-[22m[39mThe above error occurred in the <PortfolioInsightsCard> component:
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mhandles view mode switching
+[22m[39mThe above error occurred in the <ActionApprovalQueue> component:
 
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:11:61)
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:82:3)
     at div
-    at div
-    at DealFlowPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/DealFlowPage/DealFlowPage.tsx:216:57)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
     at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
     at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
 
 Consider adding an error boundary to your tree to customize error handling behavior.
 Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
 
-[90mstdout[2m | src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22m[2mDealFlowPage Integration Tests[2m > [22m[2mactivates Smart Search on valid query
-[22m[39m[ActionApprovalQueue] selectedAction changed [90mundefined[39m
-
-Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice')]
+Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'find')]
     at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
@@ -138,18 +123,18 @@ Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice'
     at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
     at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
     at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
-    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'slice')
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:105:44)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'find')
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:73:36)
     at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
-    at updateFunctionComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:19617:20)
-    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21640:16)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
     at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
     at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
     at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
     at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice')]
+Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'find')]
     at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
@@ -159,34 +144,32 @@ Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice'
     at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
     at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
     at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
-    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'slice')
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:105:44)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'find')
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:73:36)
     at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
-    at updateFunctionComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:19617:20)
-    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21640:16)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
     at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
     at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
     at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
     at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-[90mstderr[2m | src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22m[2mDealFlowPage Integration Tests[2m > [22m[2mactivates Smart Search on valid query
-[22m[39mThe above error occurred in the <PortfolioInsightsCard> component:
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mopens "Add Appointment" modal
+[22m[39mThe above error occurred in the <ActionApprovalQueue> component:
 
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:11:61)
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:82:3)
     at div
-    at div
-    at DealFlowPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/DealFlowPage/DealFlowPage.tsx:216:57)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
     at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
     at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
 
 Consider adding an error boundary to your tree to customize error handling behavior.
 Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
 
-[90mstdout[2m | src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22m[2mDealFlowPage Integration Tests[2m > [22m[2mhandles batch selection mode
-[22m[39m[ActionApprovalQueue] selectedAction changed [90mundefined[39m
-
-Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice')]
+Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'find')]
     at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
@@ -196,18 +179,18 @@ Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice'
     at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
     at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
     at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
-    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'slice')
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:105:44)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'find')
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:73:36)
     at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
-    at updateFunctionComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:19617:20)
-    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21640:16)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
     at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
     at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
     at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
     at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice')]
+Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'find')]
     at reportException (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
@@ -217,120 +200,57 @@ Error: Uncaught [TypeError: Cannot read properties of undefined (reading 'slice'
     at Object.invokeGuardedCallbackDev (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
     at invokeGuardedCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
     at beginWork$1 (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
-    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'slice')
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:105:44)
+    at performUnitOfWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading 'find')
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:73:36)
     at renderWithHooks (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
-    at updateFunctionComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:19617:20)
-    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21640:16)
+    at mountIndeterminateComponent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
     at HTMLUnknownElement.callCallback (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
     at HTMLUnknownElement.callTheUserObjectsOperation (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
     at innerInvokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
     at invokeEventListeners (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
     at HTMLUnknownElementImpl._dispatch (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
     at HTMLUnknownElementImpl.dispatchEvent (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-[90mstderr[2m | src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22m[2mDealFlowPage Integration Tests[2m > [22m[2mhandles batch selection mode
-[22m[39mThe above error occurred in the <PortfolioInsightsCard> component:
+[90mstderr[2m | src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22m[2mCalendarPage Integration Tests[2m > [22m[2mhandles AI suggestions from URL params
+[22m[39mThe above error occurred in the <ActionApprovalQueue> component:
 
-    at PortfolioInsightsCard (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:11:61)
+    at ActionApprovalQueue (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:82:3)
     at div
-    at div
-    at DealFlowPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/DealFlowPage/DealFlowPage.tsx:216:57)
+    at CalendarPage (/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend/src/pages/CalendarPage/CalendarPage.tsx:31:57)
+    at RenderedRoute (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:539:7)
+    at Routes (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1273:7)
     at Router (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1207:17)
     at MemoryRouter (/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/react-router/dist/umd/react-router.development.js:1101:7)
 
 Consider adding an error boundary to your tree to customize error handling behavior.
 Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
 
- [31m❯[39m src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx [2m([22m[2m4 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 2375[2mms[22m[39m
-[31m     [31m×[31m loads and displays pipeline columns[39m[33m 1077[2mms[22m[39m
-[31m     [31m×[31m opens "New Deal" modal on button click[39m[33m 1123[2mms[22m[39m
-     [32m✓[39m activates Smart Search on valid query[32m 112[2mms[22m[39m
-[31m     [31m×[31m handles batch selection mode[39m[32m 60[2mms[22m[39m
+ [31m×[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mloads and aggregates events from all sources[32m 118[2mms[22m[39m
+[31m   → Cannot read properties of undefined (reading 'find')[39m
+ [31m×[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mhandles view mode switching[32m 24[2mms[22m[39m
+[31m   → Cannot read properties of undefined (reading 'find')[39m
+ [31m×[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mopens "Add Appointment" modal[32m 22[2mms[22m[39m
+[31m   → Cannot read properties of undefined (reading 'find')[39m
+ [31m×[39m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mhandles AI suggestions from URL params[32m 27[2mms[22m[39m
+[31m   → Cannot read properties of undefined (reading 'find')[39m
 
-[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
 
-[41m[1m FAIL [22m[49m src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22mDealFlowPage Integration Tests[2m > [22mloads and displays pipeline columns
-[31m[1mTestingLibraryElementError[22m: Unable to find an element with the text: 123 Test St. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
-
-Ignored nodes: comments, script, style
-[36m<body>[31m
-  [36m<div />[31m
-[36m</body>[31m
-
-Ignored nodes: comments, script, style
-[36m<body>[31m
-  [36m<div />[31m
-[36m</body>[31m[39m
-[90m [2m❯[22m waitForWrapper ../../node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
-[90m [2m❯[22m ../../node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
-[36m [2m❯[22m src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx:[2m133:29[22m[39m
-    [90m131| [39m        // Note: The actual component likely renders columns based on …
-    [90m132| [39m        [90m// Let's check for the deals if columns are dynamic[39m
-    [90m133| [39m        expect(await screen.findByText('123 Test St')).toBeInTheDocume…
-    [90m   | [39m                            [31m^[39m
-    [90m134| [39m        expect(await screen.findByText('456 High St')).toBeInTheDocume…
-    [90m135| [39m    })[33m;[39m
-
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
-
-[41m[1m FAIL [22m[49m src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22mDealFlowPage Integration Tests[2m > [22mopens "New Deal" modal on button click
-[31m[1mTestingLibraryElementError[22m: Unable to find an element by: [data-testid="new-deal-modal"]
-
-Ignored nodes: comments, script, style
-[36m<body>[31m
-  [36m<div />[31m
-[36m</body>[31m
-
-Ignored nodes: comments, script, style
-[36m<body>[31m
-  [36m<div />[31m
-[36m</body>[31m[39m
-[90m [2m❯[22m waitForWrapper ../../node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
-[90m [2m❯[22m ../../node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
-[36m [2m❯[22m src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx:[2m148:29[22m[39m
-    [90m146| [39m        [35mawait[39m user[33m.[39m[34mclick[39m(addButton)[33m;[39m
-    [90m147| [39m
-    [90m148| [39m        expect(await screen.findByTestId('new-deal-modal')).toBeInTheD…
-    [90m   | [39m                            [31m^[39m
-    [90m149| [39m    })[33m;[39m
-    [90m150| [39m
-
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
-
-[41m[1m FAIL [22m[49m src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[2m > [22mDealFlowPage Integration Tests[2m > [22mhandles batch selection mode
-[31m[1mError[22m: [2mexpect([22m[31melement[31m[2m).toHaveClass([22m[32m[32m"active"[32m[31m[2m)[22m
-
-Expected the element to have class:
-[32m  active[31m
-Received:
-[31m  deal-flow-page__action-btn deal-flow-page__select-btn[31m[39m
-[36m [2m❯[22m src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx:[2m214:30[22m[39m
-    [90m212| [39m        [35mawait[39m user[33m.[39m[34mclick[39m(selectButton)[33m;[39m
-    [90m213| [39m
-    [90m214| [39m        [34mexpect[39m(selectButton)[33m.[39m[34mtoHaveClass[39m([32m'active'[39m)[33m;[39m
-    [90m   | [39m                             [31m^[39m
-    [90m215| [39m        // Further selection logic would require clicking deals, which…
-    [90m216| [39m    })[33m;[39m
-
-[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
-
-[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Errors [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
-[31m[1m
-Vitest caught 4 unhandled errors during the test run.
-This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
-
-[31m⎯⎯⎯⎯⎯[39m[1m[41m Uncaught Exception [49m[22m[31m⎯⎯⎯⎯⎯[39m
-[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'slice')[39m
-[36m [2m❯[22m PortfolioInsightsCard src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:[2m105:44[22m[39m
-    [90m103| [39m                    [33m<[39m[33mh3[39m[33m>[39m[33m<[39m[33mShieldAlert[39m [33msize[39m[33m=[39m[33m{[39m[34m16[39m[33m}[39m [33m/[39m[33m>[39m Systemic Risks[33m<[39m[33m/[39m[33mh3[39m[33m>[39m
-    [90m104| [39m                    [33m<[39m[33mdiv[39m [33mclassName[39m[33m=[39m[32m"cluster-list"[39m[33m>[39m
-    [90m105| [39m                        {data.riskClusters.slice(0, 3).map((cluster, i…
-    [90m   | [39m                                           [31m^[39m
-    [90m106| [39m                            [33m<[39m[33mdiv[39m [33mkey[39m[33m=[39m[33m{[39mi[33m}[39m [33mclassName[39m[33m=[39m[32m"cluster-tag"[39m[33m>[39m
-    [90m107| [39m                                <AlertTriangle size={14} className="te…
+[41m[1m FAIL [22m[49m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mloads and aggregates events from all sources
+[41m[1m FAIL [22m[49m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mhandles view mode switching
+[41m[1m FAIL [22m[49m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mopens "Add Appointment" modal
+[41m[1m FAIL [22m[49m src/pages/CalendarPage/CalendarPage.comprehensive.test.tsx[2m > [22mCalendarPage Integration Tests[2m > [22mhandles AI suggestions from URL params
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'find')[39m
+[36m [2m❯[22m ActionApprovalQueue src/components/ActionApprovalQueue/ActionApprovalQueue.tsx:[2m73:36[22m[39m
+    [90m 71| [39m    [35mconst[39m fileInputRef [33m=[39m [33mReact[39m[33m.[39museRef[33m<[39m[33mHTMLInputElement[39m[33m>[39m([35mnull[39m)[33m;[39m
+    [90m 72| [39m
+    [90m 73| [39m    const selectedAction = actions.find(a => a.id === selectedActionId…
+    [90m   | [39m                                   [31m^[39m
+    [90m 74| [39m
+    [90m 75| [39m    [90m// Initial selected action[39m
 [90m [2m❯[22m renderWithHooks ../../node_modules/react-dom/cjs/react-dom.development.js:[2m15486:18[22m[39m
-[90m [2m❯[22m updateFunctionComponent ../../node_modules/react-dom/cjs/react-dom.development.js:[2m19617:20[22m[39m
-[90m [2m❯[22m beginWork ../../node_modules/react-dom/cjs/react-dom.development.js:[2m21640:16[22m[39m
+[90m [2m❯[22m mountIndeterminateComponent ../../node_modules/react-dom/cjs/react-dom.development.js:[2m20103:13[22m[39m
+[90m [2m❯[22m beginWork ../../node_modules/react-dom/cjs/react-dom.development.js:[2m21626:16[22m[39m
 [90m [2m❯[22m beginWork$1 ../../node_modules/react-dom/cjs/react-dom.development.js:[2m27465:14[22m[39m
 [90m [2m❯[22m performUnitOfWork ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26599:12[22m[39m
 [90m [2m❯[22m workLoopSync ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26505:5[22m[39m
@@ -338,95 +258,11 @@ This might cause false positive tests. Resolve unhandled errors to make sure you
 [90m [2m❯[22m recoverFromConcurrentError ../../node_modules/react-dom/cjs/react-dom.development.js:[2m25889:20[22m[39m
 [90m [2m❯[22m performConcurrentWorkOnRoot ../../node_modules/react-dom/cjs/react-dom.development.js:[2m25789:22[22m[39m
 
-[31mThis error originated in "[1msrc/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
-[31mThe latest test that might've caused the error is "[1mloads and displays pipeline columns[22m". It might mean one of the following:
-- The error was thrown, while Vitest was running this test.
-- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
-
-[31m⎯⎯⎯⎯⎯[39m[1m[41m Uncaught Exception [49m[22m[31m⎯⎯⎯⎯⎯[39m
-[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'slice')[39m
-[36m [2m❯[22m PortfolioInsightsCard src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:[2m105:44[22m[39m
-    [90m103| [39m                    [33m<[39m[33mh3[39m[33m>[39m[33m<[39m[33mShieldAlert[39m [33msize[39m[33m=[39m[33m{[39m[34m16[39m[33m}[39m [33m/[39m[33m>[39m Systemic Risks[33m<[39m[33m/[39m[33mh3[39m[33m>[39m
-    [90m104| [39m                    [33m<[39m[33mdiv[39m [33mclassName[39m[33m=[39m[32m"cluster-list"[39m[33m>[39m
-    [90m105| [39m                        {data.riskClusters.slice(0, 3).map((cluster, i…
-    [90m   | [39m                                           [31m^[39m
-    [90m106| [39m                            [33m<[39m[33mdiv[39m [33mkey[39m[33m=[39m[33m{[39mi[33m}[39m [33mclassName[39m[33m=[39m[32m"cluster-tag"[39m[33m>[39m
-    [90m107| [39m                                <AlertTriangle size={14} className="te…
-[90m [2m❯[22m renderWithHooks ../../node_modules/react-dom/cjs/react-dom.development.js:[2m15486:18[22m[39m
-[90m [2m❯[22m updateFunctionComponent ../../node_modules/react-dom/cjs/react-dom.development.js:[2m19617:20[22m[39m
-[90m [2m❯[22m beginWork ../../node_modules/react-dom/cjs/react-dom.development.js:[2m21640:16[22m[39m
-[90m [2m❯[22m beginWork$1 ../../node_modules/react-dom/cjs/react-dom.development.js:[2m27465:14[22m[39m
-[90m [2m❯[22m performUnitOfWork ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26599:12[22m[39m
-[90m [2m❯[22m workLoopSync ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26505:5[22m[39m
-[90m [2m❯[22m renderRootSync ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26473:7[22m[39m
-[90m [2m❯[22m recoverFromConcurrentError ../../node_modules/react-dom/cjs/react-dom.development.js:[2m25889:20[22m[39m
-[90m [2m❯[22m performConcurrentWorkOnRoot ../../node_modules/react-dom/cjs/react-dom.development.js:[2m25789:22[22m[39m
-
-[31mThis error originated in "[1msrc/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
-[31mThe latest test that might've caused the error is "[1mopens "New Deal" modal on button click[22m". It might mean one of the following:
-- The error was thrown, while Vitest was running this test.
-- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
-
-[31m⎯⎯⎯⎯⎯[39m[1m[41m Uncaught Exception [49m[22m[31m⎯⎯⎯⎯⎯[39m
-[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'slice')[39m
-[36m [2m❯[22m PortfolioInsightsCard src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:[2m105:44[22m[39m
-    [90m103| [39m                    [33m<[39m[33mh3[39m[33m>[39m[33m<[39m[33mShieldAlert[39m [33msize[39m[33m=[39m[33m{[39m[34m16[39m[33m}[39m [33m/[39m[33m>[39m Systemic Risks[33m<[39m[33m/[39m[33mh3[39m[33m>[39m
-    [90m104| [39m                    [33m<[39m[33mdiv[39m [33mclassName[39m[33m=[39m[32m"cluster-list"[39m[33m>[39m
-    [90m105| [39m                        {data.riskClusters.slice(0, 3).map((cluster, i…
-    [90m   | [39m                                           [31m^[39m
-    [90m106| [39m                            [33m<[39m[33mdiv[39m [33mkey[39m[33m=[39m[33m{[39mi[33m}[39m [33mclassName[39m[33m=[39m[32m"cluster-tag"[39m[33m>[39m
-    [90m107| [39m                                <AlertTriangle size={14} className="te…
-[90m [2m❯[22m renderWithHooks ../../node_modules/react-dom/cjs/react-dom.development.js:[2m15486:18[22m[39m
-[90m [2m❯[22m updateFunctionComponent ../../node_modules/react-dom/cjs/react-dom.development.js:[2m19617:20[22m[39m
-[90m [2m❯[22m beginWork ../../node_modules/react-dom/cjs/react-dom.development.js:[2m21640:16[22m[39m
-[90m [2m❯[22m beginWork$1 ../../node_modules/react-dom/cjs/react-dom.development.js:[2m27465:14[22m[39m
-[90m [2m❯[22m performUnitOfWork ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26599:12[22m[39m
-[90m [2m❯[22m workLoopSync ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26505:5[22m[39m
-[90m [2m❯[22m renderRootSync ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26473:7[22m[39m
-[90m [2m❯[22m recoverFromConcurrentError ../../node_modules/react-dom/cjs/react-dom.development.js:[2m25889:20[22m[39m
-[90m [2m❯[22m performConcurrentWorkOnRoot ../../node_modules/react-dom/cjs/react-dom.development.js:[2m25789:22[22m[39m
-
-[31mThis error originated in "[1msrc/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
-[31mThe latest test that might've caused the error is "[1mactivates Smart Search on valid query[22m". It might mean one of the following:
-- The error was thrown, while Vitest was running this test.
-- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
-
-[31m⎯⎯⎯⎯⎯[39m[1m[41m Uncaught Exception [49m[22m[31m⎯⎯⎯⎯⎯[39m
-[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'slice')[39m
-[36m [2m❯[22m PortfolioInsightsCard src/components/DealFlow/ZenaIntelligence/PortfolioInsightsCard.tsx:[2m105:44[22m[39m
-    [90m103| [39m                    [33m<[39m[33mh3[39m[33m>[39m[33m<[39m[33mShieldAlert[39m [33msize[39m[33m=[39m[33m{[39m[34m16[39m[33m}[39m [33m/[39m[33m>[39m Systemic Risks[33m<[39m[33m/[39m[33mh3[39m[33m>[39m
-    [90m104| [39m                    [33m<[39m[33mdiv[39m [33mclassName[39m[33m=[39m[32m"cluster-list"[39m[33m>[39m
-    [90m105| [39m                        {data.riskClusters.slice(0, 3).map((cluster, i…
-    [90m   | [39m                                           [31m^[39m
-    [90m106| [39m                            [33m<[39m[33mdiv[39m [33mkey[39m[33m=[39m[33m{[39mi[33m}[39m [33mclassName[39m[33m=[39m[32m"cluster-tag"[39m[33m>[39m
-    [90m107| [39m                                <AlertTriangle size={14} className="te…
-[90m [2m❯[22m renderWithHooks ../../node_modules/react-dom/cjs/react-dom.development.js:[2m15486:18[22m[39m
-[90m [2m❯[22m updateFunctionComponent ../../node_modules/react-dom/cjs/react-dom.development.js:[2m19617:20[22m[39m
-[90m [2m❯[22m beginWork ../../node_modules/react-dom/cjs/react-dom.development.js:[2m21640:16[22m[39m
-[90m [2m❯[22m beginWork$1 ../../node_modules/react-dom/cjs/react-dom.development.js:[2m27465:14[22m[39m
-[90m [2m❯[22m performUnitOfWork ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26599:12[22m[39m
-[90m [2m❯[22m workLoopSync ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26505:5[22m[39m
-[90m [2m❯[22m renderRootSync ../../node_modules/react-dom/cjs/react-dom.development.js:[2m26473:7[22m[39m
-[90m [2m❯[22m recoverFromConcurrentError ../../node_modules/react-dom/cjs/react-dom.development.js:[2m25889:20[22m[39m
-[90m [2m❯[22m performConcurrentWorkOnRoot ../../node_modules/react-dom/cjs/react-dom.development.js:[2m25789:22[22m[39m
-
-[31mThis error originated in "[1msrc/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
-[31mThe latest test that might've caused the error is "[1mhandles batch selection mode[22m". It might mean one of the following:
-- The error was thrown, while Vitest was running this test.
-- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
-[31m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
 
 
 [2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
-[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (4)[39m
-[2m     Errors [22m [1m[31m4 errors[39m[22m
-[2m   Start at [22m 16:19:41
-[2m   Duration [22m 5.92s[2m (transform 955ms, setup 193ms, import 2.46s, tests 2.37s, environment 574ms)[22m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[90m (4)[39m
+[2m   Start at [22m 17:00:38
+[2m   Duration [22m 3.08s[2m (transform 676ms, setup 268ms, import 1.21s, tests 194ms, environment 985ms)[22m
 
-npm error Lifecycle script `test` failed with error:
-npm error code 1
-npm error path /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend
-npm error workspace @zena/frontend@1.0.0
-npm error location /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend
-npm error command failed
-npm error command sh -c vitest --run src/pages/DealFlowPage/DealFlowPage.comprehensive.test.tsx
