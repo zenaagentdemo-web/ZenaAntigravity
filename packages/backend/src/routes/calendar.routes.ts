@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { optimiseDay, applyDay } from '../controllers/calendar.controller.js';
 import * as CalendarController from '../controllers/calendar.controller.js';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 

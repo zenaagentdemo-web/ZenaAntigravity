@@ -253,17 +253,27 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
         cameraRef.current = camera;
 
         try {
-            const renderer = new THREE.WebGLRenderer({
-                canvas: canvasRef.current,
+            // PRE-FLIGHT CHECK: Explicitly check for context availability before Three.js tries to initialize.
+            // Using webgl2 to avoid deprecation warnings and improve performance/stability.
+            const gl = canvasRef.current.getContext('webgl2', {
                 alpha: true,
                 antialias: true,
-                powerPreference: 'high-performance',
+                powerPreference: 'high-performance'
             });
 
-            // Check if context was successfully created
-            if (!renderer || !renderer.getContext()) {
-                throw new Error('Failed to create WebGL context');
+            if (!gl || !gl.getContextAttributes()) {
+                console.warn('[DissolveParticleSystem] WebGL 2 Context unavailable or invalid. Aborting renderer creation.');
+                rendererRef.current = null;
+                isInitializedRef.current = false;
+                return;
             }
+
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvasRef.current,
+                context: gl,
+                alpha: true,
+                antialias: true,
+            });
 
             renderer.setSize(size, size);
             // Use FULL device pixel ratio for ultra HD quality (3x minimum for crisp particles)
@@ -271,7 +281,7 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
             rendererRef.current = renderer;
             isInitializedRef.current = true;
         } catch (error) {
-            console.error('[DissolveParticleSystem] WebGL initialization failed:', error);
+            console.error('[DissolveParticleSystem] WebGL 2 initialization failed (Exception):', error);
             rendererRef.current = null;
             isInitializedRef.current = false;
             return; // Exit early if renderer creation fails

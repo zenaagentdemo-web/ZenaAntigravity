@@ -18,6 +18,7 @@ export interface CalendarAppointment {
   urgency?: 'low' | 'medium' | 'high';
   conflictsWith?: string[]; // IDs of conflicting appointments
   linkedEntityId?: string; // ID of the entity this appointment shadows (e.g. a milestone)
+  contactId?: string;
   reminder?: string;
 }
 

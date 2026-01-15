@@ -21,6 +21,7 @@ interface Property {
     type?: string;
     milestones?: Array<{
         id: string;
+        title?: string;
         type: string;
         date: string;
         endTime?: string;
@@ -324,7 +325,7 @@ export const CalendarPage: React.FC = () => {
                         appts.push({
                             id: milestone.id,
                             time: date,
-                            title: formatTitle(milestone.type || 'other', property.address, milestone.title),
+                            title: formatTitle(milestone.type || 'other', property.address, (milestone as any).title),
                             location: sanitizeTitle(property.address),
                             property: {
                                 id: property.id,
@@ -656,7 +657,7 @@ export const CalendarPage: React.FC = () => {
                                 borderRadius: '12px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyCenter: 'center',
+                                justifyContent: 'center',
                                 color: '#a78bfa',
                                 flexShrink: 0
                             }}>

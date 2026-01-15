@@ -62,12 +62,12 @@ export interface HighTechDashboardProps {
 /**
  * Format timestamp to HH:MM AM/PM
  */
-const formatAppointmentTime = (timestamp: string): string => {
+const formatAppointmentTime = (timestamp: string | Date): string => {
   try {
-    const date = new Date(timestamp);
+    const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
     return date.toLocaleTimeString('en-NZ', { hour: '2-digit', minute: '2-digit', hour12: true });
   } catch (e) {
-    return timestamp;
+    return typeof timestamp === 'string' ? timestamp : String(timestamp);
   }
 };
 

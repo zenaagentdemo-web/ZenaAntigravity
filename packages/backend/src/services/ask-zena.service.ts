@@ -2,11 +2,9 @@ import { searchService } from './search.service.js';
 import { websocketService } from './websocket.service.js';
 import { contactCategorizationService } from './contact-categorization.service.js';
 import { neuralScorerService } from './neural-scorer.service.js';
-import { decodeHTMLEntities } from '../utils/text-utils.js';
 import prisma from '../config/database.js';
 import { logger } from './logger.service.js';
 import { tokenTrackingService } from './token-tracking.service.js';
-// import { cloudRobotService } from './cloud-robot.service.js';
 import { intelligentNavigatorService } from './intelligent-navigator.service.js';
 import { navigationPlannerService } from './navigation-planner.service.js';
 import { contextRetrieverService } from './context-retriever.service.js';
@@ -14,7 +12,6 @@ import { agentOrchestrator } from './agent-orchestrator.service.js';
 import { sessionManager } from './session-manager.service.js';
 import { userPersonaService } from './user-persona.service.js';
 import puppeteer from 'puppeteer';
-
 
 
 export interface AskZenaQuery {
@@ -35,6 +32,8 @@ export interface AskZenaResponse {
   answer: string;
   sources: ResponseSource[];
   suggestedActions?: string[];
+  sessionId?: string;
+  requiresApproval?: boolean;
   pendingAction?: {
     type: string;
     subType?: string;
@@ -59,7 +58,6 @@ export interface SearchContext {
   tasks: any[];
   timelineEvents: any[];
   voiceNotes: any[];
-  voiceNotes: any[];
   chatHistory: any[];
   synapseContext?: string;
 }
@@ -78,10 +76,9 @@ export class AskZenaService {
     this.apiEndpoint = process.env.OPENAI_API_ENDPOINT || 'https://api.openai.com/v1/chat/completions';
     this.model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 
-    logger.info('[AskZenaService] Initializing Ask Zena...');
-    logger.info('[AskZenaService] OPENAI_API_KEY set:', !!this.apiKey);
-    logger.info('[AskZenaService] GEMINI_API_KEY set:', !!process.env.GEMINI_API_KEY);
-    logger.info('[AskZenaService] GEMINI_MODEL:', process.env.GEMINI_MODEL || 'gemini-3-flash-preview');
+    logger.info('[AskZenaService] Initializing Ask Zena...', { apiKeySet: !!this.apiKey });
+    logger.info('[AskZenaService] API Keys configured', { openAI: !!this.apiKey, gemini: !!process.env.GEMINI_API_KEY });
+    logger.info('[AskZenaService] Model configuration', { geminiModel: process.env.GEMINI_MODEL || 'gemini-3-flash-preview' });
 
     if (!this.apiKey && !process.env.GEMINI_API_KEY) {
       logger.warn('Warning: Neither OPENAI_API_KEY nor GEMINI_API_KEY set. Ask Zena will use fallback responses.');
@@ -91,7 +88,7 @@ export class AskZenaService {
   /**
    * Process a draft rewrite request
    */
-  async rewriteDraft(userId: string, originalContent: string, feedback: string): Promise<string> {
+  async rewriteDraft(_userId: string, originalContent: string, feedback: string): Promise<string> {
     const prompt = `You are Zena, a high-intelligence real estate assistant. 
     I need you to rewrite the following draft based on the user's feedback.
     
@@ -145,7 +142,7 @@ export class AskZenaService {
       console.log('📜 History Length:', query.conversationHistory?.length || 0);
       if (query.conversationHistory && query.conversationHistory.length > 0) {
         console.log('📜 Recent Conversation History:');
-        query.conversationHistory.slice(-3).forEach((msg, i) => {
+        query.conversationHistory.slice(-3).forEach((msg, _i) => {
           console.log(`   [${msg.role}]: ${msg.content.substring(0, 100)}${msg.content.length > 100 ? '...' : ''}`);
         });
       }
@@ -257,8 +254,8 @@ export class AskZenaService {
               currentPrice = Number(property.listingPrice);
               if (adjustment) {
                 newPrice = currentPrice + adjustment;
-                payload.newPrice = newPrice;
-                payload.currentPrice = currentPrice;
+                (payload as any).newPrice = newPrice;
+                (payload as any).currentPrice = currentPrice;
               }
             }
           }
@@ -273,6 +270,7 @@ export class AskZenaService {
 
         const response: AskZenaResponse = {
           answer: `I need your approval to perform a price adjustment for **${intent.parameters.address || 'this property'}** on Trade Me.`,
+          sources: [],
           pendingAction: {
             type: intent.action,
             subType: intent.parameters.writeAction,
@@ -381,7 +379,7 @@ export class AskZenaService {
       }
 
       // For AUTHENTICATED_ACTION queries (Write actions)
-      if (queryType === 'AUTHENTICATED_ACTION') {
+      if ((queryType as string) === 'AUTHENTICATED_ACTION') {
         logger.info('[AskZenaService] 🔑 AUTHENTICATED_ACTION detected - delegating to Intelligent Navigator...');
         const result = await intelligentNavigatorService.executeQuery(query.query);
         if (result.success) {
@@ -425,7 +423,7 @@ export class AskZenaService {
           const result = await intelligentNavigatorService.executeQuery(query.query);
           if (result.success) bridgeData = result.data;
         } catch (bridgeErr) {
-          logger.error('[AskZenaService] ⚠️ Neural Bridge error in hybrid flow:', bridgeErr);
+          logger.error('[AskZenaService] ⚠️ Neural Bridge error in hybrid flow:', bridgeErr instanceof Error ? bridgeErr : undefined);
         }
 
         const finalContext = await this.retrieveContext(query.userId, searchTerms, query.query);
@@ -898,7 +896,7 @@ export class AskZenaService {
         tasks,
         timelineEvents,
         voiceNotes,
-        chatHistory: isHistoryQuery ? await searchService.searchChatHistory(searchTerms, userId) : [],
+        chatHistory: isHistoryQuery ? await searchService.searchChatHistory(userId, searchTerms.join(' ')) : [],
         synapseContext
       };
     } catch (error) {
@@ -1726,7 +1724,7 @@ STRICT SOURCE LINK RULES (GROUNDING-ONLY):
       // Attempt 2: Newline Escaping
       try {
         // Fix raw newlines inside JSON string values
-        const sanitized = jsonString.replace(/(": ")([\s\S]*?)("[,}\n])/g, (match, p1, p2, p3) => {
+        const sanitized = jsonString.replace(/(": ")([\s\S]*?)("[,}\n])/g, (_match, p1, p2, p3) => {
           const escapedValue = p2.replace(/\n/g, '\\n').replace(/\r/g, '\\r');
           return p1 + escapedValue + p3;
         });
@@ -2395,7 +2393,7 @@ Respond with ONLY the draft text (no JSON, no subject line, just the content):`;
    * NOW ENHANCED WITH ORACLE PERSONALITY DETECTION AND PROPERTY CONTEXT GROUNDING
    */
   async generateContactEmail(
-    userId: string,
+    _userId: string,
     contacts: Array<{
       id: string;
       name: string;
@@ -2594,7 +2592,7 @@ Best regards`
    * This powers the IntelScoreTooltip "Improve Now" feature
    */
   async generateImprovementActions(
-    userId: string,
+    _userId: string,
     contact: {
       id: string;
       name: string;
@@ -2675,7 +2673,7 @@ Respond in JSON:
    * This powers the PropertyIntelScoreTooltip "Improve Now" feature
    */
   async generatePropertyImprovementActions(
-    userId: string,
+    _userId: string,
     propertyId: string
   ): Promise<{
     tips: string[];
@@ -2714,7 +2712,7 @@ PROPERTY:
 - Address: ${property.address}
 - Status: ${property.status}
 - Intel Score: ${property.prediction?.momentumScore || 50}%
-- Buyer Interest: ${property.buyerInterestLevel || 'Medium'}
+- Buyer Interest: ${property.prediction?.buyerInterestLevel || 'Medium'}
 - Days on Market: ${Math.floor((Date.now() - property.createdAt.getTime()) / (1000 * 60 * 60 * 24))}
 - Vendors: ${vendorNames}
 
@@ -2870,7 +2868,7 @@ Respond in JSON:
    * This powers the ZenaCallTooltip
    */
   async generateCallIntel(
-    userId: string,
+    _userId: string,
     contactId: string
   ): Promise<{
     bestTime: string;
@@ -3254,7 +3252,7 @@ Respond in JSON format:
    * Parse natural language search query into structured filters
    */
   async parseSearchQuery(
-    userId: string,
+    _userId: string,
     query: string
   ): Promise<{
     role: string;
@@ -3768,7 +3766,7 @@ AVAILABLE FILTERS:
       // Build prompt for AI analysis
       const contactSummaries = contacts.map(c => {
         const email = c.emails?.[0] || '';
-        const domain = email.split('@')[1] || '';
+        // const domain = email.split('@')[1] || ''; // domain is unused here but used in heuristic fallback below
         return `- ${c.name} (${email}): Current role: ${c.role || 'unknown'}, Category: ${c.zenaCategory || 'none'}, Intel: ${c.intelligenceSnippet || 'none'}`;
       }).join('\n');
 
@@ -3940,7 +3938,7 @@ Respond in JSON format:
    * Parse property details from raw text/URL
    * This powers the "Magic Entry" feature
    */
-  async parsePropertyDetails(userId: string, text: string): Promise<any> {
+  async parsePropertyDetails(_userId: string, text: string): Promise<any> {
     try {
       const prompt = `You are Zena, a world-class real estate AI. Parse the following real estate listing text (which might be raw copy-paste or a URL summary) into high-fidelity structured JSON.
       
@@ -4053,8 +4051,8 @@ Respond in JSON format:
       const contact = await prisma.contact.findFirst({
         where: { id: contactId, userId },
         include: {
-          linkedProperties: { take: 5 },
-          linkedDeals: { take: 5 }
+          vendorProperties: { take: 5 },
+          deals: { take: 5 }
         }
       });
 
@@ -4074,8 +4072,8 @@ Respond in JSON format:
       let reason = 'Insufficient activity data for analysis';
 
       // Analyze linked properties - if they have listings, likely vendor
-      const propertyCount = contact.linkedProperties?.length || 0;
-      const dealCount = contact.linkedDeals?.length || 0;
+      const propertyCount = contact.vendorProperties?.length || 0;
+      const dealCount = contact.deals?.length || 0;
 
       // Count timeline events for this contact
       const timelineCount = await prisma.timelineEvent.count({

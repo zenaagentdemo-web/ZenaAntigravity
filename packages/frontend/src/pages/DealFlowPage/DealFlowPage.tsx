@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     CheckSquare,
-    Download,
     RefreshCw,
     Search,
     Sparkles,
@@ -14,200 +13,19 @@ import {
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { BatchAction } from '../../models/newPage.types';
-import { PipelineType, PipelineResponse, Deal, NewDealModal, DealQuickActions, ZenaMomentumFlow, StrategySessionContext, STRATEGY_SESSION_KEY, STAGE_LABELS } from '../../components/DealFlow';
+import { PipelineType, PipelineResponse, Deal, NewDealModal, StrategySessionContext, STRATEGY_SESSION_KEY, STAGE_LABELS } from '../../components/DealFlow';
 import { analyseDeal } from '../../components/DealFlow/ZenaIntelligence/ZenaIntelligenceEngine';
 import { DealDetailPanel } from '../../components/DealFlow/DealDetailPanel';
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
-import { BatchActionBar } from '../../components/BatchActionBar/BatchActionBar';
 import { GodmodeToggle } from '../../components/GodmodeToggle/GodmodeToggle';
 import { ActionApprovalQueue } from '../../components/ActionApprovalQueue/ActionApprovalQueue';
 import { ToastContainer } from '../../components/Toast/Toast';
 import { useGodmode } from '../../hooks/useGodmode';
 import { useThreadActions } from '../../hooks/useThreadActions';
 import { api } from '../../utils/apiClient';
+import { calculateDaysInStage } from '../../components/DealFlow/types';
 import '../../components/DealFlow/DealFlow.css';
 import './DealFlowPage.css';
-
-// API base URL
-const API_BASE = '/api';
-
-// ============================================================
-// MOCK DEALS FOR TESTING MOMENTUM RADAR
-// ============================================================
-// Using type assertion since mock data doesn't need all required fields
-const MOCK_DEALS_FOR_TESTING = [
-    // CRITICAL - Will show in Momentum Radar
-    {
-        id: 'deal-critical-001',
-        pipelineType: 'buyer',
-        stage: 'conditional',
-        stageEnteredAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
-        lastContactAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
-        riskLevel: 'critical',
-        property: { address: '15 Marine Parade, Herne Bay' },
-        dealValue: 3250000,
-        contacts: [{ id: 'c1', name: 'Sarah Mitchell', email: 'sarah@example.com', role: 'buyer' }],
-        conditions: [
-            { id: 'cond1', label: 'Finance Approval', type: 'finance', status: 'pending', dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString() },
-            { id: 'cond2', label: 'Building Report', type: 'building_report', status: 'pending', dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString() },
-        ],
-        estimatedCommission: 97500,
-        isConjunctional: true,
-        conjunctionalSplit: 0.2,
-        settlementDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-        id: 'deal-warning-002',
-        pipelineType: 'buyer',
-        stage: 'offer_made',
-        stageEnteredAt: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
-        lastContactAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-        riskLevel: 'high',
-        property: { address: '42 Kohimarama Road, Kohimarama' },
-        dealValue: 2800000,
-        contacts: [{ id: 'c2', name: 'James Chen', email: 'james@example.com', role: 'buyer' }],
-        auctionDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-        estimatedCommission: 84000,
-        activeOffer: {
-            id: 'o1',
-            amount: 2750000,
-            conditions: ['Finance approval', 'Solicitor approval'],
-            settlementDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
-            status: 'submitted',
-            expiryDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-            isMultiOffer: true,
-        },
-    },
-    {
-        id: 'deal-warning-003',
-        pipelineType: 'buyer',
-        stage: 'conditional',
-        stageEnteredAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        lastContactAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-        riskLevel: 'medium',
-        property: { address: '108 Remuera Road, Remuera' },
-        dealValue: 1950000,
-        contacts: [{ id: 'c3', name: 'Emma Wright', email: 'emma@example.com', role: 'buyer' }],
-        conditions: [
-            { type: 'building_report', status: 'pending', dueDate: new Date(Date.now() + 0.5 * 24 * 60 * 60 * 1000).toISOString() },
-        ],
-    },
-    {
-        id: 'deal-healthy-004',
-        pipelineType: 'buyer',
-        stage: 'buyer_consult',
-        stageEnteredAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        lastContactAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        riskLevel: 'low',
-        property: { address: '56 Victoria Avenue, Remuera' },
-        dealValue: 2100000,
-        contacts: [{ id: 'c4', name: 'Michael Brown', email: 'michael@example.com', role: 'buyer' }],
-    },
-    {
-        id: 'deal-healthy-005',
-        pipelineType: 'buyer',
-        stage: 'shortlisting',
-        stageEnteredAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-        lastContactAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        riskLevel: 'low',
-        property: { address: '23 Arney Road, Remuera' },
-        dealValue: 4500000,
-        contacts: [{ id: 'c5', name: 'Lisa Anderson', email: 'lisa@example.com', role: 'buyer' }],
-        searchCriteria: {
-            propertyType: 'Modern Villa',
-            location: ['Remuera', 'Parnell'],
-            priceRange: { min: 4000000, max: 6000000 },
-            bedrooms: '4+',
-            bathrooms: '3+',
-            mustHaves: ['Tennis Court', 'Wine Cellar', 'North Facing'],
-        },
-        propertiesShared: [
-            { id: 'p1', address: '12 Arney Crescent, Remuera', feedback: 'like', isFavourite: true },
-            { id: 'p2', address: '45 Victoria Ave, Remuera', feedback: 'neutral', isHot: true, auctionDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString() },
-            { id: 'p3', address: '8 Cliff Road, St Heliers', feedback: 'dislike' },
-        ],
-    },
-    {
-        id: 'deal-healthy-006',
-        pipelineType: 'buyer',
-        stage: 'pre_settlement',
-        stageEnteredAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-        lastContactAt: new Date().toISOString(),
-        riskLevel: 'low',
-        property: { address: '8 Cliff Road, St Heliers' },
-        dealValue: 1750000,
-        contacts: [{ id: 'c6', name: 'David Wilson', email: 'david@example.com', role: 'buyer' }],
-        viewings: [
-            { id: 'v1', propertyId: 'p8', address: '8 Cliff Road, St Heliers', date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), time: '10:00 AM', status: 'completed', feedback: 'Stunning views, but garden is a bit small.' },
-            { id: 'v2', propertyId: 'p8', address: '8 Cliff Road, St Heliers (2nd)', date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(), time: '2:30 PM', status: 'scheduled' },
-        ],
-        preSettlementInspection: {
-            date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
-            time: '11:00 AM',
-            status: 'pending',
-            isFundsReady: false,
-            isKeysArranged: false,
-        },
-    },
-    {
-        id: 'deal-seller-001',
-        pipelineType: 'seller',
-        stage: 'marketing',
-        stageEnteredAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-        riskLevel: 'low',
-        property: { address: '28 Arney Crescent, Remuera' },
-        dealValue: 5250000,
-        contacts: [{ id: 's1', name: 'Robert Vance', role: 'seller' }],
-        marketingStats: {
-            views: 3450,
-            watchlist: 124,
-            inquiries: 18,
-            viewings: 12,
-            daysOnMarket: 14,
-            trend: 'up',
-        },
-        estimatedCommission: 157500,
-    },
-    {
-        id: 'deal-seller-002',
-        pipelineType: 'seller',
-        stage: 'offers_received',
-        stageEnteredAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        riskLevel: 'medium',
-        property: { address: '5 Victoria Avenue, Remuera' },
-        dealValue: 0,
-        contacts: [{ id: 's2', name: 'Angela Merkel', role: 'seller' }],
-        offers: [
-            { id: 'o1', buyerName: 'The Smiths', amount: 4850000, conditions: 2, status: 'countered', date: '2025-12-24' },
-            { id: 'o2', buyerName: 'Zhang Family', amount: 5100000, conditions: 1, status: 'pending', date: '2025-12-25' },
-        ],
-        nextAction: 'Present new offer to Angela',
-    },
-    {
-        id: 'deal-settled-007',
-        pipelineType: 'buyer',
-        stage: 'settled',
-        stageEnteredAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-        riskLevel: 'none',
-        property: { address: '112 Victoria Avenue, Remuera' },
-        dealValue: 2450000,
-        estimatedCommission: 73500,
-        contacts: [{ id: 'c7', name: 'Peter Sellers', email: 'peter@example.com', role: 'buyer' }],
-    },
-] as unknown as Deal[];
-
-// Fetch function with auth token
-async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
-    const token = localStorage.getItem('authToken');
-    return fetch(url, {
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            ...(options.headers || {})
-        }
-    });
-}
 
 export const DealFlowPage: React.FC = () => {
     const navigate = useNavigate();
@@ -229,7 +47,6 @@ export const DealFlowPage: React.FC = () => {
     // New features state
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [isBatchMode, setIsBatchMode] = useState(false);
-    const [isRefreshing, setIsRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
     // ============================================
@@ -426,33 +243,25 @@ export const DealFlowPage: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await fetchWithAuth(`${API_BASE}/deals/pipeline/${pipelineType}`);
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch pipeline data');
-            }
+            const response = await api.get<PipelineResponse>(`/deals/pipeline/${pipelineType}`, {
+                cache: true, // Allow caching
+            });
 
-            const data = await response.json();
+            const data = response.data;
             const allDeals = data.columns.flatMap((col: { deals: Deal[] }) => col.deals);
 
             // Always use API data - even when empty, this ensures we show real state
             setPipelineData(data);
             setDeals(allDeals);
-        } catch (err) {
-            console.error('Error fetching pipeline:', err);
-            // Only show mock data as fallback when API completely fails
-            const mockPipelineData = {
-                pipelineType,
-                columns: [{ stage: 'all', label: 'All Deals', deals: MOCK_DEALS_FOR_TESTING.filter(d => d.pipelineType === pipelineType), totalValue: 0, count: 0 }],
-                summary: { totalDeals: 0, totalValue: 0, atRiskCount: 0, overdueCount: 0, todayCount: 0 }
-            } as PipelineResponse;
-            setPipelineData(mockPipelineData);
-            setDeals(MOCK_DEALS_FOR_TESTING.filter(d => d.pipelineType === pipelineType));
-            setError(null);
+        } catch (err: any) {
+            console.error('[ZenaDealFlow] Error fetching pipeline:', err);
+            setError(err.message || 'Failed to fetch pipeline data');
+            addToast('error', 'Failed to update deal pipeline.');
         } finally {
             setLoading(false);
         }
-    }, [pipelineType]);
+    }, [pipelineType, addToast]);
 
     useEffect(() => {
         fetchPipeline();
@@ -505,11 +314,32 @@ export const DealFlowPage: React.FC = () => {
     };
 
     // Handle Start Zena Live
-    const handleStartZenaLive = useCallback((context: StrategySessionContext) => {
+    const handleStartZenaLive = useCallback((dealId: string) => {
+        const deal = deals.find(d => d.id === dealId);
+        if (!deal) return;
+
+        // Use analyseDeal to get heuristic intelligence if needed
+        const intelligence = analyseDeal(deal);
+        const context: StrategySessionContext = {
+            dealId: deal.id,
+            address: deal.property?.address || 'Unknown Property',
+            stage: deal.stage,
+            stageLabel: STAGE_LABELS[deal.stage] || deal.stage,
+            dealValue: deal.dealValue,
+            daysInStage: calculateDaysInStage(deal.stageEnteredAt),
+            healthScore: intelligence.healthScore || 0,
+            healthStatus: intelligence.stageHealthStatus || 'healthy',
+            primaryRisk: intelligence.riskSignals?.[0]?.description || 'No immediate risks',
+            riskType: intelligence.riskSignals?.[0]?.type || 'none',
+            coachingInsight: intelligence.coachingInsight || '',
+            suggestedAction: intelligence.suggestedPowerMove?.headline,
+            contactName: deal.contacts?.[0]?.name
+        };
+
         sessionStorage.setItem(STRATEGY_SESSION_KEY, JSON.stringify(context));
         // CRITICAL: Use liveMode=true to trigger Gemini Live voice (Aoede) instead of TTS
         navigate(`/ask-zena?greeting=strategy-session&liveMode=true&t=${Date.now()}`);
-    }, [navigate]);
+    }, [deals, navigate]);
 
     // Selection handlers
     const toggleSelection = (id: string) => {
@@ -657,11 +487,9 @@ export const DealFlowPage: React.FC = () => {
 
     // Sync/Refresh
     const handleSync = async () => {
-        setIsRefreshing(true);
         addToast('info', 'Syncing deals with Zena brain...');
         const minWait = new Promise(resolve => setTimeout(resolve, 800));
         await Promise.all([fetchPipeline(), minWait]);
-        setIsRefreshing(false);
     };
 
     // Smart Search

@@ -15,6 +15,7 @@ interface ZenaDatePickerProps {
     placeholder?: string;
     appointments?: Appointment[];
     defaultOpen?: boolean;
+    minDate?: string;
 }
 
 export const ZenaDatePicker: React.FC<ZenaDatePickerProps> = ({

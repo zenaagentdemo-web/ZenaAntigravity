@@ -21,6 +21,10 @@ export interface AutonomousAction {
     status: string;
     mode: string;
     createdAt: string;
+    contextSummary?: string;
+    reasoning?: string;
+    payload?: any;
+    script?: string;
     contact?: {
         id: string;
         name: string;

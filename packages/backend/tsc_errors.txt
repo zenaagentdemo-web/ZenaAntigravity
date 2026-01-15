@@ -1,0 +1,802 @@
+src/controllers/auth.controller.ts(183,16): error TS6133: 'req' is declared but its value is never read.
+src/controllers/communications.controller.ts(11,48): error TS6133: 'trackingId' is declared but its value is never read.
+src/controllers/connections.controller.ts(84,33): error TS6133: 'req' is declared but its value is never read.
+src/controllers/connections.controller.ts(317,30): error TS6133: 'req' is declared but its value is never read.
+src/controllers/connections.controller.ts(340,35): error TS6133: 'req' is declared but its value is never read.
+src/controllers/connections.controller.ts(491,34): error TS6133: 'req' is declared but its value is never read.
+src/controllers/connections.controller.ts(629,27): error TS6133: 'filters' is declared but its value is never read.
+src/controllers/connections.controller.ts(681,27): error TS6133: 'filters' is declared but its value is never read.
+src/controllers/contacts.controller.ts(10,1): error TS6133: 'logger' is declared but its value is never read.
+src/controllers/contacts.controller.ts(10,20): error TS2307: Cannot find module '../utils/logger.js' or its corresponding type declarations.
+src/controllers/contacts.controller.ts(1233,9): error TS2554: Expected 2 arguments, but got 3.
+src/controllers/contacts.controller.ts(1233,36): error TS2367: This comparison appears to be unintentional because the types 'string | false | ParsedQs | (string | ParsedQs)[]' and 'true' have no overlap.
+src/controllers/crm-delivery.controller.ts(133,23): error TS2561: Object literal may only specify known properties, but 'crmEmail' does not exist in type 'UserSelect<DefaultArgs>'. Did you mean to write 'crmEmails'?
+src/controllers/crm-delivery.controller.ts(136,20): error TS2551: Property 'crmEmail' does not exist on type '{ id: string; email: string; passwordHash: string; name: string; createdAt: Date; updatedAt: Date; preferences: JsonValue; fullGodEnd: Date | null; fullGodStart: Date | null; lastGodmodeScanAt: Date | null; crmType: string | null; crmEmails: JsonValue; }'. Did you mean 'crmEmails'?
+src/controllers/crm-integration.controller.ts(7,41): error TS6133: 'req' is declared but its value is never read.
+src/controllers/deals.controller.comprehensive.test.ts(1,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/controllers/deals.controller.comprehensive.test.ts(1,48): error TS6133: 'afterEach' is declared but its value is never read.
+src/controllers/deals.controller.comprehensive.test.ts(650,39): error TS2339: Property 'getRevenueForecast' does not exist on type 'DealsController'.
+src/controllers/deals.controller.ts(336,15): error TS2353: Object literal may only specify known properties, and 'contact' does not exist in type 'ContactInclude<DefaultArgs>'.
+src/controllers/deals.controller.ts(1412,11): error TS2353: Object literal may only specify known properties, and 'timelineEvents' does not exist in type 'DealInclude<DefaultArgs>'.
+src/controllers/deals.controller.ts(1424,16): error TS2339: Property 'timelineEvents' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; threadId: string | null; propertyId: string | null; stage: string; riskLevel: string; riskFlags: string[]; nextAction: string | null; ... 20 more ...; status: string; }'.
+src/controllers/deals.controller.ts(1431,31): error TS2339: Property 'timelineEvents' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; threadId: string | null; propertyId: string | null; stage: string; riskLevel: string; riskFlags: string[]; nextAction: string | null; ... 20 more ...; status: string; }'.
+src/controllers/deals.controller.ts(1432,32): error TS2339: Property 'timelineEvents' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; threadId: string | null; propertyId: string | null; stage: string; riskLevel: string; riskFlags: string[]; nextAction: string | null; ... 20 more ...; status: string; }'.
+src/controllers/deals.controller.ts(1432,51): error TS7006: Parameter 'o' implicitly has an 'any' type.
+src/controllers/deals.controller.ts(1468,11): error TS2353: Object literal may only specify known properties, and 'legalDetails' does not exist in type '(Without<DealUpdateInput, DealUncheckedUpdateInput> & DealUncheckedUpdateInput) | (Without<...> & DealUpdateInput)'.
+src/controllers/deals.controller.ts(1513,11): error TS2353: Object literal may only specify known properties, and 'depositStatus' does not exist in type '(Without<DealUpdateInput, DealUncheckedUpdateInput> & DealUncheckedUpdateInput) | (Without<...> & DealUpdateInput)'.
+src/controllers/deals.controller.ts(1665,11): error TS2353: Object literal may only specify known properties, and 'archived' does not exist in type '(Without<DealUpdateInput, DealUncheckedUpdateInput> & DealUncheckedUpdateInput) | (Without<...> & DealUpdateInput)'.
+src/controllers/geocoding.controller.ts(100,19): error TS2322: Type 'unknown' is not assignable to type 'NominatimResult[]'.
+src/controllers/godmode.controller.ts(291,45): error TS2339: Property 'runPerformanceAudit' does not exist on type 'GodmodeService'.
+src/controllers/market-data.controller.ts(33,88): error TS2554: Expected 1 arguments, but got 2.
+src/controllers/market-data.controller.ts(40,47): error TS2339: Property 'length' does not exist on type '{ comparables: ComparableSale[]; sourceUrls: string[]; targetSaleHistory?: TargetSaleHistory | undefined; }'.
+src/controllers/notification.controller.ts(134,41): error TS6133: 'req' is declared but its value is never read.
+src/controllers/properties.controller.ts(6,1): error TS6133: 'neuralScorerService' is declared but its value is never read.
+src/controllers/search.controller.ts(82,43): error TS2339: Property 'search' does not exist on type 'SearchService'.
+src/controllers/threads.controller.test.ts(101,15): error TS2739: Type '{ userId: string; }' is missing the following properties from type '{ id: string; userId: string; email: string; }': id, email
+src/controllers/threads.controller.test.ts(196,15): error TS2739: Type '{ userId: string; }' is missing the following properties from type '{ id: string; userId: string; email: string; }': id, email
+src/controllers/threads.controller.test.ts(262,15): error TS2739: Type '{ userId: string; }' is missing the following properties from type '{ id: string; userId: string; email: string; }': id, email
+src/controllers/threads.controller.test.ts(333,17): error TS2739: Type '{ userId: string; }' is missing the following properties from type '{ id: string; userId: string; email: string; }': id, email
+src/controllers/threads.controller.ts(691,42): error TS2339: Property 'summarizeThread' does not exist on type 'RecapService'.
+src/controllers/threads.controller.ts(745,17): error TS2353: Object literal may only specify known properties, and 'snoozedUntil' does not exist in type '(Without<ThreadUpdateInput, ThreadUncheckedUpdateInput> & ThreadUncheckedUpdateInput) | (Without<...> & ThreadUpdateInput)'.
+src/controllers/threads.controller.ts(760,13): error TS6133: 'id' is declared but its value is never read.
+src/index.ts(84,29): error TS6133: 'req' is declared but its value is never read.
+src/middleware/error.middleware.ts(42,3): error TS6133: 'next' is declared but its value is never read.
+src/middleware/error.middleware.ts(90,50): error TS6133: 'res' is declared but its value is never read.
+src/middleware/logging.middleware.ts(41,56): error TS6133: 'res' is declared but its value is never read.
+src/middleware/logging.middleware.ts(70,38): error TS2345: Argument of type '{ method: string; url: string; statusCode: number; duration: string; }' is not assignable to parameter of type 'Error & LogContext'.
+  Type '{ method: string; url: string; statusCode: number; duration: string; }' is missing the following properties from type 'Error': name, message
+src/middleware/performance.middleware.ts(129,39): error TS6133: 'req' is declared but its value is never read.
+src/routes/calendar.endpoints.test.ts(9,35): error TS6133: 'res' is declared but its value is never read.
+src/routes/calendar.endpoints.test.ts(13,32): error TS6133: 'res' is declared but its value is never read.
+src/routes/calendar.endpoints.test.ts(21,25): error TS6133: 'req' is declared but its value is never read.
+src/routes/calendar.endpoints.test.ts(22,32): error TS6133: 'req' is declared but its value is never read.
+src/routes/calendar.endpoints.test.ts(23,30): error TS6133: 'req' is declared but its value is never read.
+src/routes/calendar.endpoints.test.ts(24,31): error TS6133: 'req' is declared but its value is never read.
+src/routes/calendar.endpoints.test.ts(25,25): error TS6133: 'req' is declared but its value is never read.
+src/routes/calendar.endpoints.test.ts(26,25): error TS6133: 'req' is declared but its value is never read.
+src/routes/calendar.endpoints.test.ts(35,34): error TS6133: 'req' is declared but its value is never read.
+src/routes/calendar.endpoints.test.ts(36,36): error TS6133: 'req' is declared but its value is never read.
+src/routes/calendar.endpoints.test.ts(37,40): error TS6133: 'req' is declared but its value is never read.
+src/routes/contacts.endpoints.test.ts(10,22): error TS7006: Parameter 'req' implicitly has an 'any' type.
+src/routes/contacts.endpoints.test.ts(10,27): error TS6133: 'res' is declared but its value is never read.
+src/routes/contacts.endpoints.test.ts(10,27): error TS7006: Parameter 'res' implicitly has an 'any' type.
+src/routes/contacts.endpoints.test.ts(10,32): error TS7006: Parameter 'next' implicitly has an 'any' type.
+src/routes/contacts.endpoints.test.ts(24,34): error TS6133: 'req' is declared but its value is never read.
+src/routes/contacts.endpoints.test.ts(25,35): error TS6133: 'req' is declared but its value is never read.
+src/routes/contacts.routes.test.ts(20,32): error TS6133: 'vi' is declared but its value is never read.
+src/routes/contacts.routes.test.ts(210,31): error TS6133: 'hasUpdate' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(8,32): error TS6133: 'res' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(20,39): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(21,38): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(22,31): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(23,38): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(24,31): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(25,32): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(26,33): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(27,33): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(28,32): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(29,29): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(30,32): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(31,37): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(32,38): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(33,32): error TS6133: 'req' is declared but its value is never read.
+src/routes/deals.endpoints.test.ts(34,33): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(8,30): error TS6133: 'res' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(17,31): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(18,29): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(20,29): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(21,30): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(22,31): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(23,30): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(24,33): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(25,32): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(26,33): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(27,31): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(28,38): error TS6133: 'req' is declared but its value is never read.
+src/routes/inbox.endpoints.test.ts(29,38): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(8,32): error TS6133: 'res' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(20,36): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(21,30): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(22,36): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(23,34): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(24,35): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(25,37): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(26,37): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(27,40): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(28,37): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(29,41): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(30,37): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.endpoints.test.ts(31,41): error TS6133: 'req' is declared but its value is never read.
+src/routes/properties.routes.test.ts(23,32): error TS6133: 'vi' is declared but its value is never read.
+src/routes/sync.routes.ts(41,41): error TS7006: Parameter 'account' implicitly has an 'any' type.
+src/routes/sync.routes.ts(48,47): error TS7006: Parameter 'account' implicitly has an 'any' type.
+src/routes/sync.routes.ts(119,23): error TS7006: Parameter 'account' implicitly has an 'any' type.
+src/routes/sync.routes.ts(190,23): error TS7006: Parameter 'account' implicitly has an 'any' type.
+src/routes/task.routes.test.ts(9,35): error TS6133: 'res' is declared but its value is never read.
+src/routes/task.routes.test.ts(17,22): error TS6133: 'req' is declared but its value is never read.
+src/routes/task.routes.test.ts(21,24): error TS6133: 'req' is declared but its value is never read.
+src/routes/task.routes.test.ts(22,29): error TS6133: 'req' is declared but its value is never read.
+src/routes/task.routes.test.ts(23,24): error TS6133: 'req' is declared but its value is never read.
+src/routes/task.routes.test.ts(24,31): error TS6133: 'req' is declared but its value is never read.
+src/scenarios/S02_RoleCorrection.scenario.test.ts(4,1): error TS6133: 'contactCategorizationService' is declared but its value is never read.
+src/scenarios/S03_EngagementNudge.scenario.test.ts(3,1): error TS6133: 'askZenaService' is declared but its value is never read.
+src/scenarios/S03_EngagementNudge.scenario.test.ts(50,29): error TS2339: Property 'generateSuggestedActions' does not exist on type 'ZenaActionsService'.
+src/scenarios/S03_EngagementNudge.scenario.test.ts(53,49): error TS2339: Property 'generateSuggestedActions' does not exist on type 'ZenaActionsService'.
+src/scenarios/S06_DiscoverySocket.scenario.test.ts(5,1): error TS6133: 'prisma' is declared but its value is never read.
+src/scenarios/S06_DiscoverySocket.scenario.test.ts(26,51): error TS6133: 'importOriginal' is declared but its value is never read.
+src/scenarios/S100_OmniSearch.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S100_OmniSearch.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S100_ParallelTask.scenario.test.ts(26,33): error TS6133: 'context' is declared but its value is never read.
+src/scenarios/S100_ParallelTask.scenario.test.ts(59,13): error TS2345: Argument of type '{ userId: string; conversationId: string; approvalConfirmed: true; }' is not assignable to parameter of type 'ToolExecutionContext'.
+  Property 'sessionId' is missing in type '{ userId: string; conversationId: string; approvalConfirmed: true; }' but required in type 'ToolExecutionContext'.
+src/scenarios/S100_ParallelTask.scenario.test.ts(90,13): error TS2345: Argument of type '{ userId: string; conversationId: string; approvalConfirmed: true; }' is not assignable to parameter of type 'ToolExecutionContext'.
+  Property 'sessionId' is missing in type '{ userId: string; conversationId: string; approvalConfirmed: true; }' but required in type 'ToolExecutionContext'.
+src/scenarios/S101_NewListingChain.scenario.test.ts(5,1): error TS6133: 'prisma' is declared but its value is never read.
+src/scenarios/S102_ProactiveDialogue.scenario.test.ts(2,32): error TS6133: 'vi' is declared but its value is never read.
+src/scenarios/S103_AuctionMode.scenario.test.ts(1,32): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+src/scenarios/S11_SocialScrape.scenario.test.ts(23,15): error TS6133: 'socialUrl' is declared but its value is never read.
+src/scenarios/S11_SocialScrape.scenario.test.ts(27,76): error TS6133: 'userId' is declared but its value is never read.
+src/scenarios/S17_ListingCopy.scenario.test.ts(5,1): error TS6133: 'prisma' is declared but its value is never read.
+src/scenarios/S20_URLScrape.scenario.test.ts(19,15): error TS6133: 'listingUrl' is declared but its value is never read.
+src/scenarios/S23_TimelineForecast.scenario.test.ts(2,32): error TS6133: 'vi' is declared but its value is never read.
+src/scenarios/S27_SoldAutomation.scenario.test.ts(55,36): error TS2339: Property 'archiveThread' does not exist on type 'NeuralScorerService'.
+src/scenarios/S31_DealCreation.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S31_DealCreation.scenario.test.ts(5,1): error TS6133: 'prisma' is declared but its value is never read.
+src/scenarios/S32_OfferIntake.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S33_RiskAnalysis.scenario.test.ts(2,32): error TS6133: 'vi' is declared but its value is never read.
+src/scenarios/S34_LegalLinkage.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S35_FinancialHealth.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S36_Conditional.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S37_Unconditional.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S38_Conjunctional.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S38_Conjunctional.scenario.test.ts(4,1): error TS6133: 'dealFlowService' is declared but its value is never read.
+src/scenarios/S39_SaleMethod.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S40_FallThrough.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S40_FallThrough.scenario.test.ts(20,34): error TS6133: 'body' is declared but its value is never read.
+src/scenarios/S41_SettlementTracker.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S41_SettlementTracker.scenario.test.ts(4,1): error TS6133: 'dealFlowService' is declared but its value is never read.
+src/scenarios/S42_CommissionOverride.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S43_MultiOffer.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S44_ConditionWatchdog.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S47_DealStagnation.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S50_HistoricalHandover.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S51_SmartReply.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S52_ThreadLinking.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S53_InboxToTask.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S54_CalendarSync.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S55_BatchCompose.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S56_SiftSearch.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S57_VoiceToReply.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S58_InboxSummarization.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S59_ForwardingIntent.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S60_SnoozeReasoning.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S61_AttachmentScrape.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S62_PriorityOrb.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S62_PriorityOrb.scenario.test.ts(4,1): error TS6133: 'prisma' is declared but its value is never read.
+src/scenarios/S63_MultiLink.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S64_DraftCollaboration.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S65_AutoArchive.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S66_OpenHomeFeedback.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S67_CalendarClash.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S67_CalendarClash.scenario.test.ts(4,1): error TS6133: 'godmodeService' is declared but its value is never read.
+src/scenarios/S68_ProactiveCMA.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S69_WeatherInsight.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S70_TravelTime.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S71_TeamDelegation.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S72_WaitlistInvite.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S73_CalendarToContact.scenario.test.ts(2,24): error TS6133: 'expect' is declared but its value is never read.
+src/scenarios/S73_CalendarToContact.scenario.test.ts(2,32): error TS6133: 'vi' is declared but its value is never read.
+src/scenarios/S73_CalendarToContact.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S73_CalendarToContact.scenario.test.ts(3,1): error TS6133: 'Router' is declared but its value is never read.
+src/scenarios/S74_MissedSync.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S75_ProactiveAgenda.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S76_BatchApproval.scenario.test.ts(2,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/scenarios/S76_BatchApproval.scenario.test.ts(4,1): error TS6133: 'prisma' is declared but its value is never read.
+src/scenarios/S76_BatchApproval.scenario.test.ts(9,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S76_BatchApproval.scenario.test.ts(11,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S77_TaskDependency.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S77_TaskDependency.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S77_TaskDependency.scenario.test.ts(11,61): error TS6133: 'userId' is declared but its value is never read.
+src/scenarios/S77_TaskDependency.scenario.test.ts(24,23): error TS2339: Property 'unlocked' does not exist on type 'void'.
+src/scenarios/S78_OrbitalSwirl.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S78_OrbitalSwirl.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S79_BatchDefer.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S79_BatchDefer.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S80_PersonaShift.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S80_PersonaShift.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S81_RecurringLogic.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S81_RecurringLogic.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S82_PerformanceAudit.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S82_PerformanceAudit.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S82_PerformanceAudit.scenario.test.ts(22,45): error TS2339: Property 'runPerformanceAudit' does not exist on type 'GodmodeService'.
+src/scenarios/S83_CrisisPivot.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S83_CrisisPivot.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S84_TaskDelegation.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S84_TaskDelegation.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S85_CrmCleanup.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S85_CrmCleanup.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S86_IntelligencePulse.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S86_IntelligencePulse.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S87_AutonomousMode.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S87_AutonomousMode.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S88_PerformanceRecovery.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S88_PerformanceRecovery.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S89_TaskPruning.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S89_TaskPruning.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S90_IntelligenceThresholds.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S90_IntelligenceThresholds.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S91_CrmConnector.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S91_CrmConnector.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S92_BriefCustomization.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S92_BriefCustomization.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S93_PersonaVoice.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S93_PersonaVoice.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S94_OnboardingSkip.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S94_OnboardingSkip.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S95_TokenRotation.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S95_TokenRotation.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S96_OfflineSearch.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S96_OfflineSearch.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S97_DataDeletion.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S97_DataDeletion.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S97_DataDeletion.scenario.test.ts(18,42): error TS2339: Property 'deleteUserRecord' does not exist on type 'AuthService'.
+src/scenarios/S98_HealthCheck.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S98_HealthCheck.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scenarios/S99_FeedbackLoop.scenario.test.ts(8,9): error TS2698: Spread types may only be created from object types.
+src/scenarios/S99_FeedbackLoop.scenario.test.ts(10,16): error TS18046: 'original' is of type 'unknown'.
+src/scripts/test-login-endpoint.ts(2,19): error TS7016: Could not find a declaration file for module 'node-fetch'. '/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/node-fetch/lib/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/node-fetch` if it exists or add a new declaration (.d.ts) file containing `declare module 'node-fetch';`
+src/scripts/test-login-endpoint.ts(26,41): error TS18046: 'err' is of type 'unknown'.
+src/services/action-scanner.property.test.ts(67,28): error TS2339: Property 'length' does not exist on type 'ScanResult'.
+src/services/action-scanner.service.ts(130,25): error TS2322: Type '"finance_followup"' is not assignable to type 'ActionType'.
+src/services/action-scanner.service.ts(252,21): error TS2322: Type '"milestone_prep"' is not assignable to type 'ActionType'.
+src/services/action-scanner.service.ts(303,13): error TS2322: Type '"create_task"' is not assignable to type 'ActionType'.
+src/services/actions/actions.property.test.ts(1,36): error TS6133: 'beforeAll' is declared but its value is never read.
+src/services/actions/strategies/buyer-match.strategy.ts(81,37): error TS6133: 'payload' is declared but its value is never read.
+src/services/actions/strategies/generate-weekly-report.strategy.ts(4,1): error TS6133: 'timelineService' is declared but its value is never read.
+src/services/actions/strategies/generate-weekly-report.strategy.ts(86,37): error TS6133: 'payload' is declared but its value is never read.
+src/services/actions/strategies/price-reduction.strategy.ts(1,1): error TS6133: 'AutonomousAction' is declared but its value is never read.
+src/services/actions/strategies/price-reduction.strategy.ts(2,1): error TS6133: 'prisma' is declared but its value is never read.
+src/services/actions/strategies/price-reduction.strategy.ts(2,24): error TS2307: Cannot find module '../../../../prisma/client' or its corresponding type declarations.
+src/services/actions/strategies/price-reduction.strategy.ts(5,47): error TS2307: Cannot find module '../action.service' or its corresponding type declarations.
+src/services/actions/strategies/price-reduction.strategy.ts(12,22): error TS6133: 'context' is declared but its value is never read.
+src/services/actions/strategies/price-reduction.strategy.ts(24,84): error TS2554: Expected 1 arguments, but got 2.
+src/services/actions/strategies/price-reduction.strategy.ts(27,225): error TS2339: Property 'map' does not exist on type '{ comparables: ComparableSale[]; sourceUrls: string[]; targetSaleHistory?: TargetSaleHistory | undefined; }'.
+src/services/actions/strategies/price-reduction.strategy.ts(27,229): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/services/actions/strategies/schedule-viewing.strategy.ts(9,27): error TS6133: 'userId' is declared but its value is never read.
+src/services/actions/strategies/schedule-viewing.strategy.ts(64,19): error TS6133: 'actionId' is declared but its value is never read.
+src/services/actions/strategies/schedule-viewing.strategy.ts(64,37): error TS6133: 'payload' is declared but its value is never read.
+src/services/actions/types.ts(1,22): error TS6133: 'CreateActionInput' is declared but its value is never read.
+src/services/agent-orchestrator.service.ts(11,40): error TS6133: 'CurrentFocus' is declared but its value is never read.
+src/services/agent-orchestrator.service.ts(13,52): error TS6133: 'ToolExecutionResult' is declared but its value is never read.
+src/services/agent-orchestrator.service.ts(17,1): error TS6133: 'prisma' is declared but its value is never read.
+src/services/agent-orchestrator.service.ts(120,25): error TS2353: Object literal may only specify known properties, and 'isVoiceMode' does not exist in type 'ToolExecutionContext'.
+src/services/agent-orchestrator.service.ts(125,39): error TS2872: This kind of expression is always truthy.
+src/services/agent-orchestrator.service.ts(153,62): error TS2345: Argument of type '"agent.tool_call"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/agent-orchestrator.service.ts(413,9): error TS6133: 'userId' is declared but its value is never read.
+src/services/agent-orchestrator.service.ts(482,13): error TS18046: 'responseJson' is of type 'unknown'.
+src/services/agent-orchestrator.service.ts(486,30): error TS18046: 'responseJson' is of type 'unknown'.
+src/services/agent-orchestrator.service.ts(487,31): error TS18046: 'responseJson' is of type 'unknown'.
+src/services/agent-orchestrator.service.ts(492,13): error TS18046: 'responseJson' is of type 'unknown'.
+src/services/agent-orchestrator.service.ts(493,87): error TS18046: 'responseJson' is of type 'unknown'.
+src/services/agent-orchestrator.service.ts(494,55): error TS18046: 'responseJson' is of type 'unknown'.
+src/services/agent-orchestrator.service.ts(533,26): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/services/agent-orchestrator.service.ts(536,50): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/services/agent-orchestrator.service.ts(550,21): error TS2353: Object literal may only specify known properties, and 'isVoiceMode' does not exist in type 'ToolExecutionContext'.
+src/services/agent-orchestrator.service.ts(641,29): error TS2561: Object literal may only specify known properties, but 'contextScanned' does not exist in type 'Omit<PendingConfirmation, "createdAt">'. Did you mean to write 'contextScannedKey'?
+src/services/agent-orchestrator.service.ts(758,23): error TS6133: 'wasAlreadyPrompted' is declared but its value is never read.
+src/services/agent-orchestrator.service.ts(775,25): error TS2353: Object literal may only specify known properties, and 'isVoiceMode' does not exist in type 'ToolExecutionContext'.
+src/services/agent-orchestrator.service.ts(789,62): error TS2345: Argument of type '"agent.tool_call"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/agent-orchestrator.service.ts(814,33): error TS2322: Type '"system"' is not assignable to type '"user" | "assistant" | "tool"'.
+src/services/ai-processing.service.ts(3,1): error TS6133: 'contactCategorizationService' is declared but its value is never read.
+src/services/ai-processing.service.ts(349,9): error TS18046: 'data' is of type 'unknown'.
+src/services/ai-processing.service.ts(353,22): error TS18046: 'data' is of type 'unknown'.
+src/services/ai-processing.service.ts(354,23): error TS18046: 'data' is of type 'unknown'.
+src/services/ai-processing.service.ts(359,12): error TS18046: 'data' is of type 'unknown'.
+src/services/ai-processing.service.ts(1476,67): error TS2345: Argument of type '"contact.updated"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/ask-zena.service.ts(5,1): error TS6133: 'decodeHTMLEntities' is declared but its value is never read.
+src/services/ask-zena.service.ts(94,22): error TS6133: 'userId' is declared but its value is never read.
+src/services/ask-zena.service.ts(148,59): error TS6133: 'i' is declared but its value is never read.
+src/services/ask-zena.service.ts(902,77): error TS2345: Argument of type 'string[]' is not assignable to parameter of type 'string'.
+src/services/ask-zena.service.ts(1730,77): error TS6133: 'match' is declared but its value is never read.
+src/services/ask-zena.service.ts(2399,5): error TS6133: 'userId' is declared but its value is never read.
+src/services/ask-zena.service.ts(2598,5): error TS6133: 'userId' is declared but its value is never read.
+src/services/ask-zena.service.ts(2679,5): error TS6133: 'userId' is declared but its value is never read.
+src/services/ask-zena.service.ts(2874,5): error TS6133: 'userId' is declared but its value is never read.
+src/services/ask-zena.service.ts(3258,5): error TS6133: 'userId' is declared but its value is never read.
+src/services/ask-zena.service.ts(3772,15): error TS6133: 'domain' is declared but its value is never read.
+src/services/ask-zena.service.ts(3944,30): error TS6133: 'userId' is declared but its value is never read.
+src/services/audit-logger.service.ts(109,20): error TS6133: 'toolName' is declared but its value is never read.
+src/services/auth.service.ts(118,11): error TS6133: 'password' is declared but its value is never read.
+src/services/background-job.service.ts(34,54): error TS2345: Argument of type '"voice.live.system_notification"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/background-job.service.ts(45,15): error TS6133: 'answer' is declared but its value is never read.
+src/services/background-job.service.ts(57,54): error TS2345: Argument of type '"voice.live.system_notification"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/calendar-actions.property.test.ts(200,59): error TS2339: Property 'generateMorningBriefing' does not exist on type 'CalendarActionsService'.
+src/services/calendar-actions.property.test.ts(244,63): error TS2339: Property 'generateMorningBriefing' does not exist on type 'CalendarActionsService'.
+src/services/calendar-actions.service.ts(74,19): error TS6133: 'recentOpenHomes' is declared but its value is never read.
+src/services/calendar-actions.service.ts(140,39): error TS6133: 'userId' is declared but its value is never read.
+src/services/calendar-actions.service.ts(204,44): error TS6133: 'userId' is declared but its value is never read.
+src/services/calendar-actions.service.ts(342,29): error TS2353: Object literal may only specify known properties, and 'array_contains' does not exist in type 'JsonNullableListFilter<"Property">'.
+src/services/calendar-event-linking.property.test.ts(1,32): error TS6133: 'beforeEach' is declared but its value is never read.
+src/services/calendar-event-linking.property.test.ts(1,44): error TS6133: 'afterEach' is declared but its value is never read.
+src/services/calendar-event-linking.property.test.ts(681,21): error TS6133: 'property1' is declared but its value is never read.
+src/services/calendar-event-linking.property.test.ts(688,21): error TS6133: 'property2' is declared but its value is never read.
+src/services/calendar-event-linking.service.ts(301,11): error TS2353: Object literal may only specify known properties, and 'userId_entityType_entityId' does not exist in type 'TimelineEventWhereUniqueInput'.
+src/services/calendar-event-linking.service.ts(336,11): error TS2353: Object literal may only specify known properties, and 'userId_entityType_entityId' does not exist in type 'TimelineEventWhereUniqueInput'.
+src/services/calendar-event-linking.service.ts(371,11): error TS2353: Object literal may only specify known properties, and 'userId_entityType_entityId' does not exist in type 'TimelineEventWhereUniqueInput'.
+src/services/calendar-optimizer.service.property.test.ts(46,79): error TS6133: 'start' is declared but its value is never read.
+src/services/calendar-optimizer.service.property.test.ts(46,79): error TS7006: Parameter 'start' implicitly has an 'any' type.
+src/services/calendar-optimizer.service.property.test.ts(46,86): error TS7006: Parameter 'stops' implicitly has an 'any' type.
+src/services/calendar-optimizer.service.property.test.ts(48,38): error TS7006: Parameter '_' implicitly has an 'any' type.
+src/services/calendar-optimizer.service.property.test.ts(48,41): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/services/calendar-sync-engine.service.ts(98,52): error TS2345: Argument of type '{ id: string; userId: string; provider: string; lastSyncAt: Date | null; }' is not assignable to parameter of type 'CalendarSyncJob'.
+  Property 'accountId' is missing in type '{ id: string; userId: string; provider: string; lastSyncAt: Date | null; }' but required in type 'CalendarSyncJob'.
+src/services/calendar-sync-engine.service.ts(276,19): error TS18046: 'data' is of type 'unknown'.
+src/services/calendar-sync-engine.service.ts(358,19): error TS18046: 'data' is of type 'unknown'.
+src/services/calendar-sync-engine.service.ts(548,13): error TS2353: Object literal may only specify known properties, and 'userId_entityType_entityId' does not exist in type 'TimelineEventWhereUniqueInput'.
+src/services/calendar-sync-engine.service.ts(691,29): error TS2345: Argument of type '{ id: string; userId: string; provider: string; lastSyncAt: Date | null; }' is not assignable to parameter of type 'CalendarSyncJob'.
+  Property 'accountId' is missing in type '{ id: string; userId: string; provider: string; lastSyncAt: Date | null; }' but required in type 'CalendarSyncJob'.
+src/services/cloud-robot.service.ts(315,43): error TS2304: Cannot find name 'window'.
+src/services/cloud-robot.service.ts(328,93): error TS2812: Property 'value' does not exist on type 'HTMLInputElement'. Try changing the 'lib' compiler option to include 'dom'.
+src/services/cloud-robot.service.ts(395,38): error TS2339: Property 'search' does not exist on type 'SiteNavigationMap'.
+src/services/cloud-robot.service.ts(471,53): error TS2812: Property 'href' does not exist on type 'HTMLAnchorElement'. Try changing the 'lib' compiler option to include 'dom'.
+src/services/cloud-robot.service.ts(471,107): error TS2812: Property 'href' does not exist on type 'HTMLAnchorElement'. Try changing the 'lib' compiler option to include 'dom'.
+src/services/cloud-robot.service.ts(479,62): error TS18046: 'cell' is of type 'unknown'.
+src/services/cloud-robot.service.ts(487,53): error TS2812: Property 'href' does not exist on type 'HTMLAnchorElement'. Try changing the 'lib' compiler option to include 'dom'.
+src/services/cloud-robot.service.ts(592,53): error TS2812: Property 'href' does not exist on type 'HTMLAnchorElement'. Try changing the 'lib' compiler option to include 'dom'.
+src/services/cloud-robot.service.ts(605,58): error TS18046: 'cell' is of type 'unknown'.
+src/services/contact-categorization.service.ts(77,13): error TS6133: 'role' is declared but its value is never read.
+src/services/contact-categorization.service.ts(274,31): error TS6133: 'contact' is declared but its value is never read.
+src/services/contact-intelligence.service.ts(107,21): error TS2322: Type '{ brief: ContactAnalysis; lastDeepAnalysisAt: string; }' is not assignable to type 'NullableJsonNullValueInput | InputJsonValue | undefined'.
+  Types of property 'brief' are incompatible.
+    Type 'ContactAnalysis' is not assignable to type 'InputJsonValue | null | undefined'.
+      Type 'ContactAnalysis' is not assignable to type 'InputJsonObject'.
+        Index signature for type 'string' is missing in type 'ContactAnalysis'.
+src/services/contact-intelligence.service.ts(119,89): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/contacts-actions.property.test.ts(1,53): error TS6133: 'vi' is declared but its value is never read.
+src/services/contacts-actions.property.test.ts(4,1): error TS6133: 'askZenaService' is declared but its value is never read.
+src/services/contacts-actions.property.test.ts(457,33): error TS2322: Type 'string' is not assignable to type 'ZenaCategory | EnumZenaCategoryFieldUpdateOperationsInput | undefined'.
+src/services/contacts-intelligence.property.test.ts(332,33): error TS2322: Type 'string' is not assignable to type 'ZenaCategory | undefined'.
+src/services/contacts-intelligence.property.test.ts(343,36): error TS18047: 'retrieved' is possibly 'null'.
+src/services/contacts-intelligence.property.test.ts(344,36): error TS18047: 'retrieved' is possibly 'null'.
+src/services/contacts-intelligence.property.test.ts(431,33): error TS2322: Type 'string' is not assignable to type 'ZenaCategory | EnumZenaCategoryFilter<"Contact"> | undefined'.
+src/services/contacts-intelligence.property.test.ts(547,31): error TS6133: 'prediction' is declared but its value is never read.
+src/services/contacts-intelligence.test.ts(2,1): error TS6192: All imports in import declaration are unused.
+src/services/contacts-intelligence.test.ts(116,88): error TS2345: Argument of type '{ id: string; name: string; role: string; engagementScore: number; }' is not assignable to parameter of type '{ id: string; name: string; role: string; engagementScore: number; momentum: number; dealStage?: string | undefined; intelligenceSnippet?: string | undefined; lastActivityDetail?: string | undefined; }'.
+  Property 'momentum' is missing in type '{ id: string; name: string; role: string; engagementScore: number; }' but required in type '{ id: string; name: string; role: string; engagementScore: number; momentum: number; dealStage?: string | undefined; intelligenceSnippet?: string | undefined; lastActivityDetail?: string | undefined; }'.
+src/services/contacts-intelligence.test.ts(177,9): error TS6133: 'testContactId' is declared but its value is never read.
+src/services/context-retriever.service.ts(70,70): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/context-retriever.service.ts(161,15): error TS6133: 'voiceNotes' is declared but its value is never read.
+src/services/crm-delivery.service.ts(170,52): error TS6133: 'crmType' is declared but its value is never read.
+src/services/crm-delivery.service.ts(197,54): error TS6133: 'crmType' is declared but its value is never read.
+src/services/crm-integration.property.test.ts(1,32): error TS6133: 'beforeEach' is declared but its value is never read.
+src/services/crm-integration.service.ts(109,11): error TS2322: Type 'CRMSyncConfig' is not assignable to type 'JsonNull | InputJsonValue | undefined'.
+  Type 'CRMSyncConfig' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'CRMSyncConfig'.
+src/services/crm-integration.service.ts(122,9): error TS2322: Type 'CRMSyncConfig' is not assignable to type 'JsonNull | InputJsonValue'.
+  Type 'CRMSyncConfig' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'CRMSyncConfig'.
+src/services/crm-integration.service.ts(180,24): error TS2352: Conversion of type 'string | number | boolean | JsonObject | JsonArray | null' to type 'CRMSyncConfig' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'JsonValue[]' is missing the following properties from type 'CRMSyncConfig': syncContacts, syncProperties, syncDeals, syncDirection
+src/services/crm-integration.service.ts(363,12): error TS18046: 'result' is of type 'unknown'.
+src/services/crm-integration.service.ts(383,12): error TS18046: 'result' is of type 'unknown'.
+src/services/crm-integration.service.ts(403,12): error TS18046: 'result' is of type 'unknown'.
+src/services/crm-integration.service.ts(441,12): error TS18046: 'results' is of type 'unknown'.
+src/services/crm-integration.service.ts(441,33): error TS18046: 'results' is of type 'unknown'.
+src/services/deal-flow.property.test.ts(307,25): error TS6133: 'stage' is declared but its value is never read.
+src/services/deal-flow.service.ts(394,21): error TS2353: Object literal may only specify known properties, and 'priority' does not exist in type 'Without<TaskCreateInput, TaskUncheckedCreateInput> & TaskUncheckedCreateInput'.
+src/services/deal-flow.service.unit.test.ts(1,32): error TS6133: 'vi' is declared but its value is never read.
+src/services/deal-flow.service.unit.test.ts(1,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/services/deal-intelligence.service.ts(2,1): error TS6192: All imports in import declaration are unused.
+src/services/deal-intelligence.service.ts(49,52): error TS2339: Property 'payload' does not exist on type '{ id: string; userId: string; status: string; type: string; dealId: string; output: string; triggeredAt: Date; executedAt: Date | null; dismissedAt: Date | null; }'.
+src/services/deal-intelligence.service.ts(51,42): error TS2339: Property 'payload' does not exist on type '{ id: string; userId: string; status: string; type: string; dealId: string; output: string; triggeredAt: Date; executedAt: Date | null; dismissedAt: Date | null; }'.
+src/services/deal-intelligence.service.ts(151,21): error TS2353: Object literal may only specify known properties, and 'payload' does not exist in type 'Without<ZenaActionCreateInput, ZenaActionUncheckedCreateInput> & ZenaActionUncheckedCreateInput'.
+src/services/deal-intelligence.service.ts(161,80): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/deal-scheduler.service.ts(455,13): error TS6133: 'getPriority' is declared but its value is never read.
+src/services/drive-mode.service.ts(2,1): error TS6192: All imports in import declaration are unused.
+src/services/drive-mode.service.ts(84,39): error TS6133: 'userId' is declared but its value is never read.
+src/services/email-account.service.test.ts(169,11): error TS2345: Argument of type '(userId: string, accountConfigs: { provider: string; email: string; }[]) => Promise<void>' is not assignable to parameter of type '(userId: string, accountConfigs: { provider: string; email: string; }[]) => boolean | void'.
+  Type 'Promise<void>' is not assignable to type 'boolean | void'.
+src/services/email-account.service.test.ts(219,11): error TS2345: Argument of type '(userId: string, provider: string, email: string, token1: string, token2: string) => Promise<void>' is not assignable to parameter of type '(userId: string, provider: string, email: string, token1: string, token2: string) => boolean | void'.
+  Type 'Promise<void>' is not assignable to type 'boolean | void'.
+src/services/email-account.service.test.ts(303,11): error TS2345: Argument of type '(userId: string, gmailEmail: string, microsoftEmail: string) => Promise<void>' is not assignable to parameter of type '(userId: string, gmailEmail: string, microsoftEmail: string) => boolean | void'.
+  Type 'Promise<void>' is not assignable to type 'boolean | void'.
+src/services/email-account.service.test.ts(367,11): error TS2345: Argument of type '(userId: string, accountConfigs: { id: string; provider: string; email: string; }[]) => Promise<void>' is not assignable to parameter of type '(userId: string, accountConfigs: { id: string; provider: string; email: string; }[]) => boolean | void'.
+  Type 'Promise<void>' is not assignable to type 'boolean | void'.
+src/services/email-triage.service.test.ts(1,44): error TS6133: 'afterEach' is declared but its value is never read.
+src/services/email-triage.service.test.ts(105,37): error TS6133: 'triageAiResponse' is declared but its value is never read.
+src/services/email-triage.service.ts(98,32): error TS6133: 'userId' is declared but its value is never read.
+src/services/email-triage.service.ts(160,92): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/email-triage.service.ts(168,40): error TS6133: 'userId' is declared but its value is never read.
+src/services/export.service.ts(28,35): error TS6133: 'recordIds' is declared but its value is never read.
+src/services/export.service.ts(175,44): error TS6133: 'address' is declared but its value is never read.
+src/services/export.service.ts(579,45): error TS6133: 'content' is declared but its value is never read.
+src/services/export.service.ts(579,62): error TS6133: 'format' is declared but its value is never read.
+src/services/godmode-scheduler.service.ts(5,7): error TS6133: 'SCAN_INTERVAL_MS' is declared but its value is never read.
+src/services/godmode-scheduler.service.ts(40,19): error TS6133: 'runScan' is declared but its value is never read.
+src/services/godmode.service.ts(772,31): error TS2339: Property 'recordEvent' does not exist on type 'TimelineService'.
+src/services/godmode.service.ts(808,17): error TS2353: Object literal may only specify known properties, and 'title' does not exist in type 'Without<TaskCreateInput, TaskUncheckedCreateInput> & TaskUncheckedCreateInput'.
+src/services/imap-connector.service.ts(8,1): error TS6133: 'inspect' is declared but its value is never read.
+src/services/imap-connector.service.ts(93,43): error TS6133: 'box' is declared but its value is never read.
+src/services/imap-connector.service.ts(125,39): error TS6133: 'info' is declared but its value is never read.
+src/services/imap-connector.service.ts(126,30): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(source: Source, callback: (err: any, mail: ParsedMail) => void): void', gave the following error.
+    Argument of type 'ReadableStream' is not assignable to parameter of type 'Source'.
+      Property 'compose' is missing in type 'ReadableStream' but required in type 'Stream'.
+  Overload 2 of 3, '(source: Source, options?: MailParserOptions | undefined): Promise<ParsedMail>', gave the following error.
+    Argument of type 'ReadableStream' is not assignable to parameter of type 'Source'.
+      Property 'compose' is missing in type 'ReadableStream' but required in type 'Stream'.
+src/services/imap-connector.service.ts(189,7): error TS2322: Type 'string | string[] | undefined' is not assignable to type 'string[] | undefined'.
+  Type 'string' is not assignable to type 'string[]'.
+src/services/imap-connector.service.ts(259,17): error TS6133: 'subject' is declared but its value is never read.
+src/services/imap-connector.service.ts(316,11): error TS6133: 'stripHtml' is declared but its value is never read.
+src/services/imap.service.ts(88,5): error TS6133: 'config' is declared but its value is never read.
+src/services/imap.service.ts(101,5): error TS6133: 'config' is declared but its value is never read.
+src/services/imap.service.ts(104,5): error TS6133: 'body' is declared but its value is never read.
+src/services/inbox-actions.service.ts(12,26): error TS6133: 'GodmodeMode' is declared but its value is never read.
+src/services/inbox-actions.service.ts(111,17): error TS2353: Object literal may only specify known properties, and 'archivedAt' does not exist in type 'ThreadWhereInput'.
+src/services/inbox-actions.service.ts(207,17): error TS2353: Object literal may only specify known properties, and 'archivedAt' does not exist in type 'ThreadWhereInput'.
+src/services/intelligence-heartbeat.service.ts(70,97): error TS2554: Expected 2 arguments, but got 3.
+src/services/intelligence-simulator.service.ts(12,1): error TS6133: 'calendarActionsService' is declared but its value is never read.
+src/services/intelligence-simulator.service.ts(13,1): error TS6133: 'pdfGenerationService' is declared but its value is never read.
+src/services/intelligence-simulator.service.ts(14,1): error TS6192: All imports in import declaration are unused.
+src/services/intelligence-simulator.service.ts(14,10): error TS2305: Module '"../models/types.js"' has no exported member 'ActionType'.
+src/services/intelligence-simulator.service.ts(14,22): error TS2305: Module '"../models/types.js"' has no exported member 'GodmodeMode'.
+src/services/intelligent-navigator.service.ts(10,1): error TS6133: 'prisma' is declared but its value is never read.
+src/services/intelligent-navigator.service.ts(95,36): error TS2304: Cannot find name 'siteDiscoveryService'.
+src/services/intelligent-navigator.service.ts(114,23): error TS2304: Cannot find name 'siteDiscoveryService'.
+src/services/intelligent-navigator.service.ts(123,32): error TS2304: Cannot find name 'siteDiscoveryService'.
+src/services/intelligent-navigator.service.ts(127,25): error TS2304: Cannot find name 'siteNavigationMapService'.
+src/services/intelligent-navigator.service.ts(258,18): error TS2678: Type '"report"' is not comparable to type '"filter" | "search" | "count" | "list" | "details" | "unknown"'.
+src/services/intelligent-navigator.service.ts(273,21): error TS2304: Cannot find name 'LearnedPath'.
+src/services/intelligent-navigator.service.ts(332,21): error TS2304: Cannot find name 'LearnedPath'.
+src/services/intelligent-navigator.service.ts(376,49): error TS2304: Cannot find name 'NavigationStep'.
+src/services/intelligent-navigator.service.ts(416,57): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/services/intelligent-navigator.service.ts(459,62): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/services/intelligent-navigator.service.ts(534,65): error TS2812: Property 'href' does not exist on type 'HTMLAnchorElement'. Try changing the 'lib' compiler option to include 'dom'.
+src/services/intelligent-navigator.service.ts(559,21): error TS2554: Expected 2 arguments, but got 1.
+src/services/intelligent-navigator.service.ts(802,52): error TS2584: Cannot find name 'document'. Do you need to change your target library? Try changing the 'lib' compiler option to include 'dom'.
+src/services/intelligent-navigator.service.ts(804,29): error TS2571: Object is of type 'unknown'.
+src/services/intelligent-navigator.service.ts(805,29): error TS2571: Object is of type 'unknown'.
+src/services/intelligent-navigator.service.ts(806,29): error TS2571: Object is of type 'unknown'.
+src/services/intelligent-navigator.service.ts(807,29): error TS2571: Object is of type 'unknown'.
+src/services/journey.service.ts(59,37): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(79,31): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(93,41): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(105,36): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(117,33): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(132,35): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(144,32): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(156,27): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(167,30): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(242,30): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(254,38): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(265,34): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(290,35): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(302,35): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(302,68): error TS6133: 'propertyId' is declared but its value is never read.
+src/services/journey.service.ts(327,30): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(327,66): error TS6133: 'dealId' is declared but its value is never read.
+src/services/journey.service.ts(341,25): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(356,30): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(368,32): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(380,32): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(392,33): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(403,32): error TS6133: 'userId' is declared but its value is never read.
+src/services/journey.service.ts(414,34): error TS6133: 'userId' is declared but its value is never read.
+src/services/live-search.service.ts(60,17): error TS18046: 'data' is of type 'unknown'.
+src/services/live-search.service.ts(64,34): error TS18046: 'data' is of type 'unknown'.
+src/services/live-search.service.ts(65,35): error TS18046: 'data' is of type 'unknown'.
+src/services/live-search.service.ts(70,25): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(181,17): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(185,34): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(186,35): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(190,29): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(213,17): error TS2322: Type 'number | null' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/services/market-scraper.service.ts(214,17): error TS2322: Type 'number | null' is not assignable to type 'number | undefined'.
+  Type 'null' is not assignable to type 'number | undefined'.
+src/services/market-scraper.service.ts(298,17): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(302,34): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(303,35): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(308,29): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(344,13): error TS6133: 'sanitizeHtml' is declared but its value is never read.
+src/services/market-scraper.service.ts(484,17): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(488,34): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(489,35): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(494,26): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(657,19): error TS6133: 'extractPropertyDetailsWithGemini' is declared but its value is never read.
+src/services/market-scraper.service.ts(726,26): error TS18046: 'data' is of type 'unknown'.
+src/services/market-scraper.service.ts(747,19): error TS6133: 'fetchPropertyDetailsPage' is declared but its value is never read.
+src/services/mcp-bridge.service.ts(29,21): error TS2353: Object literal may only specify known properties, and 'tools' does not exist in type '{ experimental?: { [x: string]: object; } | undefined; sampling?: { context?: object | undefined; tools?: object | undefined; } | undefined; elicitation?: { [x: string]: unknown; form?: { [x: string]: unknown; applyDefaults?: boolean | undefined; } | undefined; url?: object | undefined; } | undefined; roots?: { ...;...'.
+src/services/mcp-bridge.service.ts(51,43): error TS6133: 'context' is declared but its value is never read.
+src/services/mcp-bridge.service.ts(73,77): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/mcp-bridge.service.ts(93,75): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/microsoft-connector.service.ts(111,12): error TS18046: 'data' is of type 'unknown'.
+src/services/morning-brief.property.test.ts(4,31): error TS6133: 'MorningBriefContact' is declared but its value is never read.
+src/services/morning-brief.property.test.ts(4,52): error TS6133: 'MorningBriefEmail' is declared but its value is never read.
+src/services/morning-brief.property.test.ts(4,71): error TS6133: 'AwaitingReply' is declared but its value is never read.
+src/services/morning-brief.service.ts(659,85): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/morning-brief.service.ts(668,9): error TS6133: 'contactCount' is declared but its value is never read.
+src/services/multimodal-live.service.ts(13,20): error TS6133: 'UserSession' is declared but its value is never read.
+src/services/multimodal-live.service.ts(15,1): error TS6133: 'askZenaService' is declared but its value is never read.
+src/services/multimodal-live.service.ts(615,78): error TS2345: Argument of type 'ZenaToolDefinition<any, any>' is not assignable to parameter of type 'string'.
+src/services/multimodal-live.service.ts(670,15): error TS6133: 'fields' is declared but its value is never read.
+src/services/navigation-planner.service.ts(13,5): error TS6133: 'ActionSequence' is declared but its value is never read.
+src/services/navigation-planner.service.ts(150,72): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/navigation-planner.service.ts(401,29): error TS6133: 'fieldName' is declared but its value is never read.
+src/services/navigation-planner.service.ts(409,17): error TS2739: Type '{ steps: NavAction[]; }' is missing the following properties from type 'ActionSequence': name, description
+src/services/navigation-planner.service.ts(469,21): error TS6133: 'fieldName' is declared but its value is never read.
+src/services/neural-stress-test.integration.test.ts(1,32): error TS6133: 'vi' is declared but its value is never read.
+src/services/neural-stress-test.integration.test.ts(1,48): error TS6133: 'afterAll' is declared but its value is never read.
+src/services/neural-stress-test.integration.test.ts(145,48): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'AutonomousActionWhereInput'.
+src/services/nurture.service.ts(272,19): error TS6133: 'scheduleItem' is declared but its value is never read.
+src/services/oracle.service.ts(13,1): error TS6133: 'askZenaService' is declared but its value is never read.
+src/services/oracle.service.ts(76,22): error TS2352: Conversion of type 'string | number | boolean | JsonObject | JsonArray | null' to type 'PropensitySignal[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'JsonArray' is not comparable to type 'PropensitySignal[]'.
+    Type 'JsonValue' is not comparable to type 'PropensitySignal'.
+      Type 'JsonValue[]' is missing the following properties from type 'PropensitySignal': type, weight, source, detectedAt
+src/services/oracle.service.ts(77,22): error TS2352: Conversion of type 'string | number | boolean | JsonObject | JsonArray | null' to type 'PropensitySignal[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'JsonArray' is not comparable to type 'PropensitySignal[]'.
+    Type 'JsonValue' is not comparable to type 'PropensitySignal'.
+      Type 'JsonValue[]' is missing the following properties from type 'PropensitySignal': type, weight, source, detectedAt
+src/services/oracle.service.ts(197,15): error TS6133: 'savedPrediction' is declared but its value is never read.
+src/services/oracle.service.ts(212,17): error TS2322: Type 'PropensitySignal[]' is not assignable to type 'NullableJsonNullValueInput | InputJsonValue | undefined'.
+  Type 'PropensitySignal[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'PropensitySignal[]'.
+src/services/oracle.service.ts(215,17): error TS2322: Type 'PropensitySignal[]' is not assignable to type 'NullableJsonNullValueInput | InputJsonValue | undefined'.
+  Type 'PropensitySignal[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'PropensitySignal[]'.
+src/services/oracle.service.ts(229,17): error TS2322: Type 'PropensitySignal[]' is not assignable to type 'NullableJsonNullValueInput | InputJsonValue | undefined'.
+  Type 'PropensitySignal[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'PropensitySignal[]'.
+src/services/oracle.service.ts(232,17): error TS2322: Type 'PropensitySignal[]' is not assignable to type 'NullableJsonNullValueInput | InputJsonValue | undefined'.
+  Type 'PropensitySignal[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'PropensitySignal[]'.
+src/services/oracle.service.ts(259,66): error TS6133: 'emailContent' is declared but its value is never read.
+src/services/oracle.service.ts(289,15): error TS6133: 'markers' is declared but its value is never read.
+src/services/oracle.service.ts(560,22): error TS18046: 'data' is of type 'unknown'.
+src/services/oracle.service.ts(642,22): error TS18046: 'data' is of type 'unknown'.
+src/services/pdf-generation.property.test.ts(2,1): error TS6133: 'fc' is declared but its value is never read.
+src/services/pdf-generation.property.test.ts(28,32): error TS6133: 'PDFReportResult' is declared but its value is never read.
+src/services/pdf-generation.service.ts(98,21): error TS2353: Object literal may only specify known properties, and 'milestones' does not exist in type 'PropertyInclude<DefaultArgs>'.
+src/services/pdf-generation.service.ts(108,27): error TS2353: Object literal may only specify known properties, and 'displayName' does not exist in type 'UserSelect<DefaultArgs>'.
+src/services/pdf-generation.service.ts(112,41): error TS2339: Property 'vendors' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/pdf-generation.service.ts(137,34): error TS2339: Property 'displayName' does not exist on type '{ id: string; email: string; passwordHash: string; name: string; createdAt: Date; updatedAt: Date; preferences: JsonValue; fullGodEnd: Date | null; fullGodStart: Date | null; lastGodmodeScanAt: Date | null; crmType: string | null; crmEmails: JsonValue; }'.
+src/services/pdf-generation.service.ts(166,28): error TS2353: Object literal may only specify known properties, and 'milestones' does not exist in type 'PropertyInclude<DefaultArgs>'.
+src/services/pdf-generation.service.ts(175,27): error TS2353: Object literal may only specify known properties, and 'displayName' does not exist in type 'UserSelect<DefaultArgs>'.
+src/services/pdf-generation.service.ts(180,90): error TS2339: Property 'propertyType' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/pdf-generation.service.ts(193,39): error TS2339: Property 'askingPrice' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/pdf-generation.service.ts(193,66): error TS2339: Property 'askingPrice' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/pdf-generation.service.ts(194,40): error TS2339: Property 'propertyType' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/pdf-generation.service.ts(197,36): error TS2339: Property 'landArea' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/pdf-generation.service.ts(197,59): error TS2339: Property 'landArea' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/pdf-generation.service.ts(198,37): error TS2339: Property 'floorArea' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/pdf-generation.service.ts(198,61): error TS2339: Property 'floorArea' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/pdf-generation.service.ts(201,35): error TS18047: 'm' is possibly 'null'.
+src/services/pdf-generation.service.ts(201,37): error TS2339: Property 'type' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'type' does not exist on type 'string'.
+src/services/pdf-generation.service.ts(203,40): error TS18047: 'm' is possibly 'null'.
+src/services/pdf-generation.service.ts(203,42): error TS2339: Property 'date' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'date' does not exist on type 'string'.
+src/services/pdf-generation.service.ts(208,34): error TS2339: Property 'displayName' does not exist on type '{ id: string; email: string; passwordHash: string; name: string; createdAt: Date; updatedAt: Date; preferences: JsonValue; fullGodEnd: Date | null; fullGodStart: Date | null; lastGodmodeScanAt: Date | null; crmType: string | null; crmEmails: JsonValue; }'.
+src/services/pdf-generation.service.ts(229,43): error TS6133: 'userId' is declared but its value is never read.
+src/services/pdf-generation.service.ts(246,36): error TS2339: Property 'propertyType' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/pdf-generation.service.ts(249,40): error TS2339: Property 'landArea' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/pdf-generation.service.ts(249,63): error TS2339: Property 'landArea' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; status: string; address: string; milestones: JsonValue[]; riskOverview: string | null; bathrooms: number | null; ... 12 more ...; lastCrmExportAt: Date | null; }'.
+src/services/personality-markers.service.ts(178,39): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; max: number; } | { min: number; max: number; } | { min: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/personality-markers.service.ts(178,102): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; max: number; } | { min: number; max: number; } | { min: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/personality-markers.service.ts(182,39): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; max: number; } | { min: number; max: number; } | { min: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(182,102): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; max: number; } | { min: number; max: number; } | { min: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(188,32): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; } | { min: number; } | { min: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/personality-markers.service.ts(188,79): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; } | { min: number; } | { min: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/personality-markers.service.ts(192,32): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; } | { min: number; } | { min: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(192,79): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; } | { min: number; } | { min: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(198,38): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; } | { max: number; } | { max: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(198,99): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; } | { max: number; } | { max: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(202,38): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; } | { max: number; } | { max: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/personality-markers.service.ts(202,99): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; } | { max: number; } | { max: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/portfolio-intelligence.service.ts(23,63): error TS6133: 'forceRefresh' is declared but its value is never read.
+src/services/portfolio-intelligence.service.ts(107,92): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/portfolio-intelligence.service.ts(202,70): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/proactive-context.service.ts(41,9): error TS6133: 'intent' is declared but its value is never read.
+src/services/proactive-context.service.ts(99,67): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/proactive-context.service.ts(427,9): error TS6133: 'entityType' is declared but its value is never read.
+src/services/proactive-context.service.ts(446,51): error TS6133: 'entityType' is declared but its value is never read.
+src/services/property-intelligence.service.ts(110,40): error TS2352: Conversion of type 'string | number | boolean | JsonObject | JsonArray | null' to type 'SuggestedAction[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'JsonArray' is not comparable to type 'SuggestedAction[]'.
+    Type 'JsonValue' is not comparable to type 'SuggestedAction'.
+      Type 'JsonValue[]' is missing the following properties from type 'SuggestedAction': action, reasoning, impact
+src/services/property-intelligence.service.ts(231,17): error TS2322: Type 'SuggestedAction[]' is not assignable to type 'NullableJsonNullValueInput | InputJsonValue | undefined'.
+  Type 'SuggestedAction[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'SuggestedAction[]'.
+src/services/property-intelligence.service.ts(242,17): error TS2322: Type 'SuggestedAction[]' is not assignable to type 'NullableJsonNullValueInput | InputJsonValue | undefined'.
+  Type 'SuggestedAction[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'SuggestedAction[]'.
+src/services/property-intelligence.service.ts(276,13): error TS2322: Type 'string[]' is not assignable to type 'SuggestedAction[]'.
+  Type 'string' is not assignable to type 'SuggestedAction'.
+src/services/property-intelligence.service.ts(407,63): error TS2345: Argument of type 'string' is not assignable to parameter of type 'Error'.
+src/services/property-intelligence.service.ts(457,63): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/property-intelligence.service.ts(640,50): error TS2345: Argument of type '"market_pulse.update"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/property-intelligence.service.ts(727,78): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'LogContext | undefined'.
+src/services/property-intelligence.service.ts(739,50): error TS2345: Argument of type '"market_pulse.update"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/property-intelligence.service.ts(802,67): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'LogContext | undefined'.
+src/services/property-intelligence.service.ts(893,70): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/property-intelligence.service.ts(1017,63): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/property-intelligence.service.ts(1152,72): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/property-intelligence.service.ts(1161,23): error TS6133: 'targetAddress' is declared but its value is never read.
+src/services/property-intelligence.service.ts(1202,42): error TS6133: 'marketAvg' is declared but its value is never read.
+src/services/recap.service.ts(341,75): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/reminder-scheduler.service.ts(99,35): error TS2353: Object literal may only specify known properties, and 'not' does not exist in type 'JsonNullableListFilter<"Property">'.
+src/services/rigorous-rig.integration.test.ts(11,1): error TS6133: 'godmodeService' is declared but its value is never read.
+src/services/risk-analysis.service.test.ts(386,60): error TS2345: Argument of type '({ where }: any) => Promise<any>' is not assignable to parameter of type '(args: { select?: DealSelect<DefaultArgs> | null | undefined; include?: DealInclude<DefaultArgs> | null | undefined; where: DealWhereUniqueInput; }) => Prisma__DealClient<...>'.
+  Type 'Promise<any>' is missing the following properties from type 'Prisma__DealClient<{ id: string; createdAt: Date; updatedAt: Date; userId: string; threadId: string | null; propertyId: string | null; stage: string; riskLevel: string; riskFlags: string[]; nextAction: string | null; ... 20 more ...; status: string; } | null, null, DefaultArgs>': commissionFormula, property, user, nurtureSequences, and 4 more.
+src/services/risk-analysis.service.test.ts(389,56): error TS2345: Argument of type '({ where }: any) => Promise<any>' is not assignable to parameter of type '(args: { select?: DealSelect<DefaultArgs> | null | undefined; include?: DealInclude<DefaultArgs> | null | undefined; data: (Without<...> & DealUncheckedUpdateInput) | (Without<...> & DealUpdateInput); where: DealWhereUniqueInput; }) => Prisma__DealClient<...>'.
+  Type 'Promise<any>' is missing the following properties from type 'Prisma__DealClient<{ id: string; createdAt: Date; updatedAt: Date; userId: string; threadId: string | null; propertyId: string | null; stage: string; riskLevel: string; riskFlags: string[]; nextAction: string | null; ... 20 more ...; status: string; }, never, DefaultArgs>': commissionFormula, property, user, nurtureSequences, and 4 more.
+src/services/risk-analysis.service.test.ts(421,62): error TS2345: Argument of type '({ where }: any) => Promise<any>' is not assignable to parameter of type '(args: { select?: ThreadSelect<DefaultArgs> | null | undefined; include?: ThreadInclude<DefaultArgs> | null | undefined; where: ThreadWhereUniqueInput; }) => Prisma__ThreadClient<...>'.
+  Type 'Promise<any>' is missing the following properties from type 'Prisma__ThreadClient<{ id: string; createdAt: Date; updatedAt: Date; userId: string; emailAccountId: string; propertyId: string | null; stage: string | null; riskLevel: string; nextAction: string | null; ... 11 more ...; draftResponse: string | null; } | null, null, DefaultArgs>': messages, deal, emailAccount, property, user
+src/services/risk-analysis.service.test.ts(424,58): error TS2345: Argument of type '({ where }: any) => Promise<any>' is not assignable to parameter of type '(args: { select?: ThreadSelect<DefaultArgs> | null | undefined; include?: ThreadInclude<DefaultArgs> | null | undefined; data: (Without<...> & ThreadUncheckedUpdateInput) | (Without<...> & ThreadUpdateInput); where: ThreadWhereUniqueInput; }) => Prisma__ThreadClient<...>'.
+  Type 'Promise<any>' is missing the following properties from type 'Prisma__ThreadClient<{ id: string; createdAt: Date; updatedAt: Date; userId: string; emailAccountId: string; propertyId: string | null; stage: string | null; riskLevel: string; nextAction: string | null; ... 11 more ...; draftResponse: string | null; }, never, DefaultArgs>': messages, deal, emailAccount, property, user
+src/services/risk-analysis.service.ts(185,36): error TS6133: 'id' is declared but its value is never read.
+src/services/roleplay.scenarios.ts(16,9): error TS2741: Property 'ownerId' is missing in type '{ id: string; address: string; listingPrice: number; status: "listing"; }' but required in type 'PropertyDefinition'.
+src/services/roleplay.scenarios.ts(51,78): error TS2322: Type '"other"' is not assignable to type '"buyer" | "vendor" | "agent"'.
+src/services/roleplay.scenarios.ts(97,9): error TS2741: Property 'ownerId' is missing in type '{ id: string; address: string; listingPrice: number; status: "listing"; }' but required in type 'PropertyDefinition'.
+src/services/roleplay.scenarios.ts(130,9): error TS2741: Property 'ownerId' is missing in type '{ id: string; address: string; listingPrice: number; status: "listing"; }' but required in type 'PropertyDefinition'.
+src/services/search.property.test.ts(60,56): error TS2339: Property 'search' does not exist on type 'SearchService'.
+src/services/search.property.test.ts(61,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/services/search.property.test.ts(64,57): error TS2339: Property 'search' does not exist on type 'SearchService'.
+src/services/search.property.test.ts(65,41): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/services/search.property.test.ts(88,49): error TS2339: Property 'search' does not exist on type 'SearchService'.
+src/services/search.property.test.ts(89,33): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/services/settings.service.ts(10,29): error TS2339: Property 'userSettings' does not exist on type 'PrismaClient<{ log: ("query" | "warn" | "error")[]; }, never, DefaultArgs>'.
+src/services/settings.service.ts(27,28): error TS6133: 'userId' is declared but its value is never read.
+src/services/site-discovery.service.ts(307,33): error TS2304: Cannot find name 'prompt'.
+src/services/site-discovery.service.ts(424,33): error TS2584: Cannot find name 'document'. Do you need to change your target library? Try changing the 'lib' compiler option to include 'dom'.
+src/services/site-discovery.service.ts(426,33): error TS7006: Parameter 'el' implicitly has an 'any' type.
+src/services/site-discovery.service.ts(427,56): error TS2812: Property 'href' does not exist on type 'HTMLAnchorElement'. Try changing the 'lib' compiler option to include 'dom'.
+src/services/site-discovery.service.ts(435,37): error TS2304: Cannot find name 'window'.
+src/services/site-discovery.service.ts(490,36): error TS6133: 'page' is declared but its value is never read.
+src/services/site-discovery.service.ts(600,24): error TS2352: Conversion of type 'string | number | boolean | JsonObject | JsonArray | null' to type 'NavigationStep[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'JsonArray' is not comparable to type 'NavigationStep[]'.
+    Type 'JsonValue' is not comparable to type 'NavigationStep'.
+      Type 'JsonValue[]' is missing the following properties from type 'NavigationStep': action, description
+src/services/site-navigation-maps.ts(91,13): error TS2561: Object literal may only specify known properties, but 'resultLinkSelector' does not exist in type 'SearchConfig'. Did you mean to write 'resultItemSelector'?
+src/services/site-navigation-maps.ts(108,13): error TS2739: Type '{ steps: ({ type: "wait"; waitFor: string; timeout: number; } | { type: "click"; selector: string; } | { type: "type"; selector: string; value: string; } | { type: "submit"; selector: string; })[]; }' is missing the following properties from type 'ActionSequence': name, description
+src/services/site-navigation-maps.ts(117,13): error TS2739: Type '{ steps: ({ type: "navigate"; url: string; } | { type: "wait"; waitFor: string; timeout: number; } | { type: "type"; selector: string; value: string; } | { type: "click"; selector: string; })[]; }' is missing the following properties from type 'ActionSequence': name, description
+src/services/site-navigation-maps.ts(212,13): error TS2561: Object literal may only specify known properties, but 'resultLinkSelector' does not exist in type 'SearchConfig'. Did you mean to write 'resultItemSelector'?
+src/services/site-navigation-maps.ts(275,13): error TS2561: Object literal may only specify known properties, but 'resultLinkSelector' does not exist in type 'SearchConfig'. Did you mean to write 'resultItemSelector'?
+src/services/site-navigation-maps.ts(294,5): error TS2741: Property 'searchProperties' is missing in type '{ searchProperty: { name: string; description: string; steps: ({ type: "navigate"; url: string; } | { type: "wait"; waitFor: string; timeout: number; } | { type: "type"; selector: string; value: string; } | { ...; } | { ...; })[]; }; getCV: { ...; }; }' but required in type '{ [key: string]: ActionSequence | undefined; getListingDetails?: ActionSequence | undefined; searchProperties: ActionSequence; extractCurrentPage?: ActionSequence | undefined; }'.
+src/services/site-navigation-maps.ts(637,13): error TS2741: Property 'search' is missing in type '{ propertyDetail: { urlPattern: string; fields: {}; }; }' but required in type '{ search: SearchConfig; propertyDetail: PropertyDetailConfig; dashboard?: { url: string; dataSelectors: Record<string, string>; } | undefined; crmWrite?: Record<...> | undefined; }'.
+src/services/site-navigation-maps.ts(643,13): error TS2741: Property 'searchProperties' is missing in type '{ extractCurrentPage: { name: string; description: string; steps: { type: "wait"; waitFor: string; timeout: number; }[]; }; }' but required in type '{ [key: string]: ActionSequence | undefined; getListingDetails?: ActionSequence | undefined; searchProperties: ActionSequence; extractCurrentPage?: ActionSequence | undefined; }'.
+src/services/site-navigation-maps.ts(662,17): error TS18048: 'map.actions.extractCurrentPage' is possibly 'undefined'.
+src/services/sync-engine.service.test.ts(1,55): error TS6133: 'vi' is declared but its value is never read.
+src/services/sync-engine.service.test.ts(2,10): error TS6133: 'syncEngineService' is declared but its value is never read.
+src/services/sync-engine.service.ts(12,1): error TS6133: 'dealSchedulerService' is declared but its value is never read.
+src/services/sync-engine.service.ts(254,52): error TS2345: Argument of type '"sync.error"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/system.service.ts(2,1): error TS6133: 'prisma' is declared but its value is never read.
+src/services/system.service.ts(24,26): error TS6133: 'userId' is declared but its value is never read.
+src/services/task.milestone.test.ts(1,44): error TS6133: 'afterEach' is declared but its value is never read.
+src/services/task.service.test.ts(110,13): error TS6133: 'task2' is declared but its value is never read.
+src/services/task.service.test.ts(205,22): error TS2339: Property 'completedAt' does not exist on type '{ id: string; createdAt: Date; userId: string; source: string; propertyId: string | null; status: string; label: string; dueDate: Date | null; dealId: string | null; contactId: string | null; context: string | null; estimatedDuration: number | null; completedAt: Date | null; } | { ...; }'.
+  Property 'completedAt' does not exist on type '{ id: string; userId: string; label: any; status: any; dueDate: Date; propertyId: string; source: string; createdAt: Date; property: { id: string; address: string; }; isVirtual: boolean; }'.
+src/services/task.service.ts(76,24): error TS2353: Object literal may only specify known properties, and 'priority' does not exist in type 'TaskWhereInput'.
+src/services/task.service.ts(149,5): error TS6133: 'userId' is declared but its value is never read.
+src/services/task.service.ts(263,5): error TS6133: 'userId' is declared but its value is never read.
+src/services/task.service.ts(294,56): error TS2353: Object literal may only specify known properties, and 'price' does not exist in type 'DealSelect<DefaultArgs>'.
+src/services/task.service.ts(307,27): error TS2339: Property 'price' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; threadId: string | null; propertyId: string | null; stage: string; riskLevel: string; riskFlags: string[]; nextAction: string | null; ... 20 more ...; status: string; }'.
+src/services/task.service.ts(307,48): error TS2339: Property 'price' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; threadId: string | null; propertyId: string | null; stage: string; riskLevel: string; riskFlags: string[]; nextAction: string | null; ... 20 more ...; status: string; }'.
+src/services/task.service.ts(310,58): error TS2339: Property 'price' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; threadId: string | null; propertyId: string | null; stage: string; riskLevel: string; riskFlags: string[]; nextAction: string | null; ... 20 more ...; status: string; }'.
+src/services/task.service.ts(382,14): error TS2339: Property 'priority' does not exist on type '{ id: string; createdAt: Date; userId: string; source: string; propertyId: string | null; status: string; label: string; dueDate: Date | null; dealId: string | null; contactId: string | null; context: string | null; estimatedDuration: number | null; completedAt: Date | null; }'.
+src/services/task.service.ts(593,13): error TS6133: 'parts' is declared but its value is never read.
+src/services/task.service.ts(916,46): error TS2345: Argument of type '"task.reopened"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/thread-linking.service.ts(270,51): error TS6133: 'address' is declared but its value is never read.
+src/services/timeline.property.test.ts(1,32): error TS6133: 'beforeEach' is declared but its value is never read.
+src/services/timeline.property.test.ts(1,44): error TS6133: 'afterEach' is declared but its value is never read.
+src/services/timeline.property.test.ts(279,21): error TS6133: 'foundMixing' is declared but its value is never read.
+src/services/timeline.service.test.ts(207,13): error TS6133: 'tomorrow' is declared but its value is never read.
+src/services/tool-execution.service.ts(108,49): error TS2345: Argument of type '{ userId: string; conversationId: string; approvalConfirmed: true; }' is not assignable to parameter of type 'ToolExecutionContext'.
+  Property 'sessionId' is missing in type '{ userId: string; conversationId: string; approvalConfirmed: true; }' but required in type 'ToolExecutionContext'.
+src/services/tool-execution.service.ts(182,57): error TS2304: Cannot find name 'tool'.
+src/services/user-persona.service.ts(49,80): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/services/voice-note.service.ts(88,5): error TS6133: 'userId' is declared but its value is never read.
+src/services/voice-note.service.ts(240,11): error TS2322: Type 'ExtractedEntity[]' is not assignable to type 'InputJsonValue[] | VoiceNoteUpdateextractedEntitiesInput | undefined'.
+  Type 'ExtractedEntity[]' is not assignable to type 'InputJsonValue[]'.
+    Type 'ExtractedEntity' is not assignable to type 'InputJsonValue'.
+      Type 'ExtractedEntity' is not assignable to type 'InputJsonObject'.
+        Index signature for type 'string' is missing in type 'ExtractedEntity'.
+src/services/voice.service.ts(141,38): error TS2304: Cannot find name 'startTime'.
+src/services/yahoo-connector.service.ts(60,5): error TS6133: 'lastSyncAt' is declared but its value is never read.
+src/services/yahoo-connector.service.ts(136,17): error TS6133: 'fetchMessagesViaAlternative' is declared but its value is never read.
+src/services/yahoo-connector.service.ts(137,5): error TS6133: 'accessToken' is declared but its value is never read.
+src/services/yahoo-connector.service.ts(138,5): error TS6133: 'lastSyncAt' is declared but its value is never read.
+src/services/zena-actions.service.ts(484,17): error TS2353: Object literal may only specify known properties, and 'outcome' does not exist in type '(Without<ZenaActionUpdateInput, ZenaActionUncheckedUpdateInput> & ZenaActionUncheckedUpdateInput) | (Without<...> & ZenaActionUpdateInput)'.
+src/services/zena-actions.service.ts(509,17): error TS2353: Object literal may only specify known properties, and 'outcome' does not exist in type 'ZenaActionWhereInput'.
+src/services/zena-actions.service.ts(522,32): error TS2339: Property 'deal' does not exist on type '{ id: string; userId: string; status: string; type: string; dealId: string; output: string; triggeredAt: Date; executedAt: Date | null; dismissedAt: Date | null; }'.
+src/services/zena-actions.service.ts(523,24): error TS2339: Property 'outcome' does not exist on type '{ id: string; userId: string; status: string; type: string; dealId: string; output: string; triggeredAt: Date; executedAt: Date | null; dismissedAt: Date | null; }'.
+src/services/zena-actions.service.ts(524,22): error TS2339: Property 'outcomeNotes' does not exist on type '{ id: string; userId: string; status: string; type: string; dealId: string; output: string; triggeredAt: Date; executedAt: Date | null; dismissedAt: Date | null; }'.
+src/services/zena-actions.service.ts(556,19): error TS6133: 'callGemini' is declared but its value is never read.
+src/test/agent-orchestrator.property.test.ts(2,24): error TS6133: 'expect' is declared but its value is never read.
+src/test/agent-orchestrator.property.test.ts(31,67): error TS2353: Object literal may only specify known properties, and 'property' does not exist in type '{ id: string; name: string; address: string; propertyAddress: string; }'.
+src/test/agent-orchestrator.property.test.ts(39,38): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'RecentEntities'.
+src/test/connections-audit.test.ts(1,32): error TS6133: 'vi' is declared but its value is never read.
+src/test/connections-audit.test.ts(1,36): error TS6133: 'beforeEach' is declared but its value is never read.
+src/test/setup.ts(4,31): error TS6133: 'beforeEach' is declared but its value is never read.
+src/tools/calendar/search-calendar.tool.ts(31,14): error TS2741: Property 'auditLogFormat' is missing in type '{ name: string; domain: string; description: string; inputSchema: { type: "object"; properties: { query: { type: "string"; description: string; }; date: { type: "string"; description: string; }; }; }; outputSchema: { ...; }; permissions: string[]; requiresApproval: false; execute(params: SearchCalendarInput, context...' but required in type 'ZenaToolDefinition<SearchCalendarInput, SearchCalendarOutput>'.
+src/tools/contacts/add-relationship-note.tool.ts(125,21): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/tools/contacts/add-relationship-note.tool.ts(138,21): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/tools/deals/create-deal.tool.ts(100,40): error TS2304: Cannot find name 'prisma'.
+src/tools/deals/create-deal.tool.ts(107,47): error TS2304: Cannot find name 'prisma'.
+src/tools/deals/search-deal.tool.ts(76,21): error TS2322: Type '({ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; summary?: undefined; } | { property?: undefined; contacts?: undefined; summary?: undefined; } | { contacts: { some: { name: { ...; }; }; }; property?: undefined; summary?: undefined; } | { ...; })[]' is not assignable to type 'DealWhereInput[]'.
+  Type '{ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; summary?: undefined; } | { property?: undefined; contacts?: undefined; summary?: undefined; } | { contacts: { some: { name: { ...; }; }; }; property?: undefined; summary?: undefined; } | { ...; }' is not assignable to type 'DealWhereInput'.
+    Type '{ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; summary?: undefined; }' is not assignable to type 'DealWhereInput'.
+      Types of property 'property' are incompatible.
+        Type '{ address: { contains: string; mode: string; }; }' is not assignable to type '(Without<PropertyNullableRelationFilter, PropertyWhereInput> & PropertyWhereInput) | (Without<...> & PropertyNullableRelationFilter) | null | undefined'.
+          Type '{ address: { contains: string; mode: string; }; }' is not assignable to type '(Without<PropertyNullableRelationFilter, PropertyWhereInput> & PropertyWhereInput) | (Without<...> & PropertyNullableRelationFilter)'.
+            Type '{ address: { contains: string; mode: string; }; }' is not assignable to type 'Without<PropertyWhereInput, PropertyNullableRelationFilter> & PropertyNullableRelationFilter'.
+              Type '{ address: { contains: string; mode: string; }; }' is not assignable to type 'Without<PropertyWhereInput, PropertyNullableRelationFilter>'.
+                Types of property 'address' are incompatible.
+                  Type '{ contains: string; mode: string; }' is not assignable to type 'undefined'.
+src/tools/deals/search-deal.tool.ts(100,36): error TS2551: Property 'property' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; threadId: string | null; propertyId: string | null; stage: string; riskLevel: string; riskFlags: string[]; nextAction: string | null; ... 20 more ...; status: string; }'. Did you mean 'propertyId'?
+src/tools/deals/search-deal.tool.ts(110,52): error TS2551: Property 'property' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; userId: string; threadId: string | null; propertyId: string | null; stage: string; riskLevel: string; riskFlags: string[]; nextAction: string | null; ... 20 more ...; status: string; }'. Did you mean 'propertyId'?
+src/tools/deals/update-deal.tool.ts(91,25): error TS2322: Type '({ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; } | { property?: undefined; contacts?: undefined; } | { contacts: { some: { name: { contains: string; mode: string; }; }; }; property?: undefined; })[]' is not assignable to type 'DealWhereInput[]'.
+  Type '{ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; } | { property?: undefined; contacts?: undefined; } | { contacts: { some: { name: { contains: string; mode: string; }; }; }; property?: undefined; }' is not assignable to type 'DealWhereInput'.
+    Type '{ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; }' is not assignable to type 'DealWhereInput'.
+      Types of property 'property' are incompatible.
+        Type '{ address: { contains: string; mode: string; }; }' is not assignable to type '(Without<PropertyNullableRelationFilter, PropertyWhereInput> & PropertyWhereInput) | (Without<...> & PropertyNullableRelationFilter) | null | undefined'.
+          Type '{ address: { contains: string; mode: string; }; }' is not assignable to type '(Without<PropertyNullableRelationFilter, PropertyWhereInput> & PropertyWhereInput) | (Without<...> & PropertyNullableRelationFilter)'.
+            Type '{ address: { contains: string; mode: string; }; }' is not assignable to type 'Without<PropertyWhereInput, PropertyNullableRelationFilter> & PropertyNullableRelationFilter'.
+              Type '{ address: { contains: string; mode: string; }; }' is not assignable to type 'Without<PropertyWhereInput, PropertyNullableRelationFilter>'.
+                Types of property 'address' are incompatible.
+                  Type '{ contains: string; mode: string; }' is not assignable to type 'undefined'.
+src/tools/definitions/market-scraper.tool.ts(47,29): error TS6133: 'context' is declared but its value is never read.
+src/tools/inbox/search-inbox.tool.ts(30,14): error TS2741: Property 'auditLogFormat' is missing in type '{ name: string; domain: string; description: string; inputSchema: { type: "object"; properties: { query: { type: "string"; description: string; }; }; required: string[]; }; outputSchema: { type: "object"; properties: { ...; }; }; permissions: string[]; requiresApproval: false; execute(params: SearchInboxInput, conte...' but required in type 'ZenaToolDefinition<SearchInboxInput, SearchInboxOutput>'.
+src/tools/index.ts(41,70): error TS6133: 'generatePropertyReportTool' is declared but its value is never read.
+src/tools/memory/search-memory.tool.ts(37,5): error TS2322: Type '(userId: string, params: { query: string; types?: string[]; limit?: number; }) => Promise<{ success: true; message: string; data: { results: never[]; totalCount?: undefined; }; } | { success: true; message: string; data: { ...; }; }>' is not assignable to type '(params: any, context: ToolExecutionContext) => Promise<ToolExecutionResult<any>>'.
+  Types of parameters 'params' and 'context' are incompatible.
+    Property 'query' is missing in type 'ToolExecutionContext' but required in type '{ query: string; types?: string[] | undefined; limit?: number | undefined; }'.
+src/tools/portfolio/get_brief.tool.ts(75,27): error TS6133: 'output' is declared but its value is never read.
+src/tools/portfolio/get_global_brief.tool.ts(45,19): error TS6133: 'params' is declared but its value is never read.
+src/tools/portfolio/get_global_brief.tool.ts(61,20): error TS6133: 'input' is declared but its value is never read.
+src/tools/portfolio/get_global_brief.tool.ts(61,27): error TS6133: 'output' is declared but its value is never read.
+src/tools/properties/add-milestone.tool.ts(78,86): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'LogContext | undefined'.
+src/tools/properties/add-milestone.tool.ts(95,76): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'LogContext | undefined'.
+src/tools/properties/add-milestone.tool.ts(112,26): error TS2339: Property 'type' does not exist on type '{ id: string; title: any; date: any; status: any; createdAt: string; }'.
+src/tools/properties/add-milestone.tool.ts(137,90): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'LogContext | undefined'.
+src/tools/properties/create-property.tool.ts(163,61): error TS18047: 'contact' is possibly 'null'.
+src/tools/properties/create-property.tool.ts(165,97): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/tools/properties/create-property.tool.ts(186,106): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Error | undefined'.
+src/tools/tasks/create-task.tool.ts(107,39): error TS2339: Property 'propertyAddress' does not exist on type 'CreateTaskInput'.
+src/tools/tasks/create-task.tool.ts(109,66): error TS2339: Property 'propertyAddress' does not exist on type 'CreateTaskInput'.
+src/tools/tasks/create-task.tool.ts(115,38): error TS2339: Property 'contactName' does not exist on type 'CreateTaskInput'.
+src/tools/tasks/create-task.tool.ts(117,63): error TS2339: Property 'contactName' does not exist on type 'CreateTaskInput'.
+src/tools/tasks/delete-task.tool.ts(72,36): error TS2304: Cannot find name 'prisma'.
+src/tools/tasks/get-task.tool.ts(72,38): error TS2339: Property 'dealId' does not exist on type '{ id: string; createdAt: Date; userId: string; source: string; propertyId: string | null; status: string; label: string; dueDate: Date | null; dealId: string | null; contactId: string | null; context: string | null; estimatedDuration: number | null; completedAt: Date | null; } | { ...; }'.
+  Property 'dealId' does not exist on type '{ id: string; userId: string; label: any; status: any; dueDate: Date; propertyId: string; source: string; createdAt: Date; property: { id: string; address: string; }; isVirtual: boolean; }'.
+src/tools/tasks/get-task.tool.ts(74,41): error TS2339: Property 'contactId' does not exist on type '{ id: string; createdAt: Date; userId: string; source: string; propertyId: string | null; status: string; label: string; dueDate: Date | null; dealId: string | null; contactId: string | null; context: string | null; estimatedDuration: number | null; completedAt: Date | null; } | { ...; }'.
+  Property 'contactId' does not exist on type '{ id: string; userId: string; label: any; status: any; dueDate: Date; propertyId: string; source: string; createdAt: Date; property: { id: string; address: string; }; isVirtual: boolean; }'.
+src/tools/tasks/search-task.tool.ts(31,14): error TS2741: Property 'auditLogFormat' is missing in type '{ name: string; domain: string; description: string; inputSchema: { type: "object"; properties: { query: { type: "string"; description: string; }; includeCompleted: { type: "boolean"; description: string; default: false; }; }; required: string[]; }; outputSchema: { ...; }; permissions: string[]; requiresApproval: fa...' but required in type 'ZenaToolDefinition<SearchTaskInput, SearchTaskOutput>'.
+src/tools/tasks/update-task.tool.ts(99,57): error TS2345: Argument of type 'string' is not assignable to parameter of type 'TaskQueryOptions'.
+src/tools/tasks/update-task.tool.ts(108,40): error TS2304: Cannot find name 'prisma'.
+src/tools/tasks/update-task.tool.ts(116,39): error TS2304: Cannot find name 'prisma'.
+src/utils/database.ts(2,1): error TS6133: 'Prisma' is declared but its value is never read.
+src/utils/encryption.ts(5,7): error TS6133: 'AUTH_TAG_LENGTH' is declared but its value is never read.
+src/utils/validation.ts(22,3): error TS2322: Type '"lead"' is not assignable to type 'DealStage'.
+src/utils/validation.ts(23,3): error TS2322: Type '"qualified"' is not assignable to type 'DealStage'.
+src/utils/validation.ts(24,3): error TS2820: Type '"viewing"' is not assignable to type 'DealStage'. Did you mean '"viewings"'?
+src/utils/validation.ts(25,3): error TS2322: Type '"offer"' is not assignable to type 'DealStage'.
+src/utils/validation.ts(28,3): error TS2322: Type '"sold"' is not assignable to type 'DealStage'.
+src/verify-synapse.ts(3,1): error TS6133: 'logger' is declared but its value is never read.

@@ -127,17 +127,55 @@ export class ParticleEngine {
         );
         this.camera.position.z = 500;
 
-        // WebGL renderer with transparency
-        this.renderer = new THREE.WebGLRenderer({
-            alpha: true,
-            antialias: true,
-            premultipliedAlpha: false,
-        });
-        this.renderer.setSize(config.canvasWidth, config.canvasHeight);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        this.renderer.setClearColor(0x000000, 0);
+        try {
+            // WebGL renderer with WebGL 2 context check
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl2', {
+                alpha: true,
+                antialias: true,
+                premultipliedAlpha: false,
+            });
 
-        container.appendChild(this.renderer.domElement);
+            if (!gl || !gl.getContextAttributes()) {
+                console.warn('[ParticleEngine] WebGL 2 Context unavailable or invalid. Aborting renderer creation.');
+                // Create a dummy renderer to avoid null pointer errors
+                this.renderer = {
+                    setSize: () => { },
+                    setPixelRatio: () => { },
+                    setClearColor: () => { },
+                    render: () => { },
+                    dispose: () => { },
+                    domElement: document.createElement('div'),
+                    getContext: () => null
+                } as any;
+                return;
+            }
+
+            this.renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                context: gl,
+                alpha: true,
+                antialias: true,
+            });
+            this.renderer.setSize(config.canvasWidth, config.canvasHeight);
+            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            this.renderer.setClearColor(0x000000, 0);
+
+            container.appendChild(this.renderer.domElement);
+        } catch (error) {
+            console.error('[ParticleEngine] WebGL 2 initialization failed (Exception):', error);
+            // Create a dummy renderer to avoid null pointer errors
+            this.renderer = {
+                setSize: () => { },
+                setPixelRatio: () => { },
+                setClearColor: () => { },
+                render: () => { },
+                dispose: () => { },
+                domElement: document.createElement('div'),
+                getContext: () => null
+            } as any;
+            return;
+        }
 
         // Style the canvas
         this.renderer.domElement.style.position = 'absolute';

@@ -185,6 +185,7 @@ export interface Deal {
 
     createdAt: string;
     updatedAt: string;
+    status?: 'active' | 'archived' | 'deleted';
 }
 
 // Pipeline column for kanban view

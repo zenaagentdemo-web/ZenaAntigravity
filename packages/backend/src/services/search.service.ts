@@ -21,6 +21,21 @@ export class SearchService {
       ]
     };
   }
+
+  /**
+   * Search chat history
+   */
+  async searchChatHistory(userId: string, query: string): Promise<any[]> {
+    const historicalMessages = await prisma.chatMessage.findMany({
+      where: {
+        conversation: { userId },
+        content: { contains: query, mode: 'insensitive' }
+      },
+      include: { conversation: true },
+      take: 5
+    });
+    return historicalMessages;
+  }
 }
 
 export const searchService = new SearchService();

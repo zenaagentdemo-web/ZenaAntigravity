@@ -186,7 +186,11 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
             {/* Deal Info */}
             <div className="zena-deal-card__info-bar">
                 <div className="zena-deal-card__value">
-                    {deal.dealValue ? formatCurrency(deal.dealValue) : 'TBC'}
+                    {deal.dealValue
+                        ? formatCurrency(deal.dealValue)
+                        : deal.property?.listingPrice
+                            ? formatCurrency(deal.property.listingPrice)
+                            : 'TBC'}
                 </div>
             </div>
 

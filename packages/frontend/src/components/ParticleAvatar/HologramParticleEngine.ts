@@ -243,25 +243,43 @@ export class HologramParticleEngine {
         this.camera.position.z = 300;
 
         try {
-            // WebGL renderer
-            this.renderer = new THREE.WebGLRenderer({
+            // WebGL renderer with WebGL 2 context check
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl2', {
                 alpha: true,
                 antialias: true,
                 premultipliedAlpha: false,
             });
 
-            // Check if context was successfully created
-            if (!this.renderer.getContext()) {
-                throw new Error('Failed to create WebGL context');
+            if (!gl || !gl.getContextAttributes()) {
+                console.warn('[HologramParticleEngine] WebGL 2 Context unavailable or invalid. Aborting renderer creation.');
+                this.renderer = {
+                    setSize: () => { },
+                    setPixelRatio: () => { },
+                    setClearColor: () => { },
+                    render: () => { },
+                    dispose: () => { },
+                    domElement: document.createElement('div'),
+                    getContext: () => null
+                } as any;
+                this.isInitialized = false;
+                return;
             }
+
+            this.renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                context: gl,
+                alpha: true,
+                antialias: true,
+            });
 
             this.renderer.setSize(size, size);
             this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             this.renderer.setClearColor(0x000000, 0);
             this.isInitialized = true;
         } catch (error) {
-            console.error('[HologramParticleEngine] WebGL initialization failed:', error);
-            // Create a dummy renderer to avoid null pointer errors, though it won't render
+            console.error('[HologramParticleEngine] WebGL 2 initialization failed (Exception):', error);
+            // Create a dummy renderer to avoid null pointer errors
             this.renderer = {
                 setSize: () => { },
                 setPixelRatio: () => { },

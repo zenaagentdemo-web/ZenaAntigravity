@@ -2,17 +2,6 @@ import { config } from 'dotenv';
 
 config();
 
-interface LatLng {
-    latitude: number;
-    longitude: number;
-}
-
-interface RouteLeg {
-    distanceMeters: number;
-    duration: string; // "3600s"
-    staticDuration: string;
-}
-
 export class GeospatialService {
     private apiKey: string;
     private baseUrl = 'https://routes.googleapis.com/directions/v2:computeRoutes';
@@ -62,7 +51,7 @@ export class GeospatialService {
                 return this.getMockMetrics(origin, destination);
             }
 
-            const data = await response.json();
+            const data = await response.json() as any;
             const route = data.routes?.[0];
 
             if (!route) return null;

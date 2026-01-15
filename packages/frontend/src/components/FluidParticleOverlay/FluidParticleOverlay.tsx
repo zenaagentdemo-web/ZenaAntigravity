@@ -235,15 +235,15 @@ export const FluidParticleOverlay: React.FC<FluidParticleOverlayProps> = memo(({
 
         try {
             // PRE-FLIGHT CHECK: Explicitly check for context availability before Three.js tries to initialize.
-            // Three.js crashes (TypeError on 'precision') if it gets a null context during its internal capabilities check.
-            const gl = canvasRef.current.getContext('webgl', {
+            // Using webgl2 to avoid deprecation warnings and improve performance/stability.
+            const gl = canvasRef.current.getContext('webgl2', {
                 alpha: true,
                 antialias: true,
                 powerPreference: 'high-performance'
             });
 
-            if (!gl) {
-                console.warn('[FluidParticleOverlay] WebGL Context unavailable (Exhausted?). Aborting renderer creation.');
+            if (!gl || !gl.getContextAttributes()) {
+                console.warn('[FluidParticleOverlay] WebGL 2 Context unavailable or invalid. Aborting renderer creation.');
                 rendererRef.current = null;
                 return;
             }
@@ -251,7 +251,7 @@ export const FluidParticleOverlay: React.FC<FluidParticleOverlayProps> = memo(({
             // If we have a context, we can safely allow Three.js to initialize
             const renderer = new THREE.WebGLRenderer({
                 canvas: canvasRef.current,
-                context: gl, // Pass the existing context we just verified
+                context: gl,
                 alpha: true,
                 antialias: true,
             });
@@ -260,7 +260,7 @@ export const FluidParticleOverlay: React.FC<FluidParticleOverlayProps> = memo(({
             renderer.setPixelRatio(Math.max(window.devicePixelRatio, 3));  // 3x for crisp particles
             rendererRef.current = renderer;
         } catch (error) {
-            console.error('[FluidParticleOverlay] WebGL initialization failed (Exception):', error);
+            console.error('[FluidParticleOverlay] WebGL 2 initialization failed (Exception):', error);
             rendererRef.current = null;
             return; // Exit early if renderer creation fails
         }

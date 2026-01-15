@@ -156,15 +156,16 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
 
         try {
             // PRE-FLIGHT CHECK: Explicitly check for context availability before Three.js tries to initialize.
+            // Using webgl2 to avoid deprecation warnings and improve performance/stability.
             const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl', {
+            const gl = canvas.getContext('webgl2', {
                 alpha: true,
                 antialias: true,
                 powerPreference: 'high-performance'
             });
 
-            if (!gl) {
-                console.warn('[ParticleField] WebGL Context unavailable (Exhausted?). Aborting renderer creation.');
+            if (!gl || !gl.getContextAttributes()) {
+                console.warn('[ParticleField] WebGL 2 Context unavailable or invalid. Aborting renderer creation.');
                 rendererRef.current = null;
                 return;
             }
@@ -182,7 +183,7 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
             rendererRef.current = renderer;
             containerRef.current.appendChild(renderer.domElement);
         } catch (error) {
-            console.error('[ParticleField] WebGL initialization failed (Exception):', error);
+            console.error('[ParticleField] WebGL 2 initialization failed (Exception):', error);
             rendererRef.current = null;
             return; // Exit early if renderer creation fails
         }

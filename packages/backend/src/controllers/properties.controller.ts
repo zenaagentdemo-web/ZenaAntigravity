@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { randomUUID } from 'crypto';
 import { threadLinkingService } from '../services/thread-linking.service.js';
 import { propertyIntelligenceService } from '../services/property-intelligence.service.js';
@@ -15,7 +15,7 @@ export class PropertiesController {
    * GET /api/properties
    * List properties
    */
-  async listProperties(req: Request, res: Response): Promise<void> {
+  async listProperties(req: any, res: Response): Promise<void> {
     try {
       if (!req.user) {
         res.status(401).json({
@@ -157,7 +157,7 @@ export class PropertiesController {
    * GET /api/properties/:id/smart-matches
    * Get smart matches for a property
    */
-  async getSmartMatches(req: Request, res: Response): Promise<void> {
+  async getSmartMatches(req: any, res: Response): Promise<void> {
     try {
       const { id } = req.params;
 
@@ -182,7 +182,7 @@ export class PropertiesController {
    * GET /api/properties/smart-matches
    * Get smart matches across portfolio
    */
-  async getAllSmartMatches(req: Request, res: Response): Promise<void> {
+  async getAllSmartMatches(req: any, res: Response): Promise<void> {
     try {
       if (!req.user) {
         res.status(401).json({ error: 'Unauthorized' });
@@ -200,7 +200,7 @@ export class PropertiesController {
    * POST /api/properties
    * Create property
    */
-  async createProperty(req: Request, res: Response): Promise<void> {
+  async createProperty(req: any, res: Response): Promise<void> {
     try {
       if (!req.user) {
         res.status(401).json({
@@ -374,7 +374,7 @@ export class PropertiesController {
             console.log(`[Properties] S22: Geo-Fenced match found! Notifying ${match.name}`);
             await prisma.timelineEvent.create({
               data: {
-                userId: req.user.userId,
+                userId: req.user!.userId,
                 type: 'alert',
                 entityType: 'contact',
                 entityId: match.contactId,
@@ -443,7 +443,7 @@ export class PropertiesController {
    * GET /api/properties/:id
    * Get property details
    */
-  async getProperty(req: Request, res: Response): Promise<void> {
+  async getProperty(req: any, res: Response): Promise<void> {
     try {
       const { id } = req.params;
 
@@ -549,7 +549,7 @@ export class PropertiesController {
    * PUT /api/properties/:id
    * Update property
    */
-  async updateProperty(req: Request, res: Response): Promise<void> {
+  async updateProperty(req: any, res: Response): Promise<void> {
     try {
       const { id } = req.params;
       const {
@@ -756,7 +756,7 @@ export class PropertiesController {
       if (vendorContactIds && vendorContactIds.length > 0) {
         const prop = await prisma.property.findUnique({ where: { id } });
         if (prop) {
-          await Promise.all(vendorContactIds.map(vId =>
+          await Promise.all(vendorContactIds.map((vId: string) =>
             prisma.contact.update({
               where: { id: vId },
               data: {
@@ -774,7 +774,7 @@ export class PropertiesController {
       if (status === 'sold') {
         const threads = await threadLinkingService.getThreadsForProperty(id);
         for (const thread of threads) {
-          await neuralScorerService.archiveThread(thread.id);
+          await threadLinkingService.archiveThread(thread.id);
         }
         console.log(`[Properties] S27: Property sold. Archived ${threads.length} threads.`);
       }
@@ -799,7 +799,7 @@ export class PropertiesController {
    * DELETE /api/properties/:id
    * Delete property
    */
-  async deleteProperty(req: Request, res: Response): Promise<void> {
+  async deleteProperty(req: any, res: Response): Promise<void> {
     try {
       const { id } = req.params;
 
@@ -857,7 +857,7 @@ export class PropertiesController {
    * POST /api/properties/:id/milestones
    * Add campaign milestone to property
    */
-  async addMilestone(req: Request, res: Response): Promise<void> {
+  async addMilestone(req: any, res: Response): Promise<void> {
     try {
       const { id } = req.params;
       const { type, date, notes, endTime, reminder } = req.body;
@@ -1046,7 +1046,7 @@ export class PropertiesController {
    * POST /api/properties/bulk-delete
    * Bulk delete properties
    */
-  async bulkDeleteProperties(req: Request, res: Response): Promise<void> {
+  async bulkDeleteProperties(req: any, res: Response): Promise<void> {
     try {
       if (!req.user) {
         res.status(401).json({
@@ -1101,7 +1101,7 @@ export class PropertiesController {
    * PATCH /api/properties/bulk
    * Bulk update properties (status, type)
    */
-  async bulkUpdateProperties(req: Request, res: Response): Promise<void> {
+  async bulkUpdateProperties(req: any, res: Response): Promise<void> {
     try {
       if (!req.user) {
         res.status(401).json({
@@ -1221,7 +1221,7 @@ export class PropertiesController {
    * POST /api/properties/:id/intelligence/refresh
    * Manual trigger to refresh Zena Intelligence for a property
    */
-  async refreshIntelligence(req: Request, res: Response): Promise<void> {
+  async refreshIntelligence(req: any, res: Response): Promise<void> {
     try {
       const { id } = req.params;
 
@@ -1257,7 +1257,7 @@ export class PropertiesController {
    * GET /api/properties/:id/intelligence
    * Get cached Zena Intelligence
    */
-  async getIntelligence(req: Request, res: Response): Promise<void> {
+  async getIntelligence(req: any, res: Response): Promise<void> {
     try {
       const { id } = req.params;
 
@@ -1299,7 +1299,7 @@ export class PropertiesController {
    * PUT /api/properties/:id/milestones/:milestoneId
    * Update campaign milestone
    */
-  async updateMilestone(req: Request, res: Response): Promise<void> {
+  async updateMilestone(req: any, res: Response): Promise<void> {
     try {
       const { id, milestoneId } = req.params;
       const { title, date, notes, type, endTime, reminder } = req.body;
@@ -1365,7 +1365,7 @@ export class PropertiesController {
    * DELETE /api/properties/:id/milestones/:milestoneId
    * Delete campaign milestone
    */
-  async deleteMilestone(req: Request, res: Response): Promise<void> {
+  async deleteMilestone(req: any, res: Response): Promise<void> {
     try {
       const { id, milestoneId } = req.params;
 
@@ -1402,7 +1402,7 @@ export class PropertiesController {
    * POST /api/properties/:id/comparables
    * Run market scraper for property
    */
-  async generateComparables(req: Request, res: Response): Promise<void> {
+  async generateComparables(req: any, res: Response): Promise<void> {
     try {
       const { id } = req.params;
 
@@ -1441,7 +1441,7 @@ export class PropertiesController {
    * GET /api/properties/stats
    * Get property statistics for the user
    */
-  async getStats(req: Request, res: Response): Promise<void> {
+  async getStats(req: any, res: Response): Promise<void> {
     try {
       if (!req.user) {
         res.status(401).json({ error: 'Authentication required' });
@@ -1464,7 +1464,7 @@ export class PropertiesController {
         where: { userId, listingPrice: { not: null } },
         select: { listingPrice: true },
       });
-      const totalValue = properties.reduce((sum, p) => sum + (p.listingPrice || 0), 0);
+      const totalValue = properties.reduce((sum, p) => sum + Number(p.listingPrice || 0), 0);
 
       res.status(200).json({
         stats: {
@@ -1486,7 +1486,7 @@ export class PropertiesController {
    * POST /api/properties/bulk-archive
    * Archive multiple properties
    */
-  async bulkArchiveProperties(req: Request, res: Response): Promise<void> {
+  async bulkArchiveProperties(req: any, res: Response): Promise<void> {
     try {
       if (!req.user) {
         res.status(401).json({ error: 'Authentication required' });
@@ -1529,7 +1529,7 @@ export class PropertiesController {
    * POST /api/properties/:id/generate-copy
    * S17: Generate AI Listing Copy
    */
-  async generateListingCopy(req: Request, res: Response): Promise<void> {
+  async generateListingCopy(req: any, res: Response): Promise<void> {
     try {
       const { id } = req.params;
       const result = await propertyIntelligenceService.generateListingCopy(id);
@@ -1544,7 +1544,7 @@ export class PropertiesController {
    * GET /api/properties/:id/milestones
    * Get milestones for a property
    */
-  async getMilestones(req: Request, res: Response): Promise<void> {
+  async getMilestones(req: any, res: Response): Promise<void> {
     try {
       const { id } = req.params;
 
@@ -1582,7 +1582,7 @@ export class PropertiesController {
    * POST /api/properties/bulk-analyze
    * S21: Batch Market Analysis / Positioning
    */
-  async bulkAnalyzeProperties(req: Request, res: Response): Promise<void> {
+  async bulkAnalyzeProperties(req: any, res: Response): Promise<void> {
     try {
       const { ids } = req.body;
       if (!ids || !Array.isArray(ids)) {
@@ -1594,7 +1594,7 @@ export class PropertiesController {
 
       const results = await Promise.all(ids.map(async (id) => {
         try {
-          const intel = await propertyIntelligenceService.refreshIntelligence(id, req.user.userId, true);
+          const intel = await propertyIntelligenceService.refreshIntelligence(id, req.user!.userId, true);
           return { id, status: 'success', momentum: intel.momentumScore };
         } catch (err) {
           return { id, status: 'failed', error: String(err) };

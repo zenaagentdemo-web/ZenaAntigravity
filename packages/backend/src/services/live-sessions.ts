@@ -9,6 +9,7 @@ export interface UserSession {
     groundingSources: string[]; // Store verified source links to append to transcript
     lastTurnSourcesCount: number; // Track sources sent in current turn
     hasLoggedMessageStructure?: boolean; // Diagnostic flag for logging
+    cleanup?: () => void;
 }
 
 // Shared map to prevent instance fragmentation

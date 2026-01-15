@@ -5,14 +5,13 @@
  */
 
 import { GoogleGenAI, Modality } from '@google/genai';
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 
 // Get websocket service for sending messages to clients
 import { websocketService } from './websocket.service.js';
 import { logger } from './logger.service.js';
-import { sessions, UserSession } from './live-sessions.js';
+import { sessions } from './live-sessions.js';
 import { dealFlowService } from './deal-flow.service.js';
-import { askZenaService } from './ask-zena.service.js';
 import prisma from '../config/database.js';
 import { toolRegistry } from '../tools/registry.js';
 import { toolExecutionService } from './tool-execution.service.js';
@@ -68,9 +67,10 @@ function selectToolsForLive(history?: any[], context?: string): ZenaToolDefiniti
 
     // Get tools for selected domains
     const selectedTools: ZenaToolDefinition[] = [];
-    for (const domain of domains) {
+    const domainArray = Array.from(domains);
+    domainArray.forEach(domain => {
         selectedTools.push(...toolRegistry.getToolsByDomain(domain));
-    }
+    });
 
     console.log(`[MultimodalLive] 🧠 Domain filtering: Selected ${selectedTools.length} tools from domains: ${Array.from(domains).join(', ')}`);
     return selectedTools;
@@ -318,7 +318,7 @@ You have access to a "search_data" tool. If the user asks for details about a sp
    - If it's a viewing -> Offer to send a reminder to the vendor.
 3. USE YOUR TOOLS: If the user agrees ("Yes, email them"), use your tools (draft_email, search_data) immediately.`;
                 }
-            } catch (e) {
+            } catch (e: any) { // Added type to catch variable
                 console.error('[MultimodalLive] Failed to load mission context:', e);
             }
         }
@@ -358,7 +358,7 @@ You have access to a "search_data" tool. If the user asks for details about a sp
                         mode: 'AUTO'
                     }
                 }
-            },
+            } as any, // Cast config to any
             callbacks: {
                 onopen: () => {
                     logger.info(`[MultimodalLive] onopen: Connected to Gemini for ${userId}`);
@@ -436,26 +436,15 @@ You have access to a "search_data" tool. If the user asks for details about a sp
                 const toolLabel = tool?.name.split('.').pop()?.replace(/_/g, ' ') || job.toolName;
                 const deliveryPrompt = tool?.deliveryPrompt || "Briefly inform the user it is done.";
 
-                // NOTIFICATION STRATEGY:
-                // Global BackgroundJobService already handles the generic WebSocket text notification.
-                // Here we ONLY handle the Voice Injection for natural flow.
-
                 // Inject context into Gemini session so Zena knows
                 session.sendClientContent({
                     turns: [{
                         role: 'user',
                         parts: [{
-                            text: `SYSTEM NOTIFICATION: The background job '${job.toolName}' (ID: ${job.id}) for '${toolLabel}' has just completed. 
-                            Result: ${JSON.stringify(job.result)}. 
-                            
-                            INSTRUCTION: You must now naturally interrupt the user (or wait for a brief pause) to deliver this result. 
-                            Specific delivery instructions: ${deliveryPrompt}
-                            
-                            RAZOR-SHARP TRANSITION: Once you've delivered the key insight, pivot gracefully back to the previous yarn or ask if they need anything else related to this result. 
-                            Example: "Pardon the interruption, but I've got those numbers... [Insight]. Now, where were we?"`
+                            text: `[SYSTEM: BACKGROUND TASK COMPLETED]\nThe task "${toolLabel}" is done.\nContext: ${job.outputSummary || 'No summary available'}\nAction: ${deliveryPrompt}\nExample: "Pardon the interruption, but I've got those numbers... [Insight]. Now, where were we?"`
                         }]
                     }]
-                }).catch(e => console.error("Failed to inject job completion:", e));
+                });
             }
         };
 
@@ -464,21 +453,24 @@ You have access to a "search_data" tool. If the user asks for details about a sp
         // CLEANUP: Remove listener when session closes
         const anySession = session as any;
         const originalOnClose = anySession.callbacks?.onclose;
-        // Actually, better to attach cleanup to the WebSocket close logic or `sessions.delete`
 
         // Enhance the sessions map to include the cleanup
-        sessions.set(userId, {
-            ...sessions.get(userId)!,
-            cleanup: () => {
-                jobManager.off('job_completed', jobHandler);
-            }
-        } as any);
+        const userSessionData = sessions.get(userId);
+        if (userSessionData) {
+            sessions.set(userId, {
+                ...userSessionData,
+                cleanup: () => {
+                    jobManager.off('job_completed', jobHandler);
+                    if (originalOnClose) originalOnClose();
+                }
+            } as any);
+        }
 
-    } catch (err: any) {
-        logger.error(`[MultimodalLive] Failed to start session for ${userId}:`, err);
+    } catch (err: any) { // Added type to catch variable
+        logger.error(`[MultimodalLive] Failed to start session for ${userId}: `, err);
         websocketService.sendToClientProxy(userWs, {
             type: 'voice.live.error',
-            payload: { message: `Failed to connect: ${err?.message || 'Unknown error'}` }
+            payload: { message: `Failed to connect: ${err?.message || 'Unknown error'} ` }
         });
     }
 }
@@ -500,22 +492,22 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
         // DIAGNOSTIC: Log message structure to find grounding data
         // Only log once per turn to avoid spam
         if (!userSession.hasLoggedMessageStructure) {
-            console.log(`[MultimodalLive] 🔍 DIAGNOSTIC - Full message keys for ${userId}:`, Object.keys(message));
+            console.log(`[MultimodalLive] 🔍 DIAGNOSTIC - Full message keys for ${userId}: `, Object.keys(message));
             if (serverContent) {
-                console.log(`[MultimodalLive] 🔍 DIAGNOSTIC - serverContent keys:`, Object.keys(serverContent));
+                console.log(`[MultimodalLive] 🔍 DIAGNOSTIC - serverContent keys: `, Object.keys(serverContent));
                 if (serverContent.modelTurn || serverContent.model_turn) {
                     const modelTurn = serverContent.modelTurn || serverContent.model_turn;
-                    console.log(`[MultimodalLive] 🔍 DIAGNOSTIC - modelTurn keys:`, Object.keys(modelTurn));
+                    console.log(`[MultimodalLive] 🔍 DIAGNOSTIC - modelTurn keys: `, Object.keys(modelTurn));
                     if (modelTurn.parts) {
                         modelTurn.parts.forEach((part: any, idx: number) => {
-                            console.log(`[MultimodalLive] 🔍 DIAGNOSTIC - part[${idx}] keys:`, Object.keys(part));
+                            console.log(`[MultimodalLive] 🔍 DIAGNOSTIC - part[${idx}]keys: `, Object.keys(part));
                         });
                     }
                 }
             }
             // Also check for grounding in metadata at top level
             if (message.metadata) {
-                console.log(`[MultimodalLive] 🔍 DIAGNOSTIC - metadata keys:`, Object.keys(message.metadata));
+                console.log(`[MultimodalLive] 🔍 DIAGNOSTIC - metadata keys: `, Object.keys(message.metadata));
             }
             userSession.hasLoggedMessageStructure = true;
         }
@@ -539,7 +531,7 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
             const chunks = metadata.groundingChunks || metadata.grounding_chunks;
             const userSession = sessions.get(userId);
             if (userSession) {
-                console.log(`[MultimodalLive] Captured ${chunks.length} Grounding Chunks for ${userId}:`, JSON.stringify(chunks).substring(0, 1000));
+                console.log(`[MultimodalLive] Captured ${chunks.length} Grounding Chunks for ${userId}: `, JSON.stringify(chunks).substring(0, 1000));
 
                 // US/International domains to filter out
                 const blockedDomains = ['redfin.com', 'zillow.com', 'realtor.com', 'trulia.com', 'homes.com', 'movoto.com', 'realtor.ca'];
@@ -553,14 +545,14 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
 
                             // Filter out US real estate sources
                             if (blockedDomains.some(domain => hostname.includes(domain))) {
-                                console.log(`[MultimodalLive] ⛔ Filtering out US source: ${hostname}`);
+                                console.log(`[MultimodalLive] ⛔ Filtering out US source: ${hostname} `);
                                 return;
                             }
 
                             const displayTitle = title || hostname;
                             const link = `- [${displayTitle}](${uri})`;
                             if (!userSession.groundingSources.includes(link)) {
-                                console.log(`[MultimodalLive] ✅ Adding NZ source: ${displayTitle}`);
+                                console.log(`[MultimodalLive] ✅ Adding NZ source: ${displayTitle} `);
                                 userSession.groundingSources.push(link);
                             }
                         } catch (e) { }
@@ -573,7 +565,7 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
         const toolCall = serverContent?.tool_call || serverContent?.toolCall;
         if (toolCall?.function_calls || toolCall?.functionCalls) {
             const calls = toolCall.function_calls || toolCall.functionCalls;
-            console.log(`[MultimodalLive] TOOL CALLS for ${userId}:`, JSON.stringify(calls));
+            console.log(`[MultimodalLive] TOOL CALLS for ${userId}: `, JSON.stringify(calls));
 
             // Wrap in async IIFE to allow await
             (async () => {
@@ -586,7 +578,7 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
                     const tool = toolExecutionService.findTool(call.name, allTools);
 
                     if (!tool) {
-                        console.warn(`[MultimodalLive] Tool not found: ${call.name}`);
+                        console.warn(`[MultimodalLive] Tool not found: ${call.name} `);
                         responses.push({
                             id: call.id,
                             name: call.name,
@@ -606,7 +598,7 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
 
                             if (scanResult.suggestedData) {
                                 finalArgs = { ...call.args, ...scanResult.suggestedData };
-                                console.log(`[MultimodalLive] 🧠 Enriched args with:`, Object.keys(scanResult.suggestedData));
+                                console.log(`[MultimodalLive] 🧠 Enriched args with: `, Object.keys(scanResult.suggestedData));
                             }
                         }
                     }
@@ -617,10 +609,12 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
                     const context = {
                         userId,
                         sessionId: userId + '_live', // Virtual session ID for logs
+                        conversationId: 'live-session-' + userId,
+                        approvalConfirmed: true,
                         isVoice: true
                     };
 
-                    const execution = await toolExecutionService.executeTool(tool, finalArgs, context);
+                    const execution = await toolExecutionService.executeTool(tool.name, finalArgs, context);
 
                     if (execution.success) {
                         responses.push({
@@ -632,7 +626,7 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
                         // 🧠 PROACTIVE MULTI-STEP: Inject follow-up suggestion based on what was just done
                         const proactiveSuggestion = getProactiveSuggestion(call.name, execution.result);
                         if (proactiveSuggestion) {
-                            console.log(`[MultimodalLive] 🚀 Proactive suggestion queued: ${proactiveSuggestion}`);
+                            console.log(`[MultimodalLive] 🚀 Proactive suggestion queued: ${proactiveSuggestion} `);
                             // Store for injection after tool response
                             const userSession = sessions.get(userId);
                             if (userSession) {
@@ -669,13 +663,13 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
             if (message.setupComplete) {
                 logger.info(`[MultimodalLive] Setup complete for ${userId}`);
             } else {
-                console.log(`[MultimodalLive] Non-content message for ${userId}:`, JSON.stringify(message).substring(0, 200));
+                console.log(`[MultimodalLive] Non - content message for ${userId}: `, JSON.stringify(message).substring(0, 200));
             }
             return;
         }
 
         // VERBOSE LOGGING: Log what fields are present in serverContent
-        const fields = Object.keys(serverContent);
+        // const _fields = Object.keys(serverContent);
         // Gemini uses 'inputTranscription' and 'outputTranscription' (not 'input_audio_transcription')
         const inputTransc = serverContent.inputTranscription || serverContent.input_audio_transcription || serverContent.inputAudioTranscription;
         const outputTransc = serverContent.outputTranscription || serverContent.output_audio_transcription || serverContent.outputAudioTranscription;
@@ -683,7 +677,7 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
         const turnComplete = serverContent.turn_complete || serverContent.turnComplete;
 
         if (inputTransc || outputTransc) {
-            console.log(`[MultimodalLive] TRANSCRIPT for ${userId}:`, 'output:', outputTransc?.text, 'input:', inputTransc?.text);
+            console.log(`[MultimodalLive] TRANSCRIPT for ${userId}: `, 'output:', outputTransc?.text, 'input:', inputTransc?.text);
         }
 
         // Handle interruption (barge-in) - exact pattern from Google's example
@@ -703,9 +697,9 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
                     const data = part.inlineData?.data || part.inline_data?.data;
                     const buffer = Buffer.from(data, 'base64');
                     const isSilent = buffer.every(b => b === 0);
-                    console.log(`[MultimodalLive] Audio chunk for ${userId}, size: ${data.length}, bytes: ${buffer.length}, IS_SILENT: ${isSilent}`);
+                    console.log(`[MultimodalLive] Audio chunk for ${userId}, size: ${data.length}, bytes: ${buffer.length}, IS_SILENT: ${isSilent} `);
                     if (!isSilent) {
-                        console.log(`[MultimodalLive] Sample bytes: ${buffer.subarray(0, 10).toString('hex')}`);
+                        console.log(`[MultimodalLive] Sample bytes: ${buffer.subarray(0, 10).toString('hex')} `);
                     }
 
                     console.timeEnd(`[Latency] ${userId} response time`); // Log latency
@@ -721,7 +715,7 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
         if (inputTransc?.text) {
             const text = inputTransc.text.trim();
             const isFinished = !!inputTransc.finished;
-            console.log(`[MultimodalLive] USER SPOKE for ${userId}:`, text, 'Finished:', isFinished);
+            console.log(`[MultimodalLive] USER SPOKE for ${userId}: `, text, 'Finished:', isFinished);
 
             if (isFinished) {
                 console.time(`[Latency] ${userId} response time`);
@@ -742,11 +736,11 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
                     // When finished, use the current text (which is the final corrected version)
                     if (text.length > 0) {
                         userSession.userTranscriptBuffer.push(text);
-                        console.log(`[MultimodalLive] Finalized user segment for ${userId}:`, text);
+                        console.log(`[MultimodalLive] Finalized user segment for ${userId}: `, text);
                     } else if (userSession.currentInterimTranscript.length > 0) {
                         // Fallback: if finished text is empty, use last interim
                         userSession.userTranscriptBuffer.push(userSession.currentInterimTranscript);
-                        console.log(`[MultimodalLive] Using interim as final for ${userId}:`, userSession.currentInterimTranscript);
+                        console.log(`[MultimodalLive] Using interim as final for ${userId}: `, userSession.currentInterimTranscript);
                     }
                     userSession.currentInterimTranscript = '';
                 } else {
@@ -774,7 +768,7 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
             // We now rely EXCLUSIVELY on 'voice.live.sources' message sent at turnComplete.
             // This prevents duplication and race conditions where sources appear twice or disappear.
 
-            console.log(`[MultimodalLive] Zena said for ${userId}:`, outputTransc.text, 'Finished:', isFinal);
+            console.log(`[MultimodalLive] Zena said for ${userId}: `, outputTransc.text, 'Finished:', isFinal);
 
             websocketService.sendToClientProxy(userWs, {
                 type: 'voice.live.transcript',
@@ -796,14 +790,14 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
                 // This allows the frontend to append sources to the last assistant message
                 if (userSession.groundingSources.length > 0) {
                     console.log(`[MultimodalLive] 📚 TURN COMPLETE - Sending ${userSession.groundingSources.length} sources for ${userId}`);
-                    console.log(`[MultimodalLive] 📚 Sources:`, userSession.groundingSources);
+                    console.log(`[MultimodalLive] 📚 Sources: `, userSession.groundingSources);
 
                     // Send sources as a dedicated message type
                     websocketService.sendToClientProxy(userWs, {
                         type: 'voice.live.sources',
                         payload: {
                             sources: userSession.groundingSources,
-                            formattedText: `\n\n**Verified Sources:**\n${userSession.groundingSources.join('\n')}`
+                            formattedText: `\n\n ** Verified Sources:**\n${userSession.groundingSources.join('\n')} `
                         }
                     });
                 } else {
@@ -820,7 +814,7 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
             if (userSession) {
                 // If we have nothing in the buffer but have an interim transcript, flush it now
                 if (userSession.userTranscriptBuffer.length === 0 && userSession.currentInterimTranscript.length > 0) {
-                    console.log(`[MultimodalLive] Flushing interim transcript as final for ${userId}:`, userSession.currentInterimTranscript);
+                    console.log(`[MultimodalLive] Flushing interim transcript as final for ${userId}: `, userSession.currentInterimTranscript);
                     userSession.userTranscriptBuffer.push(userSession.currentInterimTranscript);
                     userSession.currentInterimTranscript = '';
                 }
@@ -828,7 +822,7 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
                 if (userSession.userTranscriptBuffer.length > 0) {
                     const fullUserTranscript = userSession.userTranscriptBuffer.join(' ').trim();
                     if (fullUserTranscript) {
-                        console.log(`[MultimodalLive] Sending full user transcript for ${userId}:`, fullUserTranscript);
+                        console.log(`[MultimodalLive] Sending full user transcript for ${userId}: `, fullUserTranscript);
                         websocketService.sendToClientProxy(userWs, {
                             type: 'voice.live.user_turn_complete',
                             payload: { text: fullUserTranscript }
@@ -849,7 +843,7 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
         }
 
     } catch (error: any) {
-        console.error(`[MultimodalLive] Error handling message for ${userId}:`, error?.message || error);
+        console.error(`[MultimodalLive] Error handling message for ${userId}: `, error?.message || error);
     }
 }
 
@@ -878,7 +872,7 @@ export function sendAudioChunk(userId: string, base64Data: string): void {
             }
         });
     } catch (error: any) {
-        console.error(`[MultimodalLive] Error sending audio for ${userId}:`, error?.message || error);
+        console.error(`[MultimodalLive] Error sending audio for ${userId}: `, error?.message || error);
     }
 }
 
@@ -923,7 +917,7 @@ export function sendPrompt(userId: string, text: string): void {
             turns: [{ role: 'user', parts: [{ text }] }]
         });
     } catch (error: any) {
-        console.error(`[MultimodalLive] Error sending prompt for ${userId}:`, error?.message || error);
+        console.error(`[MultimodalLive] Error sending prompt for ${userId}: `, error?.message || error);
     }
 }
 

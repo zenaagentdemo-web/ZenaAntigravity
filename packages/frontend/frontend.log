@@ -3,36 +3,163 @@
 > vite
 
 
-  VITE v7.3.0  ready in 218 ms
+  VITE v7.3.0  ready in 306 ms
 
   ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-9:39:30 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.tsx
-9:39:32 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-9:41:48 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-9:47:21 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-9:47:38 AM [vite] (client) hmr update /src/pages/ContactsPage/ContactsPage.tsx
-9:47:42 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-9:48:34 AM [vite] (client) hmr update /src/pages/ContactsPage/ContactsPage.css
-9:50:26 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.tsx
-9:50:43 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-9:50:45 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-9:54:45 AM [vite] (client) hmr update /src/pages/DealFlowPage/DealFlowPage.tsx
-9:55:10 AM [vite] (client) hmr update /src/components/DealFlow/DealCard.tsx
-9:55:34 AM [vite] (client) hmr update /src/components/DealFlow/DealFlow.css
-9:55:36 AM [vite] (client) hmr update /src/pages/DealFlowPage/DealFlowPage.tsx
-9:55:38 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-9:57:18 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-9:57:18 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-10:03:01 AM [vite] (client) hmr update /src/pages/ContactsPage/ContactsPage.tsx
-10:03:33 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-10:05:18 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-10:12:55 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-10:21:02 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-10:21:02 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-10:22:25 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.css
-10:22:40 AM [vite] (client) hmr update /src/components/DealFlow/KanbanBoard.tsx
-10:22:43 AM [vite] (client) hmr update /src/components/BottomNavigation/BottomNavigation.tsx
-10:24:38 AM [vite] (client) hmr update /src/App.tsx
-10:25:09 AM [vite] (client) hmr update /src/App.tsx
-10:27:38 AM [vite] (client) hmr update /src/pages/HighTechDashboardPage/HighTechDashboardPage.tsx
+  ➜  Network: http://192.168.67.80:5173/
+8:43:46 AM [vite] http proxy error: /api/auth/login
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:44:02 AM [vite] http proxy error: /api/deals/pipeline/seller
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:44:02 AM [vite] http proxy error: /api/deals/pipeline/seller
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:44:10 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:44:10 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:44:22 AM [vite] http proxy error: /api/health
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:44:32 AM [vite] http proxy error: /api/deals/pipeline/seller
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:44:32 AM [vite] http proxy error: /api/deals/pipeline/seller
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:45:10 AM [vite] vite.config.ts changed, restarting server...
+8:45:10 AM [vite] server restarted.
+8:45:15 AM [vite] vite.config.ts changed, restarting server...
+8:45:15 AM [vite] server restarted.
+8:45:45 AM [vite] http proxy error: /api/health
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:46:15 AM [vite] http proxy error: /api/health
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:46:23 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:46:23 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:47:29 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:47:29 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:47:30 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:47:30 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:47:31 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:47:32 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:47:32 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:47:51 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:47:51 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:47:51 AM [vite] ws proxy error:
+Error: connect ECONNREFUSED 127.0.0.1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16)
+8:49:57 AM [vite] ws proxy error:
+Error: write EPIPE
+    at afterWriteDispatched (node:internal/stream_base_commons:159:15)
+    at writeGeneric (node:internal/stream_base_commons:150:3)
+    at Socket._writeGeneric (node:net:966:11)
+    at Socket._write (node:net:978:8)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at Socket.ondata (node:internal/streams/readable:1008:24)
+    at Socket.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Readable.push (node:internal/streams/readable:390:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+8:49:57 AM [vite] ws proxy socket error:
+Error: write EPIPE
+    at afterWriteDispatched (node:internal/stream_base_commons:159:15)
+    at writeGeneric (node:internal/stream_base_commons:150:3)
+    at Socket._writeGeneric (node:net:966:11)
+    at Socket._write (node:net:978:8)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at Socket.ondata (node:internal/streams/readable:1008:24)
+    at Socket.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Readable.push (node:internal/streams/readable:390:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+8:50:56 AM [vite] ws proxy error:
+Error: write EPIPE
+    at afterWriteDispatched (node:internal/stream_base_commons:159:15)
+    at writeGeneric (node:internal/stream_base_commons:150:3)
+    at Socket._writeGeneric (node:net:966:11)
+    at Socket._write (node:net:978:8)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at Socket.ondata (node:internal/streams/readable:1008:24)
+    at Socket.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Readable.push (node:internal/streams/readable:390:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+8:50:56 AM [vite] ws proxy socket error:
+Error: write EPIPE
+    at afterWriteDispatched (node:internal/stream_base_commons:159:15)
+    at writeGeneric (node:internal/stream_base_commons:150:3)
+    at Socket._writeGeneric (node:net:966:11)
+    at Socket._write (node:net:978:8)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at Socket.ondata (node:internal/streams/readable:1008:24)
+    at Socket.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Readable.push (node:internal/streams/readable:390:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23)
+8:50:59 AM [vite] ws proxy error:
+Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+8:50:59 AM [vite] ws proxy socket error:
+Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+8:55:57 AM [vite] (client) hmr update /src/components/ZenaAvatarWidget/ZenaAvatarWidget.css
+8:56:30 AM [vite] (client) hmr update /src/components/FluidParticleOverlay/FluidParticleOverlay.tsx
+8:56:40 AM [vite] (client) hmr update /src/components/ZenaHighTechAvatar/ZenaHighTechAvatar.tsx
+8:57:08 AM [vite] (client) hmr update /src/components/DissolveParticleSystem/DissolveParticleSystem.tsx
+8:57:09 AM [vite] (client) hmr update /src/components/ParticleField/ParticleField.tsx
+8:57:24 AM [vite] (client) hmr update /src/components/HolographicAvatar/HolographicAvatar.tsx, /src/components/ParticleAvatar/ParticleAvatar.tsx
+8:57:24 AM [vite] (client) hmr update /src/components/HolographicAvatar/HolographicAvatar.tsx, /src/components/ParticleAvatar/ParticleAvatar.tsx
+8:57:26 AM [vite] (client) hmr update /src/components/HolographicAvatar/HolographicAvatar.tsx
+8:57:50 AM [vite] (client) hmr update /src/pages/DealFlowPage/DealFlowPage.tsx
+8:58:25 AM [vite] (client) hmr update /src/components/DealFlow/DealDetailPanel/sections/sections.css
+9:00:18 AM [vite] (client) hmr update /src/pages/DealFlowPage/DealFlowPage.tsx, /src/components/DealFlow/DealQuickActions.tsx, /src/components/DealFlow/DealDetailPanel/DealDetailPanel.tsx, /src/components/DealFlow/ZenaMomentumFlow.tsx, /src/components/DealFlow/ZenaIntelligence/ZenaDealCard.tsx, /src/components/ContactIntelligenceModal/ContactIntelligenceModal.tsx, /src/pages/TasksPage/TasksPage.tsx, /src/components/ContactIntelligenceCard/ContactIntelligenceCard.tsx, /src/components/DealFlow/DealDetailPanel/sections/SearchCriteriaSection.tsx, /src/components/DealFlow/DealDetailPanel/sections/OfferListSection.tsx, /src/components/DealFlow/DealDetailPanel/sections/StageProgressHeader.tsx, /src/components/DealFlow/DealDetailPanel/sections/OfferDetailsSection.tsx, /src/components/DealFlow/DealDetailPanel/sections/SettlementCountdownSection.tsx, /src/components/DealFlow/DealDetailPanel/sections/IntelligenceTab.tsx
+9:00:54 AM [vite] (client) hmr update /src/pages/DealFlowPage/DealFlowPage.tsx
+9:01:10 AM [vite] (client) hmr update /src/pages/DealFlowPage/DealFlowPage.tsx
+npm error Lifecycle script `dev` failed with error:
+npm error code 143
+npm error path /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend
+npm error workspace @zena/frontend@1.0.0
+npm error location /Users/hamishmcgee/Desktop/ZenaAntigravity/packages/frontend
+npm error command failed
+npm error command sh -c vite

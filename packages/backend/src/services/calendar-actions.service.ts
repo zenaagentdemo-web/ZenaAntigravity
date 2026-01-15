@@ -62,19 +62,20 @@ class CalendarActionsService {
 
         try {
             const property = await prisma.property.findUnique({
-                where: { id: propertyId },
-                include: {
-                    milestones: {
-                        where: { type: 'open_home' },
-                        orderBy: { date: 'desc' },
-                        take: 5,
-                    },
-                },
+                where: { id: propertyId }
             });
 
             if (!property) {
                 return [];
             }
+
+            // Get existing milestones (which is a JSON field)
+            const milestones = (property.milestones as any[]) || [];
+            const recentOpenHomes = milestones
+                .filter(m => m.type === 'open_home')
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                .slice(0, 5);
+
 
             // Get agent's existing calendar events
             const nextTwoWeeks = new Date();
@@ -338,7 +339,6 @@ Return JSON:
                     where: {
                         userId,
                         milestones: {
-                            path: ['$'],
                             array_contains: [{ id: eventId }]
                         }
                     }

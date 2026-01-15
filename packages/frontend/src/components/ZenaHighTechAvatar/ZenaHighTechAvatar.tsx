@@ -203,14 +203,15 @@ export const ZenaHighTechAvatar: React.FC<ZenaHighTechAvatarProps> = memo(({
 
         try {
             // PRE-FLIGHT CHECK: Explicitly check for context availability before Three.js tries to initialize.
-            const gl = canvasRef.current.getContext('webgl', {
+            // Using webgl2 to avoid deprecation warnings and improve performance/stability.
+            const gl = canvasRef.current.getContext('webgl2', {
                 alpha: true,
                 antialias: true,
                 powerPreference: 'high-performance'
             });
 
-            if (!gl) {
-                console.warn('[ZenaHighTechAvatar] WebGL Context unavailable (Exhausted?). Aborting renderer creation.');
+            if (!gl || !gl.getContextAttributes()) {
+                console.warn('[ZenaHighTechAvatar] WebGL 2 Context unavailable or invalid. Aborting renderer creation.');
                 rendererRef.current = null;
                 return;
             }
@@ -226,7 +227,7 @@ export const ZenaHighTechAvatar: React.FC<ZenaHighTechAvatarProps> = memo(({
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             rendererRef.current = renderer;
         } catch (error) {
-            console.error('[ZenaHighTechAvatar] WebGL initialization failed (Exception):', error);
+            console.error('[ZenaHighTechAvatar] WebGL 2 initialization failed (Exception):', error);
             rendererRef.current = null;
             return; // Exit early if renderer creation fails
         }
@@ -418,7 +419,7 @@ export const ZenaHighTechAvatar: React.FC<ZenaHighTechAvatarProps> = memo(({
 
             {/* Background Fluid Particles */}
             <div className="zena-hightech-avatar__fluid-bg">
-                {(size > 100) && (
+                {(size > 120) && (
                     <FluidParticleOverlay
                         width={overlaySize}
                         height={overlaySize}

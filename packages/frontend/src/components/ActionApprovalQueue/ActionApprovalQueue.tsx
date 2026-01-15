@@ -70,7 +70,7 @@ export const ActionApprovalQueue: React.FC<ActionApprovalQueueProps> = ({
     const [isRegenerating, setIsRegenerating] = useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-    const selectedAction = actions.find(a => a.id === selectedActionId);
+    const selectedAction = actions.find((a: AutonomousAction) => a.id === selectedActionId); // Cast to AutonomousAction
 
     // Initial selected action
     useEffect(() => {
@@ -256,7 +256,7 @@ export const ActionApprovalQueue: React.FC<ActionApprovalQueueProps> = ({
                             </div>
                         ) : (
                             <div className="action-queue__list">
-                                {actions.map(action => (
+                                {actions.map((action: AutonomousAction) => ( // Cast to AutonomousAction
                                     <div
                                         key={action.id}
                                         className={`action-queue__item ${selectedActionId === action.id ? 'selected' : ''}`}
@@ -471,7 +471,6 @@ export const ActionApprovalQueue: React.FC<ActionApprovalQueueProps> = ({
                                                         />
                                                     </div>
                                                 </div>
-                                                {console.log('[ActionApprovalQueue] Rendering attachments:', attachments.length)}
                                                 {attachments.length > 0 && (
                                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
                                                         {attachments.map((file, i) => (

@@ -16,6 +16,11 @@ const STATIC_ASSETS = [
   '/offline.html', // Fallback page
 ];
 
+// Inject manifest
+// eslint-disable-next-line no-underscore-dangle
+const precacheManifest = self.__WB_MANIFEST || [];
+console.log('[Service Worker] Precache manifest:', precacheManifest);
+
 // API endpoints that should be cached
 const CACHEABLE_API_PATTERNS = [
   /\/api\/threads/,
@@ -29,7 +34,7 @@ const CACHEABLE_API_PATTERNS = [
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing...');
-  
+
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
       console.log('[Service Worker] Caching static assets');
@@ -46,7 +51,7 @@ self.addEventListener('install', (event) => {
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
   console.log('[Service Worker] Activating...');
-  
+
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -116,18 +121,18 @@ async function networkFirstStrategy(request) {
 
   try {
     const networkResponse = await fetch(request);
-    
+
     // Cache successful responses
     if (networkResponse.ok) {
       cache.put(request, networkResponse.clone());
     }
-    
+
     return networkResponse;
   } catch (error) {
     console.log('[Service Worker] Network request failed, trying cache:', request.url);
-    
+
     const cachedResponse = await cache.match(request);
-    
+
     if (cachedResponse) {
       return cachedResponse;
     }
@@ -169,15 +174,15 @@ async function cacheFirstStrategy(request) {
 
   try {
     const networkResponse = await fetch(request);
-    
+
     if (networkResponse.ok) {
       cache.put(request, networkResponse.clone());
     }
-    
+
     return networkResponse;
   } catch (error) {
     console.error('[Service Worker] Cache and network both failed:', request.url);
-    
+
     return new Response('Resource not available offline', {
       status: 503,
       statusText: 'Service Unavailable',
@@ -277,7 +282,7 @@ self.addEventListener('notificationclick', (event) => {
           return client.focus();
         }
       }
-      
+
       // Open a new window
       if (self.clients.openWindow) {
         return self.clients.openWindow(urlToOpen);

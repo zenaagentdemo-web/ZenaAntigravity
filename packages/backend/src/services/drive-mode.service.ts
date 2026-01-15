@@ -59,11 +59,7 @@ export class DriveModeService {
         const nextEvent = await prisma.timelineEvent.findFirst({
             where: {
                 userId,
-                timestamp: { gte: now, lte: twoHoursFromNow },
-                metadata: {
-                    path: ['location'],
-                    string_contains: ""
-                }
+                timestamp: { gte: now, lte: twoHoursFromNow }
             },
             orderBy: { timestamp: 'asc' }
         });

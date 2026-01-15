@@ -384,6 +384,20 @@ class ThreadLinkingService {
       throw error;
     }
   }
+  /**
+   * Archive a thread
+   */
+  async archiveThread(threadId: string): Promise<void> {
+    try {
+      await prisma.thread.update({
+        where: { id: threadId },
+        data: { classification: 'archived' },
+      });
+    } catch (error) {
+      console.error('Error archiving thread:', error);
+      throw error;
+    }
+  }
 }
 
 export const threadLinkingService = new ThreadLinkingService();

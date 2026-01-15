@@ -1,0 +1,291 @@
+../../node_modules/@types/css-font-loading-module/index.d.ts(44,9): error TS2717: Subsequent property declarations must have the same type.  Property 'onloading' must be of type '(this: FontFaceSet, ev: FontFaceSetLoadEvent) => any', but here has type '(this: FontFaceSet, event: Event) => any'.
+../../node_modules/@types/css-font-loading-module/index.d.ts(45,9): error TS2717: Subsequent property declarations must have the same type.  Property 'onloadingdone' must be of type '(this: FontFaceSet, ev: FontFaceSetLoadEvent) => any', but here has type '(this: FontFaceSet, event: Event) => any'.
+../../node_modules/@types/css-font-loading-module/index.d.ts(46,9): error TS2717: Subsequent property declarations must have the same type.  Property 'onloadingerror' must be of type '(this: FontFaceSet, ev: FontFaceSetLoadEvent) => any', but here has type '(this: FontFaceSet, event: Event) => any'.
+../../node_modules/@types/css-font-loading-module/index.d.ts(86,9): error TS2403: Subsequent variable declarations must have the same type.  Variable 'FontFace' must be of type '{ new (family: string, source: string | BufferSource, descriptors?: FontFaceDescriptors): FontFace; prototype: FontFace; }', but here has type '{ new (family: string, source: string | BinaryData, descriptors?: FontFaceDescriptors): FontFace; prototype: FontFace; }'.
+../../node_modules/gaxios/build/cjs/src/gaxios.d.ts(16,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/google-auth-library/build/src/auth/awsclient.d.ts(83,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/google-auth-library/build/src/auth/baseexternalclient.d.ts(173,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/google-auth-library/build/src/auth/googleauth.d.ts(159,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/google-auth-library/build/src/auth/oauth2common.d.ts(50,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/google-auth-library/build/src/auth/stscredentials.d.ts(99,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/google-auth-library/build/src/util.d.ts(125,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/gtoken/build/cjs/src/index.d.ts(38,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(33,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(578,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(816,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(1122,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(1275,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(1585,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(1672,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(1718,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(1877,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(1977,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(2480,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(2576,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(2608,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(2744,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(3767,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(4262,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(4803,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(6991,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(7349,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(7647,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(7734,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(8067,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+../../node_modules/puppeteer-core/lib/types.d.ts(8309,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+src/controllers/properties.controller.ts(21,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(39,21): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(104,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(131,80): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(188,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(192,81): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(206,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(261,25): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(296,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(378,29): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(395,25): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(415,25): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(451,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(465,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(522,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(577,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(592,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(667,27): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(807,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(822,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(866,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(932,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1013,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1052,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1080,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1107,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1135,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1199,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1229,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1236,34): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1247,88): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1265,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1277,36): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1282,95): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1308,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1314,34): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1373,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1379,34): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1447,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1452,26): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1492,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1512,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1552,16): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1560,23): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/controllers/properties.controller.ts(1598,87): error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+src/services/agent-orchestrator.service.ts(120,25): error TS2353: Object literal may only specify known properties, and 'isVoiceMode' does not exist in type 'ToolExecutionContext'.
+src/services/agent-orchestrator.service.ts(125,39): error TS2872: This kind of expression is always truthy.
+src/services/agent-orchestrator.service.ts(153,62): error TS2345: Argument of type '"agent.tool_call"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/agent-orchestrator.service.ts(386,33): error TS2802: Type 'Set<string>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
+src/services/agent-orchestrator.service.ts(402,30): error TS2802: Type 'Set<string>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
+src/services/agent-orchestrator.service.ts(550,21): error TS2353: Object literal may only specify known properties, and 'isVoiceMode' does not exist in type 'ToolExecutionContext'.
+src/services/agent-orchestrator.service.ts(641,29): error TS2561: Object literal may only specify known properties, but 'contextScanned' does not exist in type 'Omit<PendingConfirmation, "createdAt">'. Did you mean to write 'contextScannedKey'?
+src/services/agent-orchestrator.service.ts(775,25): error TS2353: Object literal may only specify known properties, and 'isVoiceMode' does not exist in type 'ToolExecutionContext'.
+src/services/agent-orchestrator.service.ts(789,62): error TS2345: Argument of type '"agent.tool_call"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/agent-orchestrator.service.ts(814,33): error TS2322: Type '"system"' is not assignable to type '"user" | "assistant" | "tool"'.
+src/services/ai-processing.service.ts(1476,67): error TS2345: Argument of type '"contact.updated"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/calendar-actions.service.ts(342,29): error TS2353: Object literal may only specify known properties, and 'array_contains' does not exist in type 'JsonNullableListFilter<"Property">'.
+src/services/calendar-optimizer.service.ts(303,63): error TS1501: This regular expression flag is only available when targeting 'es2018' or later.
+src/services/contact-intelligence.service.ts(107,21): error TS2322: Type '{ brief: ContactAnalysis; lastDeepAnalysisAt: string; }' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput'.
+  Types of property 'brief' are incompatible.
+    Type 'ContactAnalysis' is not assignable to type 'InputJsonValue'.
+      Type 'ContactAnalysis' is not assignable to type 'InputJsonObject'.
+        Index signature for type 'string' is missing in type 'ContactAnalysis'.
+src/services/crm-delivery.service.ts(1,8): error TS1192: Module '"/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@types/nodemailer/index"' has no default export.
+src/services/deal-flow.service.ts(394,21): error TS2353: Object literal may only specify known properties, and 'priority' does not exist in type '(Without<TaskCreateInput, TaskUncheckedCreateInput> & TaskUncheckedCreateInput) | (Without<...> & TaskCreateInput)'.
+src/services/deal-intelligence.service.ts(49,52): error TS2339: Property 'payload' does not exist on type '{ type: string; id: string; output: string; status: string; userId: string; dealId: string; triggeredAt: Date; executedAt: Date; dismissedAt: Date; }'.
+src/services/deal-intelligence.service.ts(51,42): error TS2339: Property 'payload' does not exist on type '{ type: string; id: string; output: string; status: string; userId: string; dealId: string; triggeredAt: Date; executedAt: Date; dismissedAt: Date; }'.
+src/services/deal-intelligence.service.ts(151,21): error TS2353: Object literal may only specify known properties, and 'payload' does not exist in type '(Without<ZenaActionCreateInput, ZenaActionUncheckedCreateInput> & ZenaActionUncheckedCreateInput) | (Without<...> & ZenaActionCreateInput)'.
+src/services/godmode.service.ts(772,31): error TS2339: Property 'recordEvent' does not exist on type 'TimelineService'.
+src/services/godmode.service.ts(808,17): error TS2353: Object literal may only specify known properties, and 'title' does not exist in type '(Without<TaskCreateInput, TaskUncheckedCreateInput> & TaskUncheckedCreateInput) | (Without<...> & TaskCreateInput)'.
+src/services/intelligent-navigator.service.ts(95,36): error TS2304: Cannot find name 'siteDiscoveryService'.
+src/services/intelligent-navigator.service.ts(114,23): error TS2304: Cannot find name 'siteDiscoveryService'.
+src/services/intelligent-navigator.service.ts(123,32): error TS2304: Cannot find name 'siteDiscoveryService'.
+src/services/intelligent-navigator.service.ts(127,25): error TS2304: Cannot find name 'siteNavigationMapService'.
+src/services/intelligent-navigator.service.ts(258,18): error TS2678: Type '"report"' is not comparable to type '"search" | "filter" | "unknown" | "details" | "count" | "list"'.
+src/services/intelligent-navigator.service.ts(273,21): error TS2304: Cannot find name 'LearnedPath'.
+src/services/intelligent-navigator.service.ts(332,21): error TS2304: Cannot find name 'LearnedPath'.
+src/services/intelligent-navigator.service.ts(376,49): error TS2552: Cannot find name 'NavigationStep'. Did you mean 'NavigationType'?
+src/services/intelligent-navigator.service.ts(559,21): error TS2554: Expected 2 arguments, but got 1.
+src/services/logger.service.ts(1,8): error TS1192: Module '"fs"' has no default export.
+src/services/logger.service.ts(2,8): error TS1259: Module '"path"' can only be default-imported using the 'esModuleInterop' flag
+src/services/logger.service.ts(5,34): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/services/market-scraper.service.ts(224,17): error TS2353: Object literal may only specify known properties, and 'found' does not exist in type 'PropertyDetails'.
+src/services/multimodal-live.service.ts(8,8): error TS1259: Module '"/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@types/ws/index"' can only be default-imported using the 'esModuleInterop' flag
+src/services/multimodal-live.service.ts(70,26): error TS2802: Type 'Set<string>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
+src/services/navigation-planner.service.ts(409,17): error TS2739: Type '{ steps: NavAction[]; }' is missing the following properties from type 'ActionSequence': name, description
+src/services/oracle.service.ts(76,22): error TS2352: Conversion of type 'string | number | boolean | JsonObject | JsonArray' to type 'PropensitySignal[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'JsonArray' is not comparable to type 'PropensitySignal[]'.
+    Type 'JsonValue' is not comparable to type 'PropensitySignal'.
+      Type 'JsonValue[]' is missing the following properties from type 'PropensitySignal': type, weight, source, detectedAt
+src/services/oracle.service.ts(77,22): error TS2352: Conversion of type 'string | number | boolean | JsonObject | JsonArray' to type 'PropensitySignal[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'JsonArray' is not comparable to type 'PropensitySignal[]'.
+    Type 'JsonValue' is not comparable to type 'PropensitySignal'.
+      Type 'JsonValue[]' is missing the following properties from type 'PropensitySignal': type, weight, source, detectedAt
+src/services/oracle.service.ts(212,17): error TS2322: Type 'PropensitySignal[]' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput'.
+  Type 'PropensitySignal[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'PropensitySignal[]'.
+src/services/oracle.service.ts(215,17): error TS2322: Type 'PropensitySignal[]' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput'.
+  Type 'PropensitySignal[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'PropensitySignal[]'.
+src/services/oracle.service.ts(229,17): error TS2322: Type 'PropensitySignal[]' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput'.
+  Type 'PropensitySignal[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'PropensitySignal[]'.
+src/services/oracle.service.ts(232,17): error TS2322: Type 'PropensitySignal[]' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput'.
+  Type 'PropensitySignal[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'PropensitySignal[]'.
+src/services/personality-markers.service.ts(163,82): error TS1501: This regular expression flag is only available when targeting 'es6' or later.
+src/services/personality-markers.service.ts(178,39): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; max: number; } | { min: number; max: number; } | { min: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/personality-markers.service.ts(178,102): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; max: number; } | { min: number; max: number; } | { min: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/personality-markers.service.ts(182,39): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; max: number; } | { min: number; max: number; } | { min: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(182,102): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; max: number; } | { min: number; max: number; } | { min: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(188,32): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; } | { min: number; } | { min: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/personality-markers.service.ts(188,79): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; } | { min: number; } | { min: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/personality-markers.service.ts(192,32): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; } | { min: number; } | { min: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(192,79): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; } | { min: number; } | { min: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(198,38): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; } | { max: number; } | { max: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(198,99): error TS2339: Property 'min' does not exist on type '{ max: number; } | { min: number; } | { max: number; } | { max: number; }'.
+  Property 'min' does not exist on type '{ max: number; }'.
+src/services/personality-markers.service.ts(202,38): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; } | { max: number; } | { max: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/personality-markers.service.ts(202,99): error TS2339: Property 'max' does not exist on type '{ max: number; } | { min: number; } | { max: number; } | { max: number; }'.
+  Property 'max' does not exist on type '{ min: number; }'.
+src/services/property-intelligence.service.ts(110,40): error TS2352: Conversion of type 'string | number | boolean | JsonObject | JsonArray' to type 'SuggestedAction[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'JsonArray' is not comparable to type 'SuggestedAction[]'.
+    Type 'JsonValue' is not comparable to type 'SuggestedAction'.
+      Type 'JsonValue[]' is missing the following properties from type 'SuggestedAction': action, reasoning, impact
+src/services/property-intelligence.service.ts(231,17): error TS2322: Type 'SuggestedAction[]' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput'.
+  Type 'SuggestedAction[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'SuggestedAction[]'.
+src/services/property-intelligence.service.ts(242,17): error TS2322: Type 'SuggestedAction[]' is not assignable to type 'InputJsonValue | NullableJsonNullValueInput'.
+  Type 'SuggestedAction[]' is not assignable to type 'InputJsonObject'.
+    Index signature for type 'string' is missing in type 'SuggestedAction[]'.
+src/services/property-intelligence.service.ts(276,13): error TS2322: Type 'string[]' is not assignable to type 'SuggestedAction[]'.
+  Type 'string' is not assignable to type 'SuggestedAction'.
+src/services/property-intelligence.service.ts(407,63): error TS2345: Argument of type 'string' is not assignable to parameter of type 'Error'.
+src/services/property-intelligence.service.ts(640,50): error TS2345: Argument of type '"market_pulse.update"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/property-intelligence.service.ts(739,50): error TS2345: Argument of type '"market_pulse.update"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/site-navigation-maps.ts(91,13): error TS2561: Object literal may only specify known properties, but 'resultLinkSelector' does not exist in type 'SearchConfig'. Did you mean to write 'resultItemSelector'?
+src/services/site-navigation-maps.ts(108,13): error TS2739: Type '{ steps: ({ type: "wait"; waitFor: string; timeout: number; } | { type: "click"; selector: string; } | { type: "type"; selector: string; value: string; } | { type: "submit"; selector: string; })[]; }' is missing the following properties from type 'ActionSequence': name, description
+src/services/site-navigation-maps.ts(117,13): error TS2739: Type '{ steps: ({ type: "navigate"; url: string; } | { type: "wait"; waitFor: string; timeout: number; } | { type: "type"; selector: string; value: string; } | { type: "click"; selector: string; })[]; }' is missing the following properties from type 'ActionSequence': name, description
+src/services/site-navigation-maps.ts(212,13): error TS2561: Object literal may only specify known properties, but 'resultLinkSelector' does not exist in type 'SearchConfig'. Did you mean to write 'resultItemSelector'?
+src/services/site-navigation-maps.ts(275,13): error TS2561: Object literal may only specify known properties, but 'resultLinkSelector' does not exist in type 'SearchConfig'. Did you mean to write 'resultItemSelector'?
+src/services/site-navigation-maps.ts(294,5): error TS2741: Property 'searchProperties' is missing in type '{ searchProperty: { name: string; description: string; steps: ({ type: "navigate"; url: string; } | { type: "wait"; waitFor: string; timeout: number; } | { type: "type"; selector: string; value: string; } | { ...; } | { ...; })[]; }; getCV: { ...; }; }' but required in type '{ [key: string]: ActionSequence; getListingDetails?: ActionSequence; searchProperties: ActionSequence; extractCurrentPage?: ActionSequence; }'.
+src/services/site-navigation-maps.ts(598,34): error TS2802: Type 'Map<string, SiteNavigationMap>' can only be iterated through when using the '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
+src/services/site-navigation-maps.ts(637,13): error TS2741: Property 'search' is missing in type '{ propertyDetail: { urlPattern: string; fields: {}; }; }' but required in type '{ search: SearchConfig; propertyDetail: PropertyDetailConfig; dashboard?: { url: string; dataSelectors: Record<string, string>; }; crmWrite?: Record<...>; }'.
+src/services/site-navigation-maps.ts(643,13): error TS2741: Property 'searchProperties' is missing in type '{ extractCurrentPage: { name: string; description: string; steps: { type: "wait"; waitFor: string; timeout: number; }[]; }; }' but required in type '{ [key: string]: ActionSequence; getListingDetails?: ActionSequence; searchProperties: ActionSequence; extractCurrentPage?: ActionSequence; }'.
+src/services/task.service.ts(76,24): error TS2353: Object literal may only specify known properties, and 'priority' does not exist in type 'TaskWhereInput'.
+src/services/task.service.ts(294,56): error TS2353: Object literal may only specify known properties, and 'price' does not exist in type 'DealSelect<DefaultArgs>'.
+src/services/task.service.ts(307,27): error TS2339: Property 'price' does not exist on type '{ id: string; summary: string; status: string; createdAt: Date; userId: string; updatedAt: Date; propertyId: string; stage: string; riskLevel: string; nextAction: string; nextActionOwner: string; ... 19 more ...; contactStages: JsonValue; }'.
+src/services/task.service.ts(307,48): error TS2339: Property 'price' does not exist on type '{ id: string; summary: string; status: string; createdAt: Date; userId: string; updatedAt: Date; propertyId: string; stage: string; riskLevel: string; nextAction: string; nextActionOwner: string; ... 19 more ...; contactStages: JsonValue; }'.
+src/services/task.service.ts(310,58): error TS2339: Property 'price' does not exist on type '{ id: string; summary: string; status: string; createdAt: Date; userId: string; updatedAt: Date; propertyId: string; stage: string; riskLevel: string; nextAction: string; nextActionOwner: string; ... 19 more ...; contactStages: JsonValue; }'.
+src/services/task.service.ts(382,14): error TS2339: Property 'priority' does not exist on type '{ id: string; source: string; label: string; status: string; context: string; createdAt: Date; userId: string; propertyId: string; dealId: string; contactId: string; dueDate: Date; estimatedDuration: number; completedAt: Date; }'.
+src/services/task.service.ts(542,29): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(iterable?: Iterable<readonly [unknown, unknown]>): Map<unknown, unknown>', gave the following error.
+    Argument of type 'any[][]' is not assignable to parameter of type 'Iterable<readonly [unknown, unknown]>'.
+      The types returned by '[Symbol.iterator]().next(...)' are incompatible between these types.
+        Type 'IteratorResult<any[], any>' is not assignable to type 'IteratorResult<readonly [unknown, unknown], any>'.
+          Type 'IteratorYieldResult<any[]>' is not assignable to type 'IteratorResult<readonly [unknown, unknown], any>'.
+            Type 'IteratorYieldResult<any[]>' is not assignable to type 'IteratorYieldResult<readonly [unknown, unknown]>'.
+              Type 'any[]' is not assignable to type 'readonly [unknown, unknown]'.
+                Target requires 2 element(s) but source may have fewer.
+  Overload 2 of 4, '(entries?: readonly (readonly [unknown, unknown])[]): Map<unknown, unknown>', gave the following error.
+    Argument of type 'any[][]' is not assignable to parameter of type 'readonly (readonly [unknown, unknown])[]'.
+      Type 'any[]' is not assignable to type 'readonly [unknown, unknown]'.
+        Target requires 2 element(s) but source may have fewer.
+src/services/task.service.ts(543,32): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(iterable?: Iterable<readonly [unknown, unknown]>): Map<unknown, unknown>', gave the following error.
+    Argument of type 'any[][]' is not assignable to parameter of type 'Iterable<readonly [unknown, unknown]>'.
+      The types returned by '[Symbol.iterator]().next(...)' are incompatible between these types.
+        Type 'IteratorResult<any[], any>' is not assignable to type 'IteratorResult<readonly [unknown, unknown], any>'.
+          Type 'IteratorYieldResult<any[]>' is not assignable to type 'IteratorResult<readonly [unknown, unknown], any>'.
+            Type 'IteratorYieldResult<any[]>' is not assignable to type 'IteratorYieldResult<readonly [unknown, unknown]>'.
+              Type 'any[]' is not assignable to type 'readonly [unknown, unknown]'.
+                Target requires 2 element(s) but source may have fewer.
+  Overload 2 of 4, '(entries?: readonly (readonly [unknown, unknown])[]): Map<unknown, unknown>', gave the following error.
+    Argument of type 'any[][]' is not assignable to parameter of type 'readonly (readonly [unknown, unknown])[]'.
+      Type 'any[]' is not assignable to type 'readonly [unknown, unknown]'.
+        Target requires 2 element(s) but source may have fewer.
+src/services/task.service.ts(544,29): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(iterable?: Iterable<readonly [unknown, unknown]>): Map<unknown, unknown>', gave the following error.
+    Argument of type 'any[][]' is not assignable to parameter of type 'Iterable<readonly [unknown, unknown]>'.
+      The types returned by '[Symbol.iterator]().next(...)' are incompatible between these types.
+        Type 'IteratorResult<any[], any>' is not assignable to type 'IteratorResult<readonly [unknown, unknown], any>'.
+          Type 'IteratorYieldResult<any[]>' is not assignable to type 'IteratorResult<readonly [unknown, unknown], any>'.
+            Type 'IteratorYieldResult<any[]>' is not assignable to type 'IteratorYieldResult<readonly [unknown, unknown]>'.
+              Type 'any[]' is not assignable to type 'readonly [unknown, unknown]'.
+                Target requires 2 element(s) but source may have fewer.
+  Overload 2 of 4, '(entries?: readonly (readonly [unknown, unknown])[]): Map<unknown, unknown>', gave the following error.
+    Argument of type 'any[][]' is not assignable to parameter of type 'readonly (readonly [unknown, unknown])[]'.
+      Type 'any[]' is not assignable to type 'readonly [unknown, unknown]'.
+        Target requires 2 element(s) but source may have fewer.
+src/services/task.service.ts(552,42): error TS2339: Property 'id' does not exist on type 'unknown'.
+src/services/task.service.ts(552,60): error TS2339: Property 'name' does not exist on type 'unknown'.
+src/services/task.service.ts(552,81): error TS2339: Property 'emails' does not exist on type 'unknown'.
+src/services/task.service.ts(916,46): error TS2345: Argument of type '"task.reopened"' is not assignable to parameter of type 'WebSocketEventType'.
+src/services/tool-execution.service.ts(108,49): error TS2345: Argument of type '{ userId: string; conversationId: string; approvalConfirmed: true; }' is not assignable to parameter of type 'ToolExecutionContext'.
+  Property 'sessionId' is missing in type '{ userId: string; conversationId: string; approvalConfirmed: true; }' but required in type 'ToolExecutionContext'.
+src/services/tool-execution.service.ts(182,57): error TS2304: Cannot find name 'tool'.
+src/services/voice-note.service.ts(240,11): error TS2322: Type 'ExtractedEntity[]' is not assignable to type 'InputJsonValue[] | VoiceNoteUpdateextractedEntitiesInput'.
+  Type 'ExtractedEntity[]' is not assignable to type 'InputJsonValue[]'.
+    Type 'ExtractedEntity' is not assignable to type 'InputJsonValue'.
+      Type 'ExtractedEntity' is not assignable to type 'InputJsonObject'.
+        Index signature for type 'string' is missing in type 'ExtractedEntity'.
+src/services/websocket.service.ts(3,8): error TS1192: Module '"/Users/hamishmcgee/Desktop/ZenaAntigravity/node_modules/@types/jsonwebtoken/index"' has no default export.
+src/tools/calendar/search-calendar.tool.ts(31,14): error TS2741: Property 'auditLogFormat' is missing in type '{ name: string; domain: string; description: string; inputSchema: { type: "object"; properties: { query: { type: "string"; description: string; }; date: { type: "string"; description: string; }; }; }; outputSchema: { ...; }; permissions: string[]; requiresApproval: false; execute(params: SearchCalendarInput, context...' but required in type 'ZenaToolDefinition<SearchCalendarInput, SearchCalendarOutput>'.
+src/tools/deals/create-deal.tool.ts(100,40): error TS2304: Cannot find name 'prisma'.
+src/tools/deals/create-deal.tool.ts(107,47): error TS2304: Cannot find name 'prisma'.
+src/tools/deals/search-deal.tool.ts(76,21): error TS2322: Type '({ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; summary?: undefined; } | { property?: undefined; contacts?: undefined; summary?: undefined; } | { contacts: { some: { name: { ...; }; }; }; property?: undefined; summary?: undefined; } | { ...; })[]' is not assignable to type 'DealWhereInput[]'.
+  Type '{ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; summary?: undefined; } | { property?: undefined; contacts?: undefined; summary?: undefined; } | { contacts: { some: { name: { ...; }; }; }; property?: undefined; summary?: undefined; } | { ...; }' is not assignable to type 'DealWhereInput'.
+    Type '{ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; summary?: undefined; }' is not assignable to type 'DealWhereInput'.
+      Types of property 'property' are incompatible.
+        Type '{ address: { contains: string; mode: string; }; }' is not assignable to type '(Without<PropertyNullableRelationFilter, PropertyWhereInput> & PropertyWhereInput) | (Without<...> & PropertyNullableRelationFilter)'.
+          Type '{ address: { contains: string; mode: string; }; }' is not assignable to type 'Without<PropertyWhereInput, PropertyNullableRelationFilter> & PropertyNullableRelationFilter'.
+            Type '{ address: { contains: string; mode: string; }; }' is not assignable to type 'Without<PropertyWhereInput, PropertyNullableRelationFilter>'.
+              Types of property 'address' are incompatible.
+                Type '{ contains: string; mode: string; }' is not assignable to type 'never'.
+src/tools/deals/search-deal.tool.ts(100,36): error TS2551: Property 'property' does not exist on type '{ id: string; summary: string; status: string; createdAt: Date; userId: string; updatedAt: Date; propertyId: string; stage: string; riskLevel: string; nextAction: string; nextActionOwner: string; ... 19 more ...; contactStages: JsonValue; }'. Did you mean 'propertyId'?
+src/tools/deals/search-deal.tool.ts(110,52): error TS2551: Property 'property' does not exist on type '{ id: string; summary: string; status: string; createdAt: Date; userId: string; updatedAt: Date; propertyId: string; stage: string; riskLevel: string; nextAction: string; nextActionOwner: string; ... 19 more ...; contactStages: JsonValue; }'. Did you mean 'propertyId'?
+src/tools/deals/update-deal.tool.ts(91,25): error TS2322: Type '({ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; } | { property?: undefined; contacts?: undefined; } | { contacts: { some: { name: { contains: string; mode: string; }; }; }; property?: undefined; })[]' is not assignable to type 'DealWhereInput[]'.
+  Type '{ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; } | { property?: undefined; contacts?: undefined; } | { contacts: { some: { name: { contains: string; mode: string; }; }; }; property?: undefined; }' is not assignable to type 'DealWhereInput'.
+    Type '{ property: { address: { contains: string; mode: string; }; }; contacts?: undefined; }' is not assignable to type 'DealWhereInput'.
+      Types of property 'property' are incompatible.
+        Type '{ address: { contains: string; mode: string; }; }' is not assignable to type '(Without<PropertyNullableRelationFilter, PropertyWhereInput> & PropertyWhereInput) | (Without<...> & PropertyNullableRelationFilter)'.
+          Type '{ address: { contains: string; mode: string; }; }' is not assignable to type 'Without<PropertyWhereInput, PropertyNullableRelationFilter> & PropertyNullableRelationFilter'.
+            Type '{ address: { contains: string; mode: string; }; }' is not assignable to type 'Without<PropertyWhereInput, PropertyNullableRelationFilter>'.
+              Types of property 'address' are incompatible.
+                Type '{ contains: string; mode: string; }' is not assignable to type 'never'.
+src/tools/inbox/search-inbox.tool.ts(30,14): error TS2741: Property 'auditLogFormat' is missing in type '{ name: string; domain: string; description: string; inputSchema: { type: "object"; properties: { query: { type: "string"; description: string; }; }; required: string[]; }; outputSchema: { type: "object"; properties: { ...; }; }; permissions: string[]; requiresApproval: false; execute(params: SearchInboxInput, conte...' but required in type 'ZenaToolDefinition<SearchInboxInput, SearchInboxOutput>'.
+src/tools/memory/search-memory.tool.ts(37,5): error TS2322: Type '(userId: string, params: { query: string; types?: string[]; limit?: number; }) => Promise<{ success: true; message: string; data: { results: any[]; totalCount?: undefined; }; } | { success: true; message: string; data: { ...; }; }>' is not assignable to type '(params: any, context: ToolExecutionContext) => Promise<ToolExecutionResult<any>>'.
+  Types of parameters 'params' and 'context' are incompatible.
+    Property 'query' is missing in type 'ToolExecutionContext' but required in type '{ query: string; types?: string[]; limit?: number; }'.
+src/tools/properties/add-milestone.tool.ts(112,26): error TS2339: Property 'type' does not exist on type '{ id: string; title: any; date: any; status: any; createdAt: string; }'.
+src/tools/tasks/create-task.tool.ts(107,39): error TS2339: Property 'propertyAddress' does not exist on type 'CreateTaskInput'.
+src/tools/tasks/create-task.tool.ts(109,66): error TS2339: Property 'propertyAddress' does not exist on type 'CreateTaskInput'.
+src/tools/tasks/create-task.tool.ts(115,38): error TS2339: Property 'contactName' does not exist on type 'CreateTaskInput'.
+src/tools/tasks/create-task.tool.ts(117,63): error TS2339: Property 'contactName' does not exist on type 'CreateTaskInput'.
+src/tools/tasks/delete-task.tool.ts(72,36): error TS2304: Cannot find name 'prisma'.
+src/tools/tasks/get-task.tool.ts(72,38): error TS2339: Property 'dealId' does not exist on type '{ id: string; source: string; label: string; status: string; context: string; createdAt: Date; userId: string; propertyId: string; dealId: string; contactId: string; dueDate: Date; estimatedDuration: number; completedAt: Date; } | { ...; }'.
+  Property 'dealId' does not exist on type '{ id: string; userId: string; label: any; status: any; dueDate: Date; propertyId: string; source: string; createdAt: Date; property: { id: string; address: string; }; isVirtual: boolean; }'.
+src/tools/tasks/get-task.tool.ts(74,41): error TS2339: Property 'contactId' does not exist on type '{ id: string; source: string; label: string; status: string; context: string; createdAt: Date; userId: string; propertyId: string; dealId: string; contactId: string; dueDate: Date; estimatedDuration: number; completedAt: Date; } | { ...; }'.
+  Property 'contactId' does not exist on type '{ id: string; userId: string; label: any; status: any; dueDate: Date; propertyId: string; source: string; createdAt: Date; property: { id: string; address: string; }; isVirtual: boolean; }'.
+src/tools/tasks/search-task.tool.ts(31,14): error TS2741: Property 'auditLogFormat' is missing in type '{ name: string; domain: string; description: string; inputSchema: { type: "object"; properties: { query: { type: "string"; description: string; }; includeCompleted: { type: "boolean"; description: string; default: false; }; }; required: string[]; }; outputSchema: { ...; }; permissions: string[]; requiresApproval: fa...' but required in type 'ZenaToolDefinition<SearchTaskInput, SearchTaskOutput>'.
+src/tools/tasks/update-task.tool.ts(99,57): error TS2345: Argument of type 'string' is not assignable to parameter of type 'TaskQueryOptions'.
+src/tools/tasks/update-task.tool.ts(108,40): error TS2304: Cannot find name 'prisma'.
+src/tools/tasks/update-task.tool.ts(116,39): error TS2304: Cannot find name 'prisma'.
+src/utils/fileLogger.ts(1,8): error TS1192: Module '"fs"' has no default export.
+src/utils/fileLogger.ts(2,8): error TS1259: Module '"path"' can only be default-imported using the 'esModuleInterop' flag
