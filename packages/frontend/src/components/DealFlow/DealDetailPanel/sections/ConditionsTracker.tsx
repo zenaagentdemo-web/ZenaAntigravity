@@ -60,13 +60,13 @@ export const ConditionsTracker: React.FC<ConditionsTrackerProps> = ({ deal, onUp
                             {condition.status === 'pending' && (
                                 <>
                                     <button
-                                        className="action-btn satisfy"
+                                        className="conditions-tracker__btn conditions-tracker__btn--satisfy"
                                         onClick={() => handleAction(condition.id!, 'satisfy')}
                                     >
                                         Satisfy
                                     </button>
                                     <button
-                                        className="action-btn waive"
+                                        className="conditions-tracker__btn conditions-tracker__btn--waive"
                                         onClick={() => handleAction(condition.id!, 'waive')}
                                     >
                                         Waive

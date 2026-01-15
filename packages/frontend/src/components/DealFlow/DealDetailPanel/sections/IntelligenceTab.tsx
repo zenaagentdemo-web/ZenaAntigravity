@@ -22,7 +22,7 @@ export const IntelligenceTab: React.FC<IntelligenceTabProps> = ({
     onRefresh,
     isLoading = false
 }) => {
-    const riskInfo = RISK_BADGES[deal.riskLevel];
+    const riskInfo = RISK_BADGES[intelligence.riskLevel || 'none'];
 
     return (
         <div className="intelligence-tab">
@@ -123,14 +123,14 @@ export const IntelligenceTab: React.FC<IntelligenceTabProps> = ({
             </div>
 
             <div className="intelligence-meta">
-                <span className="meta-item">SCAN TIME: 0.2ms</span>
-                <span className="meta-item">STATUS: {isLoading ? 'SYNCING...' : 'LIVE'}</span>
+
                 <button
                     className={`intelligence-refresh-btn ${isLoading ? 'spinning' : ''}`}
                     onClick={onRefresh}
                     disabled={isLoading}
                 >
-                    {isLoading ? '⌛ Refreshing...' : '🔄 Neural Refresh'}
+                    <span className="icon">{isLoading ? '⌛' : '🔄'}</span>
+                    {isLoading ? 'Neural Syncing...' : 'Neural Refresh'}
                 </button>
             </div>
         </div>

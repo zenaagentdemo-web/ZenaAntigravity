@@ -32,6 +32,14 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Mock AddNoteModal
+vi.mock('../AddNoteModal/AddNoteModal', () => ({
+  AddNoteModal: ({ isOpen, onClose, onSave }: any) => isOpen ? React.createElement('div', { 'data-testid': 'add-note-modal' },
+    React.createElement('button', { onClick: onClose }, 'Close'),
+    React.createElement('button', { onClick: () => onSave({ content: 'test note', type: 'note' }) }, 'Save')
+  ) : null
+}));
+
 // Mock navigator.mediaDevices
 const mockMediaDevices = {
   getUserMedia: vi.fn().mockResolvedValue({
@@ -196,20 +204,15 @@ describe('QuickActionsPanel Unit Tests', () => {
 
     // Wait for async operations to complete
     await waitFor(() => {
-      // Verify getUserMedia was called (recording started immediately)
-      expect(mockMediaDevices.getUserMedia).toHaveBeenCalledWith({ audio: true });
+      // Verify modal is shown instead of direct getUserMedia call
+      expect(screen.getByTestId('add-note-modal')).toBeInTheDocument();
     });
-    
+
     // Verify action trigger was called
     expect(onActionTrigger).toHaveBeenCalledWith('voice-note');
 
-    // Wait for recording state to update - check for the specific recording indicator
-    await waitFor(() => {
-      expect(screen.getByText('Recording voice note... Tap Voice Note again to stop')).toBeInTheDocument();
-    });
-
-    // Verify haptic feedback was triggered after successful recording start (enhanced pattern)
-    expect(mockVibrate).toHaveBeenCalledWith([50, 30, 50]);
+    // Verify haptic feedback was triggered after opening modal
+    expect(mockVibrate).toHaveBeenCalledWith(50);
   });
 
   /**
@@ -235,7 +238,7 @@ describe('QuickActionsPanel Unit Tests', () => {
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/ask-zena');
     });
-    
+
     // Verify action trigger was called
     expect(onActionTrigger).toHaveBeenCalledWith('ask-zena');
 
@@ -261,7 +264,7 @@ describe('QuickActionsPanel Unit Tests', () => {
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/focus');
     });
-    
+
     expect(onActionTrigger).toHaveBeenCalledWith('focus-threads');
     expect(mockVibrate).toHaveBeenCalledWith(50);
   });
@@ -284,7 +287,7 @@ describe('QuickActionsPanel Unit Tests', () => {
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/properties');
     });
-    
+
     expect(onActionTrigger).toHaveBeenCalledWith('property-search');
     expect(mockVibrate).toHaveBeenCalledWith(50);
   });
@@ -298,19 +301,19 @@ describe('QuickActionsPanel Unit Tests', () => {
     renderWithRouter();
 
     const voiceButton = screen.getByRole('button', { name: /voice note/i });
-    
+
     const startTime = performance.now();
-    
+
     // Trigger mousedown for immediate feedback
     fireEvent.mouseDown(voiceButton);
-    
+
     // Check that visual state changes are immediate
     const endTime = performance.now();
     const responseTime = endTime - startTime;
-    
+
     // Visual feedback should be immediate (well under 100ms)
     expect(responseTime).toBeLessThan(100);
-    
+
     // Clean up
     fireEvent.mouseUp(voiceButton);
   });
@@ -377,7 +380,7 @@ describe('QuickActionsPanel Unit Tests', () => {
     });
 
     const button = screen.getByRole('button', { name: /usage test/i });
-    
+
     // Click the button multiple times
     fireEvent.click(button);
     fireEvent.click(button);
@@ -400,18 +403,18 @@ describe('QuickActionsPanel Unit Tests', () => {
 
     // Test default actions for accessibility
     const defaultActions = ['voice note', 'ask zena', 'focus', 'properties'];
-    
+
     defaultActions.forEach((actionName) => {
       const button = screen.getByRole('button', { name: new RegExp(actionName, 'i') });
-      
+
       // Verify button has proper accessibility attributes
       expect(button).toHaveAttribute('aria-label');
       expect(button).toHaveAttribute('title');
-      
+
       // Verify button is focusable
       button.focus();
       expect(document.activeElement).toBe(button);
-      
+
       // Verify button can be activated with keyboard
       fireEvent.keyDown(button, { key: 'Enter' });
       fireEvent.keyUp(button, { key: 'Enter' });
@@ -467,14 +470,14 @@ describe('QuickActionsPanel Unit Tests', () => {
     });
 
     const button = screen.getByRole('button', { name: /immediate test/i });
-    
+
     // Single click should execute action immediately
     fireEvent.click(button);
 
     // Verify action was called immediately
     expect(mockAction).toHaveBeenCalledTimes(1);
     expect(onActionTrigger).toHaveBeenCalledWith('immediate-test');
-    
+
     // No additional navigation or confirmation should be required
     expect(mockNavigate).not.toHaveBeenCalled();
   });

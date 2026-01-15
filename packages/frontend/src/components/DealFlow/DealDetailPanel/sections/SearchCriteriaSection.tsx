@@ -1,68 +1,122 @@
 /**
- * SearchCriteriaSection - Displays buyer's search preferences
+ * PropertyDetailsSection - Displays property facts for the deal
+ * Replaces SearchCriteriaSection for seller pipeline deals
  */
 
 import React from 'react';
-import { Deal } from '../../types';
+import { Home, Bed, Bath, Square, MapPin, DollarSign } from 'lucide-react';
+import { Deal, formatCurrency } from '../../types';
 import './sections.css';
 
-interface SearchCriteriaSectionProps {
+interface PropertyDetailsSectionProps {
     deal: Deal;
 }
 
-export const SearchCriteriaSection: React.FC<SearchCriteriaSectionProps> = ({ deal }) => {
-    // In a real app, this would come from deal.searchCriteria
-    // Mocking it based on deal data for now
-    const criteria = (deal as any).searchCriteria || {
-        propertyType: 'House / Townhouse',
-        location: ['Remuera', 'Parnell', 'St Heliers'],
-        priceRange: { min: 2000000, max: 3500000 },
-        bedrooms: '3+',
-        bathrooms: '2+',
-        mustHaves: ['Double Grammar Zone', 'Modern Kitchen', 'Outdoor Flow'],
+export const PropertyDetailsSection: React.FC<PropertyDetailsSectionProps> = ({ deal }) => {
+    const property = deal.property;
+
+    // Format last sale date if available
+    const formatDate = (dateString?: string) => {
+        if (!dateString) return null;
+        const date = new Date(dateString);
+        return date.getFullYear().toString();
+    };
+
+    // If no property data available, show minimal placeholder
+    if (!property) {
+        return (
+            <div className="section-card">
+                <div className="section-card__header">
+                    <Home size={16} className="section-card__icon-lucide" style={{ color: '#00ffc8' }} />
+                    <span className="section-card__title">Property Details</span>
+                </div>
+                <div className="property-details__empty">
+                    No property linked to this deal yet.
+                </div>
+            </div>
+        );
+    }
+
+    // Helper to add units if missing
+    const formatArea = (value: string) => {
+        if (!value) return '';
+        // If it already has text characters (likely units), return as is
+        if (/[a-zA-Z²]/.test(value)) return value;
+        return `${value} m²`;
     };
 
     return (
         <div className="section-card">
             <div className="section-card__header">
-                <span className="section-card__icon">🔍</span>
-                <span className="section-card__title">Search Criteria</span>
+                <Home size={16} className="section-card__icon-lucide" style={{ color: '#00ffc8' }} />
+                <span className="section-card__title">Property Details</span>
             </div>
 
-            <div className="search-criteria__grid">
-                <div className="search-criteria__item">
-                    <span className="search-criteria__label">Type</span>
-                    <span className="search-criteria__value">{criteria.propertyType}</span>
-                </div>
-                <div className="search-criteria__item">
-                    <span className="search-criteria__label">Price</span>
-                    <span className="search-criteria__value">
-                        {criteria.priceRange.min / 1000000}M - {criteria.priceRange.max / 1000000}M
-                    </span>
-                </div>
-                <div className="search-criteria__item">
-                    <span className="search-criteria__label">Bedrooms</span>
-                    <span className="search-criteria__value">{criteria.bedrooms}</span>
-                </div>
+            <div className="property-details__grid">
+                {property.bedrooms !== undefined && (
+                    <div className="property-details__item">
+                        <Bed size={14} className="property-details__icon" />
+                        <span className="property-details__label">Beds</span>
+                        <span className="property-details__value">{property.bedrooms}</span>
+                    </div>
+                )}
+                {property.bathrooms !== undefined && (
+                    <div className="property-details__item">
+                        <Bath size={14} className="property-details__icon" />
+                        <span className="property-details__label">Baths</span>
+                        <span className="property-details__value">{property.bathrooms}</span>
+                    </div>
+                )}
+                {property.floorArea && (
+                    <div className="property-details__item">
+                        <Square size={14} className="property-details__icon" />
+                        <span className="property-details__label">Floor</span>
+                        <span className="property-details__value">{formatArea(property.floorArea)}</span>
+                    </div>
+                )}
+                {property.landArea && (
+                    <div className="property-details__item">
+                        <MapPin size={14} className="property-details__icon" />
+                        <span className="property-details__label">Land</span>
+                        <span className="property-details__value">{formatArea(property.landArea)}</span>
+                    </div>
+                )}
             </div>
 
-            <div className="search-criteria__locations">
-                <span className="search-criteria__label">Suburbs</span>
-                <div className="search-criteria__tags">
-                    {criteria.location.map((loc: string) => (
-                        <span key={loc} className="search-criteria__tag">{loc}</span>
-                    ))}
+            {(property.lastSalePrice || property.listingPrice) && (
+                <div className="property-details__pricing">
+                    {property.lastSalePrice && (
+                        <div className="property-details__price-row">
+                            <DollarSign size={14} className="property-details__icon" />
+                            <span className="property-details__label">Last Sale</span>
+                            <span className="property-details__value property-details__value--price">
+                                {formatCurrency(property.lastSalePrice)}
+                                {property.lastSaleDate && ` (${formatDate(property.lastSaleDate)})`}
+                            </span>
+                        </div>
+                    )}
+                    {property.listingPrice && (
+                        <div className="property-details__price-row">
+                            <DollarSign size={14} className="property-details__icon" />
+                            <span className="property-details__label">Listing</span>
+                            <span className="property-details__value property-details__value--price">
+                                {formatCurrency(property.listingPrice)}
+                            </span>
+                        </div>
+                    )}
                 </div>
-            </div>
+            )}
 
-            <div className="search-criteria__must-haves">
-                <span className="search-criteria__label">Must Haves</span>
-                <ul className="search-criteria__list">
-                    {criteria.mustHaves.map((item: string) => (
-                        <li key={item} className="search-criteria__list-item">{item}</li>
-                    ))}
-                </ul>
-            </div>
+            {/* Show placeholder if no detailed property data */}
+            {!property.bedrooms && !property.bathrooms && !property.floorArea &&
+                !property.landArea && !property.lastSalePrice && !property.listingPrice && (
+                    <div className="property-details__empty">
+                        Property details not available yet.
+                    </div>
+                )}
         </div>
     );
 };
+
+// Keep SearchCriteriaSection as an alias for backward compatibility
+export { PropertyDetailsSection as SearchCriteriaSection };

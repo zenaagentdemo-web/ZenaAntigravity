@@ -34,13 +34,9 @@ import { LogIntelTooltip } from '../../components/LogIntelTooltip/LogIntelToolti
 import { ZenaBatchComposeModal } from '../../components/ZenaBatchComposeModal/ZenaBatchComposeModal';
 import { ZenaCallTooltip } from '../../components/ZenaCallTooltip/ZenaCallTooltip';
 import { NewContactModal } from '../../components/NewContactModal/NewContactModal';
-import {
-  EngagementScore,
-  ContactRole,
-  DealStage,
-  Contact
-} from '../../models/contact.types';
+import { Contact, ContactRole, DealStage, EngagementScore } from '../../models/contact.types';
 import './ContactDetailPage.css';
+import { useDealNavigation } from '../../hooks/useDealNavigation';
 
 interface RelationshipNote {
   id: string;
@@ -95,6 +91,8 @@ const ROLE_THEME: Record<string, { label: string, color: string, bg: string, bor
   agent: { label: 'Agent', color: '#8B5CF6', bg: 'rgba(139, 92, 246, 0.1)', border: 'rgba(139, 92, 246, 0.3)' },
   market: { label: 'Market', color: '#00FF88', bg: 'rgba(0, 255, 136, 0.1)', border: 'rgba(0, 255, 136, 0.3)' },
   other: { label: 'Contact', color: '#FFFFFF', bg: 'rgba(255, 255, 255, 0.1)', border: 'rgba(255, 255, 255, 0.2)' },
+  // Fix for specific data artifact 'Jab' -> Vendor
+  jab: { label: 'Vendor', color: '#FF00FF', bg: 'rgba(255, 0, 255, 0.1)', border: 'rgba(255, 0, 255, 0.3)' },
 };
 
 
@@ -102,6 +100,7 @@ const ROLE_THEME: Record<string, { label: string, color: string, bg: string, bor
 export const ContactDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isFromDeal, goBackToDeal } = useDealNavigation();
   const location = useLocation();
   const backState = location.state as { from?: string; label?: string; fromCalendar?: boolean; eventId?: string } | null;
   const [contact, setContact] = useState<Contact | null>(null);
@@ -514,15 +513,41 @@ export const ContactDetailPage: React.FC = () => {
       <div className="contact-detail-page__container">
         <header className="contact-detail-page__header">
           <div className="contact-detail-page__header-left">
-            <button className="contact-detail-page__back" onClick={() => {
-              if (backState?.fromCalendar) {
-                navigate(`/calendar?openEventId=${backState.eventId || ''}`);
-              } else {
-                navigate(backState?.from || '/contacts');
-              }
-            }}>
-              <ArrowLeft size={18} /> {backState?.fromCalendar ? 'Back to Calendar' : (backState?.label || 'Contacts')}
-            </button>
+            {!isFromDeal && (
+              <button className="contact-detail-page__back" onClick={() => {
+                if (backState?.fromCalendar) {
+                  navigate(`/calendar?openEventId=${backState.eventId || ''}`);
+                } else {
+                  navigate(backState?.from || '/contacts');
+                }
+              }}>
+                <ArrowLeft size={18} /> {backState?.fromCalendar ? 'Back to Calendar' : (backState?.label || 'Contacts')}
+              </button>
+            )}
+            {isFromDeal && (
+              <button
+                className="back-to-deal-btn"
+                onClick={goBackToDeal}
+                style={{
+                  background: 'rgba(0, 255, 65, 0.15)',
+                  border: '1px solid rgba(0, 255, 65, 0.4)',
+                  color: '#00ff41',
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s',
+                  marginLeft: '8px'
+                }}
+              >
+                <span style={{ fontSize: '1rem' }}>📦</span>
+                Return to Deal
+              </button>
+            )}
             <button className="contact-detail-page__delete-contact-btn" onClick={handleDeleteContact} title="Delete Contact">
               <Trash2 size={16} /> Delete Contact
             </button>
@@ -756,13 +781,15 @@ export const ContactDetailPage: React.FC = () => {
                 </button>
               </ZenaCallTooltip>
             )}
-            <button
-              className={`contact-detail-page__action-button ${showNoteForm ? 'active' : ''}`}
-              onClick={() => setShowNoteForm(!showNoteForm)}
-            >
-              <Plus size={18} /> Add note
-              <LogIntelTooltip />
-            </button>
+            <div className="add-note-wrapper" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <button
+                className={`contact-detail-page__action-button ${showNoteForm ? 'active' : ''}`}
+                onClick={() => setShowNoteForm(!showNoteForm)}
+              >
+                <Plus size={18} /> Add note
+              </button>
+              <LogIntelTooltip className="log-intel-tooltip-absolute" />
+            </div>
           </div>
 
           <AddNoteModal

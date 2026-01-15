@@ -7,7 +7,7 @@
 
 import { ZenaToolDefinition, ToolBundle, toGeminiFunctionDeclaration } from './types.js';
 
-class ToolRegistry {
+export class ToolRegistry {
     private tools: Map<string, ZenaToolDefinition> = new Map();
     private bundles: Map<string, ToolBundle> = new Map();
     private idempotencyCache: Map<string, number> = new Map();
@@ -160,4 +160,9 @@ class ToolRegistry {
 }
 
 // Singleton instance
+// Singleton instance
 export const toolRegistry = new ToolRegistry();
+
+// Auto-register core tools (temporary until dynamic loader)
+import { MarketScraperTool } from './definitions/market-scraper.tool.js';
+toolRegistry.register(MarketScraperTool);

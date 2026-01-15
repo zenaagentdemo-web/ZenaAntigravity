@@ -29,6 +29,7 @@ export type BuyerStage =
 
 // Seller pipeline stages
 export type SellerStage =
+    | 'buyer_consult'
     | 'appraisal'
     | 'listing_signed'
     | 'marketing'
@@ -156,6 +157,13 @@ export interface Deal {
     property?: {
         id: string;
         address: string;
+        bedrooms?: number;
+        bathrooms?: number;
+        floorArea?: string;  // e.g., "220 m²"
+        landArea?: string;   // e.g., "650 m²"
+        listingPrice?: number;
+        lastSalePrice?: number;
+        lastSaleDate?: string; // ISO date
     };
     contacts?: {
         id: string;
@@ -237,6 +245,33 @@ export const STAGE_LABELS: Record<string, string> = {
     settled: 'Settled',
     nurture: 'Nurture'
 };
+
+// Canonical stage sequences - SINGLE SOURCE OF TRUTH
+// All components should import these instead of defining their own
+export const BUYER_STAGE_SEQUENCE: DealStage[] = [
+    'buyer_consult',
+    'shortlisting',
+    'viewings',
+    'offer_made',
+    'conditional',
+    'unconditional',
+    'pre_settlement',
+    'settled',
+    'nurture'
+];
+
+export const SELLER_STAGE_SEQUENCE: DealStage[] = [
+    'buyer_consult',  // Initial consultation with seller
+    'appraisal',
+    'listing_signed',
+    'marketing',
+    'offers_received',
+    'conditional',
+    'unconditional',
+    'pre_settlement',
+    'settled',
+    'nurture'
+];
 
 // Risk level badge info
 export const RISK_BADGES: Record<RiskLevel, { emoji: string; color: string; label: string }> = {

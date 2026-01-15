@@ -15,4 +15,7 @@ router.use(authMiddleware);
 // GET /api/geocoding/autocomplete - Address autocomplete
 router.get('/autocomplete', (req, res) => geocodingController.autocomplete(req, res));
 
+// GET /api/geocoding/enrich - Full property enrichment
+router.get('/enrich', (req, res) => geocodingController.enrichProperty(req, res));
+
 export default router;

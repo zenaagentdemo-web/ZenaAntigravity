@@ -17,7 +17,6 @@ import { BatchAction } from '../../models/newPage.types';
 import { PipelineType, PipelineResponse, Deal, NewDealModal, DealQuickActions, ZenaMomentumFlow, StrategySessionContext, STRATEGY_SESSION_KEY, STAGE_LABELS } from '../../components/DealFlow';
 import { analyseDeal } from '../../components/DealFlow/ZenaIntelligence/ZenaIntelligenceEngine';
 import { DealDetailPanel } from '../../components/DealFlow/DealDetailPanel';
-import { PortfolioInsightsCard } from '../../components/DealFlow/ZenaIntelligence/PortfolioInsightsCard';
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
 import { BatchActionBar } from '../../components/BatchActionBar/BatchActionBar';
 import { GodmodeToggle } from '../../components/GodmodeToggle/GodmodeToggle';
@@ -216,15 +215,16 @@ export const DealFlowPage: React.FC = () => {
     const { addToast, state: actionState, dismissToast } = useThreadActions();
 
     // Core state
-    const [pipelineType, setPipelineType] = useState<PipelineType>('buyer');
+    const [pipelineType, setPipelineType] = useState<PipelineType>('seller');
     const [pipelineData, setPipelineData] = useState<PipelineResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showNewDealModal, setShowNewDealModal] = useState(false);
     const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
+    const [selectedIntelligence, setSelectedIntelligence] = useState<any | null>(null);
     const [isQuickActionsOpen, setIsQuickActionsOpen] = useState(false);
     const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
-    const [deals, setDeals] = useState<Deal[]>(MOCK_DEALS_FOR_TESTING);
+    const [deals, setDeals] = useState<Deal[]>([]);
 
     // New features state
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -320,7 +320,14 @@ export const DealFlowPage: React.FC = () => {
 
     // Handle openDealId or openAddDealModal state from navigation
     useEffect(() => {
-        const state = location.state as { openDealId?: string, openAddDealModal?: boolean } | null;
+        const state = location.state as { openDealId?: string, openPipelineType?: string, openAddDealModal?: boolean } | null;
+
+        if (state?.openPipelineType && state.openPipelineType !== pipelineType) {
+            console.log('[DealFlowPage] Switching pipeline from nav state:', state.openPipelineType);
+            setPipelineType(state.openPipelineType as PipelineType);
+            return; // Wait for pipeline switch to trigger re-fetch
+        }
+
         if (state?.openDealId) {
             console.log('[DealFlowPage] Opening deal from nav state:', state.openDealId);
             const targetDeal = deals.find(d => d.id === state.openDealId);
@@ -328,6 +335,7 @@ export const DealFlowPage: React.FC = () => {
                 // Ensure pipeline type matches the deal to make it visible
                 if (targetDeal.pipelineType !== pipelineType) {
                     setPipelineType(targetDeal.pipelineType);
+                    return; // Wait for pipeline switch
                 }
                 setSelectedDeal(targetDeal);
                 setIsDetailPanelOpen(true);
@@ -426,29 +434,20 @@ export const DealFlowPage: React.FC = () => {
 
             const data = await response.json();
             const allDeals = data.columns.flatMap((col: { deals: Deal[] }) => col.deals);
-            if (allDeals.length === 0) {
-                const mockPipelineData: PipelineResponse = {
-                    ...data,
-                    columns: [{ id: 'all', title: 'All Deals', deals: deals }],
-                    summary: {
-                        ...data.summary,
-                        totalDeals: deals.length,
-                    }
-                };
-                setPipelineData(mockPipelineData);
-            } else {
-                setPipelineData(data);
-                setDeals(allDeals);
-            }
+
+            // Always use API data - even when empty, this ensures we show real state
+            setPipelineData(data);
+            setDeals(allDeals);
         } catch (err) {
             console.error('Error fetching pipeline:', err);
-            // Fallback to mock data with type assertion
+            // Only show mock data as fallback when API completely fails
             const mockPipelineData = {
                 pipelineType,
-                columns: [{ stage: 'all', label: 'All Deals', deals: deals, totalValue: 0, count: deals.length }],
-                summary: { totalDeals: deals.length, totalValue: 0, atRiskCount: 0, overdueCount: 0, todayCount: 0 }
+                columns: [{ stage: 'all', label: 'All Deals', deals: MOCK_DEALS_FOR_TESTING.filter(d => d.pipelineType === pipelineType), totalValue: 0, count: 0 }],
+                summary: { totalDeals: 0, totalValue: 0, atRiskCount: 0, overdueCount: 0, todayCount: 0 }
             } as PipelineResponse;
             setPipelineData(mockPipelineData);
+            setDeals(MOCK_DEALS_FOR_TESTING.filter(d => d.pipelineType === pipelineType));
             setError(null);
         } finally {
             setLoading(false);
@@ -464,24 +463,40 @@ export const DealFlowPage: React.FC = () => {
     }, [fetchPipeline]);
 
     // Handle deal card click - open detail panel
-    const handleDealClick = (deal: Deal) => {
+    const handleDealClick = (deal: Deal, intelligence?: any) => {
         if (isBatchMode) {
             toggleSelection(deal.id);
             return;
         }
         setSelectedDeal(deal);
+        setSelectedIntelligence(intelligence || null);
         setIsDetailPanelOpen(true);
     };
 
     // Handle close detail panel
     const handleCloseDetailPanel = () => {
         setIsDetailPanelOpen(false);
-        setTimeout(() => setSelectedDeal(null), 300);
+        setTimeout(() => {
+            setSelectedDeal(null);
+            setSelectedIntelligence(null);
+        }, 300);
     };
 
     // Handle navigate to contact
     const handleNavigateToContact = (contactId: string) => {
-        navigate(`/contacts/${contactId}`, { state: { from: location.pathname, label: 'Deal Flow' } });
+        if (selectedDeal) {
+            navigate(`/contacts/${contactId}`, {
+                state: {
+                    from: 'deal-detail', // Special flag for ContactDetailPage to show "Return to Deal"
+                    dealId: selectedDeal.id,
+                    propertyName: selectedDeal.property?.address,
+                    pipelineType: selectedDeal.pipelineType,
+                    label: 'Deal Flow'
+                }
+            });
+        } else {
+            navigate(`/contacts/${contactId}`, { state: { from: location.pathname, label: 'Deal Flow' } });
+        }
     };
 
     // Handle new deal button click
@@ -850,9 +865,6 @@ export const DealFlowPage: React.FC = () => {
                     </div>
                 </section>
 
-                {/* Global Portfolio Intelligence - Phase 8 */}
-                <PortfolioInsightsCard />
-
                 {/* Search Bar */}
                 <section className="deal-flow-page__controls">
                     <div className="deal-flow-page__search-wrapper">
@@ -1054,36 +1066,14 @@ export const DealFlowPage: React.FC = () => {
                 />
             )}
 
-            {/* Deal Detail Panel */}
             {selectedDeal && isDetailPanelOpen && (
                 <DealDetailPanel
                     deal={selectedDeal}
+                    precomputedIntelligence={selectedIntelligence}
                     onClose={handleCloseDetailPanel}
                     onNavigateToContact={handleNavigateToContact}
                     onDealUpdate={handleUpdateDeal}
-                    onStartZenaLive={(dealId) => {
-                        const deal = deals.find(d => d.id === dealId);
-                        if (deal) {
-                            // Use real intelligence from the deal
-                            const intelligence = analyseDeal(deal);
-                            const topRisk = intelligence.riskSignals[0];
-
-                            handleStartZenaLive({
-                                dealId: deal.id,
-                                address: deal.property?.address || 'Unknown',
-                                stage: deal.stage,
-                                stageLabel: STAGE_LABELS[deal.stage] || deal.stage,
-                                dealValue: deal.dealValue,
-                                daysInStage: intelligence.daysInStage,
-                                healthScore: intelligence.healthScore,
-                                healthStatus: intelligence.stageHealthStatus,
-                                primaryRisk: topRisk?.description || 'No immediate risks detected',
-                                riskType: topRisk?.type || 'general',
-                                coachingInsight: intelligence.coachingInsight,
-                                contactName: deal.contacts?.[0]?.name,
-                            });
-                        }
-                    }}
+                    onStartZenaLive={handleStartZenaLive}
                 />
             )}
 

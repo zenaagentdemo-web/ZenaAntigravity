@@ -44,6 +44,9 @@ export const generateComparablesTool: ZenaToolDefinition = {
 
     permissions: ['properties:read'],
     requiresApproval: false,
+    isAsync: true,
+    estimatedDuration: 60,
+    deliveryPrompt: 'Tell the user the CMA for the property is ready and highlight the median estimated value or number of comparable sales found.',
 
     execute: async (params, context) => {
         const userId = context.userId;

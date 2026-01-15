@@ -2244,3 +2244,25 @@
     transform: translateY(0);
   }
 }
+
+/* Zena Deal Badge */
+.zena-deal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #a5b4fc;
+  margin-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+}
+
+.zena-deal-badge svg {
+  color: #8B5CF6;
+}

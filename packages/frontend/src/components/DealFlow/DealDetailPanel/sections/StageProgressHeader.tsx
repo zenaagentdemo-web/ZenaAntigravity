@@ -3,19 +3,18 @@
  */
 
 import React from 'react';
-import { DealStage, PipelineType, STAGE_LABELS } from '../../types';
+import { DealStage, PipelineType, STAGE_LABELS, BUYER_STAGE_SEQUENCE, SELLER_STAGE_SEQUENCE } from '../../types';
 import './sections.css';
 
 interface StageProgressHeaderProps {
     currentStage: DealStage;
     pipelineType: PipelineType;
+    onStageChange?: (stage: DealStage) => void;
+    recommendedStage?: DealStage;
 }
 
-const BUYER_SEQUENCE: DealStage[] = ['buyer_consult', 'shortlisting', 'viewings', 'offer_made', 'conditional', 'unconditional', 'pre_settlement', 'settled'];
-const SELLER_SEQUENCE: DealStage[] = ['appraisal', 'listing_signed', 'marketing', 'offers_received', 'conditional', 'unconditional', 'pre_settlement', 'settled'];
-
-export const StageProgressHeader: React.FC<StageProgressHeaderProps> = ({ currentStage, pipelineType }) => {
-    const sequence = pipelineType === 'buyer' ? BUYER_SEQUENCE : SELLER_SEQUENCE;
+export const StageProgressHeader: React.FC<StageProgressHeaderProps> = ({ currentStage, pipelineType, onStageChange, recommendedStage }) => {
+    const sequence = pipelineType === 'buyer' ? BUYER_STAGE_SEQUENCE : SELLER_STAGE_SEQUENCE;
     const currentIndex = sequence.indexOf(currentStage);
 
     return (
@@ -24,21 +23,22 @@ export const StageProgressHeader: React.FC<StageProgressHeaderProps> = ({ curren
                 {sequence.map((stage, index) => {
                     const isCompleted = index < currentIndex;
                     const isCurrent = index === currentIndex;
+                    const isRecommended = stage === recommendedStage;
 
                     return (
                         <div
                             key={stage}
-                            className={`stage-progress__step ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}`}
-                            title={STAGE_LABELS[stage] || stage}
+                            className={`stage-progress__step ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${isRecommended ? 'recommended' : ''}`}
+                            onClick={() => onStageChange?.(stage)}
+                            style={{ cursor: onStageChange ? 'pointer' : 'default' }}
                         >
                             <div className="step__indicator">
                                 {isCompleted ? '✓' : index + 1}
+                                {isRecommended && <div className="step__pulse" />}
                             </div>
-                            {isCurrent && (
-                                <span className="step__label">
-                                    {STAGE_LABELS[stage] || stage}
-                                </span>
-                            )}
+                            <span className="step__label">
+                                {STAGE_LABELS[stage] || stage}
+                            </span>
                         </div>
                     );
                 })}

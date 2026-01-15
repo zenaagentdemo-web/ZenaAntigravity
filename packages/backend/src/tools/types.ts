@@ -112,7 +112,26 @@ export interface ZenaToolDefinition<TInput = any, TOutput = any> {
      * If these are missing, Zena will ask the user before proceeding.
      */
     recommendedFields?: string[];
+
+    /**
+     * Parallel Task Capability:
+     * If true, this tool will run in the background (JobManager) and return 
+     * an immediate "Job Started" signal to the LLM.
+     */
+    isAsync?: boolean;
+
+    /**
+     * Estimated duration in seconds. used to manage user expectations.
+     */
+    estimatedDuration?: number;
+
+    /**
+     * Instructions for how Zena should deliver the result naturally.
+     * e.g., "Highlight the median estimated value for the CMA."
+     */
+    deliveryPrompt?: string;
 }
+
 
 /**
  * Tool bundle for domain-scoped tool loading

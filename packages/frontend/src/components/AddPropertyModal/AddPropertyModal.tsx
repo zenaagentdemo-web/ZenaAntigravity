@@ -18,7 +18,8 @@ import {
     Plus,
     Loader2,
     Mail,
-    Phone
+    Phone,
+    Activity
 } from 'lucide-react';
 import { api } from '../../utils/apiClient';
 import './AddPropertyModal.css';
@@ -34,6 +35,12 @@ interface AddPropertyModalProps {
 type PropertyType = 'residential' | 'commercial' | 'land';
 type PropertyStatus = 'active' | 'under_contract' | 'sold' | 'withdrawn';
 
+// Address suggestion interface
+interface AddressSuggestion {
+    id: string;
+    fullAddress: string;
+}
+
 export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
     isOpen,
     onClose,
@@ -43,8 +50,13 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
 }) => {
     const [isSaving, setIsSaving] = useState(false);
     const [isParsing, setIsParsing] = useState(false); // Magic state
+    const [isEnriching, setIsEnriching] = useState(false); // Enrichment state
     const [magicText, setMagicText] = useState('');
     const [showMagicInput, setShowMagicInput] = useState(false);
+
+    // Address autocomplete state
+    const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
+    const [showAddressDropdown, setShowAddressDropdown] = useState(false);
 
     const [formData, setFormData] = useState(() => {
         if (initialData) {
@@ -65,7 +77,13 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                 vendorPhone: vendor?.phones?.[0] || '',
                 inquiryCount: initialData.inquiryCount ? String(initialData.inquiryCount) : '0',
                 viewingCount: initialData.viewingCount ? String(initialData.viewingCount) : '0',
-                rateableValue: initialData.rateableValue ? String(initialData.rateableValue) : ''
+                rateableValue: initialData.rateableValue ? String(initialData.rateableValue) : '',
+                lastSalePrice: initialData.lastSalePrice ? String(initialData.lastSalePrice) : '',
+                lastSaleDate: initialData.lastSaleDate ? new Date(initialData.lastSaleDate).toLocaleDateString() : '',
+                // Deal flow fields - always include defaults for new properties
+                createDealFlowCard: true,
+                saleMethod: 'auction' as any,
+                dealStage: 'buyer_consult'
             };
         }
         return {
@@ -85,7 +103,13 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
             vendorPhone: '',
             inquiryCount: '0',
             viewingCount: '0',
-            rateableValue: ''
+            rateableValue: '',
+            lastSalePrice: '',
+            lastSaleDate: '',
+            // Deal flow fields
+            createDealFlowCard: true,
+            saleMethod: 'auction' as any,
+            dealStage: 'buyer_consult'
         };
     });
 
@@ -101,6 +125,78 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
         }
     }, [initialData]);
 
+    // Address autocomplete - fetch suggestions from geocoding API
+    useEffect(() => {
+        const fetchAddressSuggestions = async () => {
+            if (formData.address.length < 3) {
+                setAddressSuggestions([]);
+                return;
+            }
+
+            try {
+                const response = await api.get(`/api/geocoding/autocomplete?query=${encodeURIComponent(formData.address)}`);
+                const data = response.data;
+                setAddressSuggestions(data.suggestions || []);
+            } catch (err) {
+                console.error('Error fetching address suggestions:', err);
+                setAddressSuggestions([]);
+            }
+        };
+
+        const debounce = setTimeout(fetchAddressSuggestions, 400);
+        return () => clearTimeout(debounce);
+    }, [formData.address]);
+
+    // Handle selecting an address suggestion
+    const handleAddressSelect = async (suggestion: AddressSuggestion) => {
+        // Reset fields to valid defaults (prevent data leak from previous address)
+        setFormData(prev => ({
+            ...prev,
+            address: suggestion.fullAddress,
+            // Reset numerical counters to reasonable defaults
+            bedrooms: 3,
+            bathrooms: 2,
+            // Reset string fields to empty
+            landSize: '',
+            floorSize: '',
+            rateableValue: '',
+            listingPrice: '',
+            lastSalePrice: '',
+            lastSaleDate: ''
+        }));
+
+        setShowAddressDropdown(false);
+        setAddressSuggestions([]);
+
+        // Trigger Enrichment
+        setIsEnriching(true);
+        try {
+            const res = await api.get(`/api/geocoding/enrich?address=${encodeURIComponent(suggestion.fullAddress)}`);
+            if (res.data.found && res.data.data) {
+                const d = res.data.data;
+                console.log('Enrichment data:', d);
+                setFormData(prev => ({
+                    ...prev,
+                    // ACCURACY FIX: Do NOT fall back to 'prev' state for enriched fields.
+                    // If the API returns null/undefined for a new address, we must show default/empty,
+                    // otherwise data from the PREVIOUS address will "leak" through if we use || prev.field
+                    bedrooms: d.bedrooms ? Number(d.bedrooms) : 3, // Default 3
+                    bathrooms: d.bathrooms ? Number(d.bathrooms) : 2, // Default 2
+                    landSize: d.landArea ? d.landArea.replace('m²', '').trim() : '',
+                    floorSize: d.floorArea ? d.floorArea.replace('m²', '').trim() : '',
+                    rateableValue: d.rateableValue ? String(d.rateableValue) : '',
+                    listingPrice: d.listingPrice ? String(d.listingPrice) : '',
+                    lastSalePrice: d.lastSoldPrice || '',
+                    lastSaleDate: d.lastSoldDate || ''
+                }));
+            }
+        } catch (e) {
+            console.error("Enrichment failed", e);
+        } finally {
+            setIsEnriching(false);
+        }
+    };
+
     if (!isOpen) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -111,15 +207,18 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                 address: formData.address,
                 type: formData.type,
                 status: formData.status,
-                listingPrice: formData.listingPrice ? parseFloat(formData.listingPrice) : null,
-                landSize: formData.landSize || null,
-                floorSize: formData.floorSize || null,
-                bedrooms: formData.bedrooms,
-                bathrooms: formData.bathrooms,
-                description: formData.description,
-                inquiryCount: formData.inquiryCount ? parseInt(formData.inquiryCount) : 0,
-                viewingCount: formData.viewingCount ? parseInt(formData.viewingCount) : 0,
-                rateableValue: formData.rateableValue ? parseInt(formData.rateableValue) : null,
+                ...formData,
+                listingPrice: formData.listingPrice ? Number(formData.listingPrice) : null,
+                bedrooms: Number(formData.bedrooms),
+                bathrooms: Number(formData.bathrooms),
+                rateableValue: formData.rateableValue ? Number(formData.rateableValue) : null,
+                viewingCount: Number(formData.viewingCount),
+                inquiryCount: Number(formData.inquiryCount),
+                createDealFlowCard: formData.createDealFlowCard,
+                saleMethod: formData.saleMethod,
+                dealStage: formData.dealStage,
+                lastSalePrice: formData.lastSalePrice ? Number(formData.lastSalePrice.replace(/[^0-9.]/g, '')) : null,
+                lastSaleDate: formData.lastSaleDate ? new Date(formData.lastSaleDate).toISOString() : null
             };
 
             // Include vendor data for both new properties and updates
@@ -271,17 +370,96 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
 
                             <div className="apm-field-group">
                                 <label className="apm-label">Property Address</label>
-                                <div className="apm-input-wrapper">
+                                <div className="apm-input-wrapper" style={{ position: 'relative' }}>
                                     <MapPin size={16} className="apm-input-icon" />
                                     <input
                                         type="text"
                                         className="apm-input"
-                                        placeholder="e.g. 123 Luxury Lane, Beverly Hills"
+                                        placeholder="Start typing an address..."
                                         value={formData.address}
-                                        onChange={e => setFormData({ ...formData, address: e.target.value })}
+                                        onChange={e => {
+                                            setFormData({ ...formData, address: e.target.value });
+                                            setShowAddressDropdown(true);
+                                        }}
+                                        onFocus={() => setShowAddressDropdown(true)}
+                                        onBlur={() => {
+                                            // Delay to allow click on suggestion to register
+                                            setTimeout(() => setShowAddressDropdown(false), 200);
+                                        }}
                                         required
                                         autoFocus
                                     />
+                                    {isEnriching && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            right: '12px',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            color: '#38bdf8',
+                                            fontSize: '11px',
+                                            fontWeight: 500,
+                                            animation: 'pulse 1.5s infinite ease-in-out'
+                                        }}>
+                                            <Loader2 size={12} className="apm-spin" />
+                                            <span>Fetching details... (this could take 1-2 minutes)</span>
+                                        </div>
+                                    )}
+                                    {/* Address suggestions dropdown */}
+                                    {showAddressDropdown && addressSuggestions.length > 0 && (
+                                        <div className="apm-address-dropdown" style={{
+                                            position: 'absolute',
+                                            top: '100%',
+                                            left: 0,
+                                            right: 0,
+                                            background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98))',
+                                            border: '1px solid rgba(56, 189, 248, 0.3)',
+                                            borderRadius: '8px',
+                                            marginTop: '4px',
+                                            maxHeight: '220px',
+                                            overflowY: 'auto',
+                                            zIndex: 100,
+                                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(56, 189, 248, 0.1)',
+                                            backdropFilter: 'blur(12px)'
+                                        }}>
+                                            <div style={{
+                                                padding: '8px 12px',
+                                                fontSize: '11px',
+                                                color: '#38bdf8',
+                                                borderBottom: '1px solid rgba(56, 189, 248, 0.1)',
+                                                fontWeight: 600,
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.5px'
+                                            }}>
+                                                📍 NZ Addresses
+                                            </div>
+                                            {addressSuggestions.map(suggestion => (
+                                                <button
+                                                    key={suggestion.id}
+                                                    type="button"
+                                                    onClick={() => handleAddressSelect(suggestion)}
+                                                    style={{
+                                                        display: 'block',
+                                                        width: '100%',
+                                                        padding: '10px 12px',
+                                                        textAlign: 'left',
+                                                        background: 'transparent',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        color: '#e2e8f0',
+                                                        fontSize: '13px',
+                                                        transition: 'background 0.15s ease'
+                                                    }}
+                                                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(56, 189, 248, 0.1)'}
+                                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                                >
+                                                    {suggestion.fullAddress}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -386,6 +564,35 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
 
                             <div className="apm-grid-2">
                                 <div className="apm-field-group">
+                                    <label className="apm-label">Last Sale Price</label>
+                                    <div className="apm-input-wrapper">
+                                        <DollarSign size={16} className="apm-input-icon" />
+                                        <input
+                                            type="text"
+                                            className="apm-input"
+                                            placeholder="Unknown"
+                                            value={formData.lastSalePrice}
+                                            onChange={e => setFormData({ ...formData, lastSalePrice: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="apm-field-group">
+                                    <label className="apm-label">Last Sale Date</label>
+                                    <div className="apm-input-wrapper">
+                                        <Activity size={16} className="apm-input-icon" />
+                                        <input
+                                            type="text"
+                                            className="apm-input"
+                                            placeholder="Unknown"
+                                            value={formData.lastSaleDate}
+                                            onChange={e => setFormData({ ...formData, lastSaleDate: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="apm-grid-2">
+                                <div className="apm-field-group">
                                     <label className="apm-label">Bedrooms</label>
                                     <div className="apm-counter">
                                         <button type="button" className="apm-counter-btn" onClick={() => decrement('bedrooms')}><Minus size={14} /></button>
@@ -457,7 +664,70 @@ export const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
                             </div>
                         </div>
 
-                        {/* Section 4: Vendor Contact (Required) */}
+                        {/* Section 4: Deal Flow Setup (NEW) */}
+                        <div className="apm-section">
+                            <div className="apm-section-title">
+                                <Sparkles size={16} style={{ marginRight: '8px', color: '#8B5CF6' }} />
+                                Deal Flow Integration
+                            </div>
+
+                            <div className="apm-deal-flow-section">
+                                <div className="apm-toggle-wrapper">
+                                    <div className="apm-toggle-info">
+                                        <div className="apm-toggle-title">Create Deal Flow Card?</div>
+                                        <div className="apm-toggle-desc">Automatically add this to your pipeline for tracking progress</div>
+                                    </div>
+                                    <label className="apm-toggle">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.createDealFlowCard}
+                                            onChange={e => setFormData({ ...formData, createDealFlowCard: e.target.checked })}
+                                        />
+                                        <span className="apm-toggle-slider" />
+                                    </label>
+                                </div>
+
+                                {formData.createDealFlowCard && (
+                                    <div className="apm-grid-2" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                                        <div className="apm-field-group">
+                                            <label className="apm-label">Sale Method</label>
+                                            <div className="apm-input-wrapper">
+                                                <Tag size={16} className="apm-input-icon" />
+                                                <select
+                                                    className="apm-input"
+                                                    value={formData.saleMethod}
+                                                    onChange={e => setFormData({ ...formData, saleMethod: e.target.value as any })}
+                                                >
+                                                    <option value="auction">Auction</option>
+                                                    <option value="negotiation">Negotiation</option>
+                                                    <option value="tender">Tender</option>
+                                                    <option value="deadline_sale">Deadline Sale</option>
+                                                    <option value="asking_price">Asking Price</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="apm-field-group">
+                                            <label className="apm-label">Deal Stage</label>
+                                            <div className="apm-input-wrapper">
+                                                <Activity size={16} className="apm-input-icon" />
+                                                <select
+                                                    className="apm-input"
+                                                    value={formData.dealStage}
+                                                    onChange={e => setFormData({ ...formData, dealStage: e.target.value })}
+                                                >
+                                                    <option value="buyer_consult">Consult (Standard)</option>
+                                                    <option value="appraisal">Appraisal</option>
+                                                    <option value="listing_signed">Listing Signed</option>
+                                                    <option value="marketing">Marketing</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Section 5: Vendor Contact (Required) */}
                         <div className="apm-section">
                             <div className="apm-section-title">
                                 <Users size={16} style={{ marginRight: '8px' }} />

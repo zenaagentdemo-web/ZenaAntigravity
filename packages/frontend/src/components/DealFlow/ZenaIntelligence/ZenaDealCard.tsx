@@ -8,7 +8,7 @@
 import React, { useMemo, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Deal, STAGE_LABELS, formatCurrency, StrategySessionContext } from '../types';
-import { analyseDeal, personalisePowerMove, DealIntelligence } from './ZenaIntelligenceEngine';
+import { analyseDeal, personalisePowerMove, DealIntelligence, getHealthColor } from './ZenaIntelligenceEngine';
 import { PowerPulse } from './PowerPulse';
 import { PowerMoveCard } from './PowerMoveCard';
 import { Zap } from 'lucide-react';
@@ -81,6 +81,13 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
         return intelligence.riskSignals.some(s => s.type === 'stalling');
     }, [intelligence.riskSignals]);
 
+    const needsAction = useMemo(() => {
+        // A deal needs action if:
+        // 1. It has any risk signals (risk, overdue conditions, tasks, actions)
+        // 2. Its risk level is explicitly high or critical
+        return intelligence.riskSignals.length > 0 || deal.riskLevel === 'high' || deal.riskLevel === 'critical';
+    }, [intelligence.riskSignals, deal.riskLevel]);
+
     const mainAddress = useMemo(() => {
         const address = deal.property?.address || 'Unknown Property';
         return address.split(',')[0].trim();
@@ -112,7 +119,7 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
 
     return (
         <motion.div
-            className={`zena-deal-card ${healthClass} ${isStalled ? 'zena-deal-card--stalled' : ''} ${compact ? 'zena-deal-card--compact' : ''} ${isHighlighted ? 'zena-deal-card--highlighted' : ''} ${isDimmed ? 'zena-deal-card--dimmed' : ''} ${isSelected ? 'zena-deal-card--selected' : ''}`}
+            className={`zena-deal-card ${healthClass} ${isStalled ? 'zena-deal-card--stalled' : ''} ${needsAction ? 'zena-deal-card--needs-action' : ''} ${compact ? 'zena-deal-card--compact' : ''} ${isHighlighted ? 'zena-deal-card--highlighted' : ''} ${isDimmed ? 'zena-deal-card--dimmed' : ''} ${isSelected ? 'zena-deal-card--selected' : ''}`}
             onClick={onClick}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -159,7 +166,15 @@ export const ZenaDealCard: React.FC<ZenaDealCardProps> = ({
                     </div>
                 </div>
                 <div className="zena-deal-card__stage-column">
-                    <div className="zena-deal-card__stage" data-status={intelligence.stageHealthStatus}>
+                    <div
+                        className="zena-deal-card__stage"
+                        data-status={intelligence.stageHealthStatus}
+                        style={{
+                            color: getHealthColor(intelligence.healthScore),
+                            borderColor: `${getHealthColor(intelligence.healthScore)}33`,
+                            background: `${getHealthColor(intelligence.healthScore)}15`
+                        }}
+                    >
                         {isStalled ? 'STALLED' : stageLabel}
                     </div>
                     <div className="zena-deal-card__days">

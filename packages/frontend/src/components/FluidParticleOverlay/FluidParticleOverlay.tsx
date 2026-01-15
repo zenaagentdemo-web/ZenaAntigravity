@@ -233,18 +233,41 @@ export const FluidParticleOverlay: React.FC<FluidParticleOverlayProps> = memo(({
         camera.position.z = 100;
         cameraRef.current = camera;
 
-        const renderer = new THREE.WebGLRenderer({
-            canvas: canvasRef.current,
-            alpha: true,
-            antialias: true,
-            powerPreference: 'high-performance',
-        });
-        renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.max(window.devicePixelRatio, 3));  // 3x for crisp particles
-        rendererRef.current = renderer;
+        try {
+            // PRE-FLIGHT CHECK: Explicitly check for context availability before Three.js tries to initialize.
+            // Three.js crashes (TypeError on 'precision') if it gets a null context during its internal capabilities check.
+            const gl = canvasRef.current.getContext('webgl', {
+                alpha: true,
+                antialias: true,
+                powerPreference: 'high-performance'
+            });
 
-        // Initialize particle data
-        particleDataRef.current = initParticles();
+            if (!gl) {
+                console.warn('[FluidParticleOverlay] WebGL Context unavailable (Exhausted?). Aborting renderer creation.');
+                rendererRef.current = null;
+                return;
+            }
+
+            // If we have a context, we can safely allow Three.js to initialize
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvasRef.current,
+                context: gl, // Pass the existing context we just verified
+                alpha: true,
+                antialias: true,
+            });
+
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.max(window.devicePixelRatio, 3));  // 3x for crisp particles
+            rendererRef.current = renderer;
+        } catch (error) {
+            console.error('[FluidParticleOverlay] WebGL initialization failed (Exception):', error);
+            rendererRef.current = null;
+            return; // Exit early if renderer creation fails
+        }
+
+        // Initialize particle data with integer count
+        const validatedParticleCount = Math.floor(particleCount || 0);
+        particleDataRef.current = initParticles(validatedParticleCount);
         const particles = particleDataRef.current;
         const count = particles.length;
 
@@ -442,7 +465,11 @@ export const FluidParticleOverlay: React.FC<FluidParticleOverlayProps> = memo(({
         return () => {
             cancelAnimationFrame(animationFrameRef.current);
             if (rendererRef.current) {
-                rendererRef.current.dispose();
+                const renderer = rendererRef.current;
+                renderer.dispose();
+                // Explicitly lose context to free up hardware resources
+                const extension = renderer.getContext().getExtension('WEBGL_lose_context');
+                if (extension) extension.loseContext();
             }
         };
     }, [initScene, animate]);
@@ -461,7 +488,11 @@ export const FluidParticleOverlay: React.FC<FluidParticleOverlayProps> = memo(({
         <canvas
             ref={canvasRef}
             className="fluid-particle-overlay"
-            style={{ width, height }}
+            style={{
+                width,
+                height,
+                display: rendererRef.current ? 'block' : 'none'
+            }}
             aria-hidden="true"
         />
     );

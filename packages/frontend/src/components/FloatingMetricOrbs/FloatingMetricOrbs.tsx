@@ -95,7 +95,7 @@ export const FloatingMetricOrbs: React.FC<FloatingMetricOrbsProps> = ({
                 {orb.icon}
               </span>
             )}
-            <span className="metric-orb__value">{orb.value}</span>
+            {orb.value > 0 && <span className="metric-orb__value">{orb.value}</span>}
             <span className="metric-orb__label">{orb.label}</span>
             {orb.subtitle && (
               <span className="metric-orb__subtitle">{orb.subtitle}</span>

@@ -196,7 +196,12 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onSubmit, properti
             setDueDatePreset(initialData.dueDate ? 'custom' : '');
 
             if (initialData.dueDate) {
-                setCustomDate(initialData.dueDate.toISOString());
+                // Use local date string to avoid timezone shifts
+                const year = initialData.dueDate.getFullYear();
+                const month = String(initialData.dueDate.getMonth() + 1).padStart(2, '0');
+                const day = String(initialData.dueDate.getDate()).padStart(2, '0');
+                setCustomDate(`${year}-${month}-${day}`);
+
                 setCustomTime(initialData.dueDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
             } else {
                 setCustomDate('');
@@ -267,19 +272,23 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onSubmit, properti
         const clientEntry = clients.find(([id]) => id === selectedClient);
 
         const newTask: Task = {
-            id: `task-${Date.now()}`,
+            // Preserve existing data if editing, or set defaults for new task
+            ...(initialData ? initialData : {
+                id: `task-${Date.now()}`,
+                status: 'pending',
+                source: 'manual',
+                isSuggestion: false,
+                createdAt: new Date()
+            }),
+            // Override with form values
             title: title.trim(),
             description: notes.trim() || undefined,
             dueDate: dueDate || undefined,
             priority,
-            status: 'pending',
             propertyId: selectedProperty || undefined,
             propertyName: propertyEntry?.[1],
             clientId: selectedClient || undefined,
-            clientName: clientEntry?.[1],
-            source: 'manual',
-            isSuggestion: false,
-            createdAt: new Date()
+            clientName: clientEntry?.[1]
         };
 
         onSubmit(newTask);

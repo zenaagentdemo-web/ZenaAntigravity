@@ -28,7 +28,7 @@ export const usePropertyIntelligence = () => {
     // WebSocket Connection specific to Properties (reusing same socket or logic)
     // For now, we reuse the pattern from useContactIntelligence, listening for 'property.intelligence'
     useEffect(() => {
-        const token = localStorage.getItem('zena_auth_token') || 'demo-token';
+        const token = localStorage.getItem('auth_token') || 'demo-token';
         if (!token) return;
 
         const host = window.location.host;

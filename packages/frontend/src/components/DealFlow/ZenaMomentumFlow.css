@@ -393,11 +393,7 @@
     margin-left: 8px;
 }
 
-.deals__sort-info {
-    font-family: var(--font-family-sans);
-    font-size: 0.6875rem;
-    color: rgba(255, 255, 255, 0.4);
-}
+
 
 .deals__grid {
     display: grid;

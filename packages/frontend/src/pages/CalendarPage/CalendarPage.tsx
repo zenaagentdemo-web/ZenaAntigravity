@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Sparkles, Calendar, CheckCircle2, MapPin, ArrowRight, Clock, ChevronLeft, ChevronRight, AlertTriangle, X, Plus, Brain } from 'lucide-react';
 import { CalendarAppointment } from '../../components/CalendarWidget/CalendarWidget';
 import { ScheduleOpenHomeModal } from '../../components/ScheduleOpenHomeModal/ScheduleOpenHomeModal';
@@ -13,6 +13,7 @@ import { getLocalISODate } from '../../utils/dateUtils';
 import { OptimiseProposalModal } from '../../components/CalendarOptimizationModal/OptimiseProposalModal';
 import { toast } from 'react-hot-toast';
 import './CalendarPage.css';
+import { useDealNavigation } from '../../hooks/useDealNavigation';
 
 interface Property {
     id: string;
@@ -31,6 +32,8 @@ interface Property {
 export const CalendarPage: React.FC = () => {
     console.log('[DEBUG] CalendarPage component rendering');
     const navigate = useNavigate();
+    const location = useLocation();
+    const { isFromDeal, propertyName, goBackToDeal } = useDealNavigation();
     const [searchParams] = useSearchParams();
     const [viewMode, setViewMode] = useState<'day' | 'week' | 'month'>('day');
     const { pendingCount } = useGodmode();
@@ -189,6 +192,19 @@ export const CalendarPage: React.FC = () => {
             }
         }
     }, [searchParams, properties]);
+
+    // Handle targetDate from deal flow key dates navigation
+    useEffect(() => {
+        const navState = location.state as { targetDate?: string } | null;
+        if (navState?.targetDate) {
+            const target = new Date(navState.targetDate);
+            if (!isNaN(target.getTime())) {
+                setSelectedAgendaDate(target);
+                // Clear the state to prevent re-triggering
+                window.history.replaceState({}, document.title);
+            }
+        }
+    }, [location.state]);
 
     useEffect(() => {
         loadData();
@@ -480,14 +496,61 @@ export const CalendarPage: React.FC = () => {
         }
     };
 
+    const handleApplyAndStart = async () => {
+        if (!optimiseProposal) return;
+
+        setIsOptimising(true);
+
+        try {
+            await api.post('/api/calendar-optimization/apply', {
+                userId: 'user-123',
+                schedule: (optimiseProposal as any).proposedSchedule
+            });
+
+            toast.success("Schedule optimised! Transitioning to Mission Mode...");
+            setIsOptimiseModalOpen(false);
+            navigate('/ask-zena?mode=live&context=optimised_day');
+        } catch (error) {
+            console.error('Failed to apply schedule:', error);
+            toast.error("Failed to save schedule changes.");
+        } finally {
+            setIsOptimising(false);
+        }
+    };
+
     return (
         <div className="calendar-page">
             <header className="calendar-page__header">
                 {/* Top Row: Back, Title, Nav, Godmode Controls */}
                 <div className="calendar-header-top-row">
-                    <button className="back-button" onClick={() => navigate(-1)}>
-                        ← Back
-                    </button>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <button className="back-button" onClick={() => navigate(-1)}>
+                            ← Back
+                        </button>
+                        {isFromDeal && (
+                            <button
+                                className="back-to-deal-btn"
+                                onClick={goBackToDeal}
+                                style={{
+                                    background: 'rgba(0, 255, 65, 0.15)',
+                                    border: '1px solid rgba(0, 255, 65, 0.4)',
+                                    color: '#00ff41',
+                                    padding: '8px 14px',
+                                    borderRadius: '8px',
+                                    fontSize: '0.9rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                <span style={{ fontSize: '1rem' }}>📦</span>
+                                Return to {propertyName ? propertyName.split(',')[0] : 'Deal'}
+                            </button>
+                        )}
+                    </div>
                     <div className="calendar-header-main">
                         <h1 className="calendar-page__title">Your Schedule</h1>
                     </div>
@@ -877,7 +940,6 @@ export const CalendarPage: React.FC = () => {
                                                                             e.stopPropagation();
                                                                             navigate(`/contacts/${appt.contactId}`, { state: { fromCalendar: true, eventId: appt.id } });
                                                                         }}
-                                                                        style={{ marginTop: appt.property?.id ? '4px' : '0' }}
                                                                     >
                                                                         View Contact
                                                                     </button>
@@ -971,37 +1033,37 @@ export const CalendarPage: React.FC = () => {
 
 
                 </aside>
+                {isOptimiseModalOpen && createPortal(
+                    <OptimiseProposalModal
+                        isOpen={isOptimiseModalOpen}
+                        onClose={() => setIsOptimiseModalOpen(false)}
+                        onApply={handleApplyOptimisation}
+                        onApplyAndStart={handleApplyAndStart}
+                        proposal={optimiseProposal}
+                        isLoading={isOptimising}
+                    />,
+                    document.body
+                )}  {/* Removed FAB - Moved to Header */}
+
+                <ScheduleOpenHomeModal
+                    isOpen={isScheduleModalOpen}
+                    onClose={handleCloseScheduleModal}
+                    property={selectedProperty as any}
+                    allProperties={properties as any}
+                    milestone={selectedMilestone}
+                    onSuccess={() => {
+                        loadData(); // Refresh calendar
+                    }}
+                />
+
+                <ActionApprovalQueue
+                    isOpen={isActionQueueOpen}
+                    onClose={() => setIsActionQueueOpen(false)}
+                    onActionTaken={() => {
+                        loadData();
+                    }}
+                />
             </main>
-
-            <OptimiseProposalModal
-                isOpen={isOptimiseModalOpen}
-                onClose={() => setIsOptimiseModalOpen(false)}
-                onApply={handleApplyOptimisation}
-                proposal={optimiseProposal}
-                isLoading={isOptimising}
-            />
-
-
-            {/* Removed FAB - Moved to Header */}
-
-            <ScheduleOpenHomeModal
-                isOpen={isScheduleModalOpen}
-                onClose={handleCloseScheduleModal}
-                property={selectedProperty as any}
-                allProperties={properties as any}
-                milestone={selectedMilestone}
-                onSuccess={() => {
-                    loadData(); // Refresh calendar
-                }}
-            />
-
-            <ActionApprovalQueue
-                isOpen={isActionQueueOpen}
-                onClose={() => setIsActionQueueOpen(false)}
-                onActionTaken={() => {
-                    loadData();
-                }}
-            />
         </div>
     );
 };

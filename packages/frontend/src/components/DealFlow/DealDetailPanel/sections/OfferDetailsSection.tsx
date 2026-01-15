@@ -5,15 +5,29 @@
 import React from 'react';
 import { Deal, formatCurrency } from '../../types';
 import { logActivity } from '../../utils/ActivityLogger';
+import { getStageConfig, QuickAction } from '../StageConfig';
 import './sections.css';
 
 interface OfferDetailsSectionProps {
     deal: Deal;
     onUpdate?: (deal: Deal) => void;
+    onQuickAction?: (action: QuickAction) => void;
 }
 
-export const OfferDetailsSection: React.FC<OfferDetailsSectionProps> = ({ deal, onUpdate }) => {
+export const OfferDetailsSection: React.FC<OfferDetailsSectionProps> = ({ deal, onUpdate, onQuickAction }) => {
     const handleAction = (type: 'revise' | 'counter') => {
+        if (onQuickAction) {
+            const actionId = type === 'revise' ? 'revise-offer' : 'counter';
+            const actionLabel = type === 'revise' ? 'Revise Offer' : 'Counter Offer';
+            onQuickAction({
+                id: actionId,
+                label: actionLabel,
+                icon: type === 'revise' ? '✏️' : '📝',
+                action: 'custom'
+            });
+            return;
+        }
+
         if (!onUpdate) return;
 
         const eventTitle = type === 'revise' ? 'Revised Offer Prepared' : 'Counter-Offer Sent';

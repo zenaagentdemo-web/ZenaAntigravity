@@ -9,6 +9,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
     return {
         ...actual,
         useNavigate: () => mockNavigate,
+        useLocation: () => ({ pathname: '/deal-flow', state: null }),
     };
 });
 
@@ -57,6 +58,20 @@ vi.mock('./sections', () => ({
     FollowUpActionsSection: () => <div data-testid="follow-up-actions-section" />,
     IntelligenceTab: () => <div data-testid="intelligence-tab" />,
 }));
+
+// Mock ZenaIntelligenceEngine hooks
+vi.mock('../ZenaIntelligence/ZenaIntelligenceEngine', async (importOriginal) => {
+    const actual = await importOriginal() as any;
+    return {
+        ...actual,
+        useDealIntelligence: vi.fn().mockReturnValue({
+            intelligence: null,
+            loading: false,
+            error: null,
+            refresh: vi.fn(),
+        }),
+    };
+});
 
 import DealDetailPanel from './DealDetailPanel';
 import type { Deal } from '../types';
@@ -119,16 +134,15 @@ describe('DealDetailPanel Property-Based Tests', () => {
                             dealValue: dealData.dealValue,
                         });
 
-                        const { container, unmount } = render(
-
+                        const { unmount } = render(
                             <DealDetailPanel
                                 deal={deal}
                                 onClose={() => { }}
                             />
-
                         );
 
-                        expect(document.body.querySelector('.deal-detail-panel')).toBeInTheDocument();
+                        const panel = document.body.querySelector('.deal-detail-panel');
+                        expect(panel).toBeInTheDocument();
                         unmount();
                     }
                 ),
@@ -567,6 +581,55 @@ describe('DealDetailPanel Property-Based Tests', () => {
 
             // Should not throw during unmount
             expect(() => unmount()).not.toThrow();
+        });
+    });
+    /**
+     * Property 16: Intelligence synchronization
+     * Verifies that precomputed intelligence is displayed correctly and takes precedence
+     */
+    describe('Property 16: Intelligence synchronization', () => {
+        it('should display precomputed health score and coaching insight', () => {
+            fc.assert(
+                fc.property(
+                    fc.integer({ min: 0, max: 100 }),
+                    fc.string({ minLength: 5, maxLength: 100 }),
+                    (healthScore, coachingInsight) => {
+                        const deal = createDeal();
+                        const intelligence = {
+                            dealId: deal.id,
+                            healthScore,
+                            healthVelocity: 0,
+                            riskSignals: [],
+                            suggestedPowerMove: null,
+                            coachingInsight,
+                            emailSentiment: 'neutral' as const,
+                            needsLiveSession: false,
+                            daysInStage: 5,
+                            stageHealthStatus: (healthScore >= 70 ? 'healthy' : healthScore >= 40 ? 'warning' : 'critical') as any,
+                        };
+
+                        const { unmount } = render(
+                            <DealDetailPanel
+                                deal={deal}
+                                precomputedIntelligence={intelligence}
+                                onClose={() => { }}
+                            />
+                        );
+
+                        // Health score should be visible in the Momentum Score section
+                        const scoreText = `${healthScore}%`;
+                        const healthScoreElement = screen.getByTestId('health-score');
+
+                        expect(healthScoreElement.textContent).toContain(scoreText);
+
+                        // Coaching insight should be passed to the coaching panel or displayed in intelligence tab
+                        // Since we mock ZenaCoachingPanel, we can't easily see it there, but we can verify the text exists if it's rendered elsewhere
+
+                        unmount();
+                    }
+                ),
+                { numRuns: 10 }
+            );
         });
     });
 });

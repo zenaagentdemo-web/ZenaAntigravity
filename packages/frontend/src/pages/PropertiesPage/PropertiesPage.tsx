@@ -72,7 +72,11 @@ interface Property {
   bathrooms?: number;
   landSize?: string;
   floorSize?: string;
-  dealId?: string;
+  deals?: Array<{
+    id: string;
+    stage: string;
+    summary: string;
+  }>;
   milestones: Array<{
     id: string;
     type: string;
@@ -1428,6 +1432,12 @@ export const PropertiesPage: React.FC = () => {
                         <div className="property-list-item__address">
                           <div className="address-main">
                             <span>{property.address}</span>
+                            {property.deals && property.deals.length > 0 && (
+                              <div className="zena-deal-badge" title={`Deal Stage: ${property.deals[0].stage}`}>
+                                <Zap size={10} fill="currentColor" />
+                                <span>{property.deals[0].stage.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</span>
+                              </div>
+                            )}
                           </div>
 
                           <div className="property-specs-compact">

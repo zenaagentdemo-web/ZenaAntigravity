@@ -38,6 +38,7 @@ import { intelligenceHeartbeatService } from './services/intelligence-heartbeat.
 import { reminderSchedulerService } from './services/reminder-scheduler.service.js';
 import { logger } from './services/logger.service.js';
 import { healthCheckService } from './services/health-check.service.js';
+import { backgroundJobService } from './services/background-job.service.js';
 import {
   requestContextMiddleware,
   requestLoggingMiddleware,
@@ -219,6 +220,7 @@ const server = createServer(app);
 // Initialize WebSocket server and background engines only if not in test
 if (process.env.NODE_ENV !== 'test') {
   websocketService.initialize(server);
+  backgroundJobService.initialize();
 
   // Restore sessions from disk (safe initialization)
   restoreSessions();

@@ -226,9 +226,15 @@ export class PropertiesController {
         rateableValue,
         viewingCount,
         inquiryCount,
-        vendor, // New: { firstName, lastName, email, phone }
+        vendor, // { firstName, lastName, email, phone }
         vendorContactIds = [],
-        buyerContactIds = []
+        buyerContactIds = [],
+        lastSalePrice,
+        lastSaleDate,
+        // Deal specific fields
+        createDealFlowCard = false,
+        saleMethod = 'negotiation',
+        dealStage = 'buyer_consult',
       } = req.body;
 
       // Validate required fields
@@ -297,6 +303,8 @@ export class PropertiesController {
           floorSize: floorSize != null ? String(floorSize) : null,
           listingDate: listingDate ? new Date(listingDate) : null,
           rateableValue: rateableValue != null ? parseInt(rateableValue) : null,
+          lastSalePrice: lastSalePrice != null ? (typeof lastSalePrice === 'number' ? lastSalePrice : parseFloat(lastSalePrice)) : null,
+          lastSaleDate: lastSaleDate ? new Date(lastSaleDate) : null,
           viewingCount: viewingCount != null ? parseInt(viewingCount) : 0,
           inquiryCount: inquiryCount != null ? parseInt(inquiryCount) : 0,
           milestones: propertyMilestones,
@@ -378,9 +386,46 @@ export class PropertiesController {
         }).catch(err => console.error('[Properties] S22 match pulse failed:', err));
       }
 
+      // --- NEW: Handle Deal Flow Card Creation ---
+      let createdDeal = null;
+      if (createDealFlowCard) {
+        createdDeal = await prisma.deal.create({
+          data: {
+            userId: req.user.userId,
+            propertyId: property.id,
+            stage: dealStage,
+            pipelineType: 'seller', // Usually when adding from property page it's a seller-lead
+            saleMethod: saleMethod,
+            summary: property.address,
+            nextActionOwner: 'agent',
+            contacts: {
+              connect: vendorIdsToConnect.map((id: string) => ({ id })),
+            },
+            contactStages: vendorIdsToConnect.reduce((acc: any, id: string) => {
+              acc[id] = dealStage;
+              return acc;
+            }, {}),
+          }
+        });
+
+        // Log deal creation for timeline
+        await prisma.timelineEvent.create({
+          data: {
+            userId: req.user.userId,
+            type: 'note',
+            entityType: 'deal',
+            entityId: createdDeal.id,
+            summary: `Automated deal flow card created from property signup`,
+            timestamp: new Date()
+          }
+        });
+        console.log(`[Properties] Automated deal created for ${address.trim()}`);
+      }
+
       res.status(201).json({
         property,
-        message: 'Property created successfully',
+        deal: createdDeal,
+        message: createdDeal ? 'Property and Deal created successfully' : 'Property created successfully',
       });
     } catch (error) {
       console.error('Create property error:', error);
@@ -518,6 +563,8 @@ export class PropertiesController {
         floorSize,
         listingDate,
         rateableValue,
+        lastSalePrice,
+        lastSaleDate,
         viewingCount,
         inquiryCount,
         vendorContactIds,
@@ -582,6 +629,8 @@ export class PropertiesController {
       if (floorSize !== undefined) updateData.floorSize = floorSize != null ? String(floorSize) : null;
       if (listingDate !== undefined) updateData.listingDate = listingDate ? new Date(listingDate) : null;
       if (rateableValue !== undefined) updateData.rateableValue = rateableValue != null ? parseInt(rateableValue) : null;
+      if (lastSalePrice !== undefined) updateData.lastSalePrice = lastSalePrice != null ? parseFloat(lastSalePrice) : null;
+      if (lastSaleDate !== undefined) updateData.lastSaleDate = lastSaleDate ? new Date(lastSaleDate) : null;
       if (viewingCount !== undefined) updateData.viewingCount = viewingCount != null ? parseInt(viewingCount) : 0;
       if (inquiryCount !== undefined) updateData.inquiryCount = inquiryCount != null ? parseInt(inquiryCount) : 0;
 

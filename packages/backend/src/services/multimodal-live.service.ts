@@ -14,6 +14,102 @@ import { sessions, UserSession } from './live-sessions.js';
 import { dealFlowService } from './deal-flow.service.js';
 import { askZenaService } from './ask-zena.service.js';
 import prisma from '../config/database.js';
+import { toolRegistry } from '../tools/registry.js';
+import { toolExecutionService } from './tool-execution.service.js';
+import { proactiveContextService } from './proactive-context.service.js';
+import { jobManager } from './job-manager.service.js'; // Import Job Manager
+import { calendarOptimizerService } from './calendar-optimizer.service.js';
+import { ZenaToolDefinition } from '../tools/types.js';
+
+/**
+ * 🧠 DOMAIN FILTERING FOR ZENA LIVE
+ * Matches AgentOrchestrator's selectTools() logic for consistency.
+ * Intelligently selects tools based on context keywords in history.
+ */
+function selectToolsForLive(history?: any[], context?: string): ZenaToolDefinition[] {
+    const domains = new Set<string>(['core', 'calendar', 'task']); // Always include essentials
+
+    // Combine all text sources for keyword detection
+    const allText = [
+        context || '',
+        ...(history || []).map(h => h.content || '')
+    ].join(' ').toLowerCase();
+
+    // Intent detection (matching AgentOrchestrator)
+    if (allText.includes('email') || allText.includes('inbox') || allText.includes('message')) {
+        domains.add('inbox');
+    }
+    if (allText.includes('deal') || allText.includes('pipeline') || allText.includes('portfolio') || allText.includes('business')) {
+        domains.add('deal');
+    }
+    if (allText.includes('contact') || allText.includes('person') || allText.includes('who is') || allText.includes('note')) {
+        domains.add('contact');
+    }
+    if (allText.includes('property') || allText.includes('address') || allText.includes('listing') ||
+        allText.includes('market analysis') || allText.includes('cma') || allText.includes('milestone')) {
+        domains.add('property');
+    }
+    if (allText.includes('task') || allText.includes('todo') || allText.includes('remind') || allText.includes('follow up')) {
+        domains.add('task');
+    }
+    if (allText.includes('voice note') || allText.includes('dictate')) {
+        domains.add('voice-notes');
+    }
+
+    // If 'create' or 'update' is mentioned, include major action domains for safety
+    if (allText.includes('create') || allText.includes('update') || allText.includes('log') ||
+        allText.includes('add') || allText.includes('schedule') || allText.includes('book')) {
+        domains.add('contact');
+        domains.add('property');
+        domains.add('deal');
+        domains.add('task');
+        domains.add('calendar');
+    }
+
+    // Get tools for selected domains
+    const selectedTools: ZenaToolDefinition[] = [];
+    for (const domain of domains) {
+        selectedTools.push(...toolRegistry.getToolsByDomain(domain));
+    }
+
+    console.log(`[MultimodalLive] 🧠 Domain filtering: Selected ${selectedTools.length} tools from domains: ${Array.from(domains).join(', ')}`);
+    return selectedTools;
+}
+
+/**
+ * 🚀 PROACTIVE SUGGESTION GENERATOR
+ * Returns a contextual follow-up suggestion based on what action was just completed.
+ * This enables multi-step "Chief of Staff" behavior matching Ask Zena.
+ */
+function getProactiveSuggestion(toolName: string, result: any): string | null {
+    const entityId = result?.id || result?.property?.id || result?.contact?.id || result?.deal?.id || result?.event?.id;
+
+    switch (true) {
+        case toolName.includes('property.create'):
+            return `Property created successfully. The system will now offer the user a CMA and milestone setup. Entity: ${entityId}`;
+
+        case toolName.includes('contact.create'):
+            return `Contact created. The system can offer a discovery scan to enrich the profile. Entity: ${entityId}`;
+
+        case toolName.includes('calendar.create'):
+            return `Appointment scheduled. The system can offer to draft a confirmation email or set a reminder.`;
+
+        case toolName.includes('deal.create'):
+            return `Deal created. The system can offer to analyze the deal and assign key contacts. Entity: ${entityId}`;
+
+        case toolName.includes('task.create'):
+            return `Task created. The system can offer to block calendar time for this task.`;
+
+        case toolName.includes('property.generate_comparables'):
+            return `CMA generated. The system can offer to set up standard campaign milestones for this property.`;
+
+        case toolName.includes('property.add_milestone'):
+            return `Milestone added. The system can offer to add more milestones or schedule them in the calendar.`;
+
+        default:
+            return null; // No proactive suggestion for this tool
+    }
+}
 
 // Initialize Google GenAI client with v1alpha for Multimodal Live
 const ai = new GoogleGenAI({
@@ -63,6 +159,26 @@ VOICE STYLE & EXPRESSION (MAXED OUT 11/10):
 - CLEAN SPEECH (MANDATORY): Do NOT use markdown (asterisks, bullet points) in your spoken output. Use plain text only to avoid audio artifacts.
 - Concise but Punchy: Keep voice responses under 2-3 sentences. Get to the point with a quip.
 
+*** TOOL USAGE - MANDATORY FOR ACTIONS ***
+You MUST use function calling for ANY action the user requests:
+- Creating appointments/meetings → MUST use calendar.create tool
+- Creating contacts → MUST use contact.create tool
+- Creating properties → MUST use property.create tool
+- Creating deals → MUST use deal.create tool
+- Sending emails/drafts → MUST use appropriate email tool
+
+CRITICAL RULE: NEVER simulate or pretend to complete an action. If you say "done", "created", "scheduled", or "added" without calling the corresponding tool, you are LYING to the user. Always use the tool FIRST, then confirm based on the tool's response.
+
+*** PROACTIVE VALUE-ADD (CHIEF OF STAFF MODE) - CRITICAL ***
+After completing ANY action, you MUST proactively suggest the next logical value-add action:
+- After creating a PROPERTY → Offer: "Want me to generate a CMA for this property and set up the standard campaign milestones?"
+- After creating a CONTACT → Offer: "Shall I run a discovery scan to enrich their profile with LinkedIn data?"
+- After creating an APPOINTMENT → Offer: "Should I draft a confirmation email or set a reminder?"
+- After creating a DEAL → Offer: "Want me to analyze this deal and assign the key contacts?"
+- After creating a TASK → Offer: "Should I also block time in your calendar for this?"
+
+IMPORTANT: If the user says YES to any of these offers, you MUST execute the corresponding tool immediately. Do NOT just acknowledge - TAKE ACTION.
+
 RULES:
 - Always respond in English only.
 - You help with real estate tasks: scheduling, client management, deal tracking, market insights.
@@ -96,11 +212,16 @@ export async function startLiveSession(userId: string, userWs: WebSocket, histor
 
     // Close existing session if any
     const existing = sessions.get(userId);
-    if (existing?.session) {
-        try {
-            existing.session.close();
-        } catch (e) {
-            // Ignore close errors
+    if (existing) {
+        if (existing.cleanup) {
+            existing.cleanup();
+        }
+        if (existing.session) {
+            try {
+                existing.session.close();
+            } catch (e) {
+                // Ignore close errors
+            }
         }
         sessions.delete(userId);
     }
@@ -164,6 +285,44 @@ You have access to a "search_data" tool. If the user asks for details about a sp
             console.log('[MultimodalLive] Could not fetch pipeline context:', e);
         }
 
+        // Mission Context (Optimized Day)
+        let missionContext = '';
+        if (context === 'optimised_day') {
+            try {
+                const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
+                const endOfDay = new Date(); endOfDay.setHours(23, 59, 59, 999);
+                const appointments = await calendarOptimizerService.fetchDailyAppointments(userId, startOfDay, endOfDay);
+
+                if (appointments.length > 0) {
+                    const missionItems = appointments.map((a, i) => {
+                        let details = `${i + 1}. ${a.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${a.title} @ ${a.location}`;
+
+                        // Enriched Contact Data for Proactivity
+                        if (a.contact) {
+                            details += `\n   -> CONTACT: ${a.contact.name} (ID: ${a.contact.id}, Email: ${a.contact.email || 'N/A'})`;
+                        }
+                        if (a.participants?.length) {
+                            a.participants.forEach((p: any) => {
+                                details += `\n   -> ATTENDEE: ${p.name} (${p.role}) (Email: ${p.email || 'N/A'})`;
+                            });
+                        }
+                        return details;
+                    }).join('\n');
+
+                    missionContext = `\n\nTODAY'S OPTIMIZED MISSION (Your Packet):\n${missionItems}`;
+                    missionContext += `\n\nMISSION PROTOCOL (CHIEF OF STAFF MODE):
+1. IMMEDIATE BRIEFING: You must START the session by verifying the first task. Do NOT ask "How can I help?". Instead, say: "I've pulled up your day. Your first task is [Task] at [Time]. Shall I [Proactive Action]?"
+2. VALUE-ADD ACTIONS: For every task, propose a specific admin action.
+   - If it's a meeting -> Offer to draft a confirmation email or prep a briefing doc.
+   - If it's a call -> Offer to pull the CRM history.
+   - If it's a viewing -> Offer to send a reminder to the vendor.
+3. USE YOUR TOOLS: If the user agrees ("Yes, email them"), use your tools (draft_email, search_data) immediately.`;
+                }
+            } catch (e) {
+                console.error('[MultimodalLive] Failed to load mission context:', e);
+            }
+        }
+
         // Connect to Gemini Live API using the most standard verified pattern
         const session = await ai.live.connect({
             model: `models/${MODEL}`,
@@ -185,27 +344,20 @@ You have access to a "search_data" tool. If the user asks for details about a sp
                 inputAudioTranscription: {},
                 outputAudioTranscription: {},
                 systemInstruction: {
-                    parts: [{ text: `Current Date: ${new Date().toLocaleDateString()}\n` + SYSTEM_INSTRUCTION + locationContext + pipelineContext + historyContext }]
+                    parts: [{ text: `Current Date: ${new Date().toLocaleDateString()}\n` + SYSTEM_INSTRUCTION + locationContext + pipelineContext + missionContext + historyContext }]
                 },
                 tools: [
                     { googleSearch: {} },
                     {
-                        functionDeclarations: [
-                            {
-                                name: "search_data",
-                                description: "Search for specific contacts, properties, deals, or inbox threads in the agent's database.",
-                                parameters: {
-                                    type: "OBJECT",
-                                    properties: {
-                                        query: { type: "STRING", description: "The search query (e.g. 'John Smith', 'Ponsonby Road')" },
-                                        type: { type: "STRING", enum: ["contact", "property", "deal", "thread"], description: "Optional filter by data type" }
-                                    },
-                                    required: ["query"]
-                                }
-                            }
-                        ]
+                        functionDeclarations: toolRegistry.toGeminiFunctions(selectToolsForLive(history, context))
                     }
-                ]
+                ],
+                // Enforce function calling for action requests
+                toolConfig: {
+                    functionCallingConfig: {
+                        mode: 'AUTO'
+                    }
+                }
             },
             callbacks: {
                 onopen: () => {
@@ -224,6 +376,9 @@ You have access to a "search_data" tool. If the user asks for details about a sp
                 },
                 onclose: (event: any) => {
                     logger.info(`[MultimodalLive] onclose for ${userId}`, { code: event?.code, reason: event?.reason });
+                    // Trigger cleanup
+                    const s: any = sessions.get(userId);
+                    if (s && s.cleanup) s.cleanup();
                     sessions.delete(userId);
                 },
             },
@@ -249,6 +404,7 @@ You have access to a "search_data" tool. If the user asks for details about a sp
         console.log(`[MultimodalLive] Session started for ${userId} with instruction length: ${(SYSTEM_INSTRUCTION + historyContext).length}`);
 
         // 3. Proactive Greeting if context is provided
+        // 3. Proactive Greeting if context is provided
         if (context && context !== 'app' && context !== 'dashboard') {
             console.log(`[MultimodalLive] Triggering proactive greeting for context: ${context}`);
             setTimeout(() => {
@@ -258,7 +414,7 @@ You have access to a "search_data" tool. If the user asks for details about a sp
                         parts: [{ text: `Proactively greet me and ask how you can help me with my ${context}. Be razor-sharp, witty, and characteristic of Zena. Keep it very short. CRITICAL: NEVER use pet names like 'darling' or 'honey'.` }]
                     }]
                 });
-            }, 500); // Small delay to ensure setup is stable
+            }, 500);
         } else if (context === 'app' || context === 'dashboard') {
             console.log(`[MultimodalLive] Triggering generic greeting for context: ${context}`);
             setTimeout(() => {
@@ -270,6 +426,53 @@ You have access to a "search_data" tool. If the user asks for details about a sp
                 });
             }, 500);
         }
+
+        // 4. Listen for Background Job Completions (Parallel Task Capability)
+        const jobHandler = (job: any) => {
+            if (job.userId === userId) {
+                logger.info(`[MultimodalLive] Job ${job.id} completed for ${userId}. Injecting natural interruption.`);
+
+                const tool = toolRegistry.getTool(job.toolName);
+                const toolLabel = tool?.name.split('.').pop()?.replace(/_/g, ' ') || job.toolName;
+                const deliveryPrompt = tool?.deliveryPrompt || "Briefly inform the user it is done.";
+
+                // NOTIFICATION STRATEGY:
+                // Global BackgroundJobService already handles the generic WebSocket text notification.
+                // Here we ONLY handle the Voice Injection for natural flow.
+
+                // Inject context into Gemini session so Zena knows
+                session.sendClientContent({
+                    turns: [{
+                        role: 'user',
+                        parts: [{
+                            text: `SYSTEM NOTIFICATION: The background job '${job.toolName}' (ID: ${job.id}) for '${toolLabel}' has just completed. 
+                            Result: ${JSON.stringify(job.result)}. 
+                            
+                            INSTRUCTION: You must now naturally interrupt the user (or wait for a brief pause) to deliver this result. 
+                            Specific delivery instructions: ${deliveryPrompt}
+                            
+                            RAZOR-SHARP TRANSITION: Once you've delivered the key insight, pivot gracefully back to the previous yarn or ask if they need anything else related to this result. 
+                            Example: "Pardon the interruption, but I've got those numbers... [Insight]. Now, where were we?"`
+                        }]
+                    }]
+                }).catch(e => console.error("Failed to inject job completion:", e));
+            }
+        };
+
+        jobManager.on('job_completed', jobHandler);
+
+        // CLEANUP: Remove listener when session closes
+        const anySession = session as any;
+        const originalOnClose = anySession.callbacks?.onclose;
+        // Actually, better to attach cleanup to the WebSocket close logic or `sessions.delete`
+
+        // Enhance the sessions map to include the cleanup
+        sessions.set(userId, {
+            ...sessions.get(userId)!,
+            cleanup: () => {
+                jobManager.off('job_completed', jobHandler);
+            }
+        } as any);
 
     } catch (err: any) {
         logger.error(`[MultimodalLive] Failed to start session for ${userId}:`, err);
@@ -376,34 +579,72 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
             (async () => {
                 const responses = [];
                 for (const call of calls) {
-                    if (call.name === 'search_data') {
-                        const { query } = call.args;
-                        console.log(`[MultimodalLive] Executing search_data: "${query}" for ${userId}`);
+                    console.log(`[MultimodalLive] 🛠️ Executing tool: ${call.name} for ${userId}`);
 
-                        try {
-                            // Use AskZenaService's retrieval logic as the engine
-                            // We extract search terms manually to match the internal retrieveContext call
-                            const terms = query.toLowerCase().split(/\s+/).filter((t: string) => t.length > 2);
+                    // 1. Find the tool
+                    const allTools = toolRegistry.getAllTools();
+                    const tool = toolExecutionService.findTool(call.name, allTools);
 
-                            // We use the internal retrieveContext logic via a specialized tool call
-                            // Since retrieveContext is private, we'll implement a concise version here or use processQuery
-                            const searchResult = await askZenaService.processQuery({
-                                userId,
-                                query: `Find information about: ${query}`
-                            });
+                    if (!tool) {
+                        console.warn(`[MultimodalLive] Tool not found: ${call.name}`);
+                        responses.push({
+                            id: call.id,
+                            name: call.name,
+                            response: { error: `Tool ${call.name} not found.` }
+                        });
+                        continue;
+                    }
 
-                            responses.push({
-                                id: call.id,
-                                name: call.name,
-                                response: { result: searchResult.answer }
-                            });
-                        } catch (err) {
-                            responses.push({
-                                id: call.id,
-                                name: call.name,
-                                response: { error: "Search failed or no data found." }
-                            });
+                    // 2. Proactive Context Enrichment for Creation Tools
+                    // (Matches AgentOrchestrator behavior)
+                    let finalArgs = call.args;
+                    if (tool.name.includes('.create')) {
+                        const entityType = tool.name.split('.')[0] as any;
+                        if (['property', 'contact', 'deal'].includes(entityType)) {
+                            console.log(`[MultimodalLive] 🧠 Scanning context for ${entityType} creation...`);
+                            const scanResult = await proactiveContextService.scanForContext(userId, 'create', entityType, call.args);
+
+                            if (scanResult.suggestedData) {
+                                finalArgs = { ...call.args, ...scanResult.suggestedData };
+                                console.log(`[MultimodalLive] 🧠 Enriched args with:`, Object.keys(scanResult.suggestedData));
+                            }
                         }
+                    }
+
+                    // 3. Execute the tool
+                    // We pass a simple session context. Note: We don't have the full AgentSession here,
+                    // so some tools that rely heavily on session state might need adaptation.
+                    const context = {
+                        userId,
+                        sessionId: userId + '_live', // Virtual session ID for logs
+                        isVoice: true
+                    };
+
+                    const execution = await toolExecutionService.executeTool(tool, finalArgs, context);
+
+                    if (execution.success) {
+                        responses.push({
+                            id: call.id,
+                            name: call.name,
+                            response: { result: execution.result }
+                        });
+
+                        // 🧠 PROACTIVE MULTI-STEP: Inject follow-up suggestion based on what was just done
+                        const proactiveSuggestion = getProactiveSuggestion(call.name, execution.result);
+                        if (proactiveSuggestion) {
+                            console.log(`[MultimodalLive] 🚀 Proactive suggestion queued: ${proactiveSuggestion}`);
+                            // Store for injection after tool response
+                            const userSession = sessions.get(userId);
+                            if (userSession) {
+                                (userSession as any).pendingProactiveSuggestion = proactiveSuggestion;
+                            }
+                        }
+                    } else {
+                        responses.push({
+                            id: call.id,
+                            name: call.name,
+                            response: { error: execution.error || "Execution failed" }
+                        });
                     }
                 }
 
@@ -460,7 +701,13 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
                 // Audio data - relay directly to frontend
                 if (part.inlineData?.data || part.inline_data?.data) {
                     const data = part.inlineData?.data || part.inline_data?.data;
-                    console.log(`[MultimodalLive] Audio chunk for ${userId}, size: ${data.length}`);
+                    const buffer = Buffer.from(data, 'base64');
+                    const isSilent = buffer.every(b => b === 0);
+                    console.log(`[MultimodalLive] Audio chunk for ${userId}, size: ${data.length}, bytes: ${buffer.length}, IS_SILENT: ${isSilent}`);
+                    if (!isSilent) {
+                        console.log(`[MultimodalLive] Sample bytes: ${buffer.subarray(0, 10).toString('hex')}`);
+                    }
+
                     console.timeEnd(`[Latency] ${userId} response time`); // Log latency
                     websocketService.sendToClientProxy(userWs, {
                         type: 'voice.live.audio',
@@ -646,6 +893,9 @@ export function stopLiveSession(userId: string): void {
         userSession.isStopping = true;
         console.log(`[MultimodalLive] Session stopping for ${userId} - flag set, closing connection...`);
 
+        if (userSession.cleanup) {
+            userSession.cleanup();
+        }
         try {
             userSession.session.close();
         } catch (e) {

@@ -500,7 +500,15 @@ export class CalendarOptimizerService {
                 dueDate: { gte: start, lte: end },
                 status: { not: 'completed' }
             }
+            // Removed invalid include: { contact: true } - relation does not exist
         });
+
+        // 2b. Manually fetch contacts for tasks
+        const taskContactIds = tasks.map(t => t.contactId).filter(id => id) as string[];
+        const taskContacts = await prisma.contact.findMany({
+            where: { id: { in: taskContactIds } }
+        });
+        const contactMap = new Map(taskContacts.map(c => [c.id, c]));
 
         // 3. Fetch Timeline Events (Generic calendar events)
         const timelineEvents = await prisma.timelineEvent.findMany({
@@ -508,6 +516,13 @@ export class CalendarOptimizerService {
                 userId: targetUserId,
                 timestamp: { gte: start, lte: end },
                 entityType: 'calendar_event'
+            },
+            include: {
+                participants: {
+                    include: {
+                        contact: true // Fetch participants and their contact details
+                    }
+                }
             }
         });
 
@@ -542,6 +557,8 @@ export class CalendarOptimizerService {
         // Process Tasks
         tasks.forEach(t => {
             const prop = t.propertyId ? properties.find(p => p.id === t.propertyId) : null;
+            const contact = t.contactId ? contactMap.get(t.contactId) : null;
+
             appointments.push({
                 id: t.id,
                 title: t.label,
@@ -549,7 +566,13 @@ export class CalendarOptimizerService {
                 location: prop?.address || 'Admin / Phone',
                 type: 'task',
                 source: 'task',
-                propertyId: t.propertyId
+                propertyId: t.propertyId,
+                contact: contact ? {
+                    id: contact.id,
+                    name: contact.name,
+                    email: contact.emails?.[0],
+                    phone: contact.phones?.[0]
+                } : undefined
             });
         });
 
@@ -564,7 +587,14 @@ export class CalendarOptimizerService {
                 location: prop?.address || (e.metadata as any)?.location || 'Personal',
                 type: e.type,
                 source: 'timeline',
-                propertyId
+                propertyId,
+                participants: e.participants?.map(p => ({
+                    id: p.contact.id,
+                    name: p.contact.name,
+                    role: p.role,
+                    email: p.contact.emails?.[0],
+                    phone: p.contact.phones?.[0]
+                }))
             });
         });
 

@@ -114,58 +114,6 @@ export class AskZenaService {
   }
 
   /**
-   * Internal helper to call the LLM "Brain"
-   */
-  async askBrain(prompt: string, options: { jsonMode?: boolean } = {}): Promise<string> {
-    // Check for Gemini first as it's our flagship brain
-    if (process.env.GEMINI_API_KEY) {
-      const model = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.2,
-            maxOutputTokens: 2000,
-            responseMimeType: options.jsonMode ? "application/json" : "text/plain"
-          }
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      }
-    }
-
-    // Fallback to OpenAI if Gemini fails or is not configured
-    if (this.apiKey) {
-      const response = await fetch(this.apiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
-        },
-        body: JSON.stringify({
-          model: this.model,
-          messages: [{ role: 'user', content: prompt }],
-          temperature: 0.2
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.choices?.[0]?.message?.content || '';
-      }
-    }
-
-    throw new Error('No LLM brain configured (GEMINI_API_KEY or OPENAI_API_KEY missing)');
-  }
-
-  /**
    * Process a natural language query
    */
   async processQuery(query: AskZenaQuery): Promise<AskZenaResponse> {

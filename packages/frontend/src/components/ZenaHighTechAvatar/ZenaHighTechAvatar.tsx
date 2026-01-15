@@ -151,7 +151,7 @@ export const ZenaHighTechAvatar: React.FC<ZenaHighTechAvatarProps> = memo(({
 
     // Clamp particle count
     const clampedParticleCount = useMemo(() =>
-        Math.max(0, Math.min(500, particleCount)),
+        Math.floor(Math.max(0, Math.min(500, particleCount))),
         [particleCount]
     );
 
@@ -201,15 +201,35 @@ export const ZenaHighTechAvatar: React.FC<ZenaHighTechAvatarProps> = memo(({
         camera.position.z = 250;
         cameraRef.current = camera;
 
-        const renderer = new THREE.WebGLRenderer({
-            canvas: canvasRef.current,
-            alpha: true,
-            antialias: true,
-            powerPreference: 'high-performance',
-        });
-        renderer.setSize(size * 1.4, size * 1.4);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        rendererRef.current = renderer;
+        try {
+            // PRE-FLIGHT CHECK: Explicitly check for context availability before Three.js tries to initialize.
+            const gl = canvasRef.current.getContext('webgl', {
+                alpha: true,
+                antialias: true,
+                powerPreference: 'high-performance'
+            });
+
+            if (!gl) {
+                console.warn('[ZenaHighTechAvatar] WebGL Context unavailable (Exhausted?). Aborting renderer creation.');
+                rendererRef.current = null;
+                return;
+            }
+
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvasRef.current,
+                context: gl,
+                alpha: true,
+                antialias: true,
+            });
+
+            renderer.setSize(size * 1.4, size * 1.4);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            rendererRef.current = renderer;
+        } catch (error) {
+            console.error('[ZenaHighTechAvatar] WebGL initialization failed (Exception):', error);
+            rendererRef.current = null;
+            return; // Exit early if renderer creation fails
+        }
 
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.BufferAttribute(initialPositions.slice(), 3));
@@ -334,7 +354,11 @@ export const ZenaHighTechAvatar: React.FC<ZenaHighTechAvatarProps> = memo(({
         return () => {
             cancelAnimationFrame(animationFrameRef.current);
             if (rendererRef.current) {
-                rendererRef.current.dispose();
+                const renderer = rendererRef.current;
+                renderer.dispose();
+                // Explicitly lose context to free up hardware resources
+                const extension = renderer.getContext().getExtension('WEBGL_lose_context');
+                if (extension) extension.loseContext();
             }
         };
     }, [initScene, animate]);
@@ -394,15 +418,17 @@ export const ZenaHighTechAvatar: React.FC<ZenaHighTechAvatarProps> = memo(({
 
             {/* Background Fluid Particles */}
             <div className="zena-hightech-avatar__fluid-bg">
-                <FluidParticleOverlay
-                    width={overlaySize}
-                    height={overlaySize}
-                    voiceState={voiceState}
-                    audioLevel={audioLevel}
-                    cursorPosition={cursorPosition}
-                    particleCount={Math.floor(fluidParticleCount * 0.3)}
-                    layerMode="background"
-                />
+                {(size > 100) && (
+                    <FluidParticleOverlay
+                        width={overlaySize}
+                        height={overlaySize}
+                        voiceState={voiceState}
+                        audioLevel={audioLevel}
+                        cursorPosition={cursorPosition}
+                        particleCount={Math.floor(fluidParticleCount * 0.3)}
+                        layerMode="background"
+                    />
+                )}
             </div>
 
             {/* Orbit Particle Canvas - fades during dissolve but stays mounted */}
@@ -413,6 +439,9 @@ export const ZenaHighTechAvatar: React.FC<ZenaHighTechAvatarProps> = memo(({
                     opacity: dissolvePhase === 'idle' ? 1 : 0,
                     transition: 'opacity 0.3s ease',
                     pointerEvents: dissolvePhase === 'idle' ? 'auto' : 'none',
+                    display: rendererRef.current ? 'block' : 'none',
+                    width: size * 1.4,
+                    height: size * 1.4
                 }}
                 aria-hidden="true"
             />

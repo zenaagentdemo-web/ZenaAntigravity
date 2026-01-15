@@ -8,7 +8,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Deal, PipelineType, StrategySessionContext, STAGE_LABELS } from './types';
+import { Deal, PipelineType, StrategySessionContext, STAGE_LABELS, BUYER_STAGE_SEQUENCE, SELLER_STAGE_SEQUENCE } from './types';
 import { ZenaDealCard, analyseDeal, fetchDealIntelligence, NZ_MARKET_DATA, DealIntelligence } from './ZenaIntelligence';
 import { ZenaAvatarWidget } from '../ZenaAvatarWidget/ZenaAvatarWidget';
 import { AmbientBackground } from '../AmbientBackground/AmbientBackground';
@@ -45,14 +45,10 @@ const LUXURY_NZ_ADDRESSES = [
     '12 Minnehaha Avenue, Takapuna',
 ];
 
-// Chronological orders
-const BUYER_SEQUENCE = ['buyer_consult', 'shortlisting', 'viewings', 'offer_made', 'conditional', 'unconditional', 'pre_settlement', 'settled', 'nurture'];
-const SELLER_SEQUENCE = ['appraisal', 'listing_signed', 'marketing', 'offers_received', 'conditional', 'unconditional', 'pre_settlement', 'settled', 'nurture'];
-
 interface ZenaMomentumFlowProps {
     deals: Deal[];
     pipelineType?: PipelineType;
-    onDealSelect?: (deal: Deal) => void;
+    onDealSelect?: (deal: Deal, intelligence?: DealIntelligence) => void;
     onStartZenaLive?: (context: StrategySessionContext) => void;
     selectedStage?: string | null;
     onStageSelect?: (stage: string | null) => void;
@@ -155,33 +151,9 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
             const baseIntelligence = analyseDeal(realisticDeal);
             const hydratedIntelligence = intelligenceMap[deal.id] || baseIntelligence;
 
-            // TESTING MODE: Force first 3 deals to appear in Momentum Radar
-            // Remove this block when connected to real data
-            const testingOverride = index < 3 ? {
-                healthScore: [35, 48, 55][index],
-                stageHealthStatus: ['critical', 'warning', 'warning'][index] as 'critical' | 'warning' | 'healthy',
-                needsLiveSession: true,
-                riskSignals: [{
-                    type: 'stalling' as const,
-                    severity: ['critical', 'high', 'medium'][index] as 'critical' | 'high' | 'medium',
-                    detectedAt: new Date(),
-                    description: [
-                        'Finance condition expires tomorrow - urgent action needed',
-                        'No activity for 8 days - buyer may be cooling off',
-                        'Extended conditional period - check for hidden concerns'
-                    ][index],
-                }],
-                healthVelocity: [-8, -3, -5][index],
-                coachingInsight: [
-                    'Finance is in the red zone. Nudge the broker now.',
-                    'Buyer has gone quiet. A lifestyle nudge can restart momentum.',
-                    'Long conditionals kill deals. Get confirmation of intent today.'
-                ][index],
-            } : {};
-
             return {
                 deal: realisticDeal,
-                intelligence: { ...hydratedIntelligence, ...testingOverride },
+                intelligence: hydratedIntelligence,
             };
         });
     }, [deals, intelligenceMap]);
@@ -235,7 +207,7 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
     }, [dealsByHealth, pipelineType]);
 
     // Determine relevant stages in chronological order
-    const relevantSequence = pipelineType === 'buyer' ? BUYER_SEQUENCE : SELLER_SEQUENCE;
+    const relevantSequence = pipelineType === 'buyer' ? BUYER_STAGE_SEQUENCE : SELLER_STAGE_SEQUENCE;
 
     // Filter visible stages based on showAllStages toggle
     const visibleStages = useMemo(() => {
@@ -332,9 +304,7 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
                                 : 'All Deals'}
                             <span className="deals__count">({filteredDeals.length})</span>
                         </h3>
-                        <div className="deals__sort-info">
-                            Sorted by urgency
-                        </div>
+
                     </div>
 
                     <div className="deals__grid">
@@ -343,7 +313,7 @@ export const ZenaMomentumFlow: React.FC<ZenaMomentumFlowProps> = ({
                                 key={deal.id}
                                 deal={deal}
                                 precomputedIntelligence={intelligence}
-                                onClick={() => onDealSelect?.(deal)}
+                                onClick={() => onDealSelect?.(deal, intelligence)}
                                 onPowerMoveExecute={handlePowerMoveExecute}
                                 onStartZenaLive={onStartZenaLive}
                                 isDimmed={selectedStage !== null && deal.stage !== selectedStage}

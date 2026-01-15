@@ -127,7 +127,7 @@ const OFFER_MADE_CONFIG: StageConfiguration = {
         { id: 'keyDates', priority: 'always', order: 10 },
     ],
     quickActions: [
-        { id: 'call-listing-agent', label: 'Call Agent', icon: '📞', primary: true, action: 'call', target: 'listing_agent' },
+        { id: 'call-listing-agent', label: 'Call Vendor', icon: '📞', primary: true, action: 'call', target: 'listing_agent' },
         { id: 'update-buyer', label: 'Update Buyer', icon: '💬', action: 'sms', target: 'buyer' },
         { id: 'revise-offer', label: 'Revise Offer', icon: '✏️', action: 'custom' },
     ],
@@ -146,12 +146,7 @@ const CONDITIONAL_CONFIG: StageConfiguration = {
         { id: 'zenaCoaching', priority: 'always', order: 5 },
         { id: 'keyDates', priority: 'always', order: 10 },
     ],
-    quickActions: [
-        { id: 'chase-finance', label: 'Chase Finance', icon: '📞', primary: true, action: 'call', target: 'broker' },
-        { id: 'check-report', label: 'Check Report', icon: '📋', action: 'custom' },
-        { id: 'call-solicitor', label: 'Solicitor', icon: '⚖️', action: 'call', target: 'solicitor' },
-        { id: 'mark-satisfied', label: 'Satisfied', icon: '✅', action: 'custom' },
-    ],
+    quickActions: [],
 };
 
 const UNCONDITIONAL_CONFIG: StageConfiguration = {
@@ -318,6 +313,18 @@ const OFFERS_RECEIVED_CONFIG: StageConfiguration = {
 };
 
 // Seller uses same configs for shared stages but with different primary contacts
+const SELLER_CONSULT_CONFIG: StageConfiguration = {
+    ...BUYER_CONSULT_CONFIG,
+    pipelineType: 'seller',
+    primaryFocus: 'Qualifying the vendor and their goals',
+    quickActions: [
+        { id: 'call-seller', label: 'Call', icon: '📞', primary: true, action: 'call', target: 'seller' },
+        { id: 'sms-seller', label: 'Text', icon: '💬', action: 'sms', target: 'seller' },
+        { id: 'schedule', label: 'Schedule', icon: '📅', action: 'schedule' },
+        { id: 'prepare-cma', label: 'Draft Appraisal', icon: '📊', action: 'custom' },
+    ],
+};
+
 const SELLER_CONDITIONAL_CONFIG: StageConfiguration = {
     ...CONDITIONAL_CONFIG,
     pipelineType: 'seller',
@@ -355,11 +362,6 @@ const STAGE_CONFIGS: Record<string, StageConfiguration> = {
  * Get stage configuration for a deal
  */
 export function getStageConfig(stage: DealStage, pipelineType: PipelineType): StageConfiguration {
-    // Check for seller-specific overrides for shared stages
-    if (pipelineType === 'seller' && stage === 'conditional') {
-        return SELLER_CONDITIONAL_CONFIG;
-    }
-
     const config = STAGE_CONFIGS[stage];
     if (!config) {
         // Return a sensible default
@@ -378,6 +380,15 @@ export function getStageConfig(stage: DealStage, pipelineType: PipelineType): St
                 { id: 'call', label: 'Call', icon: '📞', primary: true, action: 'call' },
             ],
         };
+    }
+
+    // Check for seller-specific overrides for shared stages
+    if (pipelineType === 'seller' && stage === 'conditional') {
+        return SELLER_CONDITIONAL_CONFIG;
+    }
+
+    if (pipelineType === 'seller' && stage === 'buyer_consult') {
+        return SELLER_CONSULT_CONFIG;
     }
 
     return config;

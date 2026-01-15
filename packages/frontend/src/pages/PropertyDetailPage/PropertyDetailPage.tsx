@@ -41,6 +41,7 @@ import { ZenaCallTooltip } from '../../components/ZenaCallTooltip/ZenaCallToolti
 import { AddPropertyModal } from '../../components/AddPropertyModal/AddPropertyModal';
 import { ZenaDatePicker } from '../../components/ZenaDatePicker/ZenaDatePicker';
 import './PropertyDetailPage.css';
+import { useDealNavigation } from '../../hooks/useDealNavigation';
 
 interface Contact {
   id: string;
@@ -141,6 +142,7 @@ const ROLE_THEME: Record<string, { label: string, color: string, bg: string, bor
 export const PropertyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isFromDeal, goBackToDeal } = useDealNavigation();
   const location = useLocation();
   const backState = location.state as { fromCalendar?: boolean; eventId?: string } | null;
   const [property, setProperty] = useState<Property | null>(null);
@@ -703,6 +705,29 @@ export const PropertyDetailPage: React.FC = () => {
             }}>
               <ArrowLeft size={18} /> {backState?.fromCalendar ? 'Back to Calendar' : 'Properties'}
             </button>
+            {isFromDeal && (
+              <button
+                className="back-to-deal-btn"
+                onClick={goBackToDeal}
+                style={{
+                  background: 'rgba(0, 255, 65, 0.15)',
+                  border: '1px solid rgba(0, 255, 65, 0.4)',
+                  color: '#00ff41',
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <span style={{ fontSize: '1rem' }}>📦</span>
+                Return to Deal
+              </button>
+            )}
             <button className="property-detail-page__delete-btn" onClick={handleDeleteProperty} title="Delete Property">
               <Trash2 size={16} /> Delete Property
             </button>
@@ -824,9 +849,9 @@ export const PropertyDetailPage: React.FC = () => {
                 {property.bedrooms || '0'} Beds, {property.bathrooms || '0'} Baths
                 {(property.landSize || property.floorSize) && (
                   <div className="intel-card-subvalue" style={{ fontSize: '11px', opacity: 0.8, marginTop: '4px' }}>
-                    {property.floorSize && <span>{property.floorSize} Floor</span>}
-                    {property.floorSize && property.landSize && <span> • </span>}
-                    {property.landSize && <span>{property.landSize} Land</span>}
+                    {property.landSize && <span>Land: {property.landSize} sqm</span>}
+                    {property.landSize && property.floorSize && <span> • </span>}
+                    {property.floorSize && <span>Floor: {property.floorSize} sqm</span>}
                   </div>
                 )}
               </div>

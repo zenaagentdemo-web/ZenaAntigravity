@@ -145,6 +145,41 @@ class GeocodingController {
             res.json({ suggestions: [] });
         }
     }
+
+    /**
+     * GET /api/geocoding/enrich
+     * Lookup full property details (specs, RV, sale history)
+     */
+    async enrichProperty(req: Request, res: Response): Promise<void> {
+        try {
+            const { address } = req.query;
+
+            if (!address || typeof address !== 'string' || address.trim().length < 5) {
+                res.json({ found: false });
+                return;
+            }
+
+            const searchAddress = address.trim();
+
+            // Dynamic import to avoid circular dependencies
+            const { marketScraperService } = await import('../services/market-scraper.service.js');
+            // Use getPropertyDetails which now includes full enrichment (specs + RV + sales)
+            const details = await marketScraperService.getPropertyDetails(searchAddress);
+
+            if (details) {
+                res.json({
+                    found: true,
+                    data: details
+                });
+            } else {
+                res.json({ found: false });
+            }
+
+        } catch (error) {
+            console.error('Property enrichment error:', error);
+            res.json({ found: false });
+        }
+    }
 }
 
 export const geocodingController = new GeocodingController();

@@ -92,10 +92,6 @@ vi.mock('../../components/AmbientBackground/AmbientBackground', () => ({
     AmbientBackground: () => <div data-testid="ambient-background" />
 }));
 
-vi.mock('../../components/DealFlow/ZenaIntelligence/PortfolioInsightsCard', () => ({
-    PortfolioInsightsCard: () => <div data-testid="portfolio-insights-card">Portfolio Insights</div>
-}));
-
 vi.mock('../../components/ZenaHighTechAvatar/ZenaHighTechAvatar', () => ({
     ZenaHighTechAvatar: () => <div data-testid="zena-avatar" />
 }));
@@ -152,21 +148,6 @@ describe('DealFlowPage Integration Tests', () => {
                     return Promise.resolve({
                         ok: true,
                         json: () => Promise.resolve(mockPipelineData)
-                    });
-                }
-                if (url.includes('/api/deals/portfolio/intelligence')) {
-                    return Promise.resolve({
-                        ok: true,
-                        json: () => Promise.resolve({
-                            healthScore: 85,
-                            totalValue: 1000000,
-                            activeDealsCount: 5,
-                            topPriority: 'Close deals',
-                            summary: 'All good',
-                            riskClusters: [],
-                            macroRisks: [],
-                            opportunities: []
-                        })
                     });
                 }
             }

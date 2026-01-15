@@ -175,23 +175,25 @@
 }
 
 .contact-detail-page__action-button {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  transition: all 0.3s ease;
+  gap: 8px;
+  padding: 12px 20px;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 12px;
+  color: #00D4FF;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .contact-detail-page__action-button:hover {
-  background: var(--neon-cyan-subtle);
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 15px var(--neon-cyan-dim);
+  background: rgba(0, 212, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
 }
 
 /* --- Timeline --- */
@@ -402,8 +404,8 @@
 
 /* Active Log Intel button */
 .contact-detail-page__action-button.active {
-  background: var(--neon-cyan-subtle);
-  border-color: var(--neon-cyan);
+  background: rgba(0, 212, 255, 0.2);
+  border-color: #00D4FF;
 }
 
 /* --- Loading --- */

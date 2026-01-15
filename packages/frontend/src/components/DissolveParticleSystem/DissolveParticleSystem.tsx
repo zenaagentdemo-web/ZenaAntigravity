@@ -119,6 +119,7 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
     const lastLightningRef = useRef<number>(0);
     const lastFlareRef = useRef<number>(0);
     const transitionStartRef = useRef<number>(0); // For smooth vortex→speaking transition
+    const isInitializedRef = useRef<boolean>(false);
 
     // Visual effect states
     const [lightningArcs, setLightningArcs] = React.useState<{ id: number; path: string; delay: number }[]>([]);
@@ -251,16 +252,30 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
         camera.position.z = 100;
         cameraRef.current = camera;
 
-        const renderer = new THREE.WebGLRenderer({
-            canvas: canvasRef.current,
-            alpha: true,
-            antialias: true,
-            powerPreference: 'high-performance',
-        });
-        renderer.setSize(size, size);
-        // Use FULL device pixel ratio for ultra HD quality (3x minimum for crisp particles)
-        renderer.setPixelRatio(Math.max(window.devicePixelRatio, 3));
-        rendererRef.current = renderer;
+        try {
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvasRef.current,
+                alpha: true,
+                antialias: true,
+                powerPreference: 'high-performance',
+            });
+
+            // Check if context was successfully created
+            if (!renderer || !renderer.getContext()) {
+                throw new Error('Failed to create WebGL context');
+            }
+
+            renderer.setSize(size, size);
+            // Use FULL device pixel ratio for ultra HD quality (3x minimum for crisp particles)
+            renderer.setPixelRatio(Math.max(window.devicePixelRatio, 3));
+            rendererRef.current = renderer;
+            isInitializedRef.current = true;
+        } catch (error) {
+            console.error('[DissolveParticleSystem] WebGL initialization failed:', error);
+            rendererRef.current = null;
+            isInitializedRef.current = false;
+            return; // Exit early if renderer creation fails
+        }
 
         const particles = particleDataRef.current;
         const count = particles.length;
@@ -414,7 +429,7 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
 
     // Animation loop
     const animate = useCallback(() => {
-        if (!rendererRef.current || !sceneRef.current || !cameraRef.current || !particlesRef.current) {
+        if (!isInitializedRef.current || !rendererRef.current || !sceneRef.current || !cameraRef.current || !particlesRef.current) {
             animationFrameRef.current = requestAnimationFrame(animate);
             return;
         }
@@ -817,7 +832,11 @@ export const DissolveParticleSystem: React.FC<DissolveParticleSystemProps> = mem
             <canvas
                 ref={canvasRef}
                 className="dissolve-particle-system__canvas"
-                style={{ width: size, height: size }}
+                style={{
+                    width: size,
+                    height: size,
+                    display: isInitializedRef.current ? 'block' : 'none'
+                }}
                 aria-hidden="true"
             />
 

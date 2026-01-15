@@ -123,10 +123,11 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
 
     // Memoize particle positions
     const initialPositions = useMemo(() => {
-        const positions = new Float32Array(particleCount * 3);
+        const validatedCount = Math.floor(particleCount || 0);
+        const positions = new Float32Array(validatedCount * 3);
         const radius = width * 0.4; // Initial spread relative to field size
 
-        for (let i = 0; i < particleCount; i++) {
+        for (let i = 0; i < validatedCount; i++) {
             // Spherical distribution
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(2 * Math.random() - 1);
@@ -153,17 +154,38 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
         camera.position.z = 300;
         cameraRef.current = camera;
 
-        // Renderer
-        const renderer = new THREE.WebGLRenderer({
-            alpha: true,
-            antialias: true,
-            powerPreference: 'high-performance',
-        });
-        renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        rendererRef.current = renderer;
+        try {
+            // PRE-FLIGHT CHECK: Explicitly check for context availability before Three.js tries to initialize.
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl', {
+                alpha: true,
+                antialias: true,
+                powerPreference: 'high-performance'
+            });
 
-        containerRef.current.appendChild(renderer.domElement);
+            if (!gl) {
+                console.warn('[ParticleField] WebGL Context unavailable (Exhausted?). Aborting renderer creation.');
+                rendererRef.current = null;
+                return;
+            }
+
+            // Renderer
+            const renderer = new THREE.WebGLRenderer({
+                context: gl,
+                canvas: canvas,
+                alpha: true,
+                antialias: true,
+            });
+
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            rendererRef.current = renderer;
+            containerRef.current.appendChild(renderer.domElement);
+        } catch (error) {
+            console.error('[ParticleField] WebGL initialization failed (Exception):', error);
+            rendererRef.current = null;
+            return; // Exit early if renderer creation fails
+        }
 
         // Particle geometry
         const geometry = new THREE.BufferGeometry();
@@ -326,6 +348,7 @@ export const ParticleField: React.FC<ParticleFieldProps> = ({
         <div
             ref={containerRef}
             className="particle-field"
+            style={{ display: rendererRef.current ? 'block' : 'none' }}
             aria-hidden="true"
         />
     );

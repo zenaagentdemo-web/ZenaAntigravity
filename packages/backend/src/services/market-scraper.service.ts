@@ -22,7 +22,12 @@ export interface PropertyDetails {
     landArea?: string;
     floorArea?: string;
     listingPrice?: number;
+    // New fields for enrichment
+    rateableValue?: number;
+    lastSoldPrice?: string;
+    lastSoldDate?: string;
     inferred: boolean;
+    sourceUrl?: string; // New: for strict validation
 }
 
 // 🆕 Interface for CMA request with full context
@@ -107,17 +112,45 @@ export class MarketScraperService {
                 return null;
             }
 
-            // 🔥 ENHANCED PROMPT: Explicitly search NZ property portals for better hit rate
-            const prompt = `Search New Zealand property websites (homes.co.nz, oneroof.co.nz, realestate.co.nz, trademe.co.nz/property) for property details at: ${address}
+            // 🔥 ENHANCED PROMPT: STRICT ACCURACY via homes.co.nz
+            // User Issue: Previous scrapes returned 1000m² (generic) instead of 620m² (actual).
+            // Fix: Force "site:homes.co.nz", forbid guessing, and demand source confirmation.
 
-Find and return property specifications including bedrooms, bathrooms, land area, floor area.
+            const prompt = `Perform a targeted Google Search for: site:homes.co.nz "${address}"
 
-Return ONLY a JSON object with these fields:
-{"bedrooms": X, "bathrooms": X, "landArea": "XXXm²", "floorArea": "XXXm²", "type": "residential", "listingPrice": XXXXXX}
+I need ACCURATE property details from homes.co.nz specifically.
+Look for the text "Land area" (e.g. 620m²) vs "Floor area" (e.g. 160m²). 
+DO NOT GUESS. If you cannot find the exact number on the page, return null.
 
-Example: {"bedrooms": 3, "bathrooms": 2, "landArea": "809m²", "floorArea": "170m²", "type": "residential", "listingPrice": 1250000}
+Find and return:
+- Bedrooms, Bathrooms
+- Land Area (CRITICAL: Must find "Land area" text. Do not default to 1000m². If not found, return null.)
+- Floor Area
+- Rateable Value (RV / Capital Value)
+- LAST SALE details:
+   - Look for the most recent "SOLD" record in the timeline/history.
+   - Price (e.g. $595,000)
+   - Date (e.g. 01 July 2018)
+   - Do NOT use the listing date or RV date.
 
-If you cannot find property data for this specific address, return: {"found": false}`;
+Return ONLY a JSON object:
+{
+  "bedrooms": number | null, 
+  "bathrooms": number | null, 
+  "landArea": "XXXm²" | null, 
+  "floorArea": "XXXm²" | null, 
+  "type": "residential", 
+  "listingPrice": number | null,
+  "rateableValue": number | null,
+  "lastSoldPrice": "$X,XXX,XXX" | null,
+  "lastSoldDate": "DD MMM YYYY" | null,
+  "sourceUrl": "https://homes.co.nz/..."
+}
+
+Example: {"bedrooms": 3, "bathrooms": 1, "landArea": "620m²", "floorArea": "160m²", "lastSoldPrice": "$595,000", "lastSoldDate": "01 Jul 2018", "sourceUrl": "https://homes.co.nz/address/..."}
+
+STRICT RULE: If you cannot find the property or data on homes.co.nz, you may check oneroof.co.nz, but valid homes.co.nz data is preferred.
+If you find NOTHING, return: {"found": false}`;
 
             console.time(`[MarketScraper] Direct Grounding for "${address}"`);
             const startTime = Date.now();
@@ -127,7 +160,9 @@ If you cannot find property data for this specific address, return: {"found": fa
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
+                        contents: [{
+                            parts: [{ text: prompt }]
+                        }],
                         tools: [{ google_search: {} }]
                     }),
                 }
@@ -175,17 +210,130 @@ If you cannot find property data for this specific address, return: {"found": fa
 
             return {
                 address: address,
-                bedrooms: parsed.bedrooms || null,
-                bathrooms: parsed.bathrooms || null,
+                bedrooms: parsed.bedrooms ? Number(parsed.bedrooms) : null,
+                bathrooms: parsed.bathrooms ? Number(parsed.bathrooms) : null,
                 landArea: parsed.landArea || null,
                 floorArea: parsed.floorArea || null,
                 type: parsed.type || 'residential',
                 description: parsed.description || null,
-                found: true
+                // New fields
+                rateableValue: parsed.rateableValue || null,
+                lastSoldPrice: parsed.lastSoldPrice || null,
+                lastSoldDate: parsed.lastSoldDate || null,
+                sourceUrl: parsed.sourceUrl || null,
+                found: true,
+                inferred: true // Added missing property
             };
         } catch (error) {
             console.error('[MarketScraper] Fast lookup failed:', error);
             console.timeEnd(`[MarketScraper] Total lookup for "${address}"`);
+            return null;
+        }
+    }
+
+    /**
+     * 🆕 Fast Sale History Lookup
+     * Uses Gemini Search Grounding to find ONLY the last sale price/date
+     * Much faster than full CMA (~3-5s vs 10-15s)
+     */
+    async getPropertySaleHistory(address: string): Promise<TargetSaleHistory | null> {
+        console.log(`[MarketScraper] Looking up sale history for: ${address}`);
+        console.time(`[MarketScraper] Sale history lookup for "${address}"`);
+
+        if (!this.apiKey) {
+            console.warn('[MarketScraper] No GEMINI_API_KEY for sale history lookup');
+            return null;
+        }
+
+        const model = process.env.GEMINI_MODEL || this.model;
+
+        // Focused prompt for fast sale history lookup only
+        const prompt = `Search New Zealand property websites (homes.co.nz, oneroof.co.nz, realestate.co.nz) for the LAST SALE HISTORY of this specific property:
+
+Property Address: ${address}
+
+TASK: Find the most recent sale record for this exact property address.
+
+Return ONLY a JSON object with these fields:
+{
+  "lastSoldPrice": "$X,XXX,XXX or null if not found",
+  "lastSoldDate": "DD MMM YYYY or null if not found",
+  "source": "URL where data was found or null"
+}
+
+RULES:
+- Only return FACTUAL data found on property websites
+- If you cannot find sale history for this specific address, return {"lastSoldPrice": null, "lastSoldDate": null, "source": null}
+- Price should include dollar sign and commas (e.g. "$1,250,000")
+- Date format: DD MMM YYYY (e.g. "15 Mar 2023")
+- DO NOT guess or infer - only report what you find on the web`;
+
+        try {
+            const startTime = Date.now();
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        tools: [{ google_search: {} }],
+                        generationConfig: {
+                            temperature: 0.1,
+                            response_mime_type: 'application/json'
+                        }
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                console.error('[MarketScraper] Sale history API error:', response.status);
+                console.timeEnd(`[MarketScraper] Sale history lookup for "${address}"`);
+                return null;
+            }
+
+            const data = await response.json();
+
+            // Log token usage
+            if (data.usageMetadata) {
+                tokenTrackingService.log({
+                    source: 'market-scraper-sale-history',
+                    model: model,
+                    inputTokens: data.usageMetadata.promptTokenCount,
+                    outputTokens: data.usageMetadata.candidatesTokenCount,
+                    durationMs: Date.now() - startTime
+                }).catch(() => { });
+            }
+
+            const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '{}';
+
+            // Extract JSON from response
+            const jsonMatch = rawText.match(/\{[\s\S]*?\}/);
+            if (!jsonMatch) {
+                console.log(`[MarketScraper] No JSON found in sale history response for "${address}"`);
+                console.timeEnd(`[MarketScraper] Sale history lookup for "${address}"`);
+                return null;
+            }
+
+            const parsed = JSON.parse(jsonMatch[0]);
+
+            if (!parsed.lastSoldPrice) {
+                console.log(`[MarketScraper] No sale history found for "${address}"`);
+                console.timeEnd(`[MarketScraper] Sale history lookup for "${address}"`);
+                return null;
+            }
+
+            console.log(`[MarketScraper] ✅ Sale history found for "${address}": ${parsed.lastSoldPrice} on ${parsed.lastSoldDate}`);
+            console.timeEnd(`[MarketScraper] Sale history lookup for "${address}"`);
+
+            return {
+                lastSoldPrice: parsed.lastSoldPrice,
+                lastSoldDate: parsed.lastSoldDate,
+                source: this.normalizeUrl(parsed.source)
+            };
+        } catch (error) {
+            console.error('[MarketScraper] Sale history lookup failed:', error);
+            console.timeEnd(`[MarketScraper] Sale history lookup for "${address}"`);
             return null;
         }
     }
@@ -435,14 +583,7 @@ If you cannot find property data for this specific address, return: {"found": fa
             type: 'residential',
             description: "Charming character home with a sunny deck and garden."
         },
-        '10 whitby place': {
-            bedrooms: 3,
-            bathrooms: 1,
-            landArea: '1000m²',
-            floorArea: '180m²',
-            type: 'residential',
-            description: "Modern family home with spacious living areas. Perfect for local residents."
-        },
+
         // 🆕 Added for demo reliability
         '42 woodward': {
             bedrooms: 3,
@@ -721,6 +862,26 @@ If you cannot find property data for this specific address, return: {"found": fa
         }
 
         return clean;
+    }
+
+    /**
+     * Generic search wrapper for tools
+     */
+    async search(query: string): Promise<any> {
+        console.log(`[MarketScraper] Generic search for: "${query}"`);
+        // Try to treat as property details search
+        const property = await this.getPropertyDetails(query);
+        if (property) {
+            return {
+                summary: `Found property details for ${property.address}`,
+                type: 'property_details',
+                results: [property]
+            };
+        }
+        return {
+            summary: `No specific property details found for "${query}"`,
+            results: []
+        };
     }
 }
 

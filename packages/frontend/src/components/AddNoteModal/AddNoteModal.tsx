@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Sparkles, X, Mic, Calendar, Home, Briefcase, Plus, Loader2, Check } from 'lucide-react';
 import { api } from '../../utils/apiClient';
 import { useVoiceInteraction } from '../../hooks/useVoiceInteraction';
@@ -123,7 +124,7 @@ export const AddNoteModal: React.FC<AddNoteModalProps> = ({
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <div className="add-note-modal-overlay" onClick={onClose}>
             <div className="add-note-modal" onClick={e => e.stopPropagation()}>
                 <header className="anm-header">
@@ -215,6 +216,7 @@ export const AddNoteModal: React.FC<AddNoteModalProps> = ({
                     </div>
                 </footer>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };

@@ -5,6 +5,7 @@
 import React from 'react';
 import { Deal } from '../../types';
 import './sections.css';
+import { useDealNavigation } from '../../../../hooks/useDealNavigation';
 
 interface KeyDatesSectionProps {
     deal: Deal;
@@ -25,7 +26,10 @@ export const KeyDatesSection: React.FC<KeyDatesSectionProps> = ({
     settlementDaysRemaining,
     expanded = false,
 }) => {
+    const { navigateToFromDeal } = useDealNavigation();
+
     // Build key dates from deal data
+    // ... rest of logic stays same ...
     const keyDates: KeyDate[] = [];
 
     // Stage entered date
@@ -144,6 +148,15 @@ export const KeyDatesSection: React.FC<KeyDatesSectionProps> = ({
                     <div
                         key={date.id}
                         className={`key-dates__item key-dates__item--${date.type}`}
+                        onClick={() => {
+                            if (date.date) {
+                                navigateToFromDeal('/calendar', deal.id, deal.property?.address, {
+                                    targetDate: date.date.toISOString()
+                                });
+                            }
+                        }}
+                        style={{ cursor: 'pointer' }}
+                        title="View in Calendar"
                     >
                         <div className="key-dates__label">{date.label}</div>
                         <div className="key-dates__value">

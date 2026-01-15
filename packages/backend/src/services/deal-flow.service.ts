@@ -24,6 +24,7 @@ export const BUYER_STAGES: BuyerStage[] = [
 ];
 
 export const SELLER_STAGES: SellerStage[] = [
+    'buyer_consult',
     'appraisal',
     'listing_signed',
     'marketing',
@@ -65,9 +66,24 @@ export const DEFAULT_CONDITION_DAYS: Record<string, number> = {
 };
 
 interface DealWithRelations extends Deal {
-    property?: { id: string; address: string } | null;
+    property?: {
+        id: string;
+        address: string;
+        bedrooms?: number | null;
+        bathrooms?: number | null;
+        listingPrice?: any;
+        lastSalePrice?: any;
+        lastSaleDate?: Date | null;
+        landSize?: string | null;
+        floorSize?: string | null;
+        rateableValue?: number | null;
+        landArea?: string | null; // Mapped
+        floorArea?: string | null; // Mapped
+    } | null;
     contacts?: { id: string; name: string }[];
     commissionFormula?: CommissionFormula | null;
+    tasks?: any[];
+    zenaActions?: any[];
 }
 
 interface PipelineColumn {
@@ -97,6 +113,7 @@ interface DashboardStats {
     atRiskDeals: number;
     overdueDeals: number;
     todayDeals: number;
+    dealsNeedingAction: number;
     totalPipelineValue: number;
     totalPendingCommission: number;
     dealsClosedThisMonth: number;
@@ -126,21 +143,50 @@ export class DealFlowService {
             },
             include: {
                 property: {
-                    select: { id: true, address: true }
+                    select: {
+                        id: true,
+                        address: true,
+                        bedrooms: true,
+                        bathrooms: true,
+                        listingPrice: true,
+                        lastSalePrice: true,
+                        lastSaleDate: true,
+                        landSize: true,
+                        floorSize: true,
+                        rateableValue: true
+                    }
                 },
                 contacts: {
-                    select: { id: true, name: true }
+                    select: { id: true, name: true, role: true }
                 },
-                commissionFormula: true
+                commissionFormula: true,
+                tasks: {
+                    where: { status: { in: ['pending', 'open'] } }
+                },
+                zenaActions: {
+                    where: { status: 'pending' }
+                }
             },
-            orderBy: { stageEnteredAt: 'asc' }
+            orderBy: { createdAt: 'desc' }
         });
 
         // Group deals by stage
         const dealsByStage = new Map<string, DealWithRelations[]>();
         stages.forEach(stage => dealsByStage.set(stage, []));
 
-        deals.forEach(deal => {
+        // Map property details (logic: landSize -> landArea, Decimal -> Number)
+        const mappedDeals = deals.map(deal => ({
+            ...deal,
+            property: deal.property ? {
+                ...deal.property,
+                landArea: deal.property.landSize,
+                floorArea: deal.property.floorSize,
+                listingPrice: deal.property.listingPrice ? Number(deal.property.listingPrice) : null,
+                lastSalePrice: deal.property.lastSalePrice ? Number(deal.property.lastSalePrice) : null,
+            } : null
+        }));
+
+        mappedDeals.forEach(deal => {
             const stageDeals = dealsByStage.get(deal.stage);
             if (stageDeals) {
                 stageDeals.push(deal);
@@ -397,11 +443,20 @@ export class DealFlowService {
         const now = new Date();
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        // Fetch all active deals
+        // Fetch all active deals with their tasks and actions
         const deals = await prisma.deal.findMany({
             where: {
                 userId,
-                stage: { notIn: ['settled', 'nurture'] }
+                stage: { notIn: ['settled', 'nurture'] },
+                status: 'active'
+            },
+            include: {
+                tasks: {
+                    where: { status: { in: ['pending', 'open'] } }
+                },
+                zenaActions: {
+                    where: { status: 'pending' }
+                }
             }
         });
 
@@ -419,6 +474,7 @@ export class DealFlowService {
         let atRiskDeals = 0;
         let overdueDeals = 0;
         let todayDeals = 0;
+        let dealsNeedingAction = 0;
         let totalPipelineValue = 0;
         let totalPendingCommission = 0;
 
@@ -426,7 +482,9 @@ export class DealFlowService {
             if (deal.pipelineType === 'buyer') buyerDeals++;
             else sellerDeals++;
 
-            if (deal.riskLevel === 'high' || deal.riskLevel === 'critical') {
+            // Current "at risk" logic (high/critical)
+            const isHighRisk = deal.riskLevel === 'high' || deal.riskLevel === 'critical';
+            if (isHighRisk) {
                 atRiskDeals++;
             }
 
@@ -434,9 +492,29 @@ export class DealFlowService {
             totalPendingCommission += deal.estimatedCommission ? Number(deal.estimatedCommission) : 0;
 
             const nextDeadline = this.getNextDeadline(deal);
+            let hasOverdueCondition = false;
+            let hasTodayCondition = false;
+
             if (nextDeadline) {
-                if (nextDeadline.isOverdue) overdueDeals++;
-                else if (nextDeadline.daysRemaining === 0) todayDeals++;
+                if (nextDeadline.isOverdue) {
+                    overdueDeals++;
+                    hasOverdueCondition = true;
+                } else if (nextDeadline.daysRemaining === 0) {
+                    todayDeals++;
+                    hasTodayCondition = true;
+                }
+            }
+
+            // A deal needs action if:
+            // 1. It is high/critical risk
+            // 2. It has an overdue or today condition
+            // 3. It has open tasks
+            // 4. It has pending Zena actions
+            const hasOpenTasks = (deal as any).tasks?.length > 0;
+            const hasPendingActions = (deal as any).zenaActions?.length > 0;
+
+            if (isHighRisk || hasOverdueCondition || hasTodayCondition || hasOpenTasks || hasPendingActions) {
+                dealsNeedingAction++;
             }
         }
 
@@ -446,6 +524,7 @@ export class DealFlowService {
             atRiskDeals,
             overdueDeals,
             todayDeals,
+            dealsNeedingAction,
             totalPipelineValue,
             totalPendingCommission,
             dealsClosedThisMonth: closedThisMonth
@@ -648,7 +727,11 @@ export class DealFlowService {
                 isListingAgent: dealData.isListingAgent ?? true,
                 contacts: contactIds ? {
                     connect: contactIds.map(id => ({ id }))
-                } : undefined
+                } : undefined,
+                contactStages: contactIds ? contactIds.reduce((acc: any, id: string) => {
+                    acc[id] = dealData.stage;
+                    return acc;
+                }, {}) : undefined
             }
         });
 
@@ -682,6 +765,52 @@ export class DealFlowService {
         return formula;
     }
 
+
+    /**
+     * Update a specific contact's stage within a deal and recalculate primary stage
+     */
+    async updateContactStage(dealId: string, contactId: string, newStage: string): Promise<Deal> {
+        const deal = await prisma.deal.findUnique({
+            where: { id: dealId },
+            include: { contacts: true }
+        });
+
+        if (!deal) throw new Error('Deal not found');
+
+        const contactStages = (deal.contactStages as any) || {};
+        contactStages[contactId] = newStage;
+
+        // Determine most progressed stage
+        const pipelineStages = deal.pipelineType === 'buyer' ? BUYER_STAGES : SELLER_STAGES;
+        const currentStages = Object.values(contactStages) as string[];
+
+        let mostProgressedIdx = -1;
+        let primaryStage = deal.stage;
+
+        currentStages.forEach(s => {
+            const idx = pipelineStages.indexOf(s as any);
+            if (idx > mostProgressedIdx) {
+                mostProgressedIdx = idx;
+                primaryStage = s;
+            }
+        });
+
+        const updateData: any = {
+            contactStages,
+            stage: primaryStage
+        };
+
+        // If stage actually changed, update the timer
+        if (primaryStage !== deal.stage) {
+            updateData.stageEnteredAt = new Date();
+        }
+
+        return await prisma.deal.update({
+            where: { id: dealId },
+            data: updateData
+        });
+    }
 }
+
 
 export const dealFlowService = new DealFlowService();

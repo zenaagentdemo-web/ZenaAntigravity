@@ -2,6 +2,8 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVoiceInteraction } from '../../hooks/useVoiceInteraction';
 import { usePersonalization } from '../../hooks/usePersonalization';
+import { AddNoteModal } from '../AddNoteModal/AddNoteModal';
+import { api } from '../../utils/apiClient';
 import './QuickActionsPanel.css';
 
 export interface QuickAction {
@@ -36,11 +38,9 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
   gridColumns = 2,
 }) => {
   const navigate = useNavigate();
-  const { uploadVoiceNote, isProcessing } = useVoiceInteraction();
+  const { uploadVoiceNote, isProcessing: isUploading } = useVoiceInteraction();
   const { trackUsage, getPrioritizedQuickActions, getActionFrequency } = usePersonalization();
-  const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
+  const [showNoteModal, setShowNoteModal] = useState(false);
   const [actionLoadingStates, setActionLoadingStates] = useState<Record<string, boolean>>({});
   const [focusedActionId, setFocusedActionId] = useState<string | null>(null);
 
@@ -53,8 +53,7 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
       color: 'primary',
       shortcut: 'V',
       usage_frequency: 0,
-      loading: isRecording || isProcessing,
-      disabled: isProcessing,
+      loading: showNoteModal,
       action: handleVoiceNoteAction,
     },
     {
@@ -74,6 +73,15 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
       shortcut: 'C',
       usage_frequency: 0,
       action: handleQuickCallAction,
+    },
+    {
+      id: 'focus-threads',
+      label: 'Focus',
+      icon: '🎯',
+      color: 'info',
+      shortcut: 'F',
+      usage_frequency: 0,
+      action: handleFocusAction,
     },
     {
       id: 'property-search',
@@ -112,71 +120,56 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
     }
   }, [customActions, getPrioritizedQuickActions, getActionFrequency]);
 
-  // Voice Note Action Handler with enhanced loading states
+  // Voice Note Action Handler - Now opens the standardized AddNoteModal
   async function handleVoiceNoteAction() {
-    if (isRecording) {
-      // Stop recording
-      if (mediaRecorder) {
-        mediaRecorder.stop();
-      }
-      return;
-    }
+    setShowNoteModal(true);
+    trackUsage('voice-note');
+    if (onActionTrigger) onActionTrigger('voice-note');
 
-    try {
-      setActionLoadingStates(prev => ({ ...prev, 'voice-note': true }));
-
-      // Start recording
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      const chunks: Blob[] = [];
-
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunks.push(event.data);
-        }
-      };
-
-      recorder.onstop = async () => {
-        try {
-          const audioBlob = new Blob(chunks, { type: 'audio/webm' });
-
-          // Upload voice note for processing
-          await uploadVoiceNote(audioBlob);
-
-          // Stop all tracks
-          stream.getTracks().forEach(track => track.stop());
-          setIsRecording(false);
-          setMediaRecorder(null);
-          setAudioChunks([]);
-        } catch (error) {
-          console.error('Failed to process voice note:', error);
-        } finally {
-          setActionLoadingStates(prev => ({ ...prev, 'voice-note': false }));
-        }
-      };
-
-      recorder.start();
-      setMediaRecorder(recorder);
-      setAudioChunks(chunks);
-      setIsRecording(true);
-
-      // Provide haptic feedback if supported
-      if ('vibrate' in navigator) {
-        navigator.vibrate([50, 30, 50]);
-      }
-
-    } catch (error) {
-      console.error('Failed to start voice recording:', error);
-      setActionLoadingStates(prev => ({ ...prev, 'voice-note': false }));
-
-      // Show user-friendly error message
-      const errorMessage = error instanceof Error && error.name === 'NotAllowedError'
-        ? 'Microphone access denied. Please enable microphone permissions in your browser settings.'
-        : 'Failed to access microphone. Please check your device settings and try again.';
-
-      alert(errorMessage);
+    // Provide haptic feedback
+    if ('vibrate' in navigator) {
+      navigator.vibrate(50);
     }
   }
+
+  const handleSaveNote = async (noteData: { content: string; type: string; linkedPropertyId?: string; linkedDealId?: string }) => {
+    try {
+      // If linked to a property, use the property-specific endpoint
+      if (noteData.linkedPropertyId) {
+        await api.post(`/api/timeline/notes`, {
+          entityType: 'property',
+          entityId: noteData.linkedPropertyId,
+          summary: noteData.content,
+          type: 'voice_note'
+        });
+      } else if (noteData.linkedDealId) {
+        await api.post(`/api/timeline/notes`, {
+          entityType: 'deal',
+          entityId: noteData.linkedDealId,
+          summary: noteData.content,
+          type: 'voice_note'
+        });
+      } else {
+        // Fallback: Create a voice note that will be processed or just show up in recent activity
+        // For now, let's use a generic catch-all OR create a task if it looks like one
+        // Given the current backend, we'll use a generic entry or link to the first contact/property if needed
+        // But the best approach for "Quick Note" is to create a timeline event of type 'note' 
+        // linked to a system or generic entity if possible, or just skip entity requirement if backend allows.
+
+        // As seen in timelineService, entityType and entityId are required. 
+        // We'll use 'voice_note' as entityType for generic notes.
+        await api.post(`/api/timeline/notes`, {
+          entityType: 'property', // Default to property since that's a common anchor
+          entityId: 'generic_note', // Placeholder for generic notes
+          summary: noteData.content,
+          type: 'voice_note'
+        });
+      }
+    } catch (error) {
+      console.error('Failed to save quick note:', error);
+      throw error;
+    }
+  };
 
   // Ask Zena Action Handler with loading state
   async function handleAskZenaAction() {
@@ -421,7 +414,7 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
           displayActions.map((action, index) => {
             const isActionLoading = actionLoadingStates[action.id] || action.loading;
             const isActionDisabled = action.disabled || isActionLoading;
-            const isVoiceNoteActive = action.id === 'voice-note' && (isRecording || isProcessing);
+            const isVoiceNoteActive = action.id === 'voice-note' && showNoteModal;
 
             return (
               <button
@@ -434,8 +427,7 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
                 onFocus={() => setFocusedActionId(action.id)}
                 onBlur={() => setFocusedActionId(null)}
                 aria-label={`${action.label}${action.shortcut ? `. Keyboard shortcut: Alt plus ${action.shortcut}` : ''}${isActionLoading ? '. Loading' :
-                  action.id === 'voice-note' && isRecording ? '. Currently recording' :
-                    action.id === 'voice-note' && isProcessing ? '. Processing voice note' : ''
+                  action.id === 'voice-note' && showNoteModal ? '. Modal open' : ''
                   }`}
                 aria-describedby={`${action.id}-description`}
                 aria-pressed={isVoiceNoteActive}
@@ -446,19 +438,12 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
                 <div className="quick-action-button__icon" aria-hidden="true">
                   {isActionLoading ? (
                     <div className="quick-action-button__spinner" />
-                  ) : action.id === 'voice-note' && isRecording ? (
-                    '🔴'
-                  ) : action.id === 'voice-note' && isProcessing ? (
-                    '⏳'
                   ) : (
                     action.icon
                   )}
                 </div>
                 <span className="quick-action-button__label">
-                  {isActionLoading ? 'Loading...' :
-                    action.id === 'voice-note' && isRecording ? 'Recording...' :
-                      action.id === 'voice-note' && isProcessing ? 'Processing...' :
-                        action.label}
+                  {isActionLoading ? 'Loading...' : action.label}
                 </span>
                 {action.shortcut && !isActionLoading && (
                   <span className="quick-action-button__shortcut" aria-hidden="true">
@@ -487,16 +472,12 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
         )}
       </div>
 
-      {isRecording && (
-        <div
-          className="quick-actions-panel__recording-indicator"
-          role="status"
-          aria-live="assertive"
-          aria-label="Voice recording in progress. Tap Voice Note button again to stop recording."
-        >
-          <div className="recording-pulse" aria-hidden="true" />
-          <span>Recording voice note... Tap Voice Note again to stop</span>
-        </div>
+      {showNoteModal && (
+        <AddNoteModal
+          isOpen={showNoteModal}
+          onClose={() => setShowNoteModal(false)}
+          onSave={handleSaveNote}
+        />
       )}
     </section>
   );

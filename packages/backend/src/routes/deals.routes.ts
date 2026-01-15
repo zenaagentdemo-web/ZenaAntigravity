@@ -51,6 +51,9 @@ router.put('/:id', (req, res) => dealsController.updateDeal(req, res));
 // PUT /api/deals/:id/stage - Update deal stage
 router.put('/:id/stage', (req, res) => dealsController.updateDealStage(req, res));
 
+// PUT /api/deals/:id/contact-stage - Update specific contact's stage in deal
+router.put('/:id/contact-stage', (req, res) => dealsController.updateContactStage(req, res));
+
 // PUT /api/deals/:id/conditions - Update deal conditions
 router.put('/:id/conditions', (req, res) => dealsController.updateConditions(req, res));
 

@@ -25,6 +25,7 @@ export type UserTranscriptCallback = (text: string, isFinal: boolean) => void;
 export type LiveSourcesCallback = (formattedText: string, sources: string[]) => void;
 export type AgentToolCallCallback = (payload: any) => void;
 export type AgentMessageCallback = (payload: { message: string }) => void;
+export type SystemNotificationCallback = (payload: { message: string, details?: any }) => void;
 
 class RealTimeDataService {
   private ws: WebSocket | null = null;
@@ -44,6 +45,7 @@ class RealTimeDataService {
   private liveSourcesCallbacks: Set<LiveSourcesCallback> = new Set();
   private agentToolCallCallbacks: Set<AgentToolCallCallback> = new Set();
   private agentMessageCallbacks: Set<AgentMessageCallback> = new Set();
+  private systemNotificationCallbacks: Set<SystemNotificationCallback> = new Set();
 
   private currentData: DashboardData | null = null;
   private isConnected = false;
@@ -236,6 +238,38 @@ class RealTimeDataService {
 
         case 'error':
           this.handleServerError(message.payload);
+          break;
+
+        case 'deal_update':
+          // Refresh context logic if needed
+          break;
+
+        case 'voice.live.system_notification':
+          console.log('[RealTimeData] System notification:', message.payload);
+          this.systemNotificationCallbacks.forEach(cb => {
+            try { cb(message.payload); } catch (e) { console.error('Error in system notification callback', e); }
+          });
+          break;
+
+        case 'response.function_call':
+          if (message.payload.model_draft?.parts) {
+            for (const part of message.payload.model_draft.parts) {
+              if (part.inline_data?.data) {
+                console.log('[RealTime] Relaying audio chunk to LiveAudioService');
+                import('./live-audio.service').then(m => {
+                  m.liveAudioService.handleIncomingAudio(part.inline_data.data);
+                });
+              }
+              if (part.text) {
+                console.log('[RealTime] Live transcript segment:', part.text);
+                this.notifyLiveTranscript(part.text, false);
+              }
+            }
+          }
+          if (message.payload.turn_complete) {
+            console.log('[RealTime] Turn complete');
+            this.notifyLiveTranscript('', true);
+          }
           break;
 
         case 'pong':
@@ -711,6 +745,14 @@ class RealTimeDataService {
 
   private notifyAgentMessage(payload: any): void {
     this.agentMessageCallbacks.forEach(cb => cb(payload));
+  }
+
+  /**
+   * Subscribe to system notifications (e.g. background job completions)
+   */
+  onSystemNotification(callback: SystemNotificationCallback): () => void {
+    this.systemNotificationCallbacks.add(callback);
+    return () => this.systemNotificationCallbacks.delete(callback);
   }
 
   /**

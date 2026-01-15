@@ -19,6 +19,7 @@ import {
 import { Lightbox } from '../../components/AskZena/Lightbox';
 import { voiceInteractionService } from '../../services/voice-interaction.service';
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
+import { MissionStatusWidget } from '../../components/AskZena/MissionStatusWidget';
 import { liveAudioService } from '../../services/live-audio.service';
 import { realTimeDataService } from '../../services/realTimeDataService';
 import { TranscriptionMerger } from '../../utils/transcription/transcription-merger';
@@ -141,6 +142,46 @@ export const AskZenaPage: React.FC = () => {
       setDissolvePhase('idle');
     }
   }, []);
+
+  // Mission / Media Session Logic
+  useEffect(() => {
+    if (!isConversationMode) return;
+
+    // Setup Media Session for Hardware Controls (Car / Headset)
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: 'Zena Mission Active',
+        artist: 'AI Copilot',
+        artwork: [{ src: '/icons/zena-live-cover.png', sizes: '512x512', type: 'image/png' }]
+      });
+
+      const actionHandlers = [
+        ['play', () => {
+          console.log('MediaKey: Play - Resuming Session');
+          updateActivity(true, 'hardware-play');
+          // Could verify connection or un-mic mute
+        }],
+        ['pause', () => {
+          console.log('MediaKey: Pause - Muting/Pausing');
+          // liveAudioService.setMicMuted(true);
+        }],
+        ['nexttrack', () => {
+          console.log('MediaKey: Next Task');
+          realTimeDataService.sendMessage('voice.live.prompt', { text: "Skip to the next item on the list." });
+        }],
+        ['previoustrack', () => {
+          console.log('MediaKey: Previous/Repeat');
+          realTimeDataService.sendMessage('voice.live.prompt', { text: "Repeat that last instruction." });
+        }]
+      ];
+
+      for (const [action, handler] of actionHandlers) {
+        try { navigator.mediaSession.setActionHandler(action as MediaSessionAction, handler as any); } catch (e) {
+          console.warn(`Warning! Media Session action "${action}" is not supported.`);
+        }
+      }
+    }
+  }, [isConversationMode]);
 
   // Helper to safely trigger the reforming phase
   const triggerReform = useCallback(() => {
@@ -374,6 +415,23 @@ export const AskZenaPage: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  // NEW: Subscribe to system notifications (Parallel Task Completions)
+  useEffect(() => {
+    const unsubscribe = realTimeDataService.onSystemNotification((payload) => {
+      console.log('[AskZena] Received system notification:', payload.message);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `sys-msg-${Date.now()}`,
+          role: 'assistant',
+          content: `🔔 **SYSTEM UPDATE**: ${payload.message}\n\n${payload.details ? '```json\n' + JSON.stringify(payload.details, null, 2) + '\n```' : ''}`,
+          timestamp: new Date()
+        }
+      ]);
+    });
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     let unsubscribe: (() => void) | null = null;
     let unsubscribeUser: (() => void) | null = null;
@@ -556,32 +614,30 @@ export const AskZenaPage: React.FC = () => {
 
             // SILENCE BUFFER LOGIC:
             // If this is the FIRST chunk of a new response, disable immediate playback
-            if (!zenaSpeakingRef.current && text.length > 0) {
-              console.log('[AskZena] Zena attempting to speak. Buffering for 200ms...');
+            if (!zenaSpeakingRef.current) {
+              // NON-DEBOUNCED TIMER: Only start if not already counting down
+              // This fixes the bug where rapid chunks constantly reset the timer, preventing it from ever firing
+              if (!playbackTimerRef.current && text.length > 0) {
+                console.log('[AskZena] Zena attempting to speak. Buffering for 200ms...');
 
-              // Start a timer. If user doesn't interrupt, we start playback.
-              if (playbackTimerRef.current) clearTimeout(playbackTimerRef.current);
+                playbackTimerRef.current = setTimeout(() => {
+                  console.log('[AskZena] Silence buffer passed. Allowing Zena to speak.');
+                  playbackTimerRef.current = null; // CRITICAL: Timer has fired, reset it
+                  zenaSpeakingRef.current = true;
+                  updateActivity(false, 'zena-speaking-start', false);
+                  liveAudioService.startQueuePlayback();
+                  setDissolvePhase('speaking');
 
-              playbackTimerRef.current = setTimeout(() => {
-                console.log('[AskZena] Silence buffer passed. Allowing Zena to speak.');
-                playbackTimerRef.current = null; // CRITICAL: Timer has fired, reset it
-                zenaSpeakingRef.current = true;
-                updateActivity(false, 'zena-speaking-start', false);
-                liveAudioService.startQueuePlayback();
-                setDissolvePhase('speaking');
+                  // Clear user shadow text immediately when Zena starts speaking
+                  setUserTranscript('');
 
-                // Clear user shadow text immediately when Zena starts speaking
-                setUserTranscript('');
-
-                // Force assistant mode if Zena starts talking
-                // if (avatarMode === 'hero') setAvatarMode('assistant');
-
-                // Reset asked-state logic matches existing flow
-                // REMOVED: This was causing the infinite inactivity prompt loop
-                // if (liveTranscriptBufferRef.current.length < 50) {
-                //   zenaAskedRef.current = false;
-                // }
-              }, 100); // 100ms delay
+                  // Force assistant mode if Zena starts talking
+                  // if (avatarMode === 'hero') setAvatarMode('assistant');
+                }, 200); // 200ms delay to match log
+              }
+            } else {
+              // Already speaking - ensure queue keeps playing if it ran dry
+              liveAudioService.startQueuePlayback();
             }
 
             // Assuming Zena is "speaking" (or buffering), accumulate text
@@ -945,6 +1001,17 @@ export const AskZenaPage: React.FC = () => {
       console.log('[AskZena] Handling URL params. Mode:', mode, 'Greeting:', greetingKey);
 
       // 1. Handle custom greetings (HIGHEST PRIORITY)
+      if (mode === 'live') {
+        console.log('[AskZena] Live Mode trigger detected via URL');
+        sessionStorage.removeItem('zena_live_manually_stopped');
+        wasManuallyStoppedRef.current = false;
+        setIsConversationMode(true);
+        setShowVoiceRecorder(true);
+
+        // Clear params
+        setSearchParams({}, { replace: true });
+      }
+
       if (greetingKey === 'strategy-session') {
         const isLiveMode = searchParams.get('liveMode') === 'true';
 
@@ -1579,11 +1646,14 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
                   sessionStorage.setItem('zena_live_manually_stopped', 'true');
                   wasManuallyStoppedRef.current = true;
                   // Clear URL params to prevent context/mode from re-triggering
-                  setSearchParams({}, { replace: true });
+                  // DISABLED: This was causing chat history to vanish by triggering a re-mount/reset
+                  // setSearchParams({}, { replace: true });
                 } else {
                   // User is explicitly starting - clear the stop flag
                   sessionStorage.removeItem('zena_live_manually_stopped');
                   wasManuallyStoppedRef.current = false;
+                  // RE-ENABLE AUDIO CONTEXT: Must happen inside user gesture event (Sync)
+                  liveAudioService.resume();
                 }
                 setIsConversationMode(newMode);
               }}
@@ -1839,6 +1909,15 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
         />
       )}
 
+      {/* Mission Status Widget (PiP) */}
+      {isConversationMode && (initialUrlContextRef.current === 'optimised_day' || searchParams.get('context') === 'optimised_day') && (
+        <MissionStatusWidget
+          isActive={isConversationMode}
+          currentTask="Mission Active"
+        />
+      )}
+
+      {/* Write Confirmation Modal */}
       {showWriteConfirmation && pendingActionData && (
         <CRMWriteConfirmationModal
           isOpen={showWriteConfirmation}
@@ -1846,13 +1925,8 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
             setShowWriteConfirmation(false);
             setPendingActionData(null);
           }}
-          onApprove={handleApproveWrite}
-          action={{
-            type: pendingActionData.subType,
-            targetSite: pendingActionData.targetSite,
-            payload: pendingActionData.payload,
-            description: pendingActionData.description
-          }}
+          onConfirm={handleApproveWrite}
+          actionData={pendingActionData}
           isExecuting={isExecutingWrite}
         />
       )}

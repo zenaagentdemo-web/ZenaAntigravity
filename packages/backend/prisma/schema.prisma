@@ -189,6 +189,8 @@ model Property {
   inferredFromWeb   Boolean             @default(false)
   rateableValue     Int?
   viewingCount      Int                 @default(0)
+  lastSalePrice     Decimal?            @db.Decimal(12, 2)
+  lastSaleDate      DateTime?
   lastCrmExportAt   DateTime?
   autonomousActions AutonomousAction[]
   deals             Deal[]
@@ -232,11 +234,13 @@ model Deal {
   conjunctionalAgencyName String?
   conjunctionalSplit      Float?
   isListingAgent          Boolean            @default(true)
+  contactStages           Json?
   status                  String             @default("active")
   commissionFormula       CommissionFormula? @relation(fields: [commissionFormulaId], references: [id])
   property                Property?          @relation(fields: [propertyId], references: [id])
   user                    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   nurtureSequences        NurtureSequence[]
+  tasks                   Task[]
   threads                 Thread[]
   zenaActions             ZenaAction[]
   contacts                Contact[]          @relation("DealContacts")
@@ -298,6 +302,7 @@ model Task {
   estimatedDuration Int?      // in minutes
   createdAt         DateTime  @default(now())
   completedAt       DateTime?
+  deal              Deal?     @relation(fields: [dealId], references: [id])
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])

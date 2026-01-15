@@ -36,6 +36,10 @@ function estimateGPUPerformance(): 'high' | 'medium' | 'low' {
         const lowPowerKeywords = ['intel', 'mali-4', 'mali-t6', 'adreno 3', 'adreno 4', 'powervr sgx'];
         const rendererLower = renderer.toLowerCase();
 
+        // Release context IMMEDIATELY after getting info
+        const extension = gl.getExtension('WEBGL_lose_context');
+        if (extension) extension.loseContext();
+
         if (lowPowerKeywords.some(kw => rendererLower.includes(kw))) {
             return 'low';
         }
@@ -52,7 +56,11 @@ function estimateGPUPerformance(): 'high' | 'medium' | 'low' {
     }
 }
 
+let cachedCapabilities: DeviceCapabilities | null = null;
+
 function detectCapabilities(): DeviceCapabilities {
+    if (cachedCapabilities) return cachedCapabilities;
+
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -81,7 +89,7 @@ function detectCapabilities(): DeviceCapabilities {
         recommendedParticleCount = 300; // Moderate particles
     }
 
-    return {
+    cachedCapabilities = {
         isLowPower,
         isMobile,
         prefersReducedMotion,
@@ -89,6 +97,8 @@ function detectCapabilities(): DeviceCapabilities {
         devicePixelRatio,
         hasTouch,
     };
+
+    return cachedCapabilities;
 }
 
 export function useDeviceCapabilities(): DeviceCapabilities {

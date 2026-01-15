@@ -149,9 +149,9 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
                 if (initialData.contactId) setContactId(initialData.contactId);
                 if (initialData.contactName) setContactSearch(initialData.contactName);
                 if (initialData.stage) setStage(initialData.stage);
-                else setStage(initialPipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
+                else setStage('buyer_consult');
             } else {
-                setStage(initialPipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
+                setStage('buyer_consult');
                 setSummary('');
                 setPropertyId('');
                 setPropertySearch('');
@@ -173,7 +173,7 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
     // Update default stage when pipeline type changes
     useEffect(() => {
         if (!initialData?.stage) {
-            setStage(pipelineType === 'buyer' ? 'buyer_consult' : 'appraisal');
+            setStage('buyer_consult');
         }
     }, [pipelineType, initialData]);
 
@@ -414,26 +414,6 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
                 </div>
 
                 <form className="new-deal-modal__form" onSubmit={handleSubmit}>
-                    {/* Pipeline Type Selection */}
-                    <div className="new-deal-modal__field">
-                        <label className="new-deal-modal__label">Deal Type</label>
-                        <div className="new-deal-modal__toggle">
-                            <button
-                                type="button"
-                                className={`new-deal-modal__toggle-btn ${pipelineType === 'buyer' ? 'new-deal-modal__toggle-btn--active' : ''}`}
-                                onClick={() => setPipelineType('buyer')}
-                            >
-                                Buyer
-                            </button>
-                            <button
-                                type="button"
-                                className={`new-deal-modal__toggle-btn ${pipelineType === 'seller' ? 'new-deal-modal__toggle-btn--active' : ''}`}
-                                onClick={() => setPipelineType('seller')}
-                            >
-                                Seller
-                            </button>
-                        </div>
-                    </div>
 
                     {/* Sale Method */}
                     <div className="new-deal-modal__field">
@@ -604,7 +584,7 @@ export const NewDealModal: React.FC<NewDealModalProps> = ({
 
                     {/* Stage */}
                     <div className="new-deal-modal__field">
-                        <label className="new-deal-modal__label">Initial Stage</label>
+                        <label className="new-deal-modal__label">Deal Stage</label>
                         <select
                             className="new-deal-modal__select"
                             value={stage}

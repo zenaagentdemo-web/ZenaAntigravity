@@ -1,4 +1,4 @@
-import { Deal, DealStage, RiskLevel, calculateDaysInStage } from '../types';
+import { Deal, DealStage, RiskLevel, calculateDaysInStage, BUYER_STAGE_SEQUENCE, SELLER_STAGE_SEQUENCE } from '../types';
 import { api } from '../../../utils/apiClient';
 import { useState, useEffect } from 'react';
 
@@ -14,7 +14,17 @@ export type RiskSignalType =
     | 'lim_delay'
     | 'valuation_gap'
     | 'vendor_expectations'
-    | 'long_conditional';
+    | 'long_conditional'
+    | 'pending_tasks'
+    | 'pending_actions';
+
+export function getRiskLevelFromScore(score: number): RiskLevel {
+    if (score >= 80) return 'none';     // On Track
+    if (score >= 60) return 'low';      // Low Risk
+    if (score >= 40) return 'medium';   // Medium Risk
+    if (score >= 20) return 'high';     // High Risk
+    return 'critical';                  // Critical
+}
 
 export type RiskSeverity = 'medium' | 'high' | 'critical';
 
@@ -51,7 +61,8 @@ export interface DealIntelligence {
     needsLiveSession: boolean;
     daysInStage: number;
     stageHealthStatus: 'healthy' | 'warning' | 'critical';
-    riskLevel?: string;
+    recommendedStage?: DealStage;
+    riskLevel: RiskLevel;
     analyzedAt?: string; // Phase 5: Snapshot time
 }
 
@@ -108,6 +119,17 @@ const STAGE_EXPECTED_DURATION: Record<string, number> = {
     offers_received: 14,
 };
 
+/**
+ * Shared logic to get colour based on health score (matches PowerPulse)
+ */
+export function getHealthColor(score: number): string {
+    if (score >= 80) return '#00ff41'; // Bright green - healthy
+    if (score >= 60) return '#00f3ff'; // Cyan - good
+    if (score >= 40) return '#ffd700'; // Gold - warning
+    if (score >= 20) return '#ff9500'; // Orange - concerning
+    return '#ff003c'; // Red - critical
+}
+
 // ============================================================
 // COACHING CONTENT (NZ Localised)
 // ============================================================
@@ -121,6 +143,8 @@ const COACHING_INSIGHTS: Record<RiskSignalType, string> = {
     valuation_gap: 'The valuation gap is a critical friction point. We need a strategic nudge to the vendor to manage expectations early.',
     vendor_expectations: 'Market days are climbing ({days}). We need a "reality check" nudge for the vendor based on recent REINZ data.',
     long_conditional: 'Extended conditions are momentum killers. Nudge the purchaser to confirm their "intent to proceed" today.',
+    pending_tasks: 'There are open tasks for this deal. Completing them will help move the deal forward.',
+    pending_actions: 'Zena has suggested actions for this deal. Review them to maintain momentum.',
 };
 
 const POWER_MOVE_TEMPLATES: Record<RiskSignalType, PowerMove> = {
@@ -204,6 +228,7 @@ export function analyseDeal(deal: Deal): DealIntelligence {
     const stageHealthStatus = getStageHealthStatus(healthScore);
     const suggestedPowerMove = selectPowerMove(riskSignals);
     const coachingInsight = generateCoachingInsight(riskSignals, daysInStage);
+    const recommendedStage = determineRecommendedStage(deal, riskSignals, daysInStage);
     const needsLiveSession = riskSignals.some(r => r.severity === 'critical') ||
         riskSignals.length >= 3 ||
         daysInStage > STAGE_EXPECTED_DURATION[deal.stage] * 2;
@@ -211,7 +236,9 @@ export function analyseDeal(deal: Deal): DealIntelligence {
     // Calculate health velocity (mocked based on signals and duration)
     const velocityFactor = riskSignals.length > 0 ? -2 * riskSignals.length : 2;
     const durationPenalty = daysInStage > STAGE_EXPECTED_DURATION[deal.stage] ? -1 : 0;
+
     const healthVelocity = velocityFactor + durationPenalty;
+    const riskLevel = getRiskLevelFromScore(healthScore);
 
     return {
         dealId: deal.id,
@@ -224,6 +251,9 @@ export function analyseDeal(deal: Deal): DealIntelligence {
         needsLiveSession,
         daysInStage,
         stageHealthStatus,
+
+        recommendedStage,
+        riskLevel
     };
 }
 
@@ -321,7 +351,122 @@ function detectRiskSignals(deal: Deal, daysInStage: number): RiskSignal[] {
         }
     }
 
+    // Check for pending tasks
+    if (deal.tasks && deal.tasks.length > 0) {
+        signals.push({
+            type: 'pending_tasks',
+            severity: deal.tasks.length > 3 ? 'high' : 'medium',
+            detectedAt: now,
+            dataPoint: `${deal.tasks.length} open tasks`,
+            description: `Deal has ${deal.tasks.length} open tasks`,
+        });
+    }
+
+    // Check for pending actions
+    if (deal.zenaActions && deal.zenaActions.length > 0) {
+        signals.push({
+            type: 'pending_actions',
+            severity: 'high',
+            detectedAt: now,
+            dataPoint: `${deal.zenaActions.length} pending actions`,
+            description: `Zena has ${deal.zenaActions.length} suggested actions`,
+        });
+    }
+
     return signals;
+}
+
+/**
+ * Determine the next recommended stage based on deal context
+ */
+function determineRecommendedStage(deal: Deal, riskSignals: RiskSignal[], daysInStage: number): DealStage | undefined {
+    // Shared sequences
+    const sequence = deal.pipelineType === 'buyer' ? BUYER_STAGE_SEQUENCE : SELLER_STAGE_SEQUENCE;
+    const currentIndex = sequence.indexOf(deal.stage);
+
+    if (currentIndex === -1 || currentIndex === sequence.length - 1) return undefined;
+
+    const nextStage = sequence[currentIndex + 1];
+
+    // Logic for suggesting the next move
+    switch (deal.stage) {
+        case 'buyer_consult':
+            // Suggest shortlist if search criteria is mostly complete
+            if (deal.searchCriteria && deal.searchCriteria.location.length > 0 && deal.searchCriteria.priceRange.max > 0) {
+                return 'shortlisting';
+            }
+            break;
+
+        case 'shortlisting':
+            // Suggest viewings if properties have been shared
+            if (deal.propertiesShared && deal.propertiesShared.length >= 3) {
+                return 'viewings';
+            }
+            break;
+
+        case 'viewings':
+            // Suggest offer if multiple viewings completed or high interest
+            const completedViewings = deal.viewings?.filter(v => v.status === 'completed').length || 0;
+            if (completedViewings >= 2) {
+                return 'offer_made';
+            }
+            break;
+
+        case 'conditional':
+            // Suggest unconditional if all conditions are satisfied
+            const allSatisfied = deal.conditions?.every(c => c.status === 'satisfied');
+            if (allSatisfied && deal.conditions.length > 0) {
+                return 'unconditional';
+            }
+            break;
+
+        case 'unconditional':
+            // Suggest pre-settlement as we get closer to settlement date
+            if (deal.settlementDate) {
+                const daysUntilSettlement = Math.ceil((new Date(deal.settlementDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                if (daysUntilSettlement <= 14) {
+                    return 'pre_settlement';
+                }
+            }
+            break;
+
+        case 'pre_settlement':
+            // Suggest settled if today is or past settlement date
+            if (deal.settlementDate && new Date(deal.settlementDate) <= new Date()) {
+                return 'settled';
+            }
+            break;
+
+        case 'appraisal':
+            // Suggest listing signed if deal is healthy and progressing
+            if (daysInStage >= 3 && riskSignals.length === 0) {
+                return 'listing_signed';
+            }
+            break;
+
+        case 'listing_signed':
+            // Suggest marketing if go-live date is near or set
+            if (deal.goLiveDate || daysInStage >= 5) {
+                return 'marketing';
+            }
+            break;
+
+        case 'marketing':
+            // Suggest offers received if offers exist
+            if (deal.offers && deal.offers.length > 0) {
+                return 'offers_received';
+            }
+            break;
+
+        case 'offers_received':
+            // Suggest conditional if an offer is accepted
+            if (deal.offers?.some(o => o.status === 'accepted')) {
+                return 'conditional';
+            }
+            break;
+    }
+
+    return undefined;
 }
 
 /**
@@ -439,6 +584,30 @@ export function personalisePowerMove(powerMove: PowerMove, deal: Deal): PowerMov
  * Async version that fetches deep AI intelligence from the backend
  */
 export async function fetchDealIntelligence(dealId: string, forceRefresh = false): Promise<DealIntelligence> {
+    // If mock deal, skip API call and return initial analysis
+    if (dealId.startsWith('deal-')) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                // We don't have the full deal object here normally, but for mocks we can simulate
+                // In a real app we might fetch from a local mock store
+                resolve({
+                    dealId,
+                    healthScore: 85,
+                    healthVelocity: 2,
+                    riskSignals: [],
+                    suggestedPowerMove: null,
+                    coachingInsight: 'Mock intelligence for demonstration.',
+                    emailSentiment: 'neutral',
+                    needsLiveSession: false,
+                    daysInStage: 5,
+
+                    stageHealthStatus: 'healthy',
+                    riskLevel: 'none' as RiskLevel
+                });
+            }, 500);
+        });
+    }
+
     try {
         const response = await api.get(`/api/deals/${dealId}/intelligence`, {
             params: { forceRefresh }

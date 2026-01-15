@@ -32,8 +32,8 @@ export interface HighTechDashboardProps {
   focusThreadsCount?: number;
   /** Waiting threads count */
   waitingThreadsCount?: number;
-  /** At-risk deals count */
-  atRiskDealsCount?: number;
+  /** Deals needing action count */
+  dealsNeedingActionCount?: number;
   /** Active tasks count */
   activeTasksCount?: number;
 
@@ -78,7 +78,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
   userName = 'there', // Default to 'there'
   focusThreadsCount = 0,
   waitingThreadsCount = 0,
-  atRiskDealsCount = 0,
+  dealsNeedingActionCount = 0,
   activeTasksCount = 0,
 
   appointments = [],
@@ -100,14 +100,14 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
 
   // Auto-show Morning Brief on first mount if there are urgent items
   useEffect(() => {
-    const hasUrgent = focusThreadsCount > 0 || atRiskDealsCount > 0;
+    const hasUrgent = focusThreadsCount > 0 || dealsNeedingActionCount > 0;
     const briefDismissed = localStorage.getItem('zena_brief_dismissed');
     const today = new Date().toDateString();
 
     if (hasUrgent && briefDismissed !== today) {
       setIsBriefOpen(true);
     }
-  }, [focusThreadsCount, atRiskDealsCount]);
+  }, [focusThreadsCount, dealsNeedingActionCount]);
 
   const handleBriefClose = () => {
     setIsBriefOpen(false);
@@ -132,9 +132,9 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
     {
       id: 'deals',
       label: 'DEAL FLOW',
-      value: atRiskDealsCount,
+      value: dealsNeedingActionCount,
       color: 'magenta',
-      urgency: atRiskDealsCount > 0 ? 'high' : 'low',
+      urgency: dealsNeedingActionCount > 0 ? 'high' : 'low',
     },
     {
       id: 'waiting',
@@ -278,7 +278,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
         metrics={{
           focusThreads: focusThreadsCount,
           waitingThreads: waitingThreadsCount,
-          atRiskDeals: atRiskDealsCount
+          atRiskDeals: dealsNeedingActionCount
         }}
         topAppointment={appointments.length > 0 ? {
           time: formatAppointmentTime(appointments[0].time),

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 // @ts-ignore
-import { X, Check, ArrowRight, Clock, Battery, MapPin, Loader2 } from 'lucide-react';
+import { X, Check, ArrowRight, Clock, Battery, MapPin, Loader2, Sparkles } from 'lucide-react';
 // @ts-ignore
 import { useCalendarStore } from '../../stores/useCalendarStore';
 import './OptimiseProposalModal.css';
@@ -16,6 +16,7 @@ interface OptimiseProposalModalProps {
     isOpen: boolean;
     onClose: () => void;
     onApply: () => void;
+    onApplyAndStart: () => void;
     proposal: {
         originalSchedule: any[];
         proposedSchedule: any[];
@@ -32,7 +33,7 @@ interface OptimiseProposalModalProps {
     isLoading: boolean;
 }
 
-export const OptimiseProposalModal: React.FC<OptimiseProposalModalProps> = ({ isOpen, onClose, onApply, proposal, isLoading }) => {
+export const OptimiseProposalModal: React.FC<OptimiseProposalModalProps> = ({ isOpen, onClose, onApply, onApplyAndStart, proposal, isLoading }) => {
     if (!isOpen) return null;
 
     if (isLoading) {
@@ -160,8 +161,12 @@ export const OptimiseProposalModal: React.FC<OptimiseProposalModalProps> = ({ is
 
                 <div className="optimise-footer">
                     <button className="cancel-btn" onClick={onClose}>Cancel</button>
-                    <button className="apply-btn" onClick={onApply}>
-                        Apply Optimisation
+                    <button className="apply-btn" onClick={onApply} style={{ background: 'rgba(139, 92, 246, 0.2)', border: '1px solid rgba(139, 92, 246, 0.5)' }}>
+                        Apply Only
+                    </button>
+                    <button className="apply-btn" onClick={onApplyAndStart} style={{ background: 'linear-gradient(135deg, #8b5cf6, #d946ef)', border: 'none', boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)' }}>
+                        <Sparkles size={16} style={{ marginRight: '8px' }} />
+                        Apply & Start Mission
                     </button>
                 </div>
             </div>

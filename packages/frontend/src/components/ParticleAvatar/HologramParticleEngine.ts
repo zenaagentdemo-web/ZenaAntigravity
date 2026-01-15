@@ -213,6 +213,7 @@ export class HologramParticleEngine {
     private dissolveProgress: number = 0;
     private amplitude: number = 0;
     private stateStartTime: number = 0;
+    private isInitialized: boolean = false;
 
     private readonly PARTICLE_COUNT: number;
     private readonly SIZE: number;
@@ -241,22 +242,49 @@ export class HologramParticleEngine {
         );
         this.camera.position.z = 300;
 
-        // WebGL renderer
-        this.renderer = new THREE.WebGLRenderer({
-            alpha: true,
-            antialias: true,
-            premultipliedAlpha: false,
-        });
-        this.renderer.setSize(size, size);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        this.renderer.setClearColor(0x000000, 0);
+        try {
+            // WebGL renderer
+            this.renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: true,
+                premultipliedAlpha: false,
+            });
 
-        container.appendChild(this.renderer.domElement);
-        this.renderer.domElement.style.position = 'absolute';
-        this.renderer.domElement.style.top = '0';
-        this.renderer.domElement.style.left = '0';
-        this.renderer.domElement.style.pointerEvents = 'none';
-        this.renderer.domElement.style.zIndex = '10';
+            // Check if context was successfully created
+            if (!this.renderer.getContext()) {
+                throw new Error('Failed to create WebGL context');
+            }
+
+            this.renderer.setSize(size, size);
+            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            this.renderer.setClearColor(0x000000, 0);
+            this.isInitialized = true;
+        } catch (error) {
+            console.error('[HologramParticleEngine] WebGL initialization failed:', error);
+            // Create a dummy renderer to avoid null pointer errors, though it won't render
+            this.renderer = {
+                setSize: () => { },
+                setPixelRatio: () => { },
+                setClearColor: () => { },
+                render: () => { },
+                dispose: () => { },
+                domElement: document.createElement('div'),
+                getContext: () => null
+            } as any;
+            this.isInitialized = false;
+            return;
+        }
+
+        if (this.isInitialized) {
+            container.appendChild(this.renderer.domElement);
+            this.renderer.domElement.style.position = 'absolute';
+            this.renderer.domElement.style.top = '0';
+            this.renderer.domElement.style.left = '0';
+            this.renderer.domElement.style.pointerEvents = 'none';
+            this.renderer.domElement.style.zIndex = '10';
+        } else {
+            this.renderer.domElement.style.display = 'none';
+        }
     }
 
     async initializeFromImage(imageSrc: string): Promise<void> {
@@ -302,16 +330,17 @@ export class HologramParticleEngine {
         }
 
         // Allocate arrays
-        const positions = new Float32Array(this.PARTICLE_COUNT * 3);
-        const uvs = new Float32Array(this.PARTICLE_COUNT * 2);
-        const noiseValues = new Float32Array(this.PARTICLE_COUNT);
-        const targetPositions = new Float32Array(this.PARTICLE_COUNT * 3);
+        const validatedCount = Math.floor(this.PARTICLE_COUNT || 0);
+        const positions = new Float32Array(validatedCount * 3);
+        const uvs = new Float32Array(validatedCount * 2);
+        const noiseValues = new Float32Array(validatedCount);
+        const targetPositions = new Float32Array(validatedCount * 3);
 
-        const step = Math.max(1, Math.floor(visiblePixels.length / this.PARTICLE_COUNT));
+        const step = Math.max(1, Math.floor(visiblePixels.length / validatedCount));
         const centerX = this.SIZE / 2;
         const centerY = this.SIZE / 2;
 
-        for (let i = 0; i < this.PARTICLE_COUNT; i++) {
+        for (let i = 0; i < validatedCount; i++) {
             const pixelIdx = Math.min((i * step) % visiblePixels.length, visiblePixels.length - 1);
             const pixel = visiblePixels[pixelIdx] || { x: centerX, y: centerY, a: 255 };
 
@@ -373,6 +402,7 @@ export class HologramParticleEngine {
 
     private startAnimation(): void {
         const animate = () => {
+            if (!this.isInitialized) return;
             this.time += 0.016;
             this.updateProgress();
             this.updateUniforms();
@@ -443,6 +473,7 @@ export class HologramParticleEngine {
     }
 
     private render(): void {
+        if (!this.isInitialized) return;
         this.renderer.render(this.scene, this.camera);
     }
 

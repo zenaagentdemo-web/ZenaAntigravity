@@ -25,6 +25,7 @@ export type BuyerStage =
 
 // Seller pipeline stages
 export type SellerStage =
+  | 'buyer_consult'
   | 'appraisal'
   | 'listing_signed'
   | 'marketing'

@@ -8,7 +8,7 @@ import { realTimeDataService } from './realTimeDataService';
 class LiveAudioService {
     private audioContext: AudioContext | null = null;
     private mediaStream: MediaStream | null = null;
-    private scriptProcessor: ScriptProcessorNode | null = null;
+    private audioWorkletNode: AudioWorkletNode | null = null;
     private sourceNode: MediaStreamAudioSourceNode | null = null;
     private isActive = false;
     private isStopping = false; // Prevents race conditions during shutdown
@@ -25,6 +25,7 @@ class LiveAudioService {
     private playbackQueue: Float32Array[] = [];
     private isPlaying = false;
     private currentSource: AudioBufferSourceNode | null = null;
+    private nextStartTime = 0; // Precise time for gapless playback scheduling
 
     /**
     * Start live audio session
@@ -39,6 +40,7 @@ class LiveAudioService {
     async start(onAudioLevel?: (level: number, isPlayback: boolean) => void, history?: any[], location?: { lat: number, lng: number }, context?: string): Promise<void> {
         // Generate a unique session ID for this start attempt
         const sessionId = ++this.currentSessionId;
+        this.hardStopped = false; // RESET kill switch for new session
         console.log(`[LiveAudio] Starting session ${sessionId}...`);
 
         // CRITICAL: Reset the hard stop flag ONLY when explicitly starting a new session
@@ -88,47 +90,62 @@ class LiveAudioService {
             this.mediaStream = mediaStream;
             console.log('[LiveAudio] Session connected AND mic ready, starting audio capture...');
 
-            // Create AudioContext at default sample rate (usually 48kHz)
-            this.audioContext = new AudioContext();
+            // FIX: Singleton AudioContext to prevent exhaustion (browser limit is 6)
+            if (!this.audioContext) {
+                console.log('[LiveAudio] Creating new AudioContext...');
+                this.audioContext = new AudioContext();
+            } else {
+                console.log('[LiveAudio] Reusing existing AudioContext, state:', this.audioContext.state);
+            }
+
+            // FIX: Ensure AudioContext is running (browser autoplay policy often suspends it)
+            if (this.audioContext.state === 'suspended') {
+                console.log('[LiveAudio] AudioContext suspended, attempting to resume...');
+                try {
+                    await this.audioContext.resume();
+                    console.log('[LiveAudio] AudioContext resumed');
+                } catch (err) {
+                    console.error('[LiveAudio] Failed to resume AudioContext:', err);
+                }
+            }
+
             const nativeSampleRate = this.audioContext.sampleRate;
             console.log('[LiveAudio] AudioContext sampleRate:', nativeSampleRate);
 
             // Create audio processing pipeline
             this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
-            // Reverted buffer size back to 4096 for stability (1024 was causing echo-trigger interruptions)
-            this.scriptProcessor = this.audioContext.createScriptProcessor(4096, 1, 1);
 
-            // Process audio chunks
-            this.scriptProcessor.onaudioprocess = (event) => {
-                // STOP CHECK: Immediately exit if stopping, muted, or HARD STOPPED
-                if (!this.isActive || this.isMicMuted || this.isStopping || this.hardStopped) return;
+            // Load and initialize AudioWorklet
+            try {
+                await this.audioContext.audioWorklet.addModule('/audio-processors/pcm-worker.js');
 
-                const inputData = event.inputBuffer.getChannelData(0);
+                this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'pcm-processor', {
+                    numberOfInputs: 1,
+                    numberOfOutputs: 1,
+                    outputChannelCount: [1]
+                });
 
-                // Calculate audio level for UI
-                let sum = 0;
-                for (let i = 0; i < inputData.length; i++) {
-                    sum += inputData[i] * inputData[i];
-                }
-                const rms = Math.sqrt(sum / inputData.length);
-                if (this.onAudioLevelCallback) {
-                    this.onAudioLevelCallback(rms * 100, false);
-                }
+                const nativeSampleRate = this.audioContext.sampleRate;
+                this.audioWorkletNode.port.onmessage = (event) => {
+                    if (!this.isActive || this.isMicMuted || this.isStopping || this.hardStopped) return;
+                    this.processAudioBatch(event.data, nativeSampleRate);
+                };
 
-                // Resample from native rate to 16kHz for Gemini
-                const resampled = this.resample(inputData, nativeSampleRate, 16000);
+                // Connect nodes: Source -> Worklet -> Muted Gain -> Destination
+                // We connect to destination (even if muted) to keep the pipeline active in some browsers
+                const gainNode = this.audioContext.createGain();
+                gainNode.gain.value = 0;
 
-                // Convert to Int16 PCM
-                const pcm = this.float32ToInt16(resampled);
+                this.sourceNode.connect(this.audioWorkletNode);
+                this.audioWorkletNode.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
 
-                // Convert to base64 and send
-                const base64 = this.arrayBufferToBase64(pcm.buffer);
-                realTimeDataService.sendMessage('voice.live.chunk', { data: base64 });
-            };
-
-            // Connect the pipeline
-            this.sourceNode.connect(this.scriptProcessor);
-            this.scriptProcessor.connect(this.audioContext.destination);
+                console.log('[LiveAudio] AudioWorklet initialized and connected');
+            } catch (err) {
+                console.error('[LiveAudio] Failed to load AudioWorklet:', err);
+                // In a production app, you might want to fall back to ScriptProcessor here if needed
+                throw err;
+            }
 
             this.isActive = true;
             console.log('[LiveAudio] Started');
@@ -171,6 +188,7 @@ class LiveAudioService {
             this.currentSource = null;
         }
         this.isPlaying = false;
+        this.nextStartTime = 0;
         if (this.onAudioLevelCallback) {
             this.onAudioLevelCallback(0, false);
         }
@@ -322,10 +340,7 @@ class LiveAudioService {
             const float32Data = this.int16ToFloat32(int16Data);
 
             // Add to playback queue but DO NOT automatically start playing
-            // The Frontend will control when to start playing (to add delay)
             this.playbackQueue.push(float32Data);
-
-            // CHANGED: We removed the auto path here. Frontend must call .playNextChunk() or .startQueuePlayback()
         } catch (error) {
             console.error('[LiveAudio] Error processing incoming audio:', error);
         }
@@ -376,34 +391,72 @@ class LiveAudioService {
         }
 
         // Then disconnect audio nodes
-        if (this.scriptProcessor) {
-            this.scriptProcessor.onaudioprocess = null; // CRITICAL: Stop the handler!
-            this.scriptProcessor.disconnect();
-            this.scriptProcessor = null;
+        if (this.audioWorkletNode) {
+            this.audioWorkletNode.port.onmessage = null;
+            this.audioWorkletNode.disconnect();
+            this.audioWorkletNode = null;
         }
         if (this.sourceNode) {
             this.sourceNode.disconnect();
             this.sourceNode = null;
         }
 
-        // Finally close AudioContext
-        if (this.audioContext) {
-            this.audioContext.close().catch(err => console.error('[LiveAudio] Error closing AudioContext:', err));
-            this.audioContext = null;
+        // Finally suspend AudioContext (DON'T CLOSE - it's a singleton to prevent exhaustion)
+        if (this.audioContext && this.audioContext.state !== 'closed') {
+            console.log('[LiveAudio] Suspending singleton AudioContext to release hardware...');
+            this.audioContext.suspend().catch(err => console.warn('[LiveAudio] Error suspending AudioContext:', err));
         }
 
         this.playbackQueue = [];
         this.isPlaying = false;
-        console.log('[LiveAudio] Fully stopped - all resources released');
+        console.log('[LiveAudio] Fully stopped - all resources released (hardware context kept alive)');
+    }
+
+    /**
+     * Handle raw audio from the worklet worker
+     */
+    private processAudioBatch(inputData: Float32Array, nativeSampleRate: number): void {
+        // Calculate audio level for UI
+        let sum = 0;
+        for (let i = 0; i < inputData.length; i++) {
+            sum += inputData[i] * inputData[i];
+        }
+        const rms = Math.sqrt(sum / inputData.length);
+        if (this.onAudioLevelCallback) {
+            this.onAudioLevelCallback(rms * 100, false);
+        }
+
+        // Resample from native rate to 16kHz for Gemini
+        const resampled = this.resample(inputData, nativeSampleRate, 16000);
+
+        // Convert to Int16 PCM
+        const pcm = this.float32ToInt16(resampled);
+
+        // Convert to base64 and send
+        const base64 = this.arrayBufferToBase64(pcm.buffer);
+        realTimeDataService.sendMessage('voice.live.chunk', { data: base64 });
     }
 
     private async playNextChunk(): Promise<void> {
         if (this.playbackQueue.length === 0 || !this.audioContext) {
             this.isPlaying = false;
+            this.nextStartTime = 0; // Reset for next sequence
+            // console.log('[LiveAudio] Queue empty, playback stopped');
             if (this.onAudioLevelCallback) {
                 this.onAudioLevelCallback(0, true);
             }
             return;
+        }
+
+        // FIX: Double-check AudioContext state before playing - REINFORCED
+        if (this.audioContext.state === 'suspended') {
+            try {
+                console.log('[LiveAudio] Context suspended, resuming before playback...');
+                await this.audioContext.resume();
+                console.log('[LiveAudio] Context resumed');
+            } catch (err) {
+                console.error('[LiveAudio] Failed to resume context during playback:', err);
+            }
         }
 
         this.isPlaying = true;
@@ -419,19 +472,69 @@ class LiveAudioService {
             this.onAudioLevelCallback(rms * 100, true);
         }
 
-        // Gemini outputs audio at 24kHz
-        const buffer = this.audioContext.createBuffer(1, data.length, 24000);
-        buffer.getChannelData(0).set(data);
+        try {
+            // Gemini outputs audio at 24kHz
+            const buffer = this.audioContext.createBuffer(1, data.length, 24000);
+            buffer.getChannelData(0).set(data);
 
-        const source = this.audioContext.createBufferSource();
-        source.buffer = buffer;
-        source.connect(this.audioContext.destination);
-        this.currentSource = source;
-        source.onended = () => {
-            this.currentSource = null;
+            const source = this.audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(this.audioContext.destination);
+
+            // SCHEDULING: Precision stitching of buffers
+            const now = this.audioContext.currentTime;
+
+            // If we've fallen behind or just starting, start with a tiny buffer
+            if (this.nextStartTime < now) {
+                this.nextStartTime = now + 0.05; // 50ms buffer for safety
+            }
+
+            this.currentSource = source;
+            source.onended = () => {
+                // If it's the last source and we haven't scheduled the next one yet
+                if (this.currentSource === source) {
+                    this.currentSource = null;
+                }
+            };
+
+            source.start(this.nextStartTime);
+
+            // Calculate when THE NEXT chunk should start
+            this.nextStartTime += buffer.duration;
+
+            // DIAGNOSTICS: Confirm chunk is actually scheduled
+            console.log(`[LiveAudio][Chunk] Scheduled at: ${this.nextStartTime.toFixed(3)}s | Context Time: ${this.audioContext.currentTime.toFixed(3)}s | State: ${this.audioContext.state}`);
+
+            // PRE-SCHEDULE: Start work on the next chunk while this one is playing
+            // This ensures the audio context destination always has data ready
+            const playAheadThreshold = 0.1; // 100ms
+            const timeToNext = this.nextStartTime - this.audioContext.currentTime;
+
+            if (this.playbackQueue.length > 0) {
+                // If the next chunk is coming soon, schedule it now
+                if (timeToNext < playAheadThreshold) {
+                    this.playNextChunk();
+                } else {
+                    // Otherwise, wait a bit then check again
+                    setTimeout(() => this.playNextChunk(), (timeToNext - playAheadThreshold / 2) * 1000);
+                }
+            } else {
+                // If queue is empty, wait for next onended as a fallback 
+                // but usually the handleIncomingAudio will trigger startQueuePlayback
+                source.onended = () => {
+                    if (this.currentSource === source) {
+                        this.currentSource = null;
+                        this.playNextChunk();
+                    }
+                };
+            }
+
+            console.log('[LiveAudio] Scheduled chunk at:', this.nextStartTime.toFixed(3), 'length:', data.length);
+        } catch (e) {
+            console.error('[LiveAudio] Error creating/starting buffer source:', e);
+            this.isPlaying = false;
             this.playNextChunk();
-        };
-        source.start();
+        }
     }
 
     // ============ Audio Conversion Utilities ============

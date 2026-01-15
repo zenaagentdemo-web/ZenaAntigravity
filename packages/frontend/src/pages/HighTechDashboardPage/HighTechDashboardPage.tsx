@@ -152,7 +152,25 @@ export const HighTechDashboardPage: React.FC = () => {
   // Dashboard data state
   const [focusThreadsCount] = useState(3);
   const [waitingThreadsCount] = useState(7);
-  const [atRiskDealsCount] = useState(2);
+  const [dealsNeedingActionCount, setDealsNeedingActionCount] = useState(0);
+
+  // Fetch dashboard stats from API
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        const response = await api.get<{ dealsNeedingAction: number }>('/api/deals/dashboard');
+        setDealsNeedingActionCount(response.data.dealsNeedingAction || 0);
+      } catch (err) {
+        console.error('Failed to fetch dashboard stats', err);
+      }
+    };
+
+    fetchDashboardStats();
+
+    // Refresh stats every minute
+    const interval = setInterval(fetchDashboardStats, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const [appointments] = useState<CalendarAppointment[]>(generateMockAppointments);
   const [activities] = useState<ActivityItem[]>(generateMockActivities);
@@ -208,7 +226,7 @@ export const HighTechDashboardPage: React.FC = () => {
         userName={userName}
         focusThreadsCount={focusThreadsCount}
         waitingThreadsCount={waitingThreadsCount}
-        atRiskDealsCount={atRiskDealsCount}
+        dealsNeedingActionCount={dealsNeedingActionCount}
         activeTasksCount={activeTasksCount}
         appointments={appointments}
         recentActivities={activities}

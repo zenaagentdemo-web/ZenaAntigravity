@@ -66,6 +66,14 @@ export class DealsController {
             select: {
               id: true,
               address: true,
+              bedrooms: true,
+              bathrooms: true,
+              listingPrice: true,
+              lastSalePrice: true,
+              lastSaleDate: true,
+              landSize: true,
+              floorSize: true,
+              rateableValue: true,
             },
           },
           contacts: {
@@ -77,13 +85,30 @@ export class DealsController {
               role: true,
             },
           },
+          tasks: {
+            where: { status: { in: ['pending', 'open'] } }
+          },
+          zenaActions: {
+            where: { status: 'pending' }
+          }
         },
       });
 
       const total = await prisma.deal.count({ where });
 
+      const mappedDeals = deals.map(deal => ({
+        ...deal,
+        property: deal.property ? {
+          ...deal.property,
+          landArea: deal.property.landSize,
+          floorArea: deal.property.floorSize,
+          listingPrice: deal.property.listingPrice ? Number(deal.property.listingPrice) : null,
+          lastSalePrice: deal.property.lastSalePrice ? Number(deal.property.lastSalePrice) : null,
+        } : null
+      }));
+
       res.status(200).json({
-        deals,
+        deals: mappedDeals,
         total,
         displayed: deals.length,
         pagination: {
@@ -135,6 +160,14 @@ export class DealsController {
               id: true,
               address: true,
               milestones: true,
+              bedrooms: true,
+              bathrooms: true,
+              listingPrice: true,
+              lastSalePrice: true,
+              lastSaleDate: true,
+              landSize: true,
+              floorSize: true,
+              rateableValue: true,
             },
           },
           contacts: {
@@ -200,8 +233,19 @@ export class DealsController {
         ],
       });
 
+      const mappedDeal = {
+        ...deal,
+        property: deal.property ? {
+          ...deal.property,
+          landArea: deal.property.landSize,
+          floorArea: deal.property.floorSize,
+          listingPrice: deal.property.listingPrice ? Number(deal.property.listingPrice) : null,
+          lastSalePrice: deal.property.lastSalePrice ? Number(deal.property.lastSalePrice) : null,
+        } : null
+      };
+
       res.status(200).json({
-        deal,
+        deal: mappedDeal,
         timeline: timelineEvents,
         tasks,
       });
@@ -365,6 +409,33 @@ export class DealsController {
       });
     }
   }
+
+  /**
+   * PUT /api/deals/:id/contact-stage
+   * Update specific contact's stage in deal
+   */
+  async updateContactStage(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { contactId, stage } = req.body;
+
+      if (!req.user) {
+        res.status(401).json({ error: { message: 'Authentication required' } });
+        return;
+      }
+
+      const updatedDeal = await dealFlowService.updateContactStage(id, contactId, stage);
+
+      res.status(200).json({
+        deal: updatedDeal,
+        message: 'Contact stage updated successfully'
+      });
+    } catch (error) {
+      console.error('Update contact stage error:', error);
+      res.status(500).json({ error: { message: 'Failed to update contact stage' } });
+    }
+  }
+
 
   /**
    * POST /api/deals/:id/tasks

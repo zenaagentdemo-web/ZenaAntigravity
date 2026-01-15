@@ -147,9 +147,9 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     padding: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.9);
+    font-family: var(--font-family-sans);
+    font-size: 0.8125rem;
+    color: #00f3ff;
     white-space: pre-wrap;
     word-break: break-word;
     margin: 0;

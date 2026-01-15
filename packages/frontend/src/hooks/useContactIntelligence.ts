@@ -36,7 +36,7 @@ export const useContactIntelligence = () => {
     const [socket, setSocket] = useState<WebSocket | null>(null);
 
     const connect = useCallback(() => {
-        const token = localStorage.getItem('zena_auth_token') || 'demo-token'; // Fallback for dev
+        const token = localStorage.getItem('auth_token') || 'demo-token'; // Fallback for dev
         if (!token) {
             console.warn('[ZenaBrain] No auth token found, skipping WebSocket connection');
             return;

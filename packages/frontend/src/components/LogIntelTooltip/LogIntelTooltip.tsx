@@ -84,6 +84,7 @@ export const LogIntelTooltip: React.FC<LogIntelTooltipProps> = ({ className = ''
                     <div
                         ref={tooltipRef}
                         className="log-intel-tooltip"
+                        style={tooltipStyle}
                         onClick={(e) => e.stopPropagation()}
                         role="dialog"
                         aria-modal="true"

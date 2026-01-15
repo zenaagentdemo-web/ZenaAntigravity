@@ -15,6 +15,7 @@ import '../tools/index.js';
 import { websocketService } from './websocket.service.js';
 import { logger } from './logger.service.js';
 import prisma from '../config/database.js';
+import { toolExecutionService } from './tool-execution.service.js';
 import { proactiveContextService } from './proactive-context.service.js';
 import { tokenTrackingService } from './token-tracking.service.js';
 import { getNZDateTime } from '../utils/date-utils.js';
@@ -141,7 +142,12 @@ class AgentOrchestratorService {
                     console.log('   Final Params:', JSON.stringify(finalParams, null, 2));
 
                     // Execute the tool that was waiting
-                    const result = await tool.execute(finalParams, context);
+                    const toolResult = await toolExecutionService.executeTool(tool.name, finalParams, context);
+                    const result = { success: toolResult.success, data: toolResult.result, error: toolResult.error };
+
+                    if (result.success && tool.isAsync) {
+                        logger.info(`[AgentOrchestrator] ${tool.name} started as background job. result:`, result.data);
+                    }
 
                     // Handle the tool result just like handleGeminiResponse does
                     websocketService.broadcastToUser(userId, 'agent.tool_call', {
@@ -520,14 +526,16 @@ class AgentOrchestratorService {
             const searchCalls = toolCalls.filter((tc: any) => tc.functionCall.name.endsWith('.search'));
             const actionCalls = toolCalls.filter((tc: any) => !tc.functionCall.name.endsWith('.search'));
 
-            // 🔥 ZENA UX: If we are about to run slow tools (CMA, Discovery), notify the user immediately
-            // This manages user expectations for the ~1 minute wait time
-            const SLOW_TOOLS = ['property.generate_comparables', 'contact.run_discovery'];
-            const hasSlowTools = actionCalls.some((tc: any) => SLOW_TOOLS.some(st => tc.functionCall.name.includes(st)));
+            // 🔥 ZENA UX: If we are about to run slow tools (isAsync or duration > 10s), notify the user immediately
+            // This manages user expectations while the job runs in the background.
+            const slowTools = actionCalls
+                .map((tc: any) => this.findTool(tc.functionCall.name, availableTools))
+                .filter((t): t is ZenaToolDefinition => !!t && (t.isAsync === true || (t.estimatedDuration !== undefined && t.estimatedDuration >= 10)));
 
-            if (hasSlowTools) {
-                logger.info(`[AgentOrchestrator] Detected slow tools, sending interim message`);
-                websocketService.broadcastAgentMessage(userId, "Working on it! This involves a deep market analysis and may take up to 1-2 minutes so hang in there! 🚀");
+            if (slowTools.length > 0) {
+                const toolLabels = slowTools.map(t => t.name.split('.').pop()?.replace(/_/g, ' ')).join(' and ');
+                logger.info(`[AgentOrchestrator] Detected slow tools (${toolLabels}), sending interim message`);
+                websocketService.broadcastAgentMessage(userId, `Working on ${toolLabels}! This may take a moment. While it's cooking in the background, what else do you want to work on or know? 🚀`);
             }
 
             const executedResults: any[] = [];
@@ -769,7 +777,12 @@ class AgentOrchestratorService {
                     };
 
                     console.log(`⚡ Auto-executing action: ${tool.name}`);
-                    const result = await tool.execute(accumulatedParams, context);
+                    const toolResult = await toolExecutionService.executeTool(tool.name, accumulatedParams, context);
+                    const result = { success: toolResult.success, data: toolResult.result, error: toolResult.error };
+
+                    if (result.success && tool.isAsync) {
+                        logger.info(`[AgentOrchestrator] ${tool.name} started as background job. result:`, result.data);
+                    }
 
                     this.trackEntitiesFromResult(session.sessionId, tool.domain, result.data);
 
