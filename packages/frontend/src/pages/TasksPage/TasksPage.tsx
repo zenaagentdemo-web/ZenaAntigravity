@@ -540,8 +540,39 @@ export const TasksPage: React.FC = () => {
         } else {
             localStorage.removeItem(POWER_HOUR_SNOOZE_KEY);
         }
-        setIsPowerHourDismissedState(dismissed);
     }, []);
+
+    const [pulsatingTaskId, setPulsatingTaskId] = useState<string | null>(null);
+
+    // Handle fromZena state and highlighting
+    useEffect(() => {
+        const state = location.state as any;
+        if (state?.fromZena && state?.highlightId) {
+            console.log('[TasksPage] Arrived from Zena. Pulsating task:', state.highlightId);
+            setPulsatingTaskId(state.highlightId);
+
+            // 🧠 ZENA UX: Ensure targeted task is visible by resetting filters
+            setStatusFilter('all');
+
+            // Expand it if it's the targeted one
+            setExpandedTaskId(state.highlightId);
+
+            // 🚀 ZENA AUTO-SCROLL: Center the targeted task card
+            setTimeout(() => {
+                const element = document.getElementById(`task-card-${state.highlightId}`);
+                if (element) {
+                    console.log('[TasksPage] Scrolling to task:', state.highlightId);
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 500);
+
+            const timer = setTimeout(() => {
+                setPulsatingTaskId(null);
+            }, 300000); // 5 minutes
+
+            return () => clearTimeout(timer);
+        }
+    }, [location.state]);
 
     const [undoToast, setUndoToast] = useState<{ taskId: string; label: string } | null>(null);
     const [undoTimeoutId, setUndoTimeoutId] = useState<NodeJS.Timeout | null>(null);
@@ -1051,8 +1082,9 @@ export const TasksPage: React.FC = () => {
 
         return (
             <div
+                id={`task-card-${task.id}`}
                 key={task.id}
-                className={`task-card ${task.completing ? 'task-card--completing' : ''}`}
+                className={`task-card ${task.completing ? 'task-card--completing' : ''} ${pulsatingTaskId === task.id ? 'pulsate-purple' : ''}`}
                 style={{
                     '--priority-color': config.color,
                     '--priority-glow': config.glow,
@@ -1342,7 +1374,32 @@ export const TasksPage: React.FC = () => {
                 {/* Header */}
                 <header className="tasks-page__header">
                     <div className="tasks-page__title-group">
-                        <span className="tasks-page__subtitle">Zena Task Intelligence</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            {location.state?.fromZena && (
+                                <button
+                                    className="tasks-page__back-zena-btn"
+                                    onClick={() => navigate('/ask-zena')}
+                                    style={{
+                                        background: 'rgba(168, 85, 247, 0.2)',
+                                        border: '1px solid rgba(168, 85, 247, 0.4)',
+                                        color: '#d8b4fe',
+                                        padding: '6px 14px',
+                                        borderRadius: '8px',
+                                        fontSize: '13px',
+                                        fontWeight: 600,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        cursor: 'pointer',
+                                        marginBottom: '4px'
+                                    }}
+                                >
+                                    <Sparkles size={16} />
+                                    Back to Zena
+                                </button>
+                            )}
+                            <span className="tasks-page__subtitle">Zena Task Intelligence</span>
+                        </div>
                         <h1 className="tasks-page__title">Tasks</h1>
                     </div>
                     <div className="tasks-page__actions">

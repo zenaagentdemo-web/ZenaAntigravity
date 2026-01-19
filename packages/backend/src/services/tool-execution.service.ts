@@ -31,30 +31,16 @@ export class ToolExecutionService {
         let tool = availableTools.find(t => t.name === name);
         if (tool) return tool;
 
-        // 🧠 ZENA ALIASED PATROLLER: Support common hallucinated or legacy names
-        const aliases: Record<string, string> = {
-            'property.get_cma': 'property.generate_comparables',
-            'get_cma': 'property.generate_comparables',
-            'property.get_comparables': 'property.generate_comparables',
-            'generate_cma': 'property.generate_comparables',
-            // Milestone aliases
-            'milestone.add': 'property.add_milestone',
-            'property.add_milestones': 'property.add_milestone',
-            'add_milestone': 'property.add_milestone',
-            'property.create_milestone': 'property.add_milestone',
-            // Search aliases
-            'search_contacts': 'contact.search',
-            'search_properties': 'property.search',
-            'search_deals': 'deal.search',
-            'get_property': 'property.get',
-            'get_contact': 'contact.get'
-        };
+        // 🧠 ZENA GLOBAL ALIAS: Use the unified pattern-based generator
+        const { toolAliasGenerator } = require('../tools/tool-alias-generator.js');
+        const resolvedName = toolAliasGenerator.resolve(name);
 
-
-        if (aliases[name]) {
-            const aliasName = aliases[name];
-            tool = availableTools.find(t => t.name === aliasName);
-            if (tool) return tool;
+        if (resolvedName !== name) {
+            tool = availableTools.find(t => t.name === resolvedName);
+            if (tool) {
+                console.log(`🔄 [ToolExc] Alias resolved: ${name} → ${resolvedName}`);
+                return tool;
+            }
         }
 
         // 2. Snake case conversion from camelCase

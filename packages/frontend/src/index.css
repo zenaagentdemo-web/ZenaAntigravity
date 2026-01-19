@@ -61,6 +61,7 @@ body {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+
 /* Interaction feedback animations */
 .interaction-feedback {
   transform: scale(0.98);
@@ -96,6 +97,7 @@ body {
   0% {
     background-position: -200px 0;
   }
+
   100% {
     background-position: calc(200px + 100%) 0;
   }
@@ -106,17 +108,42 @@ body {
   will-change: background-position;
 }
 
+@keyframes pulsatePurple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+    border-color: rgba(168, 85, 247, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 25px 10px rgba(168, 85, 247, 0.2);
+    border-color: rgba(168, 85, 247, 0.8);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+    border-color: rgba(168, 85, 247, 0.4);
+  }
+}
+
+.pulsate-purple {
+  animation: pulsatePurple 2s ease-in-out infinite;
+  border-radius: 8px;
+  position: relative;
+  z-index: 10;
+  background: rgba(168, 85, 247, 0.05) !important;
+}
+
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   .skeleton {
     animation: none;
     background: #f0f0f0;
   }
-  
+
   [data-theme="night"] .skeleton {
     background: #2a2a2a;
   }
-  
+
   .interaction-feedback {
     transform: none;
     transition: none;

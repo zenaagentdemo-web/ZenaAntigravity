@@ -12,6 +12,7 @@
 import { predictPersonality, PERSONALITY_MARKERS } from './personality-markers.service';
 import { askZenaService } from './ask-zena.service.js';
 import prisma from '../config/database.js';
+import { tokenTrackingService } from './token-tracking.service.js';
 
 // LLM API configuration
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -559,6 +560,17 @@ Base your confidence on how clearly the patterns match. If unclear, still provid
         const data = await response.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
+        // Log token usage
+        if (data.usageMetadata) {
+            tokenTrackingService.log({
+                source: 'oracle-personality',
+                endpoint: 'generateContent',
+                model: 'gemini-3-flash-preview',
+                inputTokens: data.usageMetadata.promptTokenCount || 0,
+                outputTokens: data.usageMetadata.candidatesTokenCount || 0,
+            });
+        }
+
         // Parse JSON from response
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
@@ -640,6 +652,17 @@ Be conservative - only return non-null probabilities if there's clear evidence. 
 
         const data = await response.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+        // Log token usage
+        if (data.usageMetadata) {
+            tokenTrackingService.log({
+                source: 'oracle-propensity',
+                endpoint: 'generateContent',
+                model: 'gemini-3-flash-preview',
+                inputTokens: data.usageMetadata.promptTokenCount || 0,
+                outputTokens: data.usageMetadata.candidatesTokenCount || 0,
+            });
+        }
 
         // Parse JSON from response
         const jsonMatch = text.match(/\{[\s\S]*\}/);

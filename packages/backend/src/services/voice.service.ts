@@ -9,7 +9,7 @@ export class VoiceService {
     }
 
     /**
-     * Transcribe audio using Gemini 1.5 Flash
+     * Transcribe audio using Gemini 3 Flash
      */
     async transcribe(audioBase64: string, mimeType: string): Promise<string> {
         // Clean cleanup mimeType (Gemini doesn't like parameters like ;codecs=opus)

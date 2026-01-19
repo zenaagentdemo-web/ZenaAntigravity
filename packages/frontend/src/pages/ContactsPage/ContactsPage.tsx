@@ -207,6 +207,10 @@ export const ContactsPage: React.FC = () => {
         [lastDiscoveryUpdate.contactId]: lastDiscoveryUpdate.status
       }));
 
+      if (lastDiscoveryUpdate.status === 'completed') {
+        triggerPulsate(lastDiscoveryUpdate.contactId);
+      }
+
       if (lastDiscoveryUpdate.status === 'started') {
         // No toast for start to avoid clutter, just UI ring
       } else if (lastDiscoveryUpdate.status === 'completed') {
@@ -257,6 +261,20 @@ export const ContactsPage: React.FC = () => {
   const [smartSearchInsight, setSmartSearchInsight] = useState<string | null>(() => getPersistedState('smartSearchInsight', null));
   const [smartSearchRichResponse, setSmartSearchRichResponse] = useState<string | null>(() => getPersistedState('smartSearchRichResponse', null));
   const [executedQuery, setExecutedQuery] = useState<string | null>(() => getPersistedState('executedQuery', null));
+
+  // 🧪 VISUAL FEEDBACK: Modified fields for pulsating effect
+  const [modifiedContactIds, setModifiedContactIds] = useState<Set<string>>(new Set());
+
+  const triggerPulsate = (id: string) => {
+    setModifiedContactIds(prev => new Set([...prev, id]));
+    setTimeout(() => {
+      setModifiedContactIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, 5000); // 5 second pulse as requested
+  };
 
   // Persistence Effect
   useEffect(() => {
@@ -584,6 +602,7 @@ export const ContactsPage: React.FC = () => {
         }
         return c;
       }));
+      triggerPulsate(lastEngagementUpdate.contactId);
       addToast('info', `Updated engagement for contact`);
     }
   }, [lastEngagementUpdate, addToast]);
@@ -602,6 +621,7 @@ export const ContactsPage: React.FC = () => {
         }
         return c;
       }));
+      triggerPulsate(lastCategoryUpdate.contactId);
       addToast('success', `Contact categorised as ${lastCategoryUpdate.zenaCategory}`);
     }
   }, [lastCategoryUpdate, addToast]);
@@ -1484,7 +1504,7 @@ export const ContactsPage: React.FC = () => {
                   return (
                     <div
                       key={contact.id}
-                      className={`contact-list-item ${selectedIds.has(contact.id) ? 'selected' : ''} ${isBatchMode ? 'batch-mode' : ''}`}
+                      className={`contact-list-item ${selectedIds.has(contact.id) ? 'selected' : ''} ${isBatchMode ? 'batch-mode' : ''} ${modifiedContactIds.has(contact.id) ? 'pulsate-purple' : ''}`}
                       onClick={(e) => {
                         if (isBatchMode) {
                           toggleSelection(contact.id, e);
@@ -1501,7 +1521,7 @@ export const ContactsPage: React.FC = () => {
                       <div className="contact-list-item__name">
                         <div
                           className={`contact-list-item__avatar ${nurtureScores[contact.id]?.status === 'stale' ? 'nurture-stale' :
-                              nurtureScores[contact.id]?.status === 'cold' ? 'nurture-cold' : ''
+                            nurtureScores[contact.id]?.status === 'cold' ? 'nurture-cold' : ''
                             }`}
                           style={{
                             '--heat-score': `${contact.engagementScore}%`,
@@ -1631,7 +1651,7 @@ export const ContactsPage: React.FC = () => {
                 return (
                   <div
                     key={contact.id}
-                    className={`contact-card ${selectedIds.has(contact.id) ? 'selected' : ''}`}
+                    className={`contact-card ${selectedIds.has(contact.id) ? 'selected' : ''} ${modifiedContactIds.has(contact.id) ? 'pulsate-purple' : ''}`}
                     onClick={(e) => {
                       if (isBatchMode) {
                         toggleSelection(contact.id, e);

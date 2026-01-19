@@ -37,18 +37,18 @@ class LiveAudioService {
         return this.hardStopped;
     }
 
-    async start(onAudioLevel?: (level: number, isPlayback: boolean) => void, history?: any[], location?: { lat: number, lng: number }, context?: string): Promise<void> {
-        // Generate a unique session ID for this start attempt
-        const sessionId = ++this.currentSessionId;
+    async start(sessionId: string, onAudioLevel?: (level: number, isPlayback: boolean) => void, history?: any[], location?: { lat: number, lng: number }, context?: string): Promise<void> {
+        // Generate a unique stream ID for this start attempt (different from session ID which is for the user)
+        const streamId = ++this.currentSessionId;
         this.hardStopped = false; // RESET kill switch for new session
-        console.log(`[LiveAudio] Starting session ${sessionId}...`);
+        console.log(`[LiveAudio] Starting stream ${streamId} for session ${sessionId}...`);
 
         // CRITICAL: Reset the hard stop flag ONLY when explicitly starting a new session
         this.hardStopped = false;
 
         // Ensure any previous session is fully cleaned up before starting a new one
         if (this.isActive || this.isStopping) {
-            console.log(`[LiveAudio][${sessionId}] Old session active/stopping, forcing cleanup before restart...`);
+            console.log(`[LiveAudio][${streamId}] Old session active/stopping, forcing cleanup before restart...`);
             this.cleanup();
         }
 
@@ -59,7 +59,7 @@ class LiveAudioService {
         try {
             // PARALLEL INITIALIZATION: Start mic and backend connection simultaneously
             console.log('[LiveAudio] Requesting session start with history:', history?.length || 0, 'location:', !!location, 'context:', context);
-            realTimeDataService.sendMessage('voice.live.start', { history, location, context });
+            realTimeDataService.sendMessage('voice.live.start', { sessionId, history, location, context });
 
             // Start mic acquisition immediately (don't wait for backend)
             const micPromise = navigator.mediaDevices.getUserMedia({
@@ -77,8 +77,8 @@ class LiveAudioService {
             ]);
 
             // RACE CONDITION CHECK: If stop() was called or a NEW start() was initiated while we were waiting, abort!
-            if (this.isStopping || sessionId !== this.currentSessionId) {
-                console.warn(`[LiveAudio][${sessionId}] Start aborted - session invalidated during initialization (isStopping=${this.isStopping})`);
+            if (this.isStopping || streamId !== this.currentSessionId) {
+                console.warn(`[LiveAudio][${streamId}] Start aborted - session invalidated during initialization (isStopping=${this.isStopping})`);
 
                 // Critical cleanup: if we got a media stream, but the session was cancelled, stop its tracks immediately
                 if (mediaStream) {

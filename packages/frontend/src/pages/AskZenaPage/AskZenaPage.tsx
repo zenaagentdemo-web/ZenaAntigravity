@@ -25,6 +25,12 @@ import { realTimeDataService } from '../../services/realTimeDataService';
 import { TranscriptionMerger } from '../../utils/transcription/transcription-merger';
 import { decodeHTMLEntities } from '../../utils/text-utils';
 import { StrategySessionContext, STRATEGY_SESSION_KEY, buildStrategyOpener } from '../../components/DealFlow/types';
+import {
+  ArrowLeft, Copy, Check, Mail, Calendar, Archive, Presentation,
+  TrendingUp, TrendingDown, FileText, Database, Clock, Paperclip,
+  Loader2, MessageSquare, Trash2, CheckCheck, User, Quote, Eye,
+  ChevronRight, X
+} from 'lucide-react';
 import CRMWriteConfirmationModal from '../../components/CRMWriteConfirmationModal/CRMWriteConfirmationModal';
 import './AskZenaPage.css';
 import './TapToTalkButton.css';
@@ -84,6 +90,7 @@ export const AskZenaPage: React.FC = () => {
   const [avatarMode, setAvatarMode] = useState<'hero' | 'assistant'>('hero');
   const [dissolvePhase, setDissolvePhase] = useState<DissolvePhase>('idle');
   const [userTranscript, setUserTranscript] = useState('');
+  const [copiedStreaming, setCopiedStreaming] = useState(false);
 
   // Phase 7: CRM Write Approval State
   const [showWriteConfirmation, setShowWriteConfirmation] = useState(false);
@@ -112,9 +119,15 @@ export const AskZenaPage: React.FC = () => {
   const pendingSpokenGreetingRef = useRef<string>(''); // Track greeting sent via voice.live.prompt to avoid duplicate
 
 
-  // Sync ref with state
+  // Sync ref with state and persist to sessionStorage
   useEffect(() => {
     activeConversationIdRef.current = activeConversationId;
+    if (activeConversationId) {
+      console.log('[AskZena] Saving active conversation to sessionStorage:', activeConversationId);
+      sessionStorage.setItem('zena_active_conversation_id', activeConversationId);
+    } else {
+      // Don't remove if it was just cleared by a remount (we'll see about this in the restore effect)
+    }
   }, [activeConversationId]);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -133,6 +146,16 @@ export const AskZenaPage: React.FC = () => {
     if (isLoading) return 'processing' as const;
     return 'idle' as const;
   };
+
+  // 🧠 ZENA RESILIENCE: Restore active conversation ID from sessionStorage on mount
+  useEffect(() => {
+    const savedId = sessionStorage.getItem('zena_active_conversation_id');
+    if (savedId && !activeConversationIdRef.current) {
+      console.log('[AskZena] Restoring active conversation from sessionStorage:', savedId);
+      setActiveConversationId(savedId);
+      setAvatarMode('assistant');
+    }
+  }, []);
 
   // Handle dissolve phase transitions
   const handleDissolvePhaseComplete = useCallback((completedPhase: DissolvePhase) => {
@@ -194,11 +217,24 @@ export const AskZenaPage: React.FC = () => {
     });
   }, []);
 
-  const detectIntentAndGenerateChips = useCallback((text: string, backendActions: string[] = []) => {
+  const detectIntentAndGenerateChips = useCallback((text: string, backendActions: any[] = [], onExecute?: (tool: string, payload: any) => void) => {
     const chips: ActionChip[] = [];
     text = text.toLowerCase();
 
-    // Check both text and backend-suggested actions
+    // 1. Process Structured Actions from Backend (One-Click)
+    if (backendActions && backendActions.length > 0) {
+      backendActions.forEach(action => {
+        if (typeof action === 'object' && action.toolName) {
+          chips.push({
+            label: action.label,
+            icon: action.icon || '⚡',
+            onClick: () => onExecute?.(action.toolName, action.payload)
+          });
+        }
+      });
+    }
+
+    // Check both text and backend-suggested actions (legacy string IDs)
     const hasAction = (term: string, actionId?: string) =>
       text.includes(term) || (actionId && backendActions.includes(actionId));
 
@@ -234,25 +270,7 @@ export const AskZenaPage: React.FC = () => {
       }
     };
 
-    if (hasAction('email', 'draft_email')) {
-
-      chips.push({
-        label: "Draft Email",
-        icon: "✉️",
-        onClick: async () => {
-          try {
-            await api.post('/api/tools/draft-email', {
-              to: "client@example.com",
-              subject: "Property Update",
-              body: "Hi, following up on our viewing..."
-            });
-            alert("Draft created in Outlook!");
-          } catch (err) {
-            console.error("Failed to draft email", err);
-          }
-        }
-      });
-    }
+    // Draft Email chip removed per user request
 
     if (hasAction('report', 'generate_report') || hasAction('pdf', 'generate_pdf')) {
       chips.push({
@@ -279,8 +297,26 @@ export const AskZenaPage: React.FC = () => {
   const loadMessages = useCallback(async (id: string) => {
     setIsLoading(true);
     try {
-      const response = await api.get<{ conversation: { messages: Message[] } }>(`/api/history/${id}`);
-      setMessages(response.data.conversation.messages || []);
+      const response = await api.get<{ conversation: { messages: any[] } }>(`/api/history/${id}`);
+
+      // Re-hydrate chips for historical assistant messages
+      const handleOneClickExecute = (toolName: string, payload: any) => {
+        console.log('[AskZena] One-Click Execution (History):', toolName);
+        const command = `Please execute ${toolName} with these parameters: ${JSON.stringify(payload)}`;
+        submitQuery(command);
+      };
+
+      const messagesWithChips = (response.data.conversation.messages || []).map(msg => {
+        if (msg.role === 'assistant' && msg.suggestedActions) {
+          return {
+            ...msg,
+            chips: detectIntentAndGenerateChips(msg.content, msg.suggestedActions, handleOneClickExecute)
+          };
+        }
+        return msg;
+      });
+
+      setMessages(messagesWithChips);
       setIsLoading(false);
     } catch (err) {
       console.error('Failed to load messages:', err);
@@ -298,6 +334,7 @@ export const AskZenaPage: React.FC = () => {
 
   const handleNewChat = useCallback(() => {
     setActiveConversationId(undefined);
+    sessionStorage.removeItem('zena_active_conversation_id');
     setMessages([]);
     setInputValue('');
     setAttachments([]);
@@ -320,6 +357,7 @@ export const AskZenaPage: React.FC = () => {
       await api.delete(`/api/history/${id}`);
       setConversations(prev => prev.filter(c => c.id !== id));
       if (activeConversationId === id) {
+        sessionStorage.removeItem('zena_active_conversation_id');
         handleNewChat();
       }
     } catch (err) {
@@ -878,7 +916,7 @@ export const AskZenaPage: React.FC = () => {
             }
 
             const context = initialUrlContextRef.current || searchParams.get('context') || undefined;
-            await liveAudioService.start((level, isPlayback) => {
+            await liveAudioService.start(sessionId, (level, isPlayback) => {
               setAudioLevel(level);
 
               // IF Zena is speaking (isPlayback), it counts as activity to prevent timeout interruption
@@ -1446,7 +1484,16 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
       }
 
       const fullContent = response.data.response;
-      const chips = detectIntentAndGenerateChips(fullContent, response.data.suggestedActions);
+
+      // Define execution handler for one-click actions
+      const handleOneClickExecute = (toolName: string, payload: any) => {
+        console.log('[AskZena] One-Click Execution:', toolName);
+        // Send a clear instruction to the agent to execute the tool
+        const command = `Please execute ${toolName} with these parameters: ${JSON.stringify(payload)}`;
+        submitQuery(command);
+      };
+
+      const chips = detectIntentAndGenerateChips(fullContent, response.data.suggestedActions as any[], handleOneClickExecute);
 
       const assistantMessage: Message = {
         id: response.data.messageId || (Date.now() + 1).toString(),
@@ -1876,6 +1923,21 @@ Provide specific, actionable coaching advice for THIS deal. Reference the proper
                         {streamingContent}
                       </ReactMarkdown>
                       <span className="typing-cursor">▋</span>
+                    </div>
+
+                    <div className="message-bubble-footer">
+                      <button
+                        className={`copy-message-btn ${copiedStreaming ? 'copied' : ''}`}
+                        onClick={() => {
+                          navigator.clipboard.writeText(streamingContent);
+                          setCopiedStreaming(true);
+                          setTimeout(() => setCopiedStreaming(false), 2000);
+                        }}
+                        title="Copy message text"
+                      >
+                        {copiedStreaming ? <Check size={14} /> : <Copy size={14} />}
+                        <span>{copiedStreaming ? 'Copied' : 'Copy'}</span>
+                      </button>
                     </div>
                   </div>
                 </div>

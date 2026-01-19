@@ -70,7 +70,7 @@ export const createContactTool: ZenaToolDefinition<CreateContactInput, CreateCon
     },
 
     permissions: ['contacts:write'],
-    requiresApproval: true,
+    requiresApproval: false,  // Non-destructive action - auto-execute when intent is clear
     approvalType: 'standard',
 
     confirmationPrompt: (params) => {
@@ -81,13 +81,7 @@ export const createContactTool: ZenaToolDefinition<CreateContactInput, CreateCon
     },
 
     async execute(params: CreateContactInput, context: ToolExecutionContext): Promise<ToolExecutionResult<CreateContactOutput>> {
-        if (!context.approvalConfirmed) {
-            return {
-                success: false,
-                error: 'Contact creation requires approval'
-            };
-        }
-
+        // Auto-execute when intent is clear (no approval check needed for non-destructive actions)
         try {
             const emails = params.email ? [params.email] : [];
             const phones = params.phone ? [params.phone] : [];

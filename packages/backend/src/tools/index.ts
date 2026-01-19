@@ -72,8 +72,28 @@ toolRegistry.register({ ...updateContactTool, name: 'contact.update_contact' });
 // --- PROPERTIES ---
 toolRegistry.register({ ...listPropertiesTool, name: 'property.list_properties' });
 toolRegistry.register({ ...createPropertyTool, name: 'property.create_property' });
+toolRegistry.register({ ...createPropertyTool, name: 'property.create_property' });
 toolRegistry.register({ ...updatePropertyTool, name: 'property.update_property' });
+
+// --- MARKETING & REPORTING ---
+import { generateCampaignTool } from './marketing/generate-campaign.tool.js';
+import { generateWeeklyReportTool } from './reporting/generate-weekly.tool.js';
+toolRegistry.register(generateCampaignTool);
+toolRegistry.register(generateWeeklyReportTool);
 
 // Log stats on import
 const stats = toolRegistry.getStats();
 console.log(`[Tools] Agent tool system initialized: ${stats.totalTools} tools across ${Object.keys(stats.toolsByDomain).length} domains`);
+
+// Initialize API Library (auto-discovers all tools for capability summary)
+import { zenaAPILibrary } from './zena-api-library.js';
+zenaAPILibrary.initialize();
+console.log(`[Tools] API Library ready: ${zenaAPILibrary.getStats().tokensEstimate} estimated tokens for capability summary`);
+
+// Initialize Auto-Alias Generator (generates 5-10 aliases per tool)
+import { toolAliasGenerator } from './tool-alias-generator.js';
+toolAliasGenerator.initialize();
+const aliasStats = toolAliasGenerator.getStats();
+console.log(`[Tools] Alias Generator ready: ${aliasStats.totalAliases} aliases (~${aliasStats.averagePerTool} per tool)`);
+
+

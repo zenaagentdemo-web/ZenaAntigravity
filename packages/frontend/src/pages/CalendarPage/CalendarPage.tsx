@@ -101,6 +101,63 @@ export const CalendarPage: React.FC = () => {
     const [optimiseProposal, setOptimiseProposal] = useState(null);
     const [isOptimising, setIsOptimising] = useState(false);
 
+    // 🧪 VISUAL FEEDBACK: Modified fields for pulsating effect
+    const [modifiedApptIds, setModifiedApptIds] = useState<Set<string>>(new Set());
+
+    const triggerPulsate = (id: string, duration?: number) => {
+        setModifiedApptIds(prev => new Set([...prev, id]));
+        setTimeout(() => {
+            setModifiedApptIds(prev => {
+                const next = new Set(prev);
+                next.delete(id);
+                return next;
+            });
+        }, duration || 5000); // Default to 5 second pulse
+    };
+
+    const [pulsatingApptId, setPulsatingApptId] = useState<string | null>(null);
+
+    // 🧠 ZENA AUTO-NAV: Part 1 - Sync Date and switch mode
+    useEffect(() => {
+        const state = location.state as any;
+        if (state?.fromZena && state?.highlightId) {
+            console.log('[CalendarPage] Arrived from Zena. Targeting appt:', state.highlightId);
+            setPulsatingApptId(state.highlightId);
+
+            // If we have the appt in our list already, sync immediately
+            const appt = appointments.find(a => a.id === state.highlightId);
+            if (appt) {
+                console.log('[CalendarPage] Found appt, syncing date to:', appt.time);
+                setSelectedAgendaDate(appt.time);
+                setViewMode('day');
+            }
+
+            // Duration is 5 seconds as requested
+            const timer = setTimeout(() => {
+                setPulsatingApptId(null);
+            }, 5000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [location.state, appointments.length]);
+
+    // 🚀 ZENA AUTO-NAV: Part 2 - Scroll once the date is synced and data is rendered
+    useEffect(() => {
+        if (pulsatingApptId && viewMode === 'day') {
+            const appt = appointments.find(a => a.id === pulsatingApptId);
+            if (appt && selectedAgendaDate && getLocalISODate(appt.time) === getLocalISODate(selectedAgendaDate)) {
+                console.log('[CalendarPage] Targeted appt is visible. Attempting scroll.');
+                setTimeout(() => {
+                    const element = document.getElementById(`appt-card-${pulsatingApptId}`);
+                    if (element) {
+                        console.log('[CalendarPage] Scrolling to appt:', pulsatingApptId);
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 300); // Wait for render
+            }
+        }
+    }, [pulsatingApptId, selectedAgendaDate, appointments.length, viewMode]);
+
     // Parse URL params for AI suggestions
     useEffect(() => {
         const suggestionsParam = searchParams.get('suggestions');
@@ -130,14 +187,16 @@ export const CalendarPage: React.FC = () => {
                     id: appt.id,
                     title: appt.title,
                     date: appt.time.toISOString(),
+                    location: appt.location || '',
                     notes: (appt as any).notes || '',
-                    type: appt.type === 'viewing' ? 'viewing' : (appt.title.toLowerCase().includes('auction') ? 'auction' : 'open_home'),
+                    type: appt.type,
                     isTimelineEvent: (appt as any).isTimelineEvent,
                     isMilestone: (appt as any).isMilestone,
                     isTask: (appt as any).isTask,
                     endTime: appt.endTime ? appt.endTime.toISOString() : undefined,
                     contactId: (appt as any).contactId,
-                    propertyId: appt.property?.id
+                    propertyId: appt.property?.id,
+                    reminder: (appt as any).reminder
                 });
                 setIsScheduleModalOpen(true);
             }
@@ -250,6 +309,13 @@ export const CalendarPage: React.FC = () => {
             const allAppts = [...filteredPropAppts, ...taskAppts, ...timelineAppts]
                 .sort((a, b) => a.time.getTime() - b.time.getTime());
 
+
+            // Detect new/modified appointments to trigger pulsate
+            allAppts.forEach(appt => {
+                const isRecent = (appt as any).updatedAt && (Date.now() - new Date((appt as any).updatedAt).getTime() < 10000);
+                if (isRecent) triggerPulsate(appt.id);
+            });
+
             setAppointments(allAppts);
             analyzeRoutes(allAppts);
         } catch (err) {
@@ -275,7 +341,7 @@ export const CalendarPage: React.FC = () => {
                         address: sanitizeTitle(property.address),
                         type: property.type
                     } : undefined,
-                    type: t.label.toLowerCase().includes('call') ? 'call' : 'other',
+                    type: 'task',
                     urgency: 'medium',
                     isTask: true
                 };
@@ -293,10 +359,10 @@ export const CalendarPage: React.FC = () => {
             const property = props.find(p => p.id === propertyId);
             const startTime = new Date(e.timestamp);
             return {
-                id: e.id,
+                id: e.entityId || e.id,
                 time: startTime,
                 title: sanitizeTitle(e.summary),
-                location: sanitizeTitle(property?.address || e.metadata?.location || ''),
+                location: e.metadata?.location || (property ? sanitizeTitle(property.address) : ''),
                 property: property ? {
                     id: property.id,
                     address: sanitizeTitle(property.address),
@@ -326,7 +392,7 @@ export const CalendarPage: React.FC = () => {
                             id: milestone.id,
                             time: date,
                             title: formatTitle(milestone.type || 'other', property.address, (milestone as any).title),
-                            location: sanitizeTitle(property.address),
+                            location: (milestone as any).location || sanitizeTitle(property.address),
                             property: {
                                 id: property.id,
                                 address: sanitizeTitle(property.address),
@@ -424,8 +490,9 @@ export const CalendarPage: React.FC = () => {
             id: appt.id,
             title: appt.title,
             date: appt.time.toISOString(),
+            location: appt.location || '',
             notes: (appt as any).notes || '',
-            type: appt.type === 'viewing' ? 'viewing' : (appt.title.toLowerCase().includes('auction') ? 'auction' : 'open_home'),
+            type: appt.type,
             isTimelineEvent: (appt as any).isTimelineEvent,
             isMilestone: (appt as any).isMilestone,
             isTask: (appt as any).isTask,
@@ -525,9 +592,26 @@ export const CalendarPage: React.FC = () => {
                 {/* Top Row: Back, Title, Nav, Godmode Controls */}
                 <div className="calendar-header-top-row">
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <button className="back-button" onClick={() => navigate(-1)}>
-                            ← Back
-                        </button>
+                        {location.state?.fromZena ? (
+                            <button
+                                className="back-button zena-back-btn"
+                                onClick={() => navigate('/ask-zena')}
+                                style={{
+                                    background: 'rgba(168, 85, 247, 0.2)',
+                                    border: '1px solid rgba(168, 85, 247, 0.4)',
+                                    color: '#d8b4fe',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}
+                            >
+                                <Sparkles size={16} /> Back to Zena
+                            </button>
+                        ) : (
+                            <button className="back-button" onClick={() => navigate(-1)}>
+                                ← Back
+                            </button>
+                        )}
                         {isFromDeal && (
                             <button
                                 className="back-to-deal-btn"
@@ -896,8 +980,9 @@ export const CalendarPage: React.FC = () => {
                                                 const isPast = appt.time < currentTime;
                                                 return (
                                                     <div
+                                                        id={`appt-card-${appt.id}`}
                                                         key={appt.id}
-                                                        className={`appt-card appt-card--${appt.urgency || 'low'} appt-card--${appt.type} ${isPast ? 'appt-card--past' : ''}`}
+                                                        className={`appt-card appt-card--${appt.urgency || 'low'} appt-card--${appt.type} ${isPast ? 'appt-card--past' : ''} ${(modifiedApptIds.has(appt.id) || pulsatingApptId === appt.id) ? 'pulsate-purple' : ''}`}
                                                         onClick={() => handleApptClick(appt)}
                                                     >
                                                         <div className="appt-time-column">

@@ -207,6 +207,10 @@ app.use('/api/crm-delivery', crmDeliveryRoutes);
 import geocodingRoutes from './routes/geocoding.routes.js';
 app.use('/api/geocoding', geocodingRoutes);
 
+// Admin routes (Token Usage Reporting)
+import adminRoutes from './routes/admin.routes.js';
+app.use('/api/admin', adminRoutes);
+
 // 404 handler - must be after all routes
 app.use(notFoundMiddleware);
 
@@ -313,6 +317,9 @@ if (process.env.NODE_ENV !== 'test') {
       nodeVersion: process.version,
       databaseConfigured: !!process.env.DATABASE_URL,
     });
+
+    // ⚡️ ZENA DEBUG: CONFIRM THE NEW CODE IS RUNNING
+    logger.info('⚡️⚡️⚡️ ZENA BACKEND RELOADED WITH SESSION FIXES (V.SYNC.2) ⚡️⚡️⚡️');
 
     logger.info('WebSocket server initialized', {
       endpoint: `ws://localhost:${PORT}/ws`,

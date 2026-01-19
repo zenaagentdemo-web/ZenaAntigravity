@@ -4,6 +4,7 @@ export interface ChatMessageData {
     role: 'user' | 'assistant';
     content: string;
     attachments?: any[];
+    suggestedActions?: any[];
 }
 
 export class HistoryService {
@@ -60,7 +61,8 @@ export class HistoryService {
                 conversationId,
                 role: message.role,
                 content: message.content,
-                attachments: message.attachments || []
+                attachments: message.attachments || [],
+                suggestedActions: message.suggestedActions || []
             }
         });
 

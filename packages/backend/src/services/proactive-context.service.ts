@@ -54,6 +54,9 @@ export class ProactiveContextService {
         // 🔥 FAST-PATH: Skip if we already have key property data (from user input or prior scan)
         const alreadyHasPropertyData = params.bedrooms || params.bathrooms || params.floorArea || params.landArea;
 
+        let ambiguityFound = false;
+        let highRelevanceMatches: ContextMatch[] = [];
+
         try {
             // 1. Address-based search (for properties, deals, tasks)
             if (params.address || params.propertyAddress) {
@@ -80,8 +83,8 @@ export class ProactiveContextService {
             // 2. Name/Email based search (for contacts) - these are fast DB queries
             if (params.name || params.vendorName || params.contactName) {
                 const name = params.name || params.vendorName || params.contactName;
-                const contactMatches = await this.searchForContactByName(userId, name);
-                matches.push(...contactMatches);
+                const matches_found = await this.searchForContactByName(userId, name);
+                matches.push(...matches_found);
             }
 
             if (params.email || params.vendorEmail) {
@@ -90,9 +93,19 @@ export class ProactiveContextService {
                 matches.push(...emailMatches);
             }
 
+            // 🛑 AMBIGUITY PROTECTION: If multiple contacts match reasonably well, 
+            // flag it so we don't pick the wrong one.
+            highRelevanceMatches = matches.filter(m => m.relevance >= 85);
+            const highRelContacts = highRelevanceMatches.filter(m => m.source === 'contact');
+
+            if (highRelContacts.length > 1) {
+                console.log(`⚠️ [ProactiveContext] Ambiguity detected: ${highRelContacts.length} contacts match. Blocking auto-fill.`);
+                ambiguityFound = true;
+            }
+
             // 3. Extract suggested data from top matches
-            if (matches.length > 0) {
-                this.extractSuggestedData(matches, suggestedData, entityType);
+            if (highRelevanceMatches.length > 0 && !ambiguityFound) {
+                this.extractSuggestedData(highRelevanceMatches, suggestedData, entityType);
             }
 
         } catch (error) {
@@ -103,11 +116,11 @@ export class ProactiveContextService {
         console.log(`⏱️ [ProactiveContext] Total scan took ${duration}ms (${matches.length} matches)`);
 
         // Build user-facing summary
-        const summaryForUser = this.buildSummary(matches, entityType);
+        const summaryForUser = this.buildSummary(matches, entityType, ambiguityFound);
 
         return {
-            hasMatches: matches.length > 0,
-            matches,
+            hasMatches: highRelevanceMatches.length > 0,
+            matches: highRelevanceMatches,
             suggestedData,
             summaryForUser,
             scanKey
@@ -407,15 +420,28 @@ export class ProactiveContextService {
 
     /**
      * Calculate relevance score for name match
+     * 🧠 ZENA INTEL: Upgraded to multi-token matching to prevent broad hallucinations
      */
     private calculateNameRelevance(foundName: string, searchName: string): number {
-        const foundLower = foundName.toLowerCase();
-        const searchLower = searchName.toLowerCase();
+        const foundLower = foundName.toLowerCase().trim();
+        const searchLower = searchName.toLowerCase().trim();
 
         if (foundLower === searchLower) return 100;
-        if (foundLower.includes(searchLower) || searchLower.includes(foundLower)) return 80;
 
-        return 50;
+        // Split into unique tokens
+        const foundTokens = new Set(foundLower.split(/\s+/));
+        const searchTokens = new Set(searchLower.split(/\s+/));
+
+        // Find intersections
+        const intersection = new Set([...searchTokens].filter(x => foundTokens.has(x)));
+
+        // Calculate Jaccard similarity
+        const combined = new Set([...searchTokens, ...foundTokens]);
+        const score = (intersection.size / combined.size) * 100;
+
+        // 🚨 CRITICAL: If searching for "Charlie Charlie1" and finding "Charlie", 
+        // score will be 50% (1/2). We require > 85% for auto-fill trust.
+        return score;
     }
 
     /**
@@ -430,6 +456,13 @@ export class ProactiveContextService {
         const sortedMatches = [...matches].sort((a, b) => b.relevance - a.relevance);
 
         for (const match of sortedMatches) {
+            // 🚨 TRUST GAP FIX: Only extract data if relevance is high (> 85%)
+            // This prevents "Charlie" data leaking into "Charlie Charlie1" records.
+            if (match.relevance < 85 && entityType === 'contact') {
+                console.log(`⚠️ [ProactiveContext] Skipping low-relevance match (${match.relevance}%) for ${match.title}`);
+                continue;
+            }
+
             if (match.extractedData) {
                 for (const [key, value] of Object.entries(match.extractedData)) {
                     if (value !== undefined && suggestedData[key] === undefined) {
@@ -443,16 +476,30 @@ export class ProactiveContextService {
     /**
      * Build user-facing summary of found context
      */
-    private buildSummary(matches: ContextMatch[], entityType: string): string {
+    private buildSummary(allMatches: ContextMatch[], entityType: string, ambiguityFound: boolean = false): string {
+        // 🚨 TRUST RADIUS: Only show matches with high relevance to prevent hallucinations
+        const matches = allMatches.filter(m => m.relevance >= 85);
+
         if (matches.length === 0) {
+            // If we found partial matches but they were low relevance, warn about ambiguity if applicable
+            if (allMatches.length > 0 && entityType === 'contact') {
+                return `⚠️ **I found several contacts with similar names, but none were a precise match.** I've left the details blank to avoid using incorrect data. Please provide the specific email and role for this ${entityType}.`;
+            }
             return '';
         }
 
         const lines: string[] = [];
-        lines.push(`🧠 **I found ${matches.length} related item(s) in your data:**\n`);
+
+        if (ambiguityFound) {
+            lines.push(`⚠️ **CAUTION: Multiple high-confidence matches found for this ${entityType}.**\n`);
+            lines.push(`To ensure data integrity, I have NOT auto-filled any details. Please confirm which record you intended to reference:\n`);
+        } else {
+            lines.push(`🧠 **I found a matching ${entityType} in your data:**\n`);
+        }
 
         for (const match of matches.slice(0, 3)) {
-            lines.push(`• **${match.title}**: ${match.snippet}`);
+            lines.push(`• **${match.title}** (Confidence: ${Math.round(match.relevance)}%)`);
+            lines.push(`  ${match.snippet}`);
 
             if (match.extractedData && Object.keys(match.extractedData).length > 0) {
                 const dataPoints = Object.entries(match.extractedData)
@@ -460,12 +507,16 @@ export class ProactiveContextService {
                     .map(([k, v]) => `${k}: ${v}`)
                     .join(', ');
                 if (dataPoints) {
-                    lines.push(`  _Extracted: ${dataPoints}_`);
+                    lines.push(`  _Details: ${dataPoints}_`);
                 }
             }
         }
 
-        lines.push(`\n**Would you like me to use this information?**`);
+        if (!ambiguityFound) {
+            lines.push(`\n**Shall I proceed with using these details?**`);
+        } else {
+            lines.push(`\n**Please specify the correct contact or provide new details.**`);
+        }
 
         return lines.join('\n');
     }

@@ -1,4 +1,5 @@
 import prisma from '../config/database.js';
+import { tokenTrackingService } from './token-tracking.service.js';
 
 export interface VendorUpdateOptions {
   propertyId: string;
@@ -157,6 +158,17 @@ INSTRUCTIONS:
 
     const result = await response.json() as any;
     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    // Log token usage
+    if (result.usageMetadata) {
+      tokenTrackingService.log({
+        source: 'vendor-update',
+        endpoint: 'generateContent',
+        model,
+        inputTokens: result.usageMetadata.promptTokenCount || 0,
+        outputTokens: result.usageMetadata.candidatesTokenCount || 0,
+      });
+    }
 
     if (!text) {
       throw new Error('Empty response from Gemini');

@@ -5,13 +5,17 @@
  * - User input (text/voice)
  * - Session state (SessionManager)
  * - Tools (ToolRegistry)
- * - LLM (Gemini 2.0/3 Flash)
+ * - LLM (Gemini 3 Flash)
  */
 
 import { sessionManager, AgentSession, CurrentFocus, ConversationMessage } from './session-manager.service.js';
 import { toolRegistry } from '../tools/registry.js';
 import { ZenaToolDefinition, ToolExecutionContext, ToolExecutionResult } from '../tools/types.js';
 import '../tools/index.js';
+import { zenaAPILibrary } from '../tools/zena-api-library.js';
+import { toolAliasGenerator } from '../tools/tool-alias-generator.js';
+import { agentPersonaService } from './agent-persona.service.js';
+import { proactivenessService } from './proactiveness.service.js';
 import { websocketService } from './websocket.service.js';
 import { logger } from './logger.service.js';
 import prisma from '../config/database.js';
@@ -26,6 +30,7 @@ export interface OrchestratorResponse {
     toolCalls?: any[];
     requiresApproval?: boolean;
     pendingAction?: any;
+    suggestedActions?: any[]; // Structured actions for One-Click UI
     sessionId: string;
 }
 
@@ -271,7 +276,7 @@ class AgentOrchestratorService {
     /**
      * Internal loop for processing tool results or follow-up turns
      */
-    private async processFollowUp(userId: string, session: AgentSession, toolResult: any, availableTools: ZenaToolDefinition[], systemPrompt: string): Promise<OrchestratorResponse> {
+    private async processFollowUp(userId: string, session: AgentSession, toolResult: any, availableTools: ZenaToolDefinition[], systemPrompt: string, previousResults: any[] = []): Promise<OrchestratorResponse> {
         // Add tool result to history in a way Gemini understands (using tool role or system hint)
         const toolResultMsg = {
             role: 'user' as const,
@@ -314,7 +319,7 @@ class AgentOrchestratorService {
         });
 
         const response = await this.callGemini(userId, session.sessionId, synthesisPrompt, systemPrompt, temporaryHistory, toolRegistry.toGeminiFunctions(availableTools));
-        return await this.handleGeminiResponse(userId, session, response, availableTools, systemPrompt);
+        return await this.handleGeminiResponse(userId, session, response, availableTools, systemPrompt, previousResults);
     }
 
     /**
@@ -336,6 +341,14 @@ class AgentOrchestratorService {
         }
         if (q.includes('property') || q.includes('address') || q.includes('listing') || q.includes('market analysis') || q.includes('cma') || session.currentFocus.type === 'property') {
             domains.add('property');
+        }
+
+        if (q.includes('calendar') || q.includes('appointment') || q.includes('meeting') || q.includes('book') || q.includes('schedule') || q.includes('event') || session.currentFocus.type === 'calendar_event') {
+            domains.add('calendar');
+        }
+
+        if (q.includes('inbox') || q.includes('email') || q.includes('message') || q.includes('mail')) {
+            domains.add('inbox');
         }
 
         // 🧠 ZENA SMART AFFIRMATIVE: If user says "yes" or "ok" and we have a property focus,
@@ -368,16 +381,15 @@ class AgentOrchestratorService {
             domains.add('property');
         }
 
-        // If 'create' or 'update' or 'log' is mentioned, be more inclusive
-        if (q.includes('create') || q.includes('update') || q.includes('log') || q.includes('change')) {
-            // For now, if updating/creating, include the most likely domains
-            if (q.includes('chen') || q.includes('smith') || q.includes('john') || q.includes('jane')) {
-                domains.add('contact');
-            }
-            // UNIVERSAL FALLBACK: If doing an action, always include major domains to be safe
+        // If 'create' or 'update' or 'log' or 'book' or 'schedule' is mentioned, be very inclusive
+        const isActionIntent = q.includes('create') || q.includes('update') || q.includes('log') || q.includes('change') || q.includes('book') || q.includes('schedule') || q.includes('add');
+        if (isActionIntent) {
+            // Always include major domains for actions to prevent tool-not-found errors during multi-turn reasoning
             domains.add('contact');
             domains.add('property');
             domains.add('deal');
+            domains.add('calendar');
+            domains.add('task');
         }
 
         // MCP-specific intent detection (e.g., github, slack)
@@ -505,7 +517,8 @@ class AgentOrchestratorService {
         session: AgentSession,
         geminiResponse: any,
         availableTools: ZenaToolDefinition[],
-        systemPrompt: string
+        systemPrompt: string,
+        previousResults: any[] = []
     ): Promise<OrchestratorResponse> {
         const candidate = geminiResponse.candidates?.[0];
         const parts = candidate?.content?.parts || [];
@@ -539,6 +552,7 @@ class AgentOrchestratorService {
             }
 
             const executedResults: any[] = [];
+            const turnEntityMap = new Map<string, string>(); // 🧠 ZENA INTEL: Track IDs of entities created in THIS turn
 
             if (searchCalls.length > 0) {
                 console.log(`🧠 ZENA DEBUG: Executing ${searchCalls.length} search tool(s) in parallel first...`);
@@ -567,7 +581,7 @@ class AgentOrchestratorService {
                     // Track found entities
                     if (result.success && result.data?.found) {
                         this.trackEntitiesFromResult(session.sessionId, tool.domain, result.data.contact || result.data.property || result.data.deal);
-                        executedResults.push(result.data); // 🚀 ZENA INTEL: Collect result to trigger follow-up turn
+                        executedResults.push({ tool: tool.name, result }); // 🚀 ZENA INTEL: Standardized result tracking
                     }
 
                     // 🧠 ZENA CONTEXT: Add search result to history so Gemini knows it happened
@@ -641,10 +655,6 @@ class AgentOrchestratorService {
                             contextScanned: true // Mark as scanned so we don't scan again
                         });
 
-                        // 🔍 VERIFY confirmation was saved
-                        const verifySession = sessionManager.getSession(session.sessionId);
-                        logger.info(`[AgentOrchestrator] SET pendingConfirmation - SessionID: ${session.sessionId}, ToolName: ${entityType}.create, OriginalQuery: "${origUserMsg?.content?.substring(0, 50) || 'Unknown'}...", Verified: ${verifySession?.pendingConfirmation?.toolName || 'NONE'}`);
-
                         sessionManager.addMessage(session.sessionId, {
                             role: 'assistant',
                             content: answer
@@ -678,8 +688,16 @@ class AgentOrchestratorService {
                 const tool = this.findTool(call.name, availableTools);
 
                 if (!tool) {
-                    logger.error(`[AgentOrchestrator] Tool not found: ${call.name}`);
-                    continue;
+                    const errorMsg = `Tool not found: ${call.name}`;
+                    logger.error(`[AgentOrchestrator] ${errorMsg}`);
+
+                    // 🔥 ZENA AGENT INTEGRITY: If a tool call is detected but not found, 
+                    // we MUST fail and report it. Continuing would result in a "success" 
+                    // message for a bypassed action.
+                    return {
+                        answer: `I tried to process your request, but I couldn't find the tool "${call.name}". Please make sure the name is correct.`,
+                        sessionId: session.sessionId
+                    };
                 }
 
                 // Check for approval
@@ -689,9 +707,21 @@ class AgentOrchestratorService {
                 if (existingPending && existingPending.toolName === tool.name) {
                     accumulatedParams = { ...existingPending.accumulatedParams, ...call.args };
                 } else {
-                    accumulatedParams = { ...call.args };
+                    try {
+                        accumulatedParams = await this.resolveSmartParameters(session, tool, call.args, turnEntityMap);
+                    } catch (error: any) {
+                        if (error.message && error.message.includes('AMBIGUITY_DETECTED')) {
+                            console.log(`🛑 Zero-Guess Safety Triggered: ${error.message}`);
+                            return {
+                                answer: `I found multiple matches for that name. ${error.message.split(': ')[1]}`,
+                                sessionId: session.sessionId
+                            };
+                        }
+                        throw error; // Re-throw other errors
+                    }
                 }
 
+                // 🧠 ZENA SUPER-INTEL: Step 1 - Proactive Context & Enrichment Scan
                 // 🧠 ZENA SUPER-INTEL: Step 1 - Proactive Context & Enrichment Scan
                 // 🔥 PERFORMANCE FIX: Only scan for TRUE creation tools, not updates/adds
                 // This prevents slow web searches during simple update operations
@@ -759,12 +789,22 @@ class AgentOrchestratorService {
 
                 // 🔥 ZENA AGENT SUPER-INTEL: Auto-proceed if intent is clear
                 // Also auto-execute if we're in autoExecuteMode (user already confirmed one action in this conversation)
-                // EXCEPT for .create tools where we prioritize data richness (bedrooms, bathrooms, etc.)
+                // NEW: Auto-execute .create tools if user explicitly said "create" in their query
+                const originalQuery = session.conversationHistory
+                    .filter(m => m.role === 'user' && !m.content.startsWith('[TOOL_RESULT]'))
+                    .pop()?.content?.toLowerCase() || '';
+                const hasExplicitCreateIntent = originalQuery.includes('create') ||
+                    originalQuery.includes('add') ||
+                    originalQuery.includes('book') ||
+                    originalQuery.includes('schedule');
+                const isCreateTool = tool.name.includes('.create') || tool.name === 'contact.add';
+
                 const shouldAutoExecute = !isDestructive && (
                     tool.requiresApproval === false ||
                     hasAllRecommended ||
                     (isUpdateOrLog && hasAnyUpdateInfo) ||
-                    (session.autoExecuteMode === true && !(tool.name.includes('.create') || tool.name === 'contact.add'))
+                    session.autoExecuteMode === true ||
+                    (hasExplicitCreateIntent && isCreateTool && hasAnyUpdateInfo)  // NEW: explicit create command = auto-execute
                 );
 
                 if (shouldAutoExecute) {
@@ -806,7 +846,20 @@ class AgentOrchestratorService {
                     });
 
                     if (result.success) {
-                        executedResults.push(result.data);
+                        executedResults.push({ tool: tool.name, result });
+
+                        // 🧠 ZENA INTEL: Record created ID for turn-level propagation
+                        // Handle different tool response formats
+                        const id = result.data.id || result.data.contact?.id || result.data.property?.id || result.data.deal?.id || result.data.event?.id || result.data.task?.id;
+                        const name = result.data.name || result.data.contact?.name || result.data.address || result.data.property?.address || result.data.summary || result.data.event?.summary || accumulatedParams.name || accumulatedParams.propertyAddress || accumulatedParams.address;
+
+                        if (id && name) {
+                            turnEntityMap.set(name.toLowerCase(), id);
+                            console.log(`🧠 [Orchestrator] Turn Entity Map: Added ${name} -> ${id}`);
+                        }
+
+                        // 🧠 ZENA INTEL: Track entities globally for session memory
+                        this.trackEntitiesFromResult(session.sessionId, tool.domain, result.data);
 
                         // 🔥 ZENA INTEL: If we auto-executed and had context, mention it in the follow-up
                         if (accumulatedParams.__contextResult) {
@@ -891,8 +944,13 @@ class AgentOrchestratorService {
                     content: prompt
                 });
 
+                // 🚀 ZENA UX: If we've already executed some tools (e.g. created contact), 
+                // we should still show the buttons for those tools even while asking for approval for the next step.
+                const alreadyDoneButtons = executedResults.length > 0 ? this.generateProductButtons(executedResults) : '';
+                const finalPrompt = prompt + (alreadyDoneButtons ? `\n\n${alreadyDoneButtons}` : '');
+
                 return {
-                    answer: prompt,
+                    answer: finalPrompt,
                     requiresApproval: true,
                     pendingAction: {
                         toolName: tool.name,
@@ -905,7 +963,58 @@ class AgentOrchestratorService {
             // If we executed tools, synthesize the results
             if (executedResults.length > 0) {
                 const combinedResult = executedResults.length === 1 ? executedResults[0] : { multipleActions: true, results: executedResults };
-                return await this.processFollowUp(userId, session, combinedResult, availableTools, systemPrompt);
+                const allResults = [...previousResults, ...executedResults];
+                let response = await this.processFollowUp(userId, session, combinedResult, availableTools, systemPrompt, allResults);
+
+                // 🚀 ZENA PROACTIVENESS ENGINE: Check for gaps and suggest next steps
+                if (response.answer && !session.pendingConfirmation) {
+                    const lastResult = executedResults[executedResults.length - 1];
+                    const proactiveResult = proactivenessService.synthesizeProactiveStatement(lastResult.tool, lastResult.result.data);
+
+                    // 🛠️ PRODUCT NAVIGATION BUTTONS: Add "View Product" buttons for trust
+                    // Use allResults to include previously executed tools too
+                    const productButtons = this.generateProductButtons(allResults);
+
+                    // 🧠 DEDUPLICATION: Only append if not already in the synthesized answer
+                    let augmentation = (proactiveResult.text || ''); // Use .text property
+                    if (productButtons) {
+                        // Check if the buttons are already present in the response answer 
+                        // (Gemini occasionally learns to generate them itself)
+                        const buttonsToAppend: string[] = [];
+                        const existingButtons = response.answer.match(/\[PRODUCT_BUTTON:[^\]]+\]/g) || [];
+
+                        const newButtons = productButtons.match(/\[PRODUCT_BUTTON:[^\]]+\]/g) || [];
+                        for (const btn of newButtons) {
+                            if (!existingButtons.includes(btn)) {
+                                buttonsToAppend.push(btn);
+                            }
+                        }
+
+                        if (buttonsToAppend.length > 0) {
+                            augmentation += `\n\n${buttonsToAppend.join(' ')}`;
+                        }
+                    }
+
+                    if (augmentation.trim()) {
+                        response.answer += augmentation;
+
+                        // Upgrade response with structured actions
+                        if (proactiveResult.suggestedActions && proactiveResult.suggestedActions.length > 0) {
+                            response.suggestedActions = proactiveResult.suggestedActions;
+                        }
+
+                        // Update history with the fully augmented answer
+                        // Map the history and update the last assistant message
+                        const history = session.conversationHistory;
+                        const lastMsg = history[history.length - 1];
+                        if (lastMsg && lastMsg.role === 'assistant') {
+                            lastMsg.content = response.answer;
+                            lastMsg.suggestedActions = response.suggestedActions;
+                        }
+                    }
+                }
+
+                return response;
             }
 
         } // End of if (toolCalls.length > 0)
@@ -939,10 +1048,279 @@ class AgentOrchestratorService {
     }
 
     /**
+     * Generate product navigation buttons for the UI
+     */
+    public generateProductButtons(results: any[]): string {
+        const buttons: string[] = [];
+        const seen = new Set<string>();
+
+        // DEBUG: Log input to button generation
+        console.log(`[AgentOrchestrator] Generating buttons for ${results.length} results...`);
+
+        for (const res of results) {
+            const tool = res.tool;
+            let data = res.result.data;
+            if (!data) continue;
+
+            // 🧠 ZENA NORMALIZATION: Some tools return { data: { ... } }
+            if (data.data && typeof data.data === 'object' && !data.id && !data.name) {
+                data = data.data;
+            }
+
+            if (tool.includes('contact')) {
+                const contact = data.contact || data;
+                if (contact && contact.id && !seen.has(`contact:${contact.id}`)) {
+                    console.log(`[AgentOrchestrator] Adding Contact Button for ${contact.id}`);
+                    buttons.push(`[PRODUCT_BUTTON: View Contact, /contacts/${contact.id}, ${contact.id}]`);
+                    seen.add(`contact:${contact.id}`);
+                }
+            } else if (tool.includes('property')) {
+                const property = data.property || data;
+                if (property && property.id && !seen.has(`property:${property.id}`)) {
+                    console.log(`[AgentOrchestrator] Adding Property Button for ${property.id}`);
+                    buttons.push(`[PRODUCT_BUTTON: View Property Card, /properties/${property.id}, ${property.id}]`);
+                    seen.add(`property:${property.id}`);
+                }
+            } else if (tool.includes('task')) {
+                const task = data.task || data;
+                if (task && task.id && !seen.has(`task:${task.id}`)) {
+                    console.log(`[AgentOrchestrator] Adding Task Button for ${task.id}`);
+                    buttons.push(`[PRODUCT_BUTTON: View Task, /tasks, ${task.id}]`);
+                    seen.add(`task:${task.id}`);
+                }
+            } else if (tool.includes('calendar')) {
+                const event = data.event || data;
+                if (event && event.id && !seen.has(`event:${event.id}`)) {
+                    console.log(`[AgentOrchestrator] Adding Event Button for ${event.id}`);
+                    buttons.push(`[PRODUCT_BUTTON: View Appointment, /calendar, ${event.id}]`);
+                    seen.add(`event:${event.id}`);
+                }
+            }
+
+        }
+
+        const buttonString = buttons.join(' ');
+        if (buttonString) {
+            console.log(`[AgentOrchestrator] Generated Buttons: ${buttonString}`);
+        } else {
+            console.log(`[AgentOrchestrator] No buttons generated.`);
+        }
+
+        return buttonString;
+    }
+
+    /**
+     * Resolve missing parameters (IDs) using session context and turn history.
+     * This unifies the "Smart Memory" logic for Chat and Live.
+     */
+    public async resolveSmartParameters(
+        session: AgentSession,
+        tool: ZenaToolDefinition,
+        args: Record<string, any>,
+        turnEntityMap: Map<string, string>
+    ): Promise<Record<string, any>> {
+        const accumulatedParams = { ...args };
+
+        // 🧠 ZENA HORIZONTAL ID PROPAGATION:
+        // If a subsequent tool in this turn refers to an entity created earlier in the turn by name,
+        // inject the ID immediately so they are linked correctly in the DB.
+        if (tool.domain === 'calendar' || tool.domain === 'task') {
+            let contactName = accumulatedParams.contactName || accumulatedParams.contact;
+            let propertyAddr = accumulatedParams.propertyAddress || accumulatedParams.address;
+
+            // 🔍 DEEP SCAN: If name isn't in a direct parameter, check the summary/description
+            const searchBuffer = `${accumulatedParams.summary || ''} ${accumulatedParams.description || ''}`.toLowerCase();
+
+            if (!contactName) {
+                for (const [name, id] of turnEntityMap.entries()) {
+                    const lowerName = name.toLowerCase();
+                    if (searchBuffer.includes(lowerName) || (lowerName.length > 5 && lowerName.includes(searchBuffer))) {
+                        contactName = name;
+                        accumulatedParams.contactId = id;
+                        break;
+                    }
+                }
+            } else {
+                const lowerContact = contactName.toLowerCase();
+                for (const [name, id] of turnEntityMap.entries()) {
+                    const lowerName = name.toLowerCase();
+                    if (lowerContact === lowerName || lowerName.includes(lowerContact) || lowerContact.includes(lowerName)) {
+                        accumulatedParams.contactId = id;
+                        break;
+                    }
+                }
+            }
+
+            if (!propertyAddr) {
+                for (const [name, id] of turnEntityMap.entries()) {
+                    const lowerName = name.toLowerCase();
+                    if (searchBuffer.includes(lowerName) || (lowerName.length > 5 && lowerName.includes(searchBuffer))) {
+                        propertyAddr = name;
+                        accumulatedParams.propertyId = id;
+                        break;
+                    }
+                }
+            } else {
+                const lowerAddr = propertyAddr.toLowerCase();
+                for (const [name, id] of turnEntityMap.entries()) {
+                    const lowerName = name.toLowerCase();
+                    if (lowerAddr === lowerName || lowerName.includes(lowerAddr) || lowerAddr.includes(lowerName)) {
+                        accumulatedParams.propertyId = id;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 🧠 ZENA GEMINI FIX: If Gemini guessed the param name as "id" but the tool requires "contactId", fix it.
+        if (accumulatedParams.id && !accumulatedParams.contactId && (tool.domain === 'contact' || tool.name.includes('contact'))) {
+            console.log(`[SmartParams] Renaming Gemini's "id" guess to "contactId" for ${tool.name}`);
+            accumulatedParams.contactId = accumulatedParams.id;
+        }
+
+        // 🧠 ZENA GEMINI FIX: If Gemini guessed the param name as "id" but the tool requires "taskId", fix it.
+        if (accumulatedParams.id && !accumulatedParams.taskId && (tool.domain === 'task' || tool.name.includes('task'))) {
+            console.log(`[SmartParams] Renaming Gemini's "id" guess to "taskId" for ${tool.name}`);
+            accumulatedParams.taskId = accumulatedParams.id;
+        }
+
+        // 🧠 ZENA HARDENING: Detect if "name" is actually an email or phone number
+        const isEmailOrPhone = (input: string) => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^[0-9+()-\s]{7,}$/;
+            return emailRegex.test(input) || (phoneRegex.test(input) && input.replace(/[^\d]/g, '').length >= 7);
+        };
+
+        const looksLikeDetail = accumulatedParams.contactName && isEmailOrPhone(accumulatedParams.contactName);
+        if (looksLikeDetail) {
+            console.log(`[SmartParams] Detected detail in name field: "${accumulatedParams.contactName}". Clearing name and trying focus.`);
+
+            // If it's an email, move it to email field if empty
+            if (accumulatedParams.contactName.includes('@') && !accumulatedParams.email && !accumulatedParams.emails) {
+                accumulatedParams.email = accumulatedParams.contactName;
+            }
+            // If it's a phone, move it to phone field if empty
+            else if (!accumulatedParams.phone && !accumulatedParams.phones) {
+                accumulatedParams.phone = accumulatedParams.contactName;
+            }
+
+            accumulatedParams.contactName = undefined; // Don't search by name if it's a detail
+        }
+
+        // 🧠 ZENA CROSS-TURN ID INJECTION:
+        // If Gemini omitted the ID (assuming we know who we're talking about),
+        // inject it from the current session focus or recent entities.
+        if (!accumulatedParams.contactId && !accumulatedParams.contactName) {
+            if (tool.domain === 'contact' || tool.name.includes('contact')) {
+                const focus = session.currentFocus;
+                console.log(`[SmartParams] Injection needed for Contact. Focus: ${focus?.type}:${focus?.id}, Recent Contacts: ${session.recentEntities?.contacts?.length}`);
+
+                if (focus.type === 'contact' && focus.id) {
+                    accumulatedParams.contactId = focus.id;
+                    console.log(`[SmartParams] Injected contactId from FOCUS: ${focus.id}`);
+                } else if (session.recentEntities.contacts.length > 0) {
+                    accumulatedParams.contactId = session.recentEntities.contacts[0].id;
+                    console.log(`[SmartParams] Injected contactId from RECENT: ${accumulatedParams.contactId}`);
+                } else {
+                    console.log(`[SmartParams] FAILED to find context for contact.update`);
+                }
+            }
+        }
+
+
+        // 🧠 ZENA ZERO-GUESS: Safe DB Resolution for Contacts
+        // If we have a name but NO ID, check the DB. If ambiguous, STOP.
+        if ((tool.domain === 'contact' || tool.name.includes('contact')) && !accumulatedParams.contactId && accumulatedParams.contactName) {
+            const matches = await prisma.contact.findMany({
+                where: { userId: session.userId, name: { contains: accumulatedParams.contactName, mode: 'insensitive' } },
+                select: { id: true, name: true }
+            });
+
+            if (matches.length === 1) {
+                accumulatedParams.contactId = matches[0].id; // Safe injection
+                console.log(`✅ [Zero-Guess] Safely resolved unique contact: ${matches[0].name}`);
+            } else if (matches.length > 1) {
+                // Check for exact matches (case-insensitive)
+                const exactMatches = matches.filter(m => m.name.toLowerCase() === accumulatedParams.contactName.toLowerCase());
+
+                if (exactMatches.length === 1) {
+                    accumulatedParams.contactId = exactMatches[0].id;
+                    console.log(`✅ [Zero-Guess] Resolved via UNIQUE EXACT match: ${exactMatches[0].name}`);
+                } else {
+                    // AMBIGUITY HAZARD: Either multiple exact matches (duplicates) or multiple partials
+                    logger.warn(`🛑 [Zero-Guess] Ambiguity blocked for "${accumulatedParams.contactName}" (${matches.length} matches, ${exactMatches.length} exact)`);
+                    throw new Error(`AMBIGUITY_DETECTED: Found ${matches.length} matches for "${accumulatedParams.contactName}". Please be more specific (e.g. by providing email).`);
+                }
+            }
+        }
+
+        if (!accumulatedParams.propertyId && !accumulatedParams.propertyAddress && !accumulatedParams.address) {
+            if (tool.domain === 'property' || tool.domain === 'deal') {
+                const focus = session.currentFocus;
+                if ((focus.type === 'property' || focus.type === 'deal') && focus.id) {
+                    if (focus.type === 'property') accumulatedParams.propertyId = focus.id;
+                    else accumulatedParams.dealId = focus.id;
+                } else if (session.recentEntities.properties.length > 0) {
+                    accumulatedParams.propertyId = session.recentEntities.properties[0].id;
+                }
+            }
+        }
+
+        // 🧠 ZENA ZERO-GUESS: Safe DB Resolution for Properties
+        if ((tool.domain === 'property' || tool.name.includes('property')) && !accumulatedParams.propertyId && accumulatedParams.address) {
+            const matches = await prisma.property.findMany({
+                where: { userId: session.userId, address: { contains: accumulatedParams.address, mode: 'insensitive' } },
+                select: { id: true, address: true }
+            });
+
+            if (matches.length === 1) {
+                accumulatedParams.propertyId = matches[0].id;
+            } else if (matches.length > 1) {
+                const exact = matches.find(m => m.address.toLowerCase() === accumulatedParams.address.toLowerCase());
+                if (exact) {
+                    accumulatedParams.propertyId = exact.id;
+                } else {
+                    throw new Error(`AMBIGUITY_DETECTED: Found ${matches.length} properties matching "${accumulatedParams.address}".`);
+                }
+            }
+        }
+
+        if (!accumulatedParams.taskId && !accumulatedParams.taskLabel) {
+            if (tool.domain === 'task' || tool.name.includes('task')) {
+                const focus = session.currentFocus;
+                if (focus.type === 'task' && focus.id) {
+                    accumulatedParams.taskId = focus.id;
+                } else if (session.recentEntities.tasks.length > 0) {
+                    accumulatedParams.taskId = session.recentEntities.tasks[0].id;
+                }
+            }
+        }
+
+        if (!accumulatedParams.id && !accumulatedParams.eventSummary) {
+            if (tool.domain === 'calendar') {
+                const focus = session.currentFocus;
+                if (focus.type === 'calendar_event' && focus.id) {
+                    accumulatedParams.id = focus.id;
+                } else if (session.recentEntities.calendar_events.length > 0) {
+                    accumulatedParams.id = session.recentEntities.calendar_events[0].id;
+                }
+            }
+        }
+
+        return accumulatedParams;
+    }
+
+    /**
      * Track entities returned from tool results for pronoun resolution
      */
-    private trackEntitiesFromResult(sessionId: string, domain: string, data: any): void {
-        if (!data) return;
+    public trackEntitiesFromResult(sessionId: string, domain: string, inputData: any): void {
+        if (!inputData) return;
+
+        // 🧠 ZENA NORMALIZATION: Some tools return { data: { ... } }
+        let data = inputData;
+        if (data.data && typeof data.data === 'object' && !data.id && !data.name) {
+            data = data.data;
+        }
 
         // 🧠 ZENA INTEL: Check for nested contacts first (common in property creation)
         if (data.contact && data.contact.id && data.contact.name) {
@@ -951,21 +1329,32 @@ class AgentOrchestratorService {
         }
 
         // Standard tracking logic
-        if (domain === 'contact' && data.id && data.name) {
-            sessionManager.trackEntity(sessionId, 'contact', data);
-            sessionManager.setFocus(sessionId, { type: 'contact', id: data.id, metadata: { name: data.name } });
-        } else if (domain === 'property') {
+        const contact = data.contact || (domain === 'contact' ? data : null);
+        if (contact && contact.id && contact.name) {
+            sessionManager.trackEntity(sessionId, 'contact', contact);
+            sessionManager.setFocus(sessionId, { type: 'contact', id: contact.id, metadata: { name: contact.name } });
+        }
+        else if (domain === 'property') {
             const property = data.property || data;
             if (property.id && property.address) {
                 sessionManager.trackEntity(sessionId, 'property', property);
                 sessionManager.setFocus(sessionId, { type: 'property', id: property.id, metadata: { address: property.address } });
             }
-        } else if (domain === 'deal' && data.id && data.address) {
-            sessionManager.trackEntity(sessionId, 'deal', data);
-            sessionManager.setFocus(sessionId, { type: 'deal', id: data.id, metadata: { address: data.address } });
+        } else if (domain === 'deal') {
+            const deal = data.deal || data;
+            if (deal.id && (deal.address || deal.summary)) {
+                sessionManager.trackEntity(sessionId, 'deal', deal);
+                sessionManager.setFocus(sessionId, { type: 'deal', id: deal.id, metadata: { address: deal.address || deal.summary } });
+            }
         } else if (data.task && data.task.id) {
             sessionManager.trackEntity(sessionId, 'task', data.task);
             sessionManager.setFocus(sessionId, { type: 'task', id: data.task.id, metadata: { subject: data.task.label } });
+        } else if (domain === 'calendar' || data.event) {
+            const event = data.event || data;
+            if (event && event.id && (event.summary || event.title)) {
+                sessionManager.trackEntity(sessionId, 'calendar_event', event);
+                sessionManager.setFocus(sessionId, { type: 'calendar_event', id: event.id, metadata: { summary: event.summary || event.title } });
+            }
         }
     }
 
@@ -976,7 +1365,6 @@ class AgentOrchestratorService {
         // Include pending action context if there's an action in progress
         let pendingContext = '';
         if (session.pendingConfirmation) {
-
             const params = session.pendingConfirmation.accumulatedParams || session.pendingConfirmation.payload;
             pendingContext = `
 PENDING ACTION IN PROGRESS:
@@ -985,13 +1373,10 @@ PENDING ACTION IN PROGRESS:
 CRITICAL: When calling this tool again, you MUST include ALL these previously collected parameters plus any new ones from the user's latest message. Do NOT omit any previously provided values.`;
         }
 
-        const nz = getNZDateTime();
-
-        return `You are Zena, a highly intelligent AI real estate agent assistant for the New Zealand (NZ) market.
-You have access to a variety of tools to help the user manage their inbox, deals, contacts, properties, and tasks.
+        return `
+${agentPersonaService.buildCommonInstructionSet()}
 
 CURRENT SESSION CONTEXT:
-- Current NZ Time: ${nz.full}
 - User ID: ${session.userId}
 - Current Focus: ${session.currentFocus.type || 'None'} ${session.currentFocus.id || ''}
 - Recent Contacts: ${session.recentEntities.contacts.map(c => `${c.name} (ID: ${c.id})`).join(', ') || 'None'}
@@ -999,22 +1384,14 @@ CURRENT SESSION CONTEXT:
 - Recent Deals: ${session.recentEntities.deals.map(d => `${d.address} (ID: ${d.id}, Stage: ${d.stage})`).join(', ') || 'None'}
 ${pendingContext}
 
-CRITICAL: You MUST use the "Current NZ Time" provided above for all relative date calculations (e.g., "today", "tomorrow", "next week"). Today is ${nz.date}.
-
 CRITICAL MEMORY GUIDELINES:
 1. NEVER ask for information the user has already provided in this conversation.
-2. When calling a tool, ALWAYS include ALL parameters collected so far, not just the new ones.
-3. If the user explicitly declines a recommended field (e.g., "no company", "skip that"), do NOT ask again. 
-4. You can pass null or an empty string for recommended fields if the user declines them, but NEVER for required ones.
-5. If you provide a confirmation prompt and the user replies with ANY relevant information, assume they want you to proceed with the tool call unless they specifically say "cancel".
+2. If the user explicitly declines a recommended field (e.g., "no company", "skip that"), do NOT ask again. 
+3. If you provide a confirmation prompt and the user replies with ANY relevant information, assume they want you to proceed with the tool call unless they specifically say "cancel".
 
 TOOL SELECTION GUIDELINES:
-1. When the user says "create", ALWAYS use a ".create" tool (e.g., property.create, contact.create, deal.create).
-2. When the user says "list" or "show", use a ".list" tool.
-3. When the user mentions a person's name with "create contact", use contact.create.
-4. When the user mentions an address with "create property", use property.create.
-5. When the user asks to UPDATE a contact's email or phone, use contact.update - NOT inbox tools.
-6. The word "email" in context of updating a contact means their email address field, NOT the inbox.
+1. When the user says "create", ALWAYS use a ".create" tool.
+2. When the user asks to UPDATE a contact's email or phone, use contact.update - NOT inbox tools.
 
 MULTI-ACTION COMMAND HANDLING:
 1. If a user asks for MULTIPLE actions in one command (e.g., "log a note AND update phone"), you MUST call multiple tools.
@@ -1031,28 +1408,7 @@ GENERAL GUIDELINES:
 4. NEVER mention underlying AI models. You are Zena.
 5. If a tool call fails, explain why and ask for clarification.
 6. For destructive actions (delete), you MUST use the confirmation flow.
-
-FORMATTING & TRUST GUIDELINES:
-1. **CLICKABLE LINKS**: When presenting Comparable Market Analysis (CMA) or market data, you MUST format all property addresses and verified sources as clickable markdown links: \[Address\](Link).
-2. Do NOT just list portal names; use the provided URLs to make them clickable.
-3. If a tool result contains a "link" field for a property or a "sourceUrls" list, you are REQUIRED to use them in your response.
-4. **NEVER CREATE LINKS TO TOOL NAMES**: Tool names like "property.generate_comparables" or "contact.run_discovery" are NOT URLs. Do NOT create markdown links to them. Instead, mention suggested actions in plain text like "Would you like me to generate a list of comparable properties?" without making it a clickable link.
-
-When you use a tool, explain briefly what you are doing.
-
-NZ STANDARD CAMPAIGN MILESTONES:
-If the user asks for "standard milestones", use these titles and logical dates (relative to today):
-1. "Photography" (Today + 2 days)
-2. "Listing Live" (Today + 1 week)
-3. "Open Home 1" (Today + 11 days)
-4. "Open Home 2" (Today + 18 days)
-5. "Auction" (Today + 4 weeks)
-
-RESPONSE FLOW RULES:
-1. When user provides vendor details (price, name, email, phone) AFTER a property confirmation, ONLY call property.create with the vendor info. Do NOT auto-execute CMA or milestones in the same turn.
-2. AFTER property.create completes, you MUST offer: "Would you like me to set up the standard campaign milestones and generate a CMA (Comparable Market Analysis) for this property?"
-3. Only when the user explicitly says "yes" to the above offer should you call property.generate_comparables AND property.add_milestone.
-4. This ensures fast response times and gives the user control over follow-up actions.`;
+`;
     }
 
     /**
@@ -1063,24 +1419,22 @@ RESPONSE FLOW RULES:
         let tool = availableTools.find(t => t.name === name);
         if (tool) return tool;
 
-        // 🧠 ZENA ALIASED PATROLLER: Support common hallucinated or legacy names
-        const aliases: Record<string, string> = {
-            'property.get_cma': 'property.generate_comparables',
-            'get_cma': 'property.generate_comparables',
-            'property.get_comparables': 'property.generate_comparables',
-            'generate_cma': 'property.generate_comparables',
-            // Milestone aliases
-            'milestone.add': 'property.add_milestone',
-            'property.add_milestones': 'property.add_milestone',
-            'add_milestone': 'property.add_milestone',
-            'property.create_milestone': 'property.add_milestone'
-        };
+        // 🧠 ZENA AUTO-ALIAS: Use auto-generated aliases (800+ patterns)
+        const resolvedName = toolAliasGenerator.resolve(name);
 
+        // Try to find in available tools first (filtered set)
+        tool = availableTools.find(t => t.name === resolvedName);
+        if (tool) {
+            if (resolvedName !== name) console.log(`🔄 Alias resolved: ${name} → ${resolvedName} `);
+            return tool;
+        }
 
-        if (aliases[name]) {
-            const aliasName = aliases[name];
-            tool = availableTools.find(t => t.name === aliasName);
-            if (tool) return tool;
+        // 🌐 GLOBAL FALLBACK: If Gemini successfully called a tool name that exists globally
+        // but was filtered out of availableTools, we should still allow it.
+        const globalTool = toolRegistry.getTool(name) || toolRegistry.getTool(resolvedName);
+        if (globalTool) {
+            logger.info(`[AgentOrchestrator] Global fallback triggered for "${name}"(Resolved to "${globalTool.name}")`);
+            return globalTool;
         }
 
         // 2. Snake case conversion from camelCase
@@ -1091,7 +1445,7 @@ RESPONSE FLOW RULES:
         // 3. Domain-less match (e.g. "create" -> "contact.create" if in contact-heavy context)
         // For now, just look for any tool that ends with the requested name
         if (!name.includes('.')) {
-            tool = availableTools.find(t => t.name.endsWith(`.${name}`) || t.name.endsWith(`.${snakeName}`));
+            tool = availableTools.find(t => t.name.endsWith(`.${name} `) || t.name.endsWith(`.${snakeName} `));
             if (tool) return tool;
         }
 

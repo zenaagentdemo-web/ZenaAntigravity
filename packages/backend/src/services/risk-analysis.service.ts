@@ -1,6 +1,7 @@
 import { Deal, Thread } from '@prisma/client';
 import { websocketService } from './websocket.service.js';
 import prisma from '../config/database.js';
+import { tokenTrackingService } from './token-tracking.service.js';
 
 /**
  * Risk level enumeration
@@ -217,6 +218,17 @@ INSTRUCTIONS:
       const data = await response.json() as any;
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
       if (!text) return null;
+
+      // Log token usage
+      if (data.usageMetadata) {
+        tokenTrackingService.log({
+          source: 'risk-analysis',
+          endpoint: 'generateContent',
+          model,
+          inputTokens: data.usageMetadata.promptTokenCount || 0,
+          outputTokens: data.usageMetadata.candidatesTokenCount || 0,
+        });
+      }
 
       const result = JSON.parse(text);
       return {

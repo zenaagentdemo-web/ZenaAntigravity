@@ -5,6 +5,7 @@ export interface UserSession {
     userWs: WebSocket;
     userTranscriptBuffer: string[];
     currentInterimTranscript: string;
+    sessionId: string;
     isStopping: boolean;
     groundingSources: string[]; // Store verified source links to append to transcript
     lastTurnSourcesCount: number; // Track sources sent in current turn

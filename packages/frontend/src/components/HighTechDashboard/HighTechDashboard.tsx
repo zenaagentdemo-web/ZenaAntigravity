@@ -175,13 +175,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
       iconImage: '/assets/icons/calendar-final.png',
       color: settings.mode === 'demi_god' ? 'purple' : settings.mode === 'full_god' ? 'gold' : 'magenta',
     },
-    {
-      id: 'add-deal',
-      label: 'Add Deal',
-      icon: '💼',
-      iconImage: '/assets/icons/add-deal-final.png',
-      color: 'green',
-    },
+
     {
       id: 'schedule-viewing',
       label: 'Schedule Meeting',
@@ -245,9 +239,7 @@ export const HighTechDashboard: React.FC<HighTechDashboardProps> = ({
         case 'calendar':
           navigate('/calendar');
           break;
-        case 'add-deal':
-          navigate('/deals/new');
-          break;
+
         case 'schedule-viewing':
           navigate('/viewings/new');
           break;

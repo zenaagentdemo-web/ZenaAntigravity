@@ -72,6 +72,7 @@ export interface ConversationMessage {
     content: string;
     toolName?: string;
     toolResult?: any;
+    suggestedActions?: any[];
     timestamp: Date;
 }
 
@@ -84,6 +85,7 @@ export interface RecentEntities {
     deals: Array<{ id: string; address: string; stage: string; mentionedAt: Date }>;
     threads: Array<{ id: string; subject: string; mentionedAt: Date }>;
     tasks: Array<{ id: string; label: string; mentionedAt: Date }>;
+    calendar_events: Array<{ id: string; summary: string; mentionedAt: Date }>;
 }
 
 /**
@@ -145,6 +147,11 @@ class SessionManagerService {
         const existingSession = this.findActiveSession(userId);
         if (existingSession) {
             existingSession.lastActivityAt = new Date();
+            // 🧠 ZENA CONVERSATION SYNC: Update conversation ID if provided (frontend context switch)
+            if (conversationId && existingSession.conversationId !== conversationId) {
+                console.log(`[SessionManager] Switching session ${existingSession.sessionId} to conversation ${conversationId}`);
+                existingSession.conversationId = conversationId;
+            }
             logger.info(`[SessionManager] REUSING session ${existingSession.sessionId} for user ${userId}, PendingConfirmation: ${existingSession.pendingConfirmation?.toolName || 'NONE'}`);
             return existingSession;
         }
@@ -169,7 +176,8 @@ class SessionManagerService {
                 properties: [],
                 deals: [],
                 threads: [],
-                tasks: []
+                tasks: [],
+                calendar_events: []
             },
             isVoiceMode: false
         };
@@ -311,7 +319,7 @@ class SessionManagerService {
      */
     trackEntity(
         sessionId: string,
-        type: 'contact' | 'property' | 'deal' | 'thread' | 'task',
+        type: 'contact' | 'property' | 'deal' | 'thread' | 'task' | 'calendar_event',
         entity: { id: string;[key: string]: any }
     ): void {
         const session = this.sessions.get(sessionId);

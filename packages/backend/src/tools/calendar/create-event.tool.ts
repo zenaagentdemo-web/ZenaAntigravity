@@ -16,7 +16,8 @@ export const createCalendarEventTool: ZenaToolDefinition = {
             endTime: { type: 'string', description: 'ISO end date' },
             location: { type: 'string' },
             attendees: { type: 'array', items: { type: 'string' } },
-            propertyId: { type: 'string' },
+            propertyId: { type: 'string', description: 'Explicit ID of the property to link' },
+            contactId: { type: 'string', description: 'Explicit ID of the contact to link' },
             propertyAddress: { type: 'string' },
             contactName: { type: 'string' }
         },
@@ -33,12 +34,12 @@ export const createCalendarEventTool: ZenaToolDefinition = {
     },
 
     permissions: ['calendar:write'],
-    requiresApproval: true,
+    requiresApproval: false,  // Non-destructive action - auto-execute when intent is clear
     confirmationPrompt: (input) => `I'm ready to schedule "${input.summary}" for ${new Date(input.startTime).toLocaleString()}. Shall I proceed?`,
 
     execute: async (params, context) => {
         const userId = context.userId;
-        let { summary, description, startTime, endTime, location, attendees, propertyId, contactName, propertyAddress } = params;
+        let { summary, description, startTime, endTime, location, attendees, propertyId, contactId, contactName, propertyAddress } = params;
 
         // 🧠 ZENA INTEL: Resolve property address
         if (!propertyId && propertyAddress) {
@@ -49,8 +50,8 @@ export const createCalendarEventTool: ZenaToolDefinition = {
         }
 
         // 🧠 ZENA INTEL: Resolve contact name
-        let resolvedContactId: string | undefined;
-        if (contactName) {
+        let resolvedContactId: string | undefined = contactId;
+        if (!resolvedContactId && contactName) {
             const contact = await prisma.contact.findFirst({
                 where: { userId, name: { contains: contactName, mode: 'insensitive' } }
             });

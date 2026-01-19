@@ -172,7 +172,12 @@ export class AskZenaService {
 
         if (query.conversationId) {
           await prisma.chatMessage.create({
-            data: { conversationId: query.conversationId, role: 'assistant', content: response.answer }
+            data: {
+              conversationId: query.conversationId,
+              role: 'assistant',
+              content: (response as any).answer || (response as any).response || "I've analyzed the real-time data for you.",
+              suggestedActions: (response as any).suggestedActions || []
+            }
           });
         }
 
@@ -180,32 +185,46 @@ export class AskZenaService {
       }
 
       // ═══════════════════════════════════════════════════════════════
-      // 🧠 PHASE A FIX: AGENT ORCHESTRATOR FIRST
+      // 🧠 ZENA INTELLIGENCE: AGENT ORCHESTRATOR FIRST
       // ═══════════════════════════════════════════════════════════════
-      // Check if this is a tool-related query BEFORE parsing external intent.
-      // This ensures "create contact", "create property", etc. go to the Orchestrator
-      // and don't get hijacked by NavigationPlanner's TradeMe/write handling.
+      // Use the Agent Orchestrator for ALMOST EVERYTHING.
+      // We ONLY fall back to legacy NavigationPlanner if the user explicitly mentions an external site.
       // ═══════════════════════════════════════════════════════════════
-      if (this.isToolQuery(query.query) || session.pendingConfirmation) {
-        console.log('🧠 ZENA DEBUG: Tool query detected, routing to Agent Orchestrator FIRST');
-        console.log('   isToolQuery:', this.isToolQuery(query.query));
-        console.log('   hasPendingConfirmation:', !!session.pendingConfirmation);
+      const mentionsExternalSite = navigationPlannerService.isThirdPartyQuery(query.query);
+      const isConversational = (query.conversationHistory && query.conversationHistory.length > 0) || !!session.pendingConfirmation;
+      const shouldRouteToOrchestrator = (this.isToolQuery(query.query) || isConversational) && !mentionsExternalSite;
+
+      if (shouldRouteToOrchestrator || !mentionsExternalSite) {
+        console.log('🧠 ZENA DEBUG: Routing to Agent Orchestrator', {
+          isTool: this.isToolQuery(query.query),
+          isConversational,
+          mentionsExternal: mentionsExternalSite
+        });
 
         const agentResponse = await agentOrchestrator.processQuery(query.userId, query.query, {
           conversationId: query.conversationId
         });
 
+        // If the orchestrator didn't hit a tool and we NOT in a conversational sequence, 
+        // we MIGHT want to try the fallback anyway if it looks like a site query, 
+        // but for now, the Brain should be the source of truth.
         const response: AskZenaResponse = {
           answer: agentResponse.answer,
           sources: [],
           sessionId: agentResponse.sessionId,
           requiresApproval: agentResponse.requiresApproval,
-          pendingAction: agentResponse.pendingAction as any
+          pendingAction: agentResponse.pendingAction as any,
+          suggestedActions: agentResponse.requiresApproval ? ["approve", "cancel"] : (agentResponse.answer.includes("[PRODUCT_BUTTON") ? [] : undefined)
         };
 
         if (query.conversationId) {
           await prisma.chatMessage.create({
-            data: { conversationId: query.conversationId, role: 'assistant', content: response.answer }
+            data: {
+              conversationId: query.conversationId,
+              role: 'assistant',
+              content: response.answer,
+              suggestedActions: response.suggestedActions || []
+            }
           });
         }
 
@@ -213,10 +232,9 @@ export class AskZenaService {
       }
 
       // ═══════════════════════════════════════════════════════════════
-      // FALLBACK: Navigation Planner for external site queries
+      // FALLBACK: Legacy Navigation Planner for EXPLICIT external site queries
       // ═══════════════════════════════════════════════════════════════
-      // Phase 7: Parse intent for external site navigation (TradeMe, etc.)
-      logger.info('[AskZenaService] 🔍 Parsing intent (fallback for external sites)...');
+      logger.info('[AskZenaService] 🔍 External Site Mentioned - Routing to Legacy Navigation Planner...');
       const intent = await navigationPlannerService.parseIntent(query.query);
 
       // ═══════════════════════════════════════════════════════════════
@@ -319,7 +337,8 @@ export class AskZenaService {
             data: {
               conversationId: query.conversationId,
               role: 'assistant',
-              content: response.answer
+              content: response.answer,
+              suggestedActions: response.suggestedActions || []
             }
           });
         }
@@ -361,7 +380,8 @@ export class AskZenaService {
                 data: {
                   conversationId: query.conversationId,
                   role: 'assistant',
-                  content: geminiResponse.answer
+                  content: geminiResponse.answer,
+                  suggestedActions: (geminiResponse as any).suggestedActions || []
                 }
               });
             }
@@ -436,7 +456,12 @@ export class AskZenaService {
         const response = await this.generateLLMResponse(query, finalContext);
         if (query.conversationId) {
           await prisma.chatMessage.create({
-            data: { conversationId: query.conversationId, role: 'assistant', content: response.answer }
+            data: {
+              conversationId: query.conversationId,
+              role: 'assistant',
+              content: (response as any).answer || (response as any).response || "I've analyzed the real-time data for you.",
+              suggestedActions: (response as any).suggestedActions || []
+            }
           });
         }
         return response;
@@ -455,7 +480,12 @@ export class AskZenaService {
           };
           if (query.conversationId) {
             await prisma.chatMessage.create({
-              data: { conversationId: query.conversationId, role: 'assistant', content: response.answer }
+              data: {
+                conversationId: query.conversationId,
+                role: 'assistant',
+                content: response.answer,
+                suggestedActions: response.suggestedActions || []
+              }
             });
           }
           return response;
@@ -469,7 +499,12 @@ export class AskZenaService {
 
       if (query.conversationId) {
         await prisma.chatMessage.create({
-          data: { conversationId: query.conversationId, role: 'assistant', content: response.answer }
+          data: {
+            conversationId: query.conversationId,
+            role: 'assistant',
+            content: response.answer,
+            suggestedActions: (response as any).suggestedActions || []
+          }
         });
       }
       // Update title if it's the first message
@@ -626,7 +661,7 @@ export class AskZenaService {
     const actionKeywords = [
       'create', 'add', 'update', 'move', 'delete', 'archive', 'unarchive',
       'send', 'draft', 'reply', 'snooze', 'mark', 'complete', 'assign', 'link',
-      'portfolio', 'business', 'pipeline', 'summarize',
+      'portfolio', 'business', 'pipeline', 'summarize', 'vendor', 'buyer', 'listing', 'email', 'phone', 'detail',
       'yes', 'no', 'confirm', 'approve', 'cancel', 'yup', 'nope', 'correct', 'ok', 'okay'
     ];
     const lowQuery = query.toLowerCase();

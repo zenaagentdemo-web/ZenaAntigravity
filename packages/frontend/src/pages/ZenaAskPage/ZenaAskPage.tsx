@@ -6,6 +6,7 @@ import { ZenaTalkButton, TalkButtonState } from '../../components/ZenaTalkButton
 import { useVoiceInteraction } from '../../hooks/useVoiceInteraction';
 import { DissolvePhase } from '../../components/DissolveParticleSystem/DissolveParticleSystem';
 import { decodeHTMLEntities } from '../../utils/text-utils';
+import { ProductNavigation, ProductButtonInfo } from '../../components/ProductNavigation/ProductNavigation';
 import './ZenaAskPage.css';
 
 // API base URL
@@ -31,6 +32,7 @@ export const ZenaAskPage: React.FC = () => {
     const [zenaResponse, setZenaResponse] = useState<string>('');
     const [displayedWords, setDisplayedWords] = useState<string[]>([]);
     const [isDisplayingResponse, setIsDisplayingResponse] = useState(false);
+    const [productButtons, setProductButtons] = useState<ProductButtonInfo[]>([]);
 
     // Simulated audio level for speaking effects
     const [simulatedAudioLevel, setSimulatedAudioLevel] = useState(0);
@@ -45,8 +47,26 @@ export const ZenaAskPage: React.FC = () => {
 
     // Simulate audio from text for visual effects
     const simulateTextAudio = useCallback(async (text: string) => {
-        const cleanText = decodeHTMLEntities(text);
-        const words = cleanText.split(/\s+/);
+        // Parse buttons out of text: [PRODUCT_BUTTON: label, path, id]
+        const buttonRegex = /\[PRODUCT_BUTTON:\s*(.*?),\s*(.*?),\s*(.*?)\]/g;
+        const buttons: ProductButtonInfo[] = [];
+        let cleanText = text;
+
+        let match;
+        while ((match = buttonRegex.exec(text)) !== null) {
+            buttons.push({
+                label: match[1],
+                path: match[2],
+                id: match[3]
+            });
+        }
+
+        // Remove button tokens from displayed text
+        cleanText = text.replace(buttonRegex, '').trim();
+        setProductButtons(buttons);
+
+        const decodedText = decodeHTMLEntities(cleanText);
+        const words = decodedText.split(/\s+/);
         const wordDelay = 80; // ms per word
 
         setDisplayedWords([]);
@@ -234,6 +254,10 @@ export const ZenaAskPage: React.FC = () => {
                                 ))}
                             </div>
                         </div>
+                        {/* Product Navigation Buttons */}
+                        {!isDisplayingResponse && productButtons.length > 0 && (
+                            <ProductNavigation buttons={productButtons} />
+                        )}
                     </div>
                 )}
 

@@ -127,6 +127,29 @@ export const ContactDetailPage: React.FC = () => {
   const [isEditingIntel, setIsEditingIntel] = useState(false);
   const [isRefreshingBrain, setIsRefreshingBrain] = useState(false);
   const [showPulseHelp, setShowPulseHelp] = useState(false);
+  const [pulsatingFields, setPulsatingFields] = useState<Set<string>>(new Set());
+
+  // Handle fromZena state and highlighting
+  useEffect(() => {
+    const state = location.state as any;
+    if (state?.fromZena) {
+      console.log('[ContactDetailPage] Arrived from Zena. HighlightID:', state.highlightId);
+
+      // Auto-determine which fields should pulsate based on recent changes or context.
+      // For now, if we arrive from Zena, we check if phone/email/role were likely the target.
+      // In a real scenario, Zena could pass `changedFields: ['phone', 'email']` in state.
+      // For this task, we'll pulsate the basic info cards if it's a new/updated contact.
+      const fields = new Set<string>(['email', 'phone', 'role', 'intelligence']);
+      setPulsatingFields(fields);
+
+      // Duration is 5 seconds as per request
+      const timer = setTimeout(() => {
+        setPulsatingFields(new Set());
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
 
   // Relationship decaying / alerts logic
 
@@ -513,7 +536,7 @@ export const ContactDetailPage: React.FC = () => {
       <div className="contact-detail-page__container">
         <header className="contact-detail-page__header">
           <div className="contact-detail-page__header-left">
-            {!isFromDeal && (
+            {!isFromDeal && !location.state?.fromZena && (
               <button className="contact-detail-page__back" onClick={() => {
                 if (backState?.fromCalendar) {
                   navigate(`/calendar?openEventId=${backState.eventId || ''}`);
@@ -522,6 +545,19 @@ export const ContactDetailPage: React.FC = () => {
                 }
               }}>
                 <ArrowLeft size={18} /> {backState?.fromCalendar ? 'Back to Calendar' : (backState?.label || 'Contacts')}
+              </button>
+            )}
+            {location.state?.fromZena && (
+              <button
+                className="contact-detail-page__back zena-back-btn"
+                onClick={() => navigate('/ask-zena')}
+                style={{
+                  background: 'rgba(168, 85, 247, 0.2)',
+                  border: '1px solid rgba(168, 85, 247, 0.4)',
+                  color: '#d8b4fe'
+                }}
+              >
+                <Sparkles size={18} /> Back to Zena
               </button>
             )}
             {isFromDeal && (
@@ -565,7 +601,7 @@ export const ContactDetailPage: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="contact-detail-page__role-badge">
+          <div className={`contact-detail-page__role-badge ${pulsatingFields.has('role') ? 'pulsate-purple' : ''}`}>
             {roleTheme.label}
           </div>
         </header>
@@ -577,7 +613,7 @@ export const ContactDetailPage: React.FC = () => {
           </h2>
           <div className="contact-info-grid">
             {/* Email Addresses */}
-            <div className="contact-info-card">
+            <div className={`contact-info-card ${pulsatingFields.has('email') ? 'pulsate-purple' : ''}`}>
               <div className="contact-info-card__header">
                 <Mail size={16} />
                 <span>Email Addresses</span>
@@ -602,7 +638,7 @@ export const ContactDetailPage: React.FC = () => {
             </div>
 
             {/* Phone Numbers */}
-            <div className="contact-info-card">
+            <div className={`contact-info-card ${pulsatingFields.has('phone') ? 'pulsate-purple' : ''}`}>
               <div className="contact-info-card__header">
                 <Phone size={16} />
                 <span>Phone Numbers</span>

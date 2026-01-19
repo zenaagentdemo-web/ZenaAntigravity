@@ -7,8 +7,7 @@ import {
     Sparkles,
     Zap,
     Clock,
-    X,
-    Plus
+    X
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -620,10 +619,7 @@ export const DealFlowPage: React.FC = () => {
                             </button>
 
                             {/* Add Deal Button */}
-                            <button className="deal-flow-page__add-btn" onClick={handleNewDealClick}>
-                                <Plus size={18} />
-                                <span>Add new Deal</span>
-                            </button>
+
 
                             {/* Archived Deals Toggle Button */}
                             <button

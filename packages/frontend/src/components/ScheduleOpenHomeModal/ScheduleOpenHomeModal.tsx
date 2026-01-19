@@ -32,6 +32,7 @@ interface ScheduleOpenHomeModalProps {
         isTimelineEvent?: boolean;
         isMilestone?: boolean;
         isTask?: boolean;
+        location?: string;
     };
 }
 
@@ -61,6 +62,7 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [reminder, setReminder] = useState<string | null>(null);
+    const [location, setLocation] = useState<string>('');
 
 
 
@@ -114,6 +116,7 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                 setNotes(milestone.notes || '');
                 setType(milestone.type);
                 setReminder((milestone as any).reminder || null);
+                setLocation((milestone as any).location || (milestone as any).metadata?.location || '');
                 // If it's edit mode, initialProperty should be passed or we find it from allProperties
                 if (initialProperty) {
                     setSelectedPropertyId(initialProperty.id);
@@ -157,6 +160,7 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                 setIsContactLinked(false);
                 setSelectedContactId('');
                 setReminder(null);
+                setLocation('');
             }
             setError(null);
 
@@ -256,6 +260,16 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
         // But if they uncheck it, we might want to warn or not. 
         // For now let's just allow the user to control it, but auto-enable if end < start.
     }, [time, endTime]);
+
+    // Update location when property changes, if not manually edited or if in create mode
+    useEffect(() => {
+        if (selectedPropertyId && isPropertyLinked && !milestone) {
+            const prop = allProperties.find(p => p.id === selectedPropertyId) || initialProperty;
+            if (prop) {
+                setLocation(prop.address);
+            }
+        }
+    }, [selectedPropertyId, isPropertyLinked, allProperties, initialProperty, milestone]);
 
     // Initialize contact state from milestone if editing
     useEffect(() => {
@@ -360,7 +374,7 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                         metadata: {
                             endTime: endDatetime.toISOString(),
                             type: type,
-                            location: isPropertyLinked ? allProperties.find(p => p.id === selectedPropertyId)?.address : 'TBD',
+                            location: location || 'TBD',
                             propertyId: selectedPropertyId || undefined,
                             contactId: selectedContactId || undefined,
                             reminder: reminder || undefined
@@ -381,6 +395,7 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                         date: startDatetime.toISOString(),
                         endTime: endDatetime.toISOString(),
                         notes,
+                        location: location || undefined,
                         reminder: reminder || undefined
                     });
                 }
@@ -394,6 +409,7 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                         date: startDatetime.toISOString(),
                         endTime: endDatetime.toISOString(),
                         notes,
+                        location: location || undefined,
                         reminder: reminder || undefined
                     });
                 } else {
@@ -403,7 +419,7 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                         startTime: startDatetime.toISOString(),
                         endTime: endDatetime.toISOString(),
                         type: type === 'open_home' ? 'meeting' : type,
-                        location: isPropertyLinked ? allProperties.find(p => p.id === selectedPropertyId)?.address : 'TBD',
+                        location: location || 'TBD',
 
                         propertyId: isPropertyLinked ? selectedPropertyId : undefined,
                         contactId: isContactLinked ? selectedContactId : undefined,
@@ -613,6 +629,29 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                             >
                                 {isContactLinked ? 'Linked' : 'Link Contact?'}
                             </button>
+                            {isContactLinked && selectedContactId && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        navigate(`/contacts/${selectedContactId}`, { state: { fromZena: true } });
+                                    }}
+                                    style={{
+                                        background: 'rgba(168, 85, 247, 0.2)',
+                                        border: '1px solid rgba(168, 85, 247, 0.4)',
+                                        borderRadius: '12px',
+                                        padding: '4px 10px',
+                                        color: '#d8b4fe',
+                                        fontSize: '11px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px'
+                                    }}
+                                >
+                                    <Sparkles size={12} />
+                                    View Contact
+                                </button>
+                            )}
                         </div>
 
                         {isContactLinked && (
@@ -685,6 +724,20 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                             onChange={e => setTitle(e.target.value)}
                             placeholder="e.g. Lunch with Agent"
                             required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="input-label">
+                            <MapPin size={14} />
+                            Location
+                        </label>
+                        <input
+                            type="text"
+                            className="high-tech-input"
+                            value={location}
+                            onChange={e => setLocation(e.target.value)}
+                            placeholder="Enter location address..."
                         />
                     </div>
 
@@ -789,7 +842,6 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                                 className="secondary-action-btn"
                                 onClick={() => {
                                     navigate(`/properties/${selectedPropertyId}`, { state: { fromCalendar: true } });
-                                    onClose();
                                 }}
                                 style={{
                                     marginRight: 'auto',
@@ -815,7 +867,6 @@ export const ScheduleOpenHomeModal: React.FC<ScheduleOpenHomeModalProps> = ({
                                 className="secondary-action-btn"
                                 onClick={() => {
                                     navigate(`/contacts/${selectedContactId}`, { state: { fromCalendar: true } });
-                                    onClose();
                                 }}
                                 style={{
                                     marginRight: '8px',

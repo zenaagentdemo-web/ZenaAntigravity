@@ -210,3 +210,127 @@
     width: 14px;
     height: 14px;
 }
+
+/* Product Navigation Buttons */
+.product-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.product-navigation-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 243, 255, 0.08);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    border-radius: 12px;
+    padding: 8px 16px;
+    color: #00f3ff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.product-navigation-btn:hover {
+    background: rgba(0, 243, 255, 0.15);
+    border-color: rgba(0, 243, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 243, 255, 0.15);
+    color: #fff;
+}
+
+.product-navigation-btn:active {
+    transform: translateY(0);
+}
+
+.btn-icon {
+    font-size: 1.1rem;
+}
+
+[data-theme='day'] .product-navigation-btn {
+    background: #e1f5fe;
+    border-color: #03a9f4;
+    color: #0288d1;
+}
+
+[data-theme='day'] .product-navigation-btn:hover {
+    background: #b3e5fc;
+    color: #01579b;
+}
+
+/* Chat Bubble Copy Button */
+.message-bubble-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.copy-message-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 4px 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.copy-message-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.copy-message-btn.copied {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10b981;
+}
+
+.copy-message-btn svg {
+    opacity: 0.8;
+}
+
+.copy-message-btn span {
+    letter-spacing: 0.02em;
+}
+
+.user .message-bubble-footer {
+    border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+.user .copy-message-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.user .copy-message-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme='day'] .copy-message-btn {
+    background: #f1f3f4;
+    border-color: #dadce0;
+    color: #5f6368;
+}
+
+[data-theme='day'] .copy-message-btn:hover {
+    background: #e8eaed;
+    color: #202124;
+}

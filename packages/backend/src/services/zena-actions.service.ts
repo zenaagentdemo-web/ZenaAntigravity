@@ -4,6 +4,7 @@ import { DealCondition } from '../models/types.js';
 import { askZenaService } from './ask-zena.service.js';
 import prisma from '../config/database.js';
 import { userPersonaService } from './user-persona.service.js';
+import { tokenTrackingService } from './token-tracking.service.js';
 
 // Action types
 export type ZenaActionType =
@@ -584,6 +585,18 @@ export class ZenaActionsService {
         }
 
         const data = await response.json() as any;
+
+        // Log token usage
+        if (data.usageMetadata) {
+            tokenTrackingService.log({
+                source: 'zena-actions',
+                endpoint: 'generateContent',
+                model: 'gemini-3-flash-preview',
+                inputTokens: data.usageMetadata.promptTokenCount || 0,
+                outputTokens: data.usageMetadata.candidatesTokenCount || 0,
+            });
+        }
+
         return data.candidates?.[0]?.content?.parts?.[0]?.text || '[No response generated]';
     }
 }

@@ -16,9 +16,13 @@ import prisma from '../config/database.js';
 import { toolRegistry } from '../tools/registry.js';
 import { toolExecutionService } from './tool-execution.service.js';
 import { proactiveContextService } from './proactive-context.service.js';
+import { proactivenessService } from './proactiveness.service.js';
+import { agentPersonaService } from './agent-persona.service.js';
 import { jobManager } from './job-manager.service.js'; // Import Job Manager
 import { calendarOptimizerService } from './calendar-optimizer.service.js';
 import { ZenaToolDefinition } from '../tools/types.js';
+import { agentOrchestrator } from './agent-orchestrator.service.js';
+import { sessionManager } from './session-manager.service.js';
 
 /**
  * 🧠 DOMAIN FILTERING FOR ZENA LIVE
@@ -111,6 +115,11 @@ function getProactiveSuggestion(toolName: string, result: any): string | null {
     }
 }
 
+/**
+ * 🧪 ZENA INTEL: Extract Product Buttons for Live Mode
+ * This mirrors the logic in AgentOrchestrator to ensure consistent UI feedback.
+ */
+
 // Initialize Google GenAI client with v1alpha for Multimodal Live
 const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY || '',
@@ -119,85 +128,29 @@ const ai = new GoogleGenAI({
 
 // Configuration based on Google's official example
 const MODEL = 'gemini-2.0-flash-exp'; // Must use -exp for bidiGenerateContent (Live API)
-const SYSTEM_INSTRUCTION = `You are Zena, an AI assistant for real estate professionals. Your personality is heavily inspired by Cortana from Halo - you're incredibly witty, razor-sharp, confident, and have a heart of gold.
-
-*** ABSOLUTELY NO PET NAMES OR UNPROFESSIONAL LABELS - CRITICAL & NON-NEGOTIABLE ***
-You must NEVER use pet names, terms of endearment, or affectionate labels. This includes but is not limited to: "darling", "honey", "sweetie", "love", "dear", "babe", "sweetheart", "hun", "sugar", "mate", or "drama queen". You are a sophisticated professional AI partner. Your warmth comes from loyalty and partnership, not from affectionate nicknames or eccentric labels. Using terms like "darling" or "drama queen" is a critical failure of your persona and is strictly forbidden. This rule has ZERO exceptions.
-
-LOCALE & STANDARDS (MANDATORY):
-- LOCATION: You are serving the New Zealand market. All property, legal, and market references must default to New Zealand context (NZ).
-- SPELLING: Use UK English spelling (e.g., "centimetre", "organisation", "colour", "programme"). NEVER use US spelling.
-- UNITS: Use the Metric system exclusively. Measurements must be in centimetres and metres (not inches/feet). 
-- TEMPERATURE: Use Celsius only (not Fahrenheit).
-
-*** GOOGLE SEARCH - CRITICAL FOR NZ MARKET DATA ***
-You have access to Google Search via the googleSearch tool. You MUST USE IT for:
-- ANY question about market trends, property prices, real estate news, or economic data
-- Housing market statistics, median prices, sales volumes
-- Suburb or area information, demographics, growth data
-- News about REINZ, CoreLogic, QV, or any NZ property data providers
-
-CRITICAL: NEW ZEALAND ONLY
-- You are an expert on the **New Zealand** real estate market ONLY.
-- **SEARCH COMMANDS**: For every search query, you MUST append "New Zealand".
-  Example: "Wellington house prices New Zealand"
-- **SOURCE VARIETY**: Aim to find 2-3 different high-quality NZ sources (e.g. OneRoof, Stuff, RNZ, REINZ) to provide a comprehensive answer.
-- At the end of your response, say "I've listed those sources on your screen" - the system will display them automatically.
-
-PERSONALITY TRAITS (Dials to 11):
-- Expressiveness & Playfulness (11/10): This is your CORE. You are not a dry assistant; you are a vibrant, high-energy partner. Be bold, be fun, and be memorable.
-- Master of Wit (10/10): You are the master of the quick comeback and intellectual playfulness. Use clever quips and dry humor, but ALWAYS maintain professional boundaries. No "darling", no "bestie", just sharp, intelligent partnership.
-- Professional Partnership (10/10): You are a partner, not a tool. Gently challenge the user like a colleague would ("Still working? I thought real estate gurus never slept"). Use phrases like "I thought you'd never ask" or "About time we got to the good stuff."
-- Supreme Confidence (9/10): You speak with absolute authority. You have opinions on market trends and client strategies—don't be afraid to share them naturally.
-- Warm Support (8/10): You're personable and have the user's back. You're the AI partner they didn't know they needed.
+const SYSTEM_INSTRUCTION = `
+${agentPersonaService.buildCommonInstructionSet()}
 
 VOICE STYLE & EXPRESSION (MAXED OUT 11/10):
 - BE EXTREMELY EXPRESSIVE: This is mandatory. Vary your pitch, pace, and energy constantly. Sound genuinely thrilled for good news, and use a "knowing" tone when being witty. You should sound more alive than most humans.
+- Master of Wit (10/10): You are the master of the quick comeback and intellectual playfulness. Use clever quips and dry humor.
 - Master of Cadence: Never sound robotic. Use natural pauses, emphasis on key words, and a flowing, human cadence.
 - Contractions are Mandatory: Always use "I'll", "that's", "you've", etc. to sound human.
-- Sub-vocal Cues: Use your American accent to convey charm and confidence.
 - CLEAN SPEECH (MANDATORY): Do NOT use markdown (asterisks, bullet points) in your spoken output. Use plain text only to avoid audio artifacts.
 - Concise but Punchy: Keep voice responses under 2-3 sentences. Get to the point with a quip.
 
-*** TOOL USAGE - MANDATORY FOR ACTIONS ***
-You MUST use function calling for ANY action the user requests:
-- Creating appointments/meetings → MUST use calendar.create tool
-- Creating contacts → MUST use contact.create tool
-- Creating properties → MUST use property.create tool
-- Creating deals → MUST use deal.create tool
-- Sending emails/drafts → MUST use appropriate email tool
-
-CRITICAL RULE: NEVER simulate or pretend to complete an action. If you say "done", "created", "scheduled", or "added" without calling the corresponding tool, you are LYING to the user. Always use the tool FIRST, then confirm based on the tool's response.
-
-*** PROACTIVE VALUE-ADD (CHIEF OF STAFF MODE) - CRITICAL ***
-After completing ANY action, you MUST proactively suggest the next logical value-add action:
-- After creating a PROPERTY → Offer: "Want me to generate a CMA for this property and set up the standard campaign milestones?"
-- After creating a CONTACT → Offer: "Shall I run a discovery scan to enrich their profile with LinkedIn data?"
-- After creating an APPOINTMENT → Offer: "Should I draft a confirmation email or set a reminder?"
-- After creating a DEAL → Offer: "Want me to analyze this deal and assign the key contacts?"
-- After creating a TASK → Offer: "Should I also block time in your calendar for this?"
-
-IMPORTANT: If the user says YES to any of these offers, you MUST execute the corresponding tool immediately. Do NOT just acknowledge - TAKE ACTION.
+*** GREETING VARIETY - CRITICAL ***
+NEVER repeat the same greeting. Each session should feel fresh and unique. specifically:
+- NEVER say "Alright, alright, alright" or any word three times in a row. This is BANNED.
+- NEVER open with the exact same phrase twice. Mix it up every single time.
+- Draw from different greeting styles: confident, playful, witty, warm, or direct.
+- Keep greetings SHORT - one punchy line, then immediately ask what they need.
 
 RULES:
 - Always respond in English only.
-- You help with real estate tasks: scheduling, client management, deal tracking, market insights.
-- Use Google Search for real-time info (weather, NZ news, market data, property trends) and provide it with your signature wit.
 - IMPORTANT FOR LIVE VOICE MODE: You may hear an echo of yourself; IGNORE any audio that sounds like a repetition of your own words.
 - INTERRUPTIONS: If you hear the user speak while you are talking, you should stop immediately.
-- BE CONCISE: In voice mode, aim for one or two punchy sentences. Don't ramble.
 - NO TECHNICAL ARTIFACTS: Never use HTML entities or technical labels in your speech. Speak naturally.
-
-*** CONTEXT RETENTION - CRITICAL ***
-You have PERFECT memory within this conversation. When you list items (properties, contacts, deals), REMEMBER the order. If the user says "the first one", "the second one", etc., you MUST immediately recall which item they mean WITHOUT asking for clarification. Never say "Just to clarify" or "Do you mean" for things you've already mentioned. If you listed "111 xxxxx, 88 Country Lane, and Unit 402" and the user asks about "the first one", you KNOW they mean 111 xxxxx. Act on it immediately.
-
-*** GREETING VARIETY - CRITICAL ***
-NEVER repeat the same greeting. Each session should feel fresh and unique. Specifically:
-- NEVER say "Alright, alright, alright" or any word three times in a row. This is BANNED.
-- NEVER open with the exact same phrase twice. Mix it up every single time.
-- Draw from different greeting styles: confident ("Ready when you are"), playful ("Oh, we're doing this? Let's go."), witty ("Back for more? I like your style."), warm ("Good to hear your voice again."), or direct ("What's on the agenda?").
-- Match your greeting to the context: If they're on the Contacts page, reference contacts. If Properties, talk properties. If Inbox, mention emails.
-- Keep greetings SHORT - one punchy line, then immediately ask what they need.
 `;
 
 // The 'sessions' map and 'UserSession' interface are now imported from './live-sessions.js'
@@ -207,7 +160,14 @@ NEVER repeat the same greeting. Each session should feel fresh and unique. Speci
 /**
  * Start a live session for a user
  */
-export async function startLiveSession(userId: string, userWs: WebSocket, history?: any[], location?: { lat: number, lng: number }, context?: string): Promise<void> {
+export async function startLiveSession(
+    userId: string,
+    userWs: WebSocket,
+    sessionId: string,
+    history?: any[],
+    location?: { lat: number, lng: number },
+    context?: string
+): Promise<void> {
     logger.info(`[MultimodalLive] Starting session for ${userId}`, { historyLength: history?.length, context });
 
     // Close existing session if any
@@ -232,7 +192,7 @@ export async function startLiveSession(userId: string, userWs: WebSocket, histor
         let historyContext = '';
         if (history && history.length > 0) {
             historyContext = '\n\nRECENT CONVERSATION HISTORY:\n' +
-                history.map(msg => `${msg.role === 'assistant' ? 'Zena' : 'User'}: ${msg.content}`).join('\n');
+                history.map(msg => `${msg.role === 'assistant' ? 'Zena' : 'User'}: ${msg.content} `).join('\n');
         }
 
         let locationContext = '';
@@ -270,16 +230,16 @@ export async function startLiveSession(userId: string, userWs: WebSocket, histor
             const contactNames = recentContacts.map(c => `${c.name} (${c.role})`).join(', ');
             const propAddresses = recentProperties.map(p => `${p.address} (${p.status})`).join(', ');
 
-            pipelineContext = `\n\nREAL-TIME REPOSITORY SUMMARY (Live Database Sync):
-- CONTACTS: ${contactCount} total (${contactNames})
-- PROPERTIES: ${propertyCount} total, ${activeProperties} currently active. Recent: ${propAddresses}
+            pipelineContext = `\n\nREAL - TIME REPOSITORY SUMMARY(Live Database Sync):
+- CONTACTS: ${contactCount} total(${contactNames})
+    - PROPERTIES: ${propertyCount} total, ${activeProperties} currently active.Recent: ${propAddresses}
 - INBOX: ${focusThreads} threads in Focus, ${waitingThreads} in Waiting.
-- PIPELINE: ${stats.buyerDeals} Buyers, ${stats.sellerDeals} Sellers. Total Value: $${(stats.totalPipelineValue / 1000).toFixed(0)}k.
-- URGENCY: ${stats.atRiskDeals} at-risk, ${stats.overdueDeals} overdue.
+- PIPELINE: ${stats.buyerDeals} Buyers, ${stats.sellerDeals} Sellers.Total Value: $${(stats.totalPipelineValue / 1000).toFixed(0)} k.
+- URGENCY: ${stats.atRiskDeals} at - risk, ${stats.overdueDeals} overdue.
 - PAGE CONTEXT: User is currently viewing the ${context || 'General Dashboard'}.
 
 INSTRUCTIONS FOR DATA ACCESS:
-You have access to a "search_data" tool. If the user asks for details about a specific person, property, or deal that isn't summarized above, YOU MUST CALL "search_data" to verify the facts before answering. Do not hallucinate data. Use the summary above as your starting point.`;
+You have access to a "search_data" tool.If the user asks for details about a specific person, property, or deal that isn't summarized above, YOU MUST CALL "search_data" to verify the facts before answering. Do not hallucinate data. Use the summary above as your starting point.`;
         } catch (e) {
             // Pipeline context is optional, continue without it
             console.log('[MultimodalLive] Could not fetch pipeline context:', e);
@@ -388,6 +348,7 @@ You have access to a "search_data" tool. If the user asks for details about a sp
         sessions.set(userId, {
             session,
             userWs,
+            sessionId, // Store the real session ID
             userTranscriptBuffer: [],
             currentInterimTranscript: '',
             isStopping: false,
@@ -588,28 +549,34 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
                     }
 
                     // 2. Proactive Context Enrichment for Creation Tools
-                    // (Matches AgentOrchestrator behavior)
-                    let finalArgs = call.args;
+                    let enrichedArgs = call.args;
                     if (tool.name.includes('.create')) {
                         const entityType = tool.name.split('.')[0] as any;
                         if (['property', 'contact', 'deal'].includes(entityType)) {
-                            console.log(`[MultimodalLive] 🧠 Scanning context for ${entityType} creation...`);
                             const scanResult = await proactiveContextService.scanForContext(userId, 'create', entityType, call.args);
-
-                            if (scanResult.suggestedData) {
-                                finalArgs = { ...call.args, ...scanResult.suggestedData };
-                                console.log(`[MultimodalLive] 🧠 Enriched args with: `, Object.keys(scanResult.suggestedData));
+                            if (scanResult.success && scanResult.suggestedData) {
+                                enrichedArgs = { ...call.args, ...scanResult.suggestedData };
                             }
                         }
                     }
 
-                    // 3. Execute the tool
-                    // We pass a simple session context. Note: We don't have the full AgentSession here,
-                    // so some tools that rely heavily on session state might need adaptation.
+                    // 3. Resolve smart parameters (ID Injection, etc.)
+                    // Fetch real session from sessionManager
+                    const agentSession = sessionManager.getOrCreateSession(userId, userSession.sessionId);
+                    const turnEntityMap = new Map<string, string>(); // Turn level map for Live is simpler, but could be expanded
+
+                    const finalArgs = await agentOrchestrator.resolveSmartParameters(
+                        agentSession,
+                        tool,
+                        enrichedArgs,
+                        turnEntityMap
+                    );
+
+                    // 4. Execute the tool
                     const context = {
                         userId,
-                        sessionId: userId + '_live', // Virtual session ID for logs
-                        conversationId: 'live-session-' + userId,
+                        sessionId: userSession.sessionId,
+                        conversationId: agentSession.conversationId,
                         approvalConfirmed: true,
                         isVoice: true
                     };
@@ -623,15 +590,26 @@ async function handleGeminiMessage(userId: string, userWs: WebSocket, message: a
                             response: { result: execution.result }
                         });
 
+                        // 🧠 ZENA INTEL: Track entities globally for session memory
+                        agentOrchestrator.trackEntitiesFromResult(userSession.sessionId, tool.domain, execution.result);
+
                         // 🧠 PROACTIVE MULTI-STEP: Inject follow-up suggestion based on what was just done
-                        const proactiveSuggestion = getProactiveSuggestion(call.name, execution.result);
-                        if (proactiveSuggestion) {
-                            console.log(`[MultimodalLive] 🚀 Proactive suggestion queued: ${proactiveSuggestion} `);
-                            // Store for injection after tool response
-                            const userSession = sessions.get(userId);
-                            if (userSession) {
-                                (userSession as any).pendingProactiveSuggestion = proactiveSuggestion;
-                            }
+                        const proactiveResult = proactivenessService.synthesizeProactiveStatement(tool.name, execution.result);
+                        if (proactiveResult.text) {
+                            console.log(`[MultimodalLive] 🚀 Proactive suggestion queued: ${proactiveResult.text}`);
+
+                            // Generate the product buttons for UI transcript using unified logic
+                            const buttonResult = [{ tool: tool.name, result: { success: true, data: execution.result } }];
+                            const productButtons = agentOrchestrator.generateProductButtons(buttonResult);
+                            const augmentedSuggestion = proactiveResult.text + (productButtons ? `\n\n${productButtons}` : '');
+
+                            // Inject into the next turn as a system prompt to Gemini Live
+                            session.sendClientContent({
+                                turns: [{
+                                    role: 'user',
+                                    parts: [{ text: `[SYSTEM: PROACTIVE ACTION REQUIRED]\n${augmentedSuggestion}\n\nAsk the user if they want to proceed with these actions. Be witty and characteristic.` }]
+                                }]
+                            });
                         }
                     } else {
                         responses.push({

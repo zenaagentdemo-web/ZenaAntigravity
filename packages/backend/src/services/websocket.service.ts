@@ -189,8 +189,8 @@ class WebSocketService {
           break;
 
         case 'voice.live.start':
-          logger.info(`[Websocket] Received voice.live.start for user: ${ws.userId} with context: ${message.payload?.context}`);
-          multimodalLiveService.startSession(ws.userId!, ws, message.payload?.history, message.payload?.location, message.payload?.context)
+          logger.info(`[Websocket] Received voice.live.start for user: ${ws.userId} with session: ${message.payload?.sessionId}`);
+          multimodalLiveService.startSession(ws.userId!, ws, message.payload?.sessionId, message.payload?.history, message.payload?.location, message.payload?.context)
             .catch(err => logger.error('[Websocket] startSession error:', err));
           break;
 

@@ -1,0 +1,98 @@
+.product-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 12px;
+    background: rgba(var(--zena-accent-rgb), 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(var(--zena-accent-rgb), 0.1);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.product-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(var(--zena-accent-rgb), 0.3);
+    border-radius: 8px;
+    color: var(--zena-text-primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+}
+
+.product-button:hover {
+    background: rgba(var(--zena-accent-rgb), 0.15);
+    border-color: var(--zena-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--zena-accent-rgb), 0.2);
+}
+
+.product-button__icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
+}
+
+.back-to-zena {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--zena-text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.back-to-zena:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--zena-text-primary);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Pulsate Purple Effect */
+.pulsate-purple {
+    animation: pulsatePurple 2s infinite ease-in-out;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes pulsatePurple {
+    0% {
+        box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+        background: rgba(168, 85, 247, 0.1);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(168, 85, 247, 0);
+        background: rgba(168, 85, 247, 0.2);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+        background: rgba(168, 85, 247, 0.1);
+    }
+}
