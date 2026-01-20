@@ -10,7 +10,9 @@ export interface ExtractedEntity {
 export interface VoiceNoteResponse {
   id: string;
   transcript: string;
+  timelineSummary?: string;
   extractedEntities: ExtractedEntity[];
+  proposedActions?: any[];
   processingStatus: 'pending' | 'processing' | 'completed' | 'failed';
 }
 
@@ -31,7 +33,9 @@ export const useVoiceInteraction = (options: UseVoiceInteractionOptions = {}) =>
   const [isProcessing, setIsProcessing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState<string>('');
+  const [timelineSummary, setTimelineSummary] = useState<string>('');
   const [extractedEntities, setExtractedEntities] = useState<ExtractedEntity[]>([]);
+  const [proposedActions, setProposedActions] = useState<any[]>([]);
   const [error, setError] = useState<Error | null>(null);
 
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -112,6 +116,18 @@ export const useVoiceInteraction = (options: UseVoiceInteractionOptions = {}) =>
   }, []);
 
   /**
+   * Helper to convert Blob to Data URL (base64)
+   */
+  const blobToDataURL = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  /**
    * Upload a voice note for transcription and entity extraction
    */
   const uploadVoiceNote = useCallback(async (audioBlob: Blob): Promise<VoiceNoteResponse | null> => {
@@ -121,9 +137,8 @@ export const useVoiceInteraction = (options: UseVoiceInteractionOptions = {}) =>
     setExtractedEntities([]);
 
     try {
-      // Create form data with audio file
-      const formData = new FormData();
-      formData.append('audio', audioBlob, 'voice-note.webm');
+      // Convert audio to data URL for JSON transport
+      const audioUrl = await blobToDataURL(audioBlob);
 
       // Cancel any previous request
       if (abortControllerRef.current) {
@@ -132,14 +147,11 @@ export const useVoiceInteraction = (options: UseVoiceInteractionOptions = {}) =>
 
       abortControllerRef.current = new AbortController();
 
-      // Upload voice note
+      // Upload voice note as JSON
       const response = await api.post<VoiceNoteResponse>(
         '/api/voice-notes',
-        formData,
+        { audioUrl },
         {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
           signal: abortControllerRef.current.signal,
         }
       );
@@ -148,7 +160,9 @@ export const useVoiceInteraction = (options: UseVoiceInteractionOptions = {}) =>
 
       // Update state with results
       setTranscript(voiceNote.transcript);
+      setTimelineSummary(voiceNote.timelineSummary || '');
       setExtractedEntities(voiceNote.extractedEntities);
+      setProposedActions(voiceNote.proposedActions || []);
 
       // Call callbacks
       if (options.onTranscriptionComplete) {
@@ -185,9 +199,8 @@ export const useVoiceInteraction = (options: UseVoiceInteractionOptions = {}) =>
     setError(null);
 
     try {
-      // Create form data with audio file
-      const formData = new FormData();
-      formData.append('audio', audioBlob, 'voice-query.webm');
+      // Convert audio to data URL for JSON transport
+      const audioUrl = await blobToDataURL(audioBlob);
 
       // Cancel any previous request
       if (abortControllerRef.current) {
@@ -196,14 +209,11 @@ export const useVoiceInteraction = (options: UseVoiceInteractionOptions = {}) =>
 
       abortControllerRef.current = new AbortController();
 
-      // Send voice query
+      // Send voice query as JSON
       const response = await api.post<VoiceQueryResponse>(
         '/api/ask/voice',
-        formData,
+        { audioUrl },
         {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
           signal: abortControllerRef.current.signal,
         }
       );
@@ -288,7 +298,9 @@ export const useVoiceInteraction = (options: UseVoiceInteractionOptions = {}) =>
     isProcessing,
     isRecording,
     transcript,
+    timelineSummary,
     extractedEntities,
+    proposedActions,
     error,
 
     // Actions

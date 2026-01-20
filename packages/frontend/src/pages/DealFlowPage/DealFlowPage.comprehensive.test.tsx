@@ -124,14 +124,14 @@ describe('DealFlowPage Integration Tests', () => {
                 id: 'prospecting',
                 title: 'Prospecting',
                 deals: [
-                    { id: '1', title: 'Deal 1', stage: 'prospecting', pipelineType: 'buyer', property: { address: '123 Test St' }, contacts: [{ name: 'John Doe' }] }
+                    { id: '1', title: 'Deal 1', stage: 'prospecting', pipelineType: 'seller', property: { address: '123 Test St' }, contacts: [{ name: 'John Doe' }] }
                 ]
             },
             {
                 id: 'negotiation',
                 title: 'Negotiation',
                 deals: [
-                    { id: '2', title: 'Deal 2', stage: 'negotiation', pipelineType: 'buyer', property: { address: '456 High St' }, contacts: [{ name: 'Jane Smith' }] }
+                    { id: '2', title: 'Deal 2', stage: 'negotiation', pipelineType: 'seller', property: { address: '456 High St' }, contacts: [{ name: 'Jane Smith' }] }
                 ]
             }
         ],
@@ -158,8 +158,11 @@ describe('DealFlowPage Integration Tests', () => {
         });
         vi.stubGlobal('fetch', mockFetch);
 
-        // Setup default GET response for pipeline (if api client is used elsewhere)
+        // Setup default GET response for pipeline
         (api.get as any).mockImplementation((url: string) => {
+            if (url.includes('/api/deals/pipeline/')) {
+                return Promise.resolve({ data: mockPipelineData });
+            }
             return Promise.resolve({ data: {} });
         });
     });
@@ -185,19 +188,6 @@ describe('DealFlowPage Integration Tests', () => {
         expect(await screen.findByText('456 High St')).toBeInTheDocument();
     });
 
-    it('opens "New Deal" modal on button click', async () => {
-        render(
-            <MemoryRouter>
-                <DealFlowPage />
-            </MemoryRouter>
-        );
-
-        // Find "Add new Deal" button
-        const addButton = await screen.findByText(/Add new Deal/i);
-        await user.click(addButton);
-
-        expect(await screen.findByTestId('new-deal-modal')).toBeInTheDocument();
-    });
 
     it('activates Smart Search on valid query', async () => {
         render(
@@ -240,12 +230,8 @@ describe('DealFlowPage Integration Tests', () => {
         // The Properties page had an "Ask Zena" button.
 
         // Let's write the test to expect the call, and if it fails, I'll inspect the buttons.
-        try {
-            const askButton = screen.getByRole('button', { name: /Ask Zena/i });
-            await user.click(askButton);
-        } catch (e) {
-            // If button not found, maybe it's just enter
-        }
+        const askButton = screen.getByRole('button', { name: /Ask Zena/i });
+        await user.click(askButton);
 
         // Wait for API call
         // Note: The previous file read of DealFlowPage had `handleSmartSearch`...

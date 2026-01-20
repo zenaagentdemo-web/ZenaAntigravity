@@ -62,6 +62,12 @@ export interface EntityExtractionResult {
   riskSignal?: RiskSignal;
 }
 
+export interface MultimodalAudioResult {
+  transcript: string;
+  timelineSummary: string;
+  entities: EntityExtractionResult;
+}
+
 /**
  * AI Processing Service
  * Handles thread classification and categorization using LLM
@@ -257,6 +263,113 @@ JSON; // End of prompt - ensure valid JSON output only`;
   }
 
   /**
+   * Process multimodal audio with diarization and summary
+   */
+  async processMultimodalAudio(audioData: string, mimeType: string = 'audio/mpeg'): Promise<MultimodalAudioResult> {
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    if (!geminiApiKey) {
+      throw new Error('GEMINI_API_KEY is required for audio processing');
+    }
+
+    const model = 'gemini-2.0-flash-exp'; // Specifically G2.0 for perception as requested
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+
+    const prompt = `
+Role: NZ Real Estate Intelligence Specialist.
+Task: Process this audio recording (multimodal) and extract a structured intelligence report.
+
+1. DIARIZED TRANSCRIPT:
+- Identify Speaker 0 (Agent) and Speaker 1+ (Clients/Others).
+- Use local NZ English context (Properties, Names, Slang).
+- Return in format: "Speaker 0: [Text]", "Speaker 1: [Text]".
+- GROUNDING: Provide ONLY what is explicitly heard. Do not normalize or "clean up" speech if it changes meaning.
+- SILENCE: If no speech is detected, return an empty string "".
+
+2. PROPERTY TIMELINE SUMMARY:
+- Provide a 1-2 sentence concise summary specifically for the Property Card Timeline.
+- Focus on: "Agent met with [Name] regarding [Action/Status]".
+
+3. CRM ENTITIES:
+- Identify Contacts, Properties, and Tasks for initial extraction.
+
+4. SILENCE HANDLING:
+- CRITICAL: If the audio is silent, contains only background noise, or lacks any human speech, you MUST return an empty transcript (""), an empty timeline summary (""), and empty entities arrays. Do NOT generate example or mock data.
+
+4. ZERO-GUESS POLICY (FACTUAL GROUNDING):
+- CRITICAL: You are a system of record. You MUST NOT hallucinate, infer, or "autocomplete" missing information.
+- If a contact is mentioned but their role isn't clear, do not guess it.
+- If a property address is incomplete (e.g., just "Main St"), return it exactly as heard; do not attempt to find a matching real address.
+- If the audio is silent or contains no human speech, return an empty JSON object for all fields. 
+- NEVER provide placeholder or example data like "John and Mary" or "123 Example St".
+
+JSON OUTPUT ONLY:
+{
+  "transcript": "", 
+  "timelineSummary": "",
+  "entities": {
+    "contacts": [],
+    "properties": [],
+    "dates": [],
+    "actions": [],
+    "dealStage": "nurture"
+  }
+}
+`;
+
+    const body = JSON.stringify({
+      contents: [{
+        parts: [
+          { text: prompt },
+          { inline_data: { mime_type: mimeType, data: audioData } }
+        ]
+      }],
+      generationConfig: {
+        temperature: 0.1,
+        response_mime_type: 'application/json',
+      },
+    });
+
+    const startTime = Date.now();
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Gemini Multimodal Error: ${response.status} ${error}`);
+    }
+
+    const data = await response.json() as any;
+    const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    let result: MultimodalAudioResult;
+    try {
+      result = JSON.parse(resultText) as MultimodalAudioResult;
+    } catch (e) {
+      console.error('[AIProcessingService] Failed to parse multimodal result:', resultText);
+      result = {
+        transcript: resultText,
+        timelineSummary: 'Analysis failed, but transcript is available.',
+        entities: { contacts: [], properties: [], dates: [], actions: [] }
+      };
+    }
+
+    // Log token usage
+    if (data.usageMetadata) {
+      tokenTrackingService.log({
+        source: 'voice-multimodal',
+        model: model,
+        inputTokens: data.usageMetadata.promptTokenCount,
+        outputTokens: data.usageMetadata.candidatesTokenCount,
+        durationMs: Date.now() - startTime
+      }).catch(() => { });
+    }
+
+    return result;
+  }
+
+  /**
    * Transcribe audio using Gemini Multimodal
    */
   async transcribeAudio(audioData: string, mimeType: string = 'audio/mpeg'): Promise<string> {
@@ -265,7 +378,8 @@ JSON; // End of prompt - ensure valid JSON output only`;
       throw new Error('GEMINI_API_KEY is required for audio transcription');
     }
 
-    let model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-exp';
+    // Default to the multimodal model
+    const model = 'gemini-2.0-flash-exp';
     // Use flash for transcription as it's faster
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
 

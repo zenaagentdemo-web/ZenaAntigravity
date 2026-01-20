@@ -2,45 +2,52 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.8rem;
-    margin-top: 1rem;
-    animation: fade-in-up 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 1.2rem;
+    animation: fade-in-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .action-chip {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    padding: 0.6rem 1rem;
-    background: rgba(0, 243, 255, 0.03);
-    border: 1px solid rgba(0, 243, 255, 0.2);
-    border-radius: 20px;
+    padding: 0.7rem 1.1rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+    border: 1px solid rgba(0, 243, 255, 0.15);
+    border-radius: 16px;
     color: #e0faff;
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(5px);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .action-chip:hover {
     background: rgba(0, 243, 255, 0.1);
     border-color: rgba(0, 243, 255, 0.5);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 243, 255, 0.15);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        0 0 15px rgba(0, 243, 255, 0.15);
+    color: #fff;
 }
 
 .action-chip:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
 }
 
 .action-chip__icon {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.4));
 }
 
 @keyframes fade-in-up {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(15px);
     }
 
     to {

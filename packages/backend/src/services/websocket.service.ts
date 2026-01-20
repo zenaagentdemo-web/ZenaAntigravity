@@ -25,6 +25,7 @@ export type WebSocketEventType =
   | 'deal.risk'
   | 'task.created'
   | 'ask.response'
+  | 'ask.status' // NEW: Status updates for Ask Zena
   | 'dashboard.data'
   | 'dashboard.update'
   | 'notification.new'

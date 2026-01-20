@@ -14,7 +14,8 @@ import { LayoutDashboard, Brain, Users, Calendar } from 'lucide-react';
 
 // Section components
 import {
-    BlockerWidget,
+    BlockerWidget, // Kept for legacy compatibility if needed
+    ActionCenter,
     QuickContacts,
     KeyDatesSection,
     ConditionsTracker,
@@ -287,14 +288,21 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
 
                     switch (section.id) {
                         case 'blocker':
-                            return intelligence?.riskSignals?.length > 0 && (
-                                <BlockerWidget
+                            return (
+                                <ActionCenter
                                     key={`blocker-${idx}`}
-                                    riskSignals={intelligence?.riskSignals || []}
-                                    nextAction={deal.nextAction}
-                                    nextActionOwner={deal.nextActionOwner}
-                                    onQuickAction={handleQuickAction}
-                                    quickActions={stageConfig.quickActions}
+                                    deal={deal}
+                                    intelligence={intelligence || heuristicIntelligence}
+                                    stageConfig={stageConfig}
+                                    onExecuteAction={(id, ctx) => {
+                                        if (id === 'execute-power-move') {
+                                            console.log('Executing Power Move:', ctx);
+                                            // Mock execution success
+                                            // onDealUpdate would serve as the effect here
+                                        } else {
+                                            handleQuickAction(stageConfig.quickActions.find(a => a.id === id) || { id, action: 'custom', label: 'Action', icon: '' });
+                                        }
+                                    }}
                                 />
                             );
                         case 'contacts':
@@ -618,19 +626,7 @@ export const DealDetailPanel: React.FC<DealDetailPanelProps> = ({
                     </button>
                 </div>
 
-                {/* Quick Actions Bar */}
-                <div className="deal-detail-panel__quick-actions">
-                    {stageConfig.quickActions.map(action => (
-                        <button
-                            key={action.id}
-                            className={`deal-detail-panel__quick-action ${action.primary ? 'deal-detail-panel__quick-action--primary' : ''}`}
-                            onClick={() => handleQuickAction(action)}
-                        >
-                            <span className="deal-detail-panel__quick-action-icon">{action.icon}</span>
-                            <span className="deal-detail-panel__quick-action-label">{action.label}</span>
-                        </button>
-                    ))}
-                </div>
+
 
                 {/* Tabs */}
                 <div className="deal-detail-panel__tabs">

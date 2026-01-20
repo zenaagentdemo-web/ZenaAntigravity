@@ -1,0 +1,175 @@
+.zena-intelligence-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    background: rgba(10, 10, 10, 0.4);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 32px 24px;
+    width: 360px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    color: #fff;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.zena-intelligence-sidebar__header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.zena-intelligence-sidebar__badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #8b5cf6;
+    text-transform: uppercase;
+}
+
+.zena-intelligence-sidebar__title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.zena-intelligence-sidebar__section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.zena-intelligence-sidebar__section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.zena-intelligence-sidebar__section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #aaa;
+    margin: 0;
+}
+
+.zena-intelligence-sidebar__action-count {
+    background: #333;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #fff;
+}
+
+.zena-intelligence-sidebar__summary-box {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(0, 212, 255, 0.05));
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.05);
+}
+
+.zena-intelligence-sidebar__summary-text {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+    color: #eee;
+}
+
+.zena-intelligence-sidebar__actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.zena-intelligence-sidebar__action-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.zena-intelligence-sidebar__action-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(139, 92, 246, 0.4);
+    transform: translateX(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.zena-intelligence-sidebar__action-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.zena-intelligence-sidebar__action-icon {
+    font-size: 20px;
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.3));
+}
+
+.zena-intelligence-sidebar__action-tool {
+    font-size: 10px;
+    font-weight: 600;
+    color: #8b5cf6;
+    text-transform: uppercase;
+}
+
+.zena-intelligence-sidebar__action-label {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 4px 0 0;
+}
+
+.zena-intelligence-sidebar__approve-btn {
+    background: #8b5cf6;
+    color: #white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.zena-intelligence-sidebar__approve-btn:hover {
+    background: #7c3aed;
+}
+
+.zena-intelligence-sidebar__chat-btn {
+    margin-top: auto;
+    background: linear-gradient(to right, #8b5cf6, #d946ef);
+    border: none;
+    color: #fff;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.zena-intelligence-sidebar__chat-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    filter: brightness(1.1);
+}
+
+.zena-intelligence-sidebar__empty-text {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+    text-align: center;
+    margin: 12px 0;
+}

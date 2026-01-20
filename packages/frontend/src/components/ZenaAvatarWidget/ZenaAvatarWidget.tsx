@@ -41,7 +41,7 @@ export const ZenaAvatarWidget: React.FC<ZenaAvatarWidgetProps> = ({
         if (onAvatarClick) {
             onAvatarClick();
         } else {
-            navigate('/ask-zena');
+            navigate('/ask-zena', { state: { reset: true } });
         }
     }, [onAvatarClick, navigate]);
 
@@ -49,7 +49,7 @@ export const ZenaAvatarWidget: React.FC<ZenaAvatarWidgetProps> = ({
         if (onLiveClick) {
             onLiveClick();
         } else {
-            navigate(`/ask-zena?mode=handsfree&context=${encodeURIComponent(context)}&t=${Date.now()}`);
+            navigate(`/ask-zena?mode=handsfree&context=${encodeURIComponent(context)}&t=${Date.now()}`, { state: { reset: true } });
         }
     }, [onLiveClick, navigate, context]);
 

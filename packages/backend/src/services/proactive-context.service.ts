@@ -73,8 +73,14 @@ export class ProactiveContextService {
                 // 🧠 ZENA SUPER-INTEL: Web Search for enrichment
                 // 🔥 PERFORMANCE: Skip if we already have data OR use cache
                 if (entityType === 'property' && !alreadyHasPropertyData) {
-                    const webMatch = await this.searchWebForPropertyCached(address);
-                    if (webMatch) matches.push(webMatch);
+                    console.log(`🧠 [ProactiveContext] Triggering web search for property enrichment: "${address}"`);
+                    const webMatch = await this.searchWebForPropertyCached(userId, address);
+                    if (webMatch) {
+                        console.log(`✅ [ProactiveContext] Web search successful, found match for "${address}"`);
+                        matches.push(webMatch);
+                    } else {
+                        console.log(`❌ [ProactiveContext] Web search returned no results for "${address}"`);
+                    }
                 } else if (alreadyHasPropertyData) {
                     console.log(`⚡ [ProactiveContext] Skipping web search - property data already provided`);
                 }
@@ -130,8 +136,8 @@ export class ProactiveContextService {
     /**
      * 🔥 PERFORMANCE: Cached web search with timeout protection
      */
-    private async searchWebForPropertyCached(address: string): Promise<ContextMatch | null> {
-        const cacheKey = address.toLowerCase().trim();
+    private async searchWebForPropertyCached(userId: string, address: string): Promise<ContextMatch | null> {
+        const cacheKey = `${userId}:${address.toLowerCase().trim()}`;
 
         // Check cache first
         const cached = this.webSearchCache.get(cacheKey);
@@ -480,21 +486,13 @@ export class ProactiveContextService {
         // 🚨 TRUST RADIUS: Only show matches with high relevance to prevent hallucinations
         const matches = allMatches.filter(m => m.relevance >= 85);
 
-        if (matches.length === 0) {
-            // If we found partial matches but they were low relevance, warn about ambiguity if applicable
-            if (allMatches.length > 0 && entityType === 'contact') {
-                return `⚠️ **I found several contacts with similar names, but none were a precise match.** I've left the details blank to avoid using incorrect data. Please provide the specific email and role for this ${entityType}.`;
-            }
-            return '';
-        }
-
         const lines: string[] = [];
 
         if (ambiguityFound) {
-            lines.push(`⚠️ **CAUTION: Multiple high-confidence matches found for this ${entityType}.**\n`);
-            lines.push(`To ensure data integrity, I have NOT auto-filled any details. Please confirm which record you intended to reference:\n`);
+            lines.push(`⚠️ **I've surfaced several ${entityType} records with similar details, but none are a precise match.**\n`);
+            lines.push(`To ensure your data remains pristine, I haven't auto-filled any fields. Please confirm which of these you were referring to:\n`);
         } else {
-            lines.push(`🧠 **I found a matching ${entityType} in your data:**\n`);
+            lines.push(`🧠 **I've surfaced some helpful details to build this ${entityType} card for you:**\n`);
         }
 
         for (const match of matches.slice(0, 3)) {
@@ -503,19 +501,13 @@ export class ProactiveContextService {
 
             if (match.extractedData && Object.keys(match.extractedData).length > 0) {
                 const dataPoints = Object.entries(match.extractedData)
-                    .filter(([_, v]) => v !== undefined)
-                    .map(([k, v]) => `${k}: ${v}`)
+                    .filter(([_, v]) => v !== undefined && v !== null && v !== '')
+                    .map(([k, v]) => `${k.replace(/([A-Z])/g, ' $1').toLowerCase()}: ${v}`)
                     .join(', ');
                 if (dataPoints) {
                     lines.push(`  _Details: ${dataPoints}_`);
                 }
             }
-        }
-
-        if (!ambiguityFound) {
-            lines.push(`\n**Shall I proceed with using these details?**`);
-        } else {
-            lines.push(`\n**Please specify the correct contact or provide new details.**`);
         }
 
         return lines.join('\n');

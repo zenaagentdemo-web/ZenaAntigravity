@@ -113,7 +113,7 @@ export const DOMAIN_FIELD_LIBRARY: DomainFieldSchema = {
         {
             key: 'listingPrice',
             label: 'Listing Price',
-            required: false,
+            required: true,
             priority: 'medium',
             question: "Is there a listing price or estimate?"
         }

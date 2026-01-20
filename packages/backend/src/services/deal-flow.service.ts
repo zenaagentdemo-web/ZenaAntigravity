@@ -146,6 +146,7 @@ export class DealFlowService {
                     select: {
                         id: true,
                         address: true,
+                        milestones: true,
                         bedrooms: true,
                         bathrooms: true,
                         listingPrice: true,

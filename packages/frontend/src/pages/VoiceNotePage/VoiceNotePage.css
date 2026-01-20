@@ -11,8 +11,8 @@
   max-width: var(--max-width-container);
   margin: 0 auto;
   width: 100%;
-  padding: var(--spacing-lg) var(--spacing-md);
-  gap: var(--spacing-xl);
+  padding: var(--spacing-md);
+  gap: var(--spacing-lg);
 }
 
 /* Header */
@@ -38,7 +38,7 @@
 .voice-note-page__recorder {
   display: flex;
   justify-content: center;
-  padding: var(--spacing-xl) 0;
+  padding: var(--spacing-lg) 0 0 0;
 }
 
 /* Processing Status */
@@ -91,6 +91,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -141,10 +142,10 @@
 }
 
 .voice-note-page__entity-card {
-  display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md);
   background-color: var(--color-background);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
@@ -152,6 +153,25 @@
 
 .voice-note-page__entity-icon {
   font-size: 24px;
+}
+
+.voice-note-page__entity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--spacing-xs);
+}
+
+.voice-note-page__entity-trust-badge {
+  font-size: 10px;
+  background: rgba(139, 92, 246, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #8b5cf6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: var(--font-weight-bold);
 }
 
 .voice-note-page__entity-content {
@@ -283,12 +303,82 @@
     padding: var(--spacing-md);
     gap: var(--spacing-lg);
   }
-  
+
   .voice-note-page__entities-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .voice-note-page__empty {
     padding: var(--spacing-xl) var(--spacing-md);
   }
+
+  .voice-note-page__main-layout {
+    flex-direction: column;
+  }
+}
+
+/* Main Layout */
+.voice-note-page__main-layout {
+  display: flex;
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-md);
+}
+
+.voice-note-page__main-layout:empty {
+  display: none;
+}
+
+.voice-note-page__content {
+  flex: 1;
+}
+
+.voice-note-page__sidebar-container {
+  width: 320px;
+  flex-shrink: 0;
+  position: sticky;
+  top: var(--spacing-lg);
+  align-self: flex-start;
+}
+
+/* Diarized Transcript */
+.voice-note-page__diarized-transcript {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.voice-note-page__transcript-line {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+}
+
+.voice-note-page__transcript-line.agent {
+  border-left: 4px solid #8b5cf6;
+  background-color: rgba(139, 92, 246, 0.05);
+}
+
+.voice-note-page__transcript-line.client {
+  border-right: 4px solid #fff;
+  background-color: rgba(255, 255, 255, 0.05);
+  align-items: flex-end;
+}
+
+.voice-note-page__speaker-tag {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
+}
+
+.voice-note-page__line-text {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text);
+  margin: 0;
 }

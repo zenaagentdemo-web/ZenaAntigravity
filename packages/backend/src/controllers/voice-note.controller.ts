@@ -21,14 +21,13 @@ export async function uploadVoiceNote(req: Request, res: Response) {
     // Create voice note record
     const voiceNoteId = await voiceNoteService.createVoiceNote(userId, audioUrl);
 
-    // Start processing asynchronously (don't wait for completion)
-    voiceNoteService.processVoiceNote(voiceNoteId).catch((error) => {
-      console.error('Error processing voice note:', error);
-    });
+    // Process voice note synchronously to return result to frontend
+    const result = await voiceNoteService.processVoiceNote(voiceNoteId);
 
     res.status(201).json({
       id: voiceNoteId,
-      message: 'Voice note uploaded and processing started',
+      ...result,
+      message: 'Voice note processed successfully',
     });
   } catch (error) {
     console.error('Error uploading voice note:', error);
@@ -57,7 +56,7 @@ export async function getVoiceNote(req: Request, res: Response) {
     res.json(voiceNote);
   } catch (error) {
     console.error('Error getting voice note:', error);
-    
+
     if (error instanceof Error && error.message === 'Voice note not found') {
       return res.status(404).json({ error: 'Voice note not found' });
     }
@@ -117,7 +116,7 @@ export async function getVoiceNoteAudio(req: Request, res: Response) {
     res.json({ audioUrl: voiceNote.audioUrl });
   } catch (error) {
     console.error('Error getting voice note audio:', error);
-    
+
     if (error instanceof Error && error.message === 'Voice note not found') {
       return res.status(404).json({ error: 'Voice note not found' });
     }

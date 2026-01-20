@@ -13,6 +13,9 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { BatchAction } from '../../models/newPage.types';
 import { PipelineType, PipelineResponse, Deal, NewDealModal, StrategySessionContext, STRATEGY_SESSION_KEY, STAGE_LABELS } from '../../components/DealFlow';
+import { ZenaMomentumFlow } from '../../components/DealFlow/ZenaMomentumFlow';
+import { BatchActionBar } from '../../components/BatchActionBar/BatchActionBar';
+import { DealQuickActions } from '../../components/DealFlow/DealQuickActions';
 import { analyseDeal } from '../../components/DealFlow/ZenaIntelligence/ZenaIntelligenceEngine';
 import { DealDetailPanel } from '../../components/DealFlow/DealDetailPanel';
 import { AmbientBackground } from '../../components/AmbientBackground/AmbientBackground';
@@ -243,7 +246,7 @@ export const DealFlowPage: React.FC = () => {
             setLoading(true);
             setError(null);
 
-            const response = await api.get<PipelineResponse>(`/deals/pipeline/${pipelineType}`, {
+            const response = await api.get<PipelineResponse>(`/api/deals/pipeline/${pipelineType}`, {
                 cache: true, // Allow caching
             });
 
@@ -337,7 +340,7 @@ export const DealFlowPage: React.FC = () => {
 
         sessionStorage.setItem(STRATEGY_SESSION_KEY, JSON.stringify(context));
         // CRITICAL: Use liveMode=true to trigger Gemini Live voice (Aoede) instead of TTS
-        navigate(`/ask-zena?greeting=strategy-session&liveMode=true&t=${Date.now()}`);
+        navigate(`/ask-zena?greeting=strategy-session&liveMode=true&t=${Date.now()}`, { state: { reset: true } });
     }, [deals, navigate]);
 
     // Selection handlers

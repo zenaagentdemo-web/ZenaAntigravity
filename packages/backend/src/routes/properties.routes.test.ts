@@ -47,7 +47,7 @@ interface CreatePropertyRequest {
 }
 
 interface Milestone {
-    type: 'listed' | 'first_viewing' | 'offer_received' | 'contract_signed' | 'settlement' | 'custom';
+    type: 'listed' | 'first_viewing' | 'offer_received' | 'contract_signed' | 'settlement' | 'custom' | 'meeting' | 'personal' | 'other';
     title: string;
     date: string;
     notes?: string;
@@ -69,8 +69,8 @@ const propertyTypeArb = fc.constantFrom<'residential' | 'commercial' | 'land'>(
     'residential', 'commercial', 'land'
 );
 
-const milestoneTypeArb = fc.constantFrom<'listed' | 'first_viewing' | 'offer_received' | 'contract_signed' | 'settlement' | 'custom'>(
-    'listed', 'first_viewing', 'offer_received', 'contract_signed', 'settlement', 'custom'
+const milestoneTypeArb = fc.constantFrom<'listed' | 'first_viewing' | 'offer_received' | 'contract_signed' | 'settlement' | 'custom' | 'meeting' | 'personal' | 'other'>(
+    'listed', 'first_viewing', 'offer_received', 'contract_signed', 'settlement', 'custom', 'meeting', 'personal', 'other'
 );
 
 const propertyArb = fc.record<Property>({
@@ -319,7 +319,7 @@ describe('Properties API Endpoint Tests', () => {
                 fc.property(
                     milestoneTypeArb,
                     (type) => {
-                        expect(['listed', 'first_viewing', 'offer_received', 'contract_signed', 'settlement', 'custom']).toContain(type);
+                        expect(['listed', 'first_viewing', 'offer_received', 'contract_signed', 'settlement', 'custom', 'meeting', 'personal', 'other']).toContain(type);
                     }
                 ),
                 { numRuns: 10 }

@@ -1,0 +1,466 @@
+
+[1m[46m RUN [49m[22m [36mv4.0.16 [39m[90m/Users/hamishmcgee/Desktop/ZenaAntigravity/packages/backend[39m
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m✅ [database.ts] Prisma initialized: [33mtrue[39m
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: market_scraper.search
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m🔍 [CalendarOptimizer] Service initialized
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ZenaAPILibrary] Initializing capability library from tool registry...
+[ZenaAPILibrary] ✅ Initialized with 1 tools across 1 domains
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.list_threads
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.get_thread
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.get_messages
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.archive_thread
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.unarchive_thread
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.snooze_thread
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[AIProcessingService] Initialized with Gemini: gemini-3-flash-preview
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.classify_thread
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.move_to_awaiting
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.link_to_property
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.link_to_contact
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.draft_reply
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.send_reply
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.regenerate_draft
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: inbox.search
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.list
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.get
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.create
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.update
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.delete
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.update_stage
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.update_conditions
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.assign_contact
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.remove_contact
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.analyze
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.archive
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.unarchive
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.add_note
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.get_brief
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.bulk_archive
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.bulk_delete
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.search
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: deal.generate_report
+[ToolRegistry] ✅ Registered tool: deal.update_risk
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.list
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.get
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.create
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.update
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.delete
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.archive
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.add_relationship_note
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.get_brief
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.run_discovery
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.recategorize
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.bulk_delete
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.bulk_update
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.search
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: contact.link_to_property
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: task.list
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: task.get
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: task.create
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: task.update
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: task.delete
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: task.complete
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: task.reschedule
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: task.get_overdue
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: task.process_voice_note
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: task.search
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.list
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.get
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.create
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.update
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.delete
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.add_milestone
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.update_milestone
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.delete_milestone
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.refresh_intelligence
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.generate_comparables
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.link_vendor
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.generate_report
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.bulk_delete
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.bulk_archive
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.get_smart_matches
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: property.search
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: calendar.list
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: calendar.get
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: calendar.create
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: calendar.update
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: calendar.delete
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ActionRegistry] Registered strategy for generate_weekly_report
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ActionRegistry] Registered strategy for buyer_match_intro
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ActionRegistry] Registered strategy for schedule_viewing
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: calendar.suggest_slots
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: calendar.optimize_day
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: calendar.search
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: portfolio.get_brief
+[ToolRegistry] ✅ Registered tool: portfolio.get_global_brief
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: search_memory
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: export.contacts
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: export.properties
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: export.deals
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: godmode.get_pending
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: godmode.approve
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: godmode.dismiss
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: voice_note.list
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: voice_note.get
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] ✅ Registered tool: voice_note.upload
+
+[90mstderr[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] Tool deal.generate_report already registered, overwriting
+[ToolRegistry] Tool deal.update already registered, overwriting
+[ToolRegistry] Tool calendar.create already registered, overwriting
+[ToolRegistry] Tool calendar.update already registered, overwriting
+[ToolRegistry] Tool calendar.delete already registered, overwriting
+[ToolRegistry] Tool task.create already registered, overwriting
+[ToolRegistry] Tool task.update already registered, overwriting
+[ToolRegistry] Tool contact.create already registered, overwriting
+[ToolRegistry] Tool contact.update already registered, overwriting
+[ToolRegistry] Tool property.create already registered, overwriting
+[ToolRegistry] Tool property.update already registered, overwriting
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts
+[22m[39m[ToolRegistry] 📦 Registered bundle: inbox (11 tools)
+[ToolRegistry] 📦 Registered bundle: deals (15 tools)
+[ToolRegistry] 📦 Registered bundle: contacts (13 tools)
+[ToolRegistry] 📦 Registered bundle: properties (13 tools)
+[ToolRegistry] 📦 Registered bundle: tasks (9 tools)
+[ToolRegistry] 📦 Registered bundle: calendar (7 tools)
+[ToolRegistry] 📦 Registered bundle: core (2 tools)
+[ToolRegistry] 📦 Registered bundle: export (3 tools)
+[ToolRegistry] 📦 Registered bundle: godmode (3 tools)
+[ToolRegistry] 📦 Registered bundle: voice_notes (3 tools)
+[ToolBundles] Registered 10 tool bundles
+[ToolRegistry] ✅ Registered tool: core.get_dashboard
+[ToolRegistry] ✅ Registered tool: core.search
+[ToolRegistry] ✅ Registered tool: deal.generate_report
+[ToolRegistry] ✅ Registered tool: deal.update
+[ToolRegistry] ✅ Registered tool: calendar.list_events
+[ToolRegistry] ✅ Registered tool: calendar.get_event
+[ToolRegistry] ✅ Registered tool: calendar.create
+[ToolRegistry] ✅ Registered tool: calendar.update
+[ToolRegistry] ✅ Registered tool: calendar.delete
+[ToolRegistry] ✅ Registered tool: calendar.reschedule
+[ToolRegistry] ✅ Registered tool: task.list_tasks
+[ToolRegistry] ✅ Registered tool: task.create
+[ToolRegistry] ✅ Registered tool: task.update
+[ToolRegistry] ✅ Registered tool: task.link_to_deal
+[ToolRegistry] ✅ Registered tool: contact.list_contacts
+[ToolRegistry] ✅ Registered tool: contact.create
+[ToolRegistry] ✅ Registered tool: contact.update
+[ToolRegistry] ✅ Registered tool: property.list_properties
+[ToolRegistry] ✅ Registered tool: property.create
+[ToolRegistry] ✅ Registered tool: property.update
+[ToolRegistry] ✅ Registered tool: marketing.generate_campaign
+[ToolRegistry] ✅ Registered tool: vendor_report.generate_weekly
+[Tools] Agent tool system initialized: 105 tools across 15 domains
+[ZenaAPILibrary] Initializing capability library from tool registry...
+[ZenaAPILibrary] ✅ Initialized with 105 tools across 15 domains
+[Tools] API Library ready: 315 estimated tokens for capability summary
+[ToolAliasGenerator] Generating aliases for 105 tools...
+[ToolAliasGenerator] ✅ Generated 4118 aliases for 105 tools
+[Tools] Alias Generator ready: 4118 aliases (~39.2 per tool)
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts[2m > [22m[2mAgentOrchestrator Intelligence & Cascading[2m > [22m[2mProactive Enrichment (Intelligence Step 1)[2m > [22m[2mshould trigger proactive web search before property creation
+[22m[39m[TestDebug] agentOrchestrator: [33mtrue[39m
+[TestDebug] toolExecutionService: [33mtrue[39m
+[TestDebug] proactiveContextService: [33mtrue[39m
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts[2m > [22m[2mAgentOrchestrator Intelligence & Cascading[2m > [22m[2mProactive Enrichment (Intelligence Step 1)[2m > [22m[2mshould trigger proactive web search before property creation
+[22m[39m
+═══════════════════════════════════════════════════════════════
+🧠 ZENA DEBUG - AGENT ORCHESTRATOR ENTRY
+═══════════════════════════════════════════════════════════════
+👤 User ID: user-123
+💬 Full Query: create property card for 22 Boundary Road
+🆔 Conversation ID: None
+🎤 Is Voice Mode: [33mfalse[39m
+═══════════════════════════════════════════════════════════════
+
+
+═══════════════════════════════════════════════════════════════
+🔍 SESSION STATE AT ENTRY
+═══════════════════════════════════════════════════════════════
+📍 Session ID: 65787c32-1887-4a81-8d92-b5c0e4a49e6f
+👤 User ID: user-123
+🕐 Last Activity: 2026-01-20T00:42:03.397Z
+⏳ Pending Confirmation: NONE
+═══════════════════════════════════════════════════════════════
+
+
+🤖 [AGENT] Query received
+   QUERY: create property card for 22 Boundary Road
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts[2m > [22m[2mAgentOrchestrator Intelligence & Cascading[2m > [22m[2mProactive Enrichment (Intelligence Step 1)[2m > [22m[2mshould trigger proactive web search before property creation
+[22m[39m
+🤖 [AGENT] Gemini response received
+
+🤖 [AGENT] Processing Gemini response
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts[2m > [22m[2mAgentOrchestrator Intelligence & Cascading[2m > [22m[2mMulti-Action Cascading (Cascading Step)[2m > [22m[2mshould execute multiple tools in a single turn if both are auto-approvable
+[22m[39m[TestDebug] agentOrchestrator: [33mtrue[39m
+[TestDebug] toolExecutionService: [33mtrue[39m
+[TestDebug] proactiveContextService: [33mtrue[39m
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts[2m > [22m[2mAgentOrchestrator Intelligence & Cascading[2m > [22m[2mMulti-Action Cascading (Cascading Step)[2m > [22m[2mshould execute multiple tools in a single turn if both are auto-approvable
+[22m[39m
+═══════════════════════════════════════════════════════════════
+🧠 ZENA DEBUG - AGENT ORCHESTRATOR ENTRY
+═══════════════════════════════════════════════════════════════
+👤 User ID: user-123
+💬 Full Query: Create John Doe as a vendor and add a task to follow up
+🆔 Conversation ID: None
+🎤 Is Voice Mode: [33mfalse[39m
+═══════════════════════════════════════════════════════════════
+
+
+═══════════════════════════════════════════════════════════════
+🔍 SESSION STATE AT ENTRY
+═══════════════════════════════════════════════════════════════
+📍 Session ID: 65787c32-1887-4a81-8d92-b5c0e4a49e6f
+👤 User ID: user-123
+🕐 Last Activity: 2026-01-20T00:42:03.550Z
+⏳ Pending Confirmation: NONE
+═══════════════════════════════════════════════════════════════
+
+
+🤖 [AGENT] Query received
+   QUERY: Create John Doe as a vendor and add a task to follow up
+
+[90mstdout[2m | src/tests/unit/orchestrator-intelligence.test.ts[2m > [22m[2mAgentOrchestrator Intelligence & Cascading[2m > [22m[2mMulti-Action Cascading (Cascading Step)[2m > [22m[2mshould execute multiple tools in a single turn if both are auto-approvable
+[22m[39m
+🤖 [AGENT] Gemini response received
+
+🤖 [AGENT] Processing Gemini response
+
+ [31m❯[39m src/tests/unit/orchestrator-intelligence.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 167[2mms[22m[39m
+[31m       [31m×[31m should trigger proactive web search before property creation[39m[32m 153[2mms[22m[39m
+[31m       [31m×[31m should execute multiple tools in a single turn if both are auto-approvable[39m[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/tests/unit/orchestrator-intelligence.test.ts[2m > [22mAgentOrchestrator Intelligence & Cascading[2m > [22mProactive Enrichment (Intelligence Step 1)[2m > [22mshould trigger proactive web search before property creation
+[31m[1mAssertionError[22m: expected "scanForContext" to be called at least once[39m
+[36m [2m❯[22m src/tests/unit/orchestrator-intelligence.test.ts:[2m60:29[22m[39m
+    [90m 58| [39m
+    [90m 59| [39m            [90m// 1. Verify proactiveness was triggered[39m
+    [90m 60| [39m            [34mexpect[39m(scanSpy)[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m   | [39m                            [31m^[39m
+    [90m 61| [39m            [34mexpect[39m(scanSpy[33m.[39mmock[33m.[39mcalls[[34m0[39m][[34m2[39m])[33m.[39m[34mtoBe[39m([32m'property'[39m)[33m;[39m
+    [90m 62| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/tests/unit/orchestrator-intelligence.test.ts[2m > [22mAgentOrchestrator Intelligence & Cascading[2m > [22mMulti-Action Cascading (Cascading Step)[2m > [22mshould execute multiple tools in a single turn if both are auto-approvable
+[31m[1mAssertionError[22m: expected "executeTool" to be called 2 times, but got 0 times[39m
+[36m [2m❯[22m src/tests/unit/orchestrator-intelligence.test.ts:[2m110:32[22m[39m
+    [90m108| [39m
+    [90m109| [39m            [90m// Verify BOTH tools were called[39m
+    [90m110| [39m            [34mexpect[39m(executeSpy)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m2[39m)[33m;[39m
+    [90m   | [39m                               [31m^[39m
+    [90m111| [39m            expect(executeSpy).toHaveBeenCalledWith('contact.create', …
+    [90m112| [39m            expect(executeSpy).toHaveBeenCalledWith('task.create', exp…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m   Start at [22m 13:42:02
+[2m   Duration [22m 1.35s[2m (transform 667ms, setup 45ms, import 1.03s, tests 167ms, environment 0ms)[22m
+

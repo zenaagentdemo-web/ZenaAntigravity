@@ -14,6 +14,7 @@ import { OptimiseProposalModal } from '../../components/CalendarOptimizationModa
 import { toast } from 'react-hot-toast';
 import './CalendarPage.css';
 import { useDealNavigation } from '../../hooks/useDealNavigation';
+import { Deal, STAGE_LABELS } from '../../components/DealFlow/types';
 
 interface Property {
     id: string;
@@ -117,27 +118,44 @@ export const CalendarPage: React.FC = () => {
 
     const [pulsatingApptId, setPulsatingApptId] = useState<string | null>(null);
 
-    // 🧠 ZENA AUTO-NAV: Part 1 - Sync Date and switch mode
+    // 🧠 AUTO-NAV: Part 1 - Sync Date, switch mode, and set highlight
     useEffect(() => {
         const state = location.state as any;
-        if (state?.fromZena && state?.highlightId) {
-            console.log('[CalendarPage] Arrived from Zena. Targeting appt:', state.highlightId);
+        if (state?.highlightId) {
+            console.log('[CalendarPage] Targeted appt:', state.highlightId);
             setPulsatingApptId(state.highlightId);
 
-            // If we have the appt in our list already, sync immediately
-            const appt = appointments.find(a => a.id === state.highlightId);
-            if (appt) {
-                console.log('[CalendarPage] Found appt, syncing date to:', appt.time);
-                setSelectedAgendaDate(appt.time);
-                setViewMode('day');
+            // Handle date synchronization
+            if (state.targetDate) {
+                const target = new Date(state.targetDate);
+                if (!isNaN(target.getTime())) {
+                    setSelectedAgendaDate(target);
+                }
+            } else {
+                // Try to find the appt date if targetDate wasn't provided
+                const appt = appointments.find(a => a.id === state.highlightId);
+                if (appt) {
+                    setSelectedAgendaDate(appt.time);
+                }
             }
+
+            setViewMode('day');
 
             // Duration is 5 seconds as requested
             const timer = setTimeout(() => {
                 setPulsatingApptId(null);
+                // After pulse, we can safely clear the state to prevent re-triggering
+                window.history.replaceState({}, document.title);
             }, 5000);
 
             return () => clearTimeout(timer);
+        } else if (state?.targetDate) {
+            // Only date, no highlight (fallback)
+            const target = new Date(state.targetDate);
+            if (!isNaN(target.getTime())) {
+                setSelectedAgendaDate(target);
+                window.history.replaceState({}, document.title);
+            }
         }
     }, [location.state, appointments.length]);
 
@@ -253,18 +271,7 @@ export const CalendarPage: React.FC = () => {
         }
     }, [searchParams, properties]);
 
-    // Handle targetDate from deal flow key dates navigation
-    useEffect(() => {
-        const navState = location.state as { targetDate?: string } | null;
-        if (navState?.targetDate) {
-            const target = new Date(navState.targetDate);
-            if (!isNaN(target.getTime())) {
-                setSelectedAgendaDate(target);
-                // Clear the state to prevent re-triggering
-                window.history.replaceState({}, document.title);
-            }
-        }
-    }, [location.state]);
+    // Removed previous targetDate handler as it's merged above
 
     useEffect(() => {
         loadData();
@@ -285,28 +292,31 @@ export const CalendarPage: React.FC = () => {
 
     const loadData = async () => {
         try {
-            const [propRes, taskRes, timelineRes] = await Promise.all([
+            const [propRes, taskRes, timelineRes, dealRes] = await Promise.all([
                 api.get(`/api/properties?_t=${Date.now()}`),
                 api.get(`/api/tasks?status=open&_t=${Date.now()}`),
-                api.get(`/api/timeline?entityType=calendar_event&_t=${Date.now()}`)
+                api.get(`/api/timeline?entityType=calendar_event&_t=${Date.now()}`),
+                api.get(`/api/deals?_t=${Date.now()}`)
             ]);
 
 
             const loadedProps = propRes.data?.properties || [];
             const loadedTasks = taskRes.data?.tasks || [];
             const loadedTimeline = timelineRes.data?.events || [];
+            const loadedDeals = dealRes.data?.deals || [];
 
             setProperties(loadedProps);
 
             const propAppts = generateAppointmentsFromProperties(loadedProps);
             const taskAppts = generateAppointmentsFromTasks(loadedTasks, loadedProps);
             const timelineAppts = generateAppointmentsFromTimeline(loadedTimeline, loadedProps);
+            const dealAppts = generateAppointmentsFromDeals(loadedDeals, loadedProps);
 
             // Deduplicate: If a timeline event shadows a milestone (via linkedEntityId), hide the milestone
             const shadowIds = new Set(timelineAppts.map(t => t.linkedEntityId).filter(Boolean));
             const filteredPropAppts = propAppts.filter(p => !shadowIds.has(p.id));
 
-            const allAppts = [...filteredPropAppts, ...taskAppts, ...timelineAppts]
+            const allAppts = [...filteredPropAppts, ...taskAppts, ...timelineAppts, ...dealAppts]
                 .sort((a, b) => a.time.getTime() - b.time.getTime());
 
 
@@ -432,6 +442,95 @@ export const CalendarPage: React.FC = () => {
         if (type.includes('meeting') || type.includes('auction')) return 'meeting';
         if (type.includes('call')) return 'call';
         return 'other';
+    };
+
+    const generateAppointmentsFromDeals = (deals: Deal[], props: Property[]): CalendarAppointment[] => {
+        const appts: CalendarAppointment[] = [];
+
+        deals.forEach(deal => {
+            const property = props.find(p => p.id === deal.propertyId);
+            const address = property?.address || 'Untitled Real Estate';
+            const cleanAddress = sanitizeTitle(address);
+
+            // 1. Stage Entry
+            if (deal.stageEnteredAt) {
+                const stageLabel = STAGE_LABELS[deal.stage] || deal.stage;
+                appts.push({
+                    id: `deal-stage-${deal.id}-${deal.stage}`,
+                    time: new Date(deal.stageEnteredAt),
+                    title: `Entered ${stageLabel}: ${cleanAddress}`,
+                    location: cleanAddress,
+                    property: property ? {
+                        id: property.id,
+                        address: cleanAddress,
+                        type: property.type
+                    } : undefined,
+                    type: 'other',
+                    urgency: 'medium',
+                    isVirtual: true,
+                    notes: `Deal moved to ${stageLabel}`
+                } as any);
+            }
+
+            // 2. Auction Date
+            if (deal.auctionDate) {
+                appts.push({
+                    id: `deal-auction-${deal.id}`,
+                    time: new Date(deal.auctionDate),
+                    title: `Auction: ${cleanAddress}`,
+                    location: cleanAddress,
+                    property: property ? {
+                        id: property.id,
+                        address: cleanAddress,
+                        type: property.type
+                    } : undefined,
+                    type: 'meeting',
+                    urgency: 'high',
+                    isVirtual: true,
+                    notes: 'Auction for property'
+                } as any);
+            }
+
+            // 3. Tender Close
+            if (deal.tenderCloseDate) {
+                appts.push({
+                    id: `deal-tender-${deal.id}`,
+                    time: new Date(deal.tenderCloseDate),
+                    title: `Tender Close: ${cleanAddress}`,
+                    location: cleanAddress,
+                    property: property ? {
+                        id: property.id,
+                        address: cleanAddress,
+                        type: property.type
+                    } : undefined,
+                    type: 'other',
+                    urgency: 'high',
+                    isVirtual: true,
+                    notes: 'Tender submission deadline'
+                } as any);
+            }
+
+            // 4. Settlement Date
+            if (deal.settlementDate) {
+                appts.push({
+                    id: `deal-settlement-${deal.id}`,
+                    time: new Date(deal.settlementDate),
+                    title: `Settlement: ${cleanAddress}`,
+                    location: cleanAddress,
+                    property: property ? {
+                        id: property.id,
+                        address: cleanAddress,
+                        type: property.type
+                    } : undefined,
+                    type: 'other',
+                    urgency: 'high',
+                    isVirtual: true,
+                    notes: 'Property settlement date'
+                } as any);
+            }
+        });
+
+        return appts;
     };
 
     const determineUrgency = (type: string): 'low' | 'medium' | 'high' => {

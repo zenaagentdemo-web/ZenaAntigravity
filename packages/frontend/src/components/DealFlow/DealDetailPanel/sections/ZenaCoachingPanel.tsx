@@ -5,6 +5,7 @@
 import React from 'react';
 import { Deal } from '../../types';
 import { DealIntelligence } from '../../ZenaIntelligence/ZenaIntelligenceEngine';
+import { BrainCircuit } from 'lucide-react';
 import './sections.css';
 
 interface ZenaCoachingPanelProps {
@@ -34,7 +35,7 @@ export const ZenaCoachingPanel: React.FC<ZenaCoachingPanelProps> = ({
     return (
         <div className="section-card section-card--zena">
             <div className="section-card__header">
-                <span className="section-card__icon">🧠</span>
+                <BrainCircuit className="zena-icon-tech" strokeWidth={1.5} />
                 <span className="section-card__title">Zena Intelligence</span>
             </div>
 

@@ -115,7 +115,6 @@ export const QuickContacts: React.FC<QuickContactsProps> = ({
         onUpdate(updatedDeal);
         setIsAdding(false);
         setSearchQuery('');
-        setAllContacts([]);
     };
 
     // Close dropdown on outside click

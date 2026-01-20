@@ -25,6 +25,7 @@ export interface ToolExecutionContext {
         type: string;
         id: string | null;
     };
+    isVoiceMode?: boolean;
 }
 
 /**

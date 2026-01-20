@@ -101,7 +101,8 @@ describe('ProactivenessService', () => {
     describe('synthesizeProactiveStatement', () => {
         it('should ask the critical question first', () => {
             const data = { name: 'John' }; // Missing Role (Critical) and Email (High)
-            const statement = service.synthesizeProactiveStatement('contact.create', data);
+            const result = service.synthesizeProactiveStatement('contact.create', data);
+            const statement = result.text;
 
             expect(statement).toContain("What is their role?");
             expect(statement).toContain("I also need: Email Address");

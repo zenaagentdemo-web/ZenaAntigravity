@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../utils/apiClient';
+import { realTimeDataService } from '../services/realTimeDataService';
 
 export interface SuggestedAction {
     action: string;
@@ -25,38 +26,30 @@ export const usePropertyIntelligence = () => {
     const [isConnected, setIsConnected] = useState(false);
     const [lastPropertyUpdate, setLastPropertyUpdate] = useState<{ propertyId: string, prediction: PropertyPrediction } | null>(null);
 
-    // WebSocket Connection specific to Properties (reusing same socket or logic)
-    // For now, we reuse the pattern from useContactIntelligence, listening for 'property.intelligence'
+    // WebSocket Connection handling via centralized RealTimeDataService
     useEffect(() => {
-        const token = localStorage.getItem('auth_token') || 'demo-token';
-        if (!token) return;
+        // Subscribe to connection status
+        const unsubscribeStatus = realTimeDataService.onConnectionStatus((status) => {
+            setIsConnected(status);
+        });
 
-        const host = window.location.host;
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const url = `${protocol}//${host}/ws?token=${token}`;
-
-        const ws = new WebSocket(url);
-
-        ws.onopen = () => {
-            console.log('[ZenaBrain] Properties connected to neural network');
+        // Initialize connection if needed
+        if (!realTimeDataService.getConnectionStatus()) {
+            realTimeDataService.ensureConnection();
+        } else {
             setIsConnected(true);
+        }
+
+        // Subscribe to property intelligence updates
+        const unsubscribeIntelligence = realTimeDataService.onPropertyIntelligence((payload) => {
+            console.log('[ZenaBrain] Received property intelligence update:', payload);
+            setLastPropertyUpdate(payload);
+        });
+
+        return () => {
+            unsubscribeStatus();
+            unsubscribeIntelligence();
         };
-
-        ws.onmessage = (event) => {
-            try {
-                const message = JSON.parse(event.data);
-                if (message.type === 'property.intelligence') {
-                    console.log('[ZenaBrain] Received property intelligence update:', message.payload);
-                    setLastPropertyUpdate(message.payload);
-                }
-            } catch (err) {
-                console.error('Error parsing WS message', err);
-            }
-        };
-
-        ws.onclose = () => setIsConnected(false);
-
-        return () => ws.close();
     }, []);
 
     // Manual Refresh Function

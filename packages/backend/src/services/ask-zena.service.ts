@@ -31,7 +31,7 @@ export interface ConversationMessage {
 export interface AskZenaResponse {
   answer: string;
   sources: ResponseSource[];
-  suggestedActions?: string[];
+  suggestedActions?: any[];
   sessionId?: string;
   requiresApproval?: boolean;
   pendingAction?: {
@@ -167,7 +167,8 @@ export class AskZenaService {
           sources: [],  // Required property
           sessionId: agentResponse.sessionId,
           requiresApproval: agentResponse.requiresApproval,
-          pendingAction: agentResponse.pendingAction as any
+          pendingAction: agentResponse.pendingAction as any,
+          suggestedActions: agentResponse.suggestedActions || []
         };
 
         if (query.conversationId) {
@@ -214,7 +215,7 @@ export class AskZenaService {
           sessionId: agentResponse.sessionId,
           requiresApproval: agentResponse.requiresApproval,
           pendingAction: agentResponse.pendingAction as any,
-          suggestedActions: agentResponse.requiresApproval ? ["approve", "cancel"] : (agentResponse.answer.includes("[PRODUCT_BUTTON") ? [] : undefined)
+          suggestedActions: agentResponse.suggestedActions || (agentResponse.requiresApproval ? ["approve", "cancel"] : (agentResponse.answer.includes("[PRODUCT_BUTTON") ? [] : undefined))
         };
 
         if (query.conversationId) {
@@ -329,7 +330,8 @@ export class AskZenaService {
         const response: AskZenaResponse = {
           answer: agentResponse.answer,
           sources: [],
-          pendingAction: agentResponse.pendingAction
+          pendingAction: agentResponse.pendingAction as any,
+          suggestedActions: agentResponse.suggestedActions || []
         };
 
         if (query.conversationId) {

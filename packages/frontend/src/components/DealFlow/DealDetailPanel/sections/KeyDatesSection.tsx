@@ -35,7 +35,7 @@ export const KeyDatesSection: React.FC<KeyDatesSectionProps> = ({
     // Stage entered date
     if (deal.stageEnteredAt) {
         keyDates.push({
-            id: 'stage_entered',
+            id: `deal-stage-${deal.id}-${deal.stage}`,
             label: `Entered ${deal.stage.replace(/_/g, ' ')}`,
             date: new Date(deal.stageEnteredAt),
             type: 'past',
@@ -47,7 +47,7 @@ export const KeyDatesSection: React.FC<KeyDatesSectionProps> = ({
         const auctionDate = new Date(deal.auctionDate);
         const daysUntil = Math.ceil((auctionDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
         keyDates.push({
-            id: 'auction',
+            id: `deal-auction-${deal.id}`,
             label: 'Auction',
             date: auctionDate,
             type: daysUntil <= 3 ? 'urgent' : daysUntil > 0 ? 'upcoming' : 'past',
@@ -60,7 +60,7 @@ export const KeyDatesSection: React.FC<KeyDatesSectionProps> = ({
         const tenderDate = new Date(deal.tenderCloseDate);
         const daysUntil = Math.ceil((tenderDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
         keyDates.push({
-            id: 'tender',
+            id: `deal-tender-${deal.id}`,
             label: 'Tender Closes',
             date: tenderDate,
             type: daysUntil <= 3 ? 'urgent' : daysUntil > 0 ? 'upcoming' : 'past',
@@ -71,7 +71,7 @@ export const KeyDatesSection: React.FC<KeyDatesSectionProps> = ({
     // Settlement date
     if (deal.settlementDate) {
         keyDates.push({
-            id: 'settlement',
+            id: `deal-settlement-${deal.id}`,
             label: 'Settlement',
             date: new Date(deal.settlementDate),
             type: settlementDaysRemaining !== null && settlementDaysRemaining <= 7 ? 'urgent' : 'upcoming',
@@ -102,16 +102,41 @@ export const KeyDatesSection: React.FC<KeyDatesSectionProps> = ({
         });
     }
 
-    // Sort by date, upcoming first
+    // Add milestones from property
+    if ((deal.property as any)?.milestones) {
+        (deal.property as any).milestones.forEach((milestone: any) => {
+            const milestoneDate = new Date(milestone.date);
+            const daysRemaining = Math.ceil((milestoneDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+            keyDates.push({
+                id: milestone.id,
+                label: milestone.title || milestone.type.replace(/_/g, ' '),
+                date: milestoneDate,
+                type: daysRemaining < 0 ? 'past' : daysRemaining <= 3 ? 'urgent' : 'upcoming',
+                daysRemaining: daysRemaining,
+            });
+        });
+    }
+
+    // Sort by date: Most recent past at top, future dates towards common
     keyDates.sort((a, b) => {
         if (!a.date) return 1;
         if (!b.date) return -1;
-        // Upcoming dates first, then past
-        const aIsUpcoming = a.date.getTime() > Date.now();
-        const bIsUpcoming = b.date.getTime() > Date.now();
-        if (aIsUpcoming && !bIsUpcoming) return -1;
-        if (!aIsUpcoming && bIsUpcoming) return 1;
-        return a.date.getTime() - b.date.getTime();
+
+        const now = Date.now();
+        const aIsUpcoming = a.date.getTime() > now;
+        const bIsUpcoming = b.date.getTime() > now;
+
+        // Past items first, then upcoming
+        if (!aIsUpcoming && bIsUpcoming) return -1;
+        if (aIsUpcoming && !bIsUpcoming) return 1;
+
+        if (!aIsUpcoming) {
+            // Both past: Newest first (Descending)
+            return b.date.getTime() - a.date.getTime();
+        } else {
+            // Both upcoming: Soonest first (Ascending)
+            return a.date.getTime() - b.date.getTime();
+        }
     });
 
     const displayDates = expanded ? keyDates : keyDates.slice(0, 4);
@@ -151,7 +176,8 @@ export const KeyDatesSection: React.FC<KeyDatesSectionProps> = ({
                         onClick={() => {
                             if (date.date) {
                                 navigateToFromDeal('/calendar', deal.id, deal.property?.address, {
-                                    targetDate: date.date.toISOString()
+                                    targetDate: date.date.toISOString(),
+                                    highlightId: date.id
                                 });
                             }
                         }}

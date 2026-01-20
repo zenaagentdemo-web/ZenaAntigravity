@@ -10,9 +10,7 @@
 
 import { sessionManager, AgentSession, CurrentFocus, ConversationMessage } from './session-manager.service.js';
 import { toolRegistry } from '../tools/registry.js';
-import { ZenaToolDefinition, ToolExecutionContext, ToolExecutionResult } from '../tools/types.js';
-import '../tools/index.js';
-import { zenaAPILibrary } from '../tools/zena-api-library.js';
+import { ZenaToolDefinition, ToolExecutionContext } from '../tools/types.js';
 import { toolAliasGenerator } from '../tools/tool-alias-generator.js';
 import { agentPersonaService } from './agent-persona.service.js';
 import { proactivenessService } from './proactiveness.service.js';
@@ -23,6 +21,11 @@ import { toolExecutionService } from './tool-execution.service.js';
 import { proactiveContextService } from './proactive-context.service.js';
 import { tokenTrackingService } from './token-tracking.service.js';
 import { getNZDateTime } from '../utils/date-utils.js';
+import { zenaAPILibrary } from '../tools/zena-api-library.js';
+
+// 🧠 ZENA GLOBAL WIRING: This side-effect import registers 100+ tools and initializes the alias generator
+import '../tools/index.js';
+
 // Node 25 has built-in fetch
 
 export interface OrchestratorResponse {
@@ -155,7 +158,7 @@ class AgentOrchestratorService {
                     }
 
                     // Handle the tool result just like handleGeminiResponse does
-                    websocketService.broadcastToUser(userId, 'agent.tool_call', {
+                    websocketService.broadcastToUser(userId, 'ask.status', {
                         toolName: tool.name,
                         status: result.success ? 'success' : 'error',
                         result: result.data
@@ -222,15 +225,34 @@ class AgentOrchestratorService {
             // If the query contains a new address or person name that doesn't match the pending one,
             // we assume the user has changed their mind and wants to start a new command.
             const pendingParams = session.pendingConfirmation.accumulatedParams || session.pendingConfirmation.payload;
+
             const newAddress = query.match(/\d+[\w\s,]+Street|Road|Avenue|Lane/i)?.[0];
-            const newName = query.match(/(?:for|with|link|to)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/)?.[1];
+
+            // 🧠 ZENA CONTEXT FIX: Refined Name Detection
+            // Prevent "Saturday", "Tomorrow", "Meeting" etc. from being detected as a new person's name
+            // and wiping out the current contact context.
+            const commonTimeWords = [
+                'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+                'Tomorrow', 'Today', 'Yesterday', 'Meeting', 'Appointment', 'Task', 'Reminder',
+                'Am', 'Pm', 'Morning', 'Afternoon', 'Evening', 'Night', 'Call', 'Zoom', 'Vendor'
+            ];
+
+            const newNameMatch = query.match(/(?:for|with|link|to)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/);
+            const newName = newNameMatch ? newNameMatch[1] : null;
+
+            // Check if the "name" is actually a common word
+            const isCommonWord = newName && commonTimeWords.some(w => newName.toLowerCase().includes(w.toLowerCase()));
 
             const isAddressSwitch = newAddress && pendingParams.address && !pendingParams.address.toLowerCase().includes(newAddress.toLowerCase());
-            const isNameSwitch = newName && pendingParams.name && !pendingParams.name.toLowerCase().includes(newName.toLowerCase());
-            const isIntentSwitch = query.toLowerCase().includes('create') || query.toLowerCase().includes('search') || query.toLowerCase().includes('find');
+            const isNameSwitch = newName && !isCommonWord && pendingParams.name && !pendingParams.name.toLowerCase().includes(newName.toLowerCase());
+
+            // 🧠 ZENA INTENT SAFETY: Only switch on "create" if it starts the sentence or is very explicit
+            // This prevents "create task for X" from killing "create contact for X" context if they are related?
+            // Actually, "create" usually DOES mean new intent. But let's be safer with "find".
+            const isIntentSwitch = query.toLowerCase().startsWith('create ') || query.toLowerCase().startsWith('search ') || query.toLowerCase().startsWith('look up ');
 
             if (isAddressSwitch || isNameSwitch || isIntentSwitch) {
-                logger.info(`[AgentOrchestrator] Context switch detected (Switch: ${isAddressSwitch ? 'Address' : isNameSwitch ? 'Name' : 'Intent'}). Clearing pending action.`);
+                logger.info(`[AgentOrchestrator] Context switch detected (Address: ${!!isAddressSwitch}, Name: ${!!isNameSwitch}, Intent: ${!!isIntentSwitch}). Clearing pending action.`);
                 sessionManager.clearPendingConfirmation(session.sessionId);
             }
         }
@@ -488,7 +510,7 @@ class AgentOrchestratorService {
             throw new Error(`Gemini calling failed: ${response.statusText}`);
         }
 
-        const responseJson = await response.json();
+        const responseJson = await response.json() as any;
 
         // Log token usage
         if (responseJson.usageMetadata) {
@@ -543,10 +565,10 @@ class AgentOrchestratorService {
             // This manages user expectations while the job runs in the background.
             const slowTools = actionCalls
                 .map((tc: any) => this.findTool(tc.functionCall.name, availableTools))
-                .filter((t): t is ZenaToolDefinition => !!t && (t.isAsync === true || (t.estimatedDuration !== undefined && t.estimatedDuration >= 10)));
+                .filter((t: ZenaToolDefinition | undefined): t is ZenaToolDefinition => !!t && (t.isAsync === true || (t.estimatedDuration !== undefined && t.estimatedDuration >= 10)));
 
             if (slowTools.length > 0) {
-                const toolLabels = slowTools.map(t => t.name.split('.').pop()?.replace(/_/g, ' ')).join(' and ');
+                const toolLabels = slowTools.map((t: any) => (t as any).label || (t as any).name).join(', ');
                 logger.info(`[AgentOrchestrator] Detected slow tools (${toolLabels}), sending interim message`);
                 websocketService.broadcastAgentMessage(userId, `Working on ${toolLabels}! This may take a moment. While it's cooking in the background, what else do you want to work on or know? 🚀`);
             }
@@ -561,6 +583,7 @@ class AgentOrchestratorService {
                     userId,
                     sessionId: session.sessionId,
                     conversationId: session.conversationId,
+                    approvalConfirmed: true, // Auto-execution context for searches
                     isVoiceMode: session.isVoiceMode
                 };
 
@@ -615,7 +638,7 @@ class AgentOrchestratorService {
                             websocketService.broadcastAgentMessage(userId, "Searching the web for property details... 🔎");
                             try {
                                 const start = Date.now();
-                                webContextResult = await proactiveContextService.scanForContext(userId, 'create', 'property', { address: searchTerm });
+                                webContextResult = await proactiveContextService.scanForContext(userId, 'create', 'property', { address: searchTerm as string });
                                 console.log(`🌐 [EARLY EXIT] Web search took ${Date.now() - start}ms. Found: ${webContextResult.hasMatches}`);
 
                                 if (webContextResult.hasMatches) {
@@ -635,389 +658,528 @@ class AgentOrchestratorService {
                             .filter(m => m.role === 'user' && !m.content.startsWith('[TOOL_RESULT]') && !['yes', 'no', 'y', 'n'].includes(m.content.toLowerCase().trim()))
                             .pop();
 
-                        // Construct the answer based on whether we found web data
-                        let answer = `I couldn't find a ${entityType} matching "**${searchTerm}**" in your database.`;
+                        // Construct the answer based on whether we found web data and user intent
+                        const isExplicitCreate = origUserMsg?.content.toLowerCase().startsWith('create') ||
+                            origUserMsg?.content.toLowerCase().startsWith('add');
 
-                        if (webContextResult?.hasMatches) {
-                            answer += `\n\nHowever, I found some details online:\n${webContextResult.summaryForUser}\n\nShall I create a new property card with these details?`;
+                        // 🔥 ZENA INTELLIGENCE: Immediate Execution Protocol
+                        // If user said "Create" and we found data online, JUST DO IT.
+                        if (isExplicitCreate && entityType === 'property') {
+                            const hasWebData = webContextResult?.hasMatches;
+                            console.log(`⚡ [EARLY EXIT] Explicit Create Intent (Web Data: ${hasWebData}). Force-executing property creation.`);
+
+                            // Add missing metrics explicitly if web data found
+                            if (hasWebData && webContextResult?.suggestedData) {
+                                accumulatedParams = { ...accumulatedParams, ...webContextResult.suggestedData };
+                            } else {
+                                console.log('⚠️ [EARLY EXIT] Creating property without web enrichment (unavailable).');
+                            }
+
+                            // Construct execution context
+                            const context: ToolExecutionContext = {
+                                userId,
+                                sessionId: session.sessionId,
+                                conversationId: session.conversationId,
+                                isVoiceMode: session.isVoiceMode,
+                                approvalConfirmed: true
+                            };
+
+                            // Execute the creation tool immediately
+                            const createToolName = `${entityType}.create`;
+                            console.log(`⚡ Force-executing action: ${createToolName}`);
+                            const toolResult = await toolExecutionService.executeTool(createToolName, accumulatedParams, context);
+
+                            const result = { success: toolResult.success, data: toolResult.result, error: toolResult.error };
+
+                            // Track result for downstream logic (buttons, etc.)
+                            this.trackEntitiesFromResult(session.sessionId, tool.domain, result.data);
+                            executedResults.push({ tool: createToolName, result }); // Add to results so augmentResponse sees it!
+
+                            // Log result
+                            sessionManager.addMessage(session.sessionId, {
+                                role: 'assistant',
+                                content: `[TOOL_RESULT] ${JSON.stringify(result.data)}`,
+                                toolName: createToolName
+                            } as any);
+
+                            websocketService.broadcastToUser(userId, 'ask.status', {
+                                toolName: createToolName,
+                                status: result.success ? 'success' : 'error',
+                                result: result.data
+                            });
+
+                            if (result.success) {
+                                // 🔥 ZENA ONE-SHOT: Exit Immediately
+                                // We have done the work. We must construct the FINAL response here and RETURN it
+                                // to prevent "Shall I proceed?" or duplicate tool calls downstream.
+
+                                // 1. Manually augment response (Vendor, Price prompts)
+                                let prompt = "";
+                                if (entityType === 'property') {
+                                    prompt = "I've successfully created the property card. Who is the vendor for this property? I can add them now. (And let me know the listing price if you have it!)";
+
+                                    // 🚀 ZENA UX: If web data was found and we added it, confirm it.
+                                    if (hasWebData && webContextResult?.suggestedData?.floorArea) {
+                                        prompt = `I've successfully created the property card for **${accumulatedParams.address}**.\n\n` +
+                                            `I found some details online (Floor: ${webContextResult.suggestedData.floorArea}m², Land: ${webContextResult.suggestedData.landArea}m²) and added them for you.\n\n` +
+                                            `Who is the vendor for this property?`;
+                                    }
+                                }
+
+                                // 2. Generate Buttons (Standardized)
+                                const buttons = this.generateProductButtons([{ tool: createToolName, result: result }]);
+
+                                // 3. Construct Final Response
+                                const finalResponse: OrchestratorResponse = {
+                                    answer: prompt + (buttons ? `\n\n${buttons}` : ''),
+                                    sessionId: session.sessionId
+                                };
+
+                                // 4. Track in history manually so conversation flows
+                                sessionManager.addMessage(session.sessionId, {
+                                    role: 'assistant',
+                                    content: finalResponse.answer
+                                });
+
+                                // 5. 🛑 STOP EXECUTION HERE.
+                                return finalResponse;
+                            } else {
+                                // If creation failed, fall back to the error message
+                                return {
+                                    answer: `I tried to create the card immediately but encountered an error: ${result.error}`,
+                                    sessionId: session.sessionId
+                                };
+                            }
                         } else {
-                            answer += ` Would you like me to create a new ${entityType} card for it?`;
-                        }
-
-                        sessionManager.setPendingConfirmation(session.sessionId, {
-                            toolName: `${entityType}.create`,
-                            payload: accumulatedParams,
-                            confirmationPrompt: answer,
-                            isDestructive: false,
-                            accumulatedParams: accumulatedParams,
-                            originalQuery: origUserMsg?.content,  // Store original query for multi-action completion
-                            wasPrompted: true,
-                            contextScanned: true // Mark as scanned so we don't scan again
-                        });
-
-                        sessionManager.addMessage(session.sessionId, {
-                            role: 'assistant',
-                            content: answer
-                        });
-
-                        return {
-                            answer,
-                            requiresApproval: true,
-                            pendingAction: {
-                                toolName: `${entityType}.create`,
-                                args: accumulatedParams
-                            },
-                            sessionId: session.sessionId
-                        };
-                    }
-                }
-
-            }
-
-
-
-            // 🚀 ZENA MULTI-ACTION: Process action tools
-            // We execute as many as we can auto-approve. If we hit one needing approval:
-            // - If we already did some work, we stop and synthesize so Gemini can re-emit the rest.
-            // - If we haven't done anything, we show the approval prompt.
-
-            for (const toolCall of actionCalls) {
-                const call = toolCall.functionCall;
-                if (!call) continue;
-
-                const tool = this.findTool(call.name, availableTools);
-
-                if (!tool) {
-                    const errorMsg = `Tool not found: ${call.name}`;
-                    logger.error(`[AgentOrchestrator] ${errorMsg}`);
-
-                    // 🔥 ZENA AGENT INTEGRITY: If a tool call is detected but not found, 
-                    // we MUST fail and report it. Continuing would result in a "success" 
-                    // message for a bypassed action.
-                    return {
-                        answer: `I tried to process your request, but I couldn't find the tool "${call.name}". Please make sure the name is correct.`,
-                        sessionId: session.sessionId
-                    };
-                }
-
-                // Check for approval
-                const existingPending = session.pendingConfirmation;
-                let accumulatedParams: Record<string, any>;
-
-                if (existingPending && existingPending.toolName === tool.name) {
-                    accumulatedParams = { ...existingPending.accumulatedParams, ...call.args };
-                } else {
-                    try {
-                        accumulatedParams = await this.resolveSmartParameters(session, tool, call.args, turnEntityMap);
-                    } catch (error: any) {
-                        if (error.message && error.message.includes('AMBIGUITY_DETECTED')) {
-                            console.log(`🛑 Zero-Guess Safety Triggered: ${error.message}`);
+                            // If creation failed, fall back to the error message
                             return {
-                                answer: `I found multiple matches for that name. ${error.message.split(': ')[1]}`,
+                                answer: `I found data online but failed to create the card automatically: ${result.error}`,
                                 sessionId: session.sessionId
                             };
                         }
-                        throw error; // Re-throw other errors
-                    }
-                }
-
-                // 🧠 ZENA SUPER-INTEL: Step 1 - Proactive Context & Enrichment Scan
-                // 🧠 ZENA SUPER-INTEL: Step 1 - Proactive Context & Enrichment Scan
-                // 🔥 PERFORMANCE FIX: Only scan for TRUE creation tools, not updates/adds
-                // This prevents slow web searches during simple update operations
-                const TRUE_CREATION_TOOLS = ['property.create', 'contact.create', 'deal.create'];
-                const isCreation = TRUE_CREATION_TOOLS.includes(tool.name);
-                const lastScanKey = session.pendingConfirmation?.contextScannedKey;
-
-                // 🔥 FAST-PATH: Skip if we already have key data (bedrooms, bathrooms, etc.)
-                const alreadyHasData = accumulatedParams.bedrooms || accumulatedParams.bathrooms ||
-                    accumulatedParams.emails?.length > 0 || accumulatedParams.phones?.length > 0;
-
-                if (isCreation && !alreadyHasData) {
-                    console.log(`⏱️ [Performance] Starting proactive context scan for ${tool.name}...`);
-
-                    // 🚀 ZENA EXPECTATION MANAGEMENT: Notify user immediately about the proactive scan
-                    // Since web search timeout is now 45s, we must inform the user.
-                    websocketService.broadcastAgentMessage(userId, "I'm checking various data sources to fill in missing property details... this might take a moment. 🔎");
-
-                    const scanStartTime = Date.now();
-
-                    const entityType = tool.domain as 'property' | 'contact' | 'deal' | 'task' | 'calendar';
-                    const contextResult = await proactiveContextService.scanForContext(userId, 'create', entityType, accumulatedParams);
-
-                    console.log(`⏱️ [Performance] Proactive scan took ${Date.now() - scanStartTime}ms`);
-
-                    if (contextResult.hasMatches && contextResult.scanKey !== lastScanKey) {
-                        logger.agent('Found proactive context items', { tool: tool.name, matchCount: contextResult.matches.length, scanKey: contextResult.scanKey });
-
-                        // 🔥 AUTO-MERGE: If we found data point that user didn't provide, fill them in.
-                        // This allows auto-execution from web-lookup or email history.
-                        for (const [key, value] of Object.entries(contextResult.suggestedData)) {
-                            // 🚨 DATA INTEGRITY: Never silenty auto-enrich listingPrice.
-                            // The user MUST provide this or explicitly confirm a suggested value.
-                            if (key === 'listingPrice') continue;
-
-                            if (accumulatedParams[key] === undefined || accumulatedParams[key] === null || accumulatedParams[key] === '') {
-                                console.log(`   ✨ Auto-enriching ${key}: ${value}`);
-                                accumulatedParams[key] = value;
-                            }
-                        }
-
-                        // Also store results for potential display in prompt if we ultimately fail to auto-execute
-                        accumulatedParams.__contextResult = contextResult;
-                    }
-                } else if (!isCreation) {
-                    console.log(`⚡ [Performance] Skipping proactive scan for ${tool.name} (not a creation tool)`);
-                } else if (alreadyHasData) {
-                    console.log(`⚡ [Performance] Skipping proactive scan - data already provided`);
-                }
-
-                // 🧠 ZENA FRICTION REMOVAL: Auto-execute if all recommended fields are present
-                // OR if we've already prompted for them once and the user has replied.
-                // SPECIAL RULE: For "update" and "log" tools, auto-execute if ANY field is present and we're not deleting.
-                const isDestructive = tool.name.includes('delete') || tool.name.includes('remove');
-                const isUpdateOrLog = tool.name.includes('update') || tool.name.includes('add_note') || tool.name.includes('relationship_note');
-
-                const hasAnyUpdateInfo = Object.keys(call.args).length > 0;
-                const hasAllRecommended = tool.recommendedFields && tool.recommendedFields.every(f =>
-                    accumulatedParams[f] !== undefined &&
-                    accumulatedParams[f] !== null &&
-                    (typeof accumulatedParams[f] !== 'string' || accumulatedParams[f].trim() !== '')
-                );
-
-                const wasAlreadyPrompted = existingPending?.wasPrompted || false;
-
-                // 🔥 ZENA AGENT SUPER-INTEL: Auto-proceed if intent is clear
-                // Also auto-execute if we're in autoExecuteMode (user already confirmed one action in this conversation)
-                // NEW: Auto-execute .create tools if user explicitly said "create" in their query
-                const originalQuery = session.conversationHistory
-                    .filter(m => m.role === 'user' && !m.content.startsWith('[TOOL_RESULT]'))
-                    .pop()?.content?.toLowerCase() || '';
-                const hasExplicitCreateIntent = originalQuery.includes('create') ||
-                    originalQuery.includes('add') ||
-                    originalQuery.includes('book') ||
-                    originalQuery.includes('schedule');
-                const isCreateTool = tool.name.includes('.create') || tool.name === 'contact.add';
-
-                const shouldAutoExecute = !isDestructive && (
-                    tool.requiresApproval === false ||
-                    hasAllRecommended ||
-                    (isUpdateOrLog && hasAnyUpdateInfo) ||
-                    session.autoExecuteMode === true ||
-                    (hasExplicitCreateIntent && isCreateTool && hasAnyUpdateInfo)  // NEW: explicit create command = auto-execute
-                );
-
-                if (shouldAutoExecute) {
-                    const context: ToolExecutionContext = {
-                        userId,
-                        sessionId: session.sessionId,
-                        conversationId: session.conversationId,
-                        isVoiceMode: session.isVoiceMode,
-                        approvalConfirmed: true
-                    };
-
-                    console.log(`⚡ Auto-executing action: ${tool.name}`);
-                    const toolResult = await toolExecutionService.executeTool(tool.name, accumulatedParams, context);
-                    const result = { success: toolResult.success, data: toolResult.result, error: toolResult.error };
-
-                    if (result.success && tool.isAsync) {
-                        logger.info(`[AgentOrchestrator] ${tool.name} started as background job. result:`, result.data);
                     }
 
-                    this.trackEntitiesFromResult(session.sessionId, tool.domain, result.data);
+                    // STANDARD FALLBACK (Confirmation Prompt) if we didn't force execute
+                    let answer = '';
+                    if (!isExplicitCreate) {
+                        answer = `I couldn't find a ${entityType} matching "**${searchTerm}**" in your database. `;
+                    } else {
+                        // If explicit create, we start more professionally
+                        answer = `I'm preparing to create that ${entityType} card for you. `;
+                    }
 
-                    websocketService.broadcastToUser(userId, 'agent.tool_call', {
-                        toolName: tool.name,
-                        status: result.success ? 'success' : 'error',
-                        result: result.data
+                    if (webContextResult?.hasMatches) {
+                        answer += isExplicitCreate
+                            ? `\n\n${webContextResult.summaryForUser}\n\nShall I proceed with these details?`
+                            : `\n\nHowever, I found some helpful details online:\n${webContextResult.summaryForUser}\n\nShall I create a new property card with these?`;
+                    } else {
+                        answer += isExplicitCreate
+                            ? `Shall I proceed with creating the new ${entityType}?`
+                            : `Would you like me to create a new ${entityType} card for it?`;
+                    }
+
+                    sessionManager.setPendingConfirmation(session.sessionId, {
+                        toolName: `${entityType}.create`,
+                        payload: accumulatedParams,
+                        confirmationPrompt: answer,
+                        isDestructive: false,
+                        accumulatedParams: accumulatedParams,
+                        originalQuery: origUserMsg?.content,  // Store original query for multi-action completion
+                        wasPrompted: true,
+                        contextScannedKey: accumulatedParams.__contextResult?.scanKey
                     });
 
                     sessionManager.addMessage(session.sessionId, {
                         role: 'assistant',
-                        content: `(Auto-executed ${tool.name})`,
-                        toolName: tool.name
+                        content: answer
                     });
 
-                    // 🔥 ZENA INTEL: Add tool result to history too!
-                    sessionManager.addMessage(session.sessionId, {
-                        role: 'user',
-                        content: `[TOOL_RESULT] ${JSON.stringify(result.data)}`,
-                        toolName: tool.name
-                    });
+                    return {
+                        answer,
+                        requiresApproval: true,
+                        pendingAction: {
+                            toolName: `${entityType}.create`,
+                            args: accumulatedParams
+                        },
+                        sessionId: session.sessionId
+                    };
+                }
+            }
 
-                    if (result.success) {
-                        executedResults.push({ tool: tool.name, result });
+        }
 
-                        // 🧠 ZENA INTEL: Record created ID for turn-level propagation
-                        // Handle different tool response formats
-                        const id = result.data.id || result.data.contact?.id || result.data.property?.id || result.data.deal?.id || result.data.event?.id || result.data.task?.id;
-                        const name = result.data.name || result.data.contact?.name || result.data.address || result.data.property?.address || result.data.summary || result.data.event?.summary || accumulatedParams.name || accumulatedParams.propertyAddress || accumulatedParams.address;
 
-                        if (id && name) {
-                            turnEntityMap.set(name.toLowerCase(), id);
-                            console.log(`🧠 [Orchestrator] Turn Entity Map: Added ${name} -> ${id}`);
+
+        // 🚀 ZENA MULTI-ACTION: Process action tools
+        // We execute as many as we can auto-approve. If we hit one needing approval:
+        // - If we already did some work, we stop and synthesize so Gemini can re-emit the rest.
+        // - If we haven't done anything, we show the approval prompt.
+
+        for (const toolCall of actionCalls) {
+            const call = toolCall.functionCall;
+            if (!call) continue;
+
+            const tool = this.findTool(call.name, availableTools);
+
+            if (!tool) {
+                const errorMsg = `Tool not found: ${call.name}`;
+                logger.error(`[AgentOrchestrator] ${errorMsg}`);
+
+                // 🔥 ZENA AGENT INTEGRITY: If a tool call is detected but not found, 
+                // we MUST fail and report it. Continuing would result in a "success" 
+                // message for a bypassed action.
+                return {
+                    answer: `I tried to process your request, but I couldn't find the tool "${call.name}". Please make sure the name is correct.`,
+                    sessionId: session.sessionId
+                };
+            }
+
+            // Check for approval
+            const existingPending = session.pendingConfirmation;
+            let accumulatedParams: Record<string, any>;
+
+            if (existingPending && existingPending.toolName === tool.name) {
+                accumulatedParams = { ...existingPending.accumulatedParams, ...call.args };
+            } else {
+                try {
+                    accumulatedParams = await this.resolveSmartParameters(session, tool, call.args, turnEntityMap);
+                } catch (error: any) {
+                    if (error.message && error.message.includes('AMBIGUITY_DETECTED')) {
+                        console.log(`🛑 Zero-Guess Safety Triggered: ${error.message}`);
+                        return {
+                            answer: `I found multiple matches for that name. ${error.message.split(': ')[1]}`,
+                            sessionId: session.sessionId
+                        };
+                    }
+                    throw error; // Re-throw other errors
+                }
+            }
+
+            // 🧠 ZENA SUPER-INTEL: Step 1 - Proactive Context & Enrichment Scan
+            // 🧠 ZENA SUPER-INTEL: Step 1 - Proactive Context & Enrichment Scan
+            // 🔥 PERFORMANCE FIX: Only scan for TRUE creation tools, not updates/adds
+            // This prevents slow web searches during simple update operations
+            const TRUE_CREATION_TOOLS = ['property.create', 'contact.create', 'deal.create'];
+            const isCreation = TRUE_CREATION_TOOLS.includes(tool.name);
+            const lastScanKey = session.pendingConfirmation?.contextScannedKey;
+
+            // 🔥 FAST-PATH: Skip if we already have key data (bedrooms, bathrooms, etc.)
+            const alreadyHasData = accumulatedParams.bedrooms || accumulatedParams.bathrooms ||
+                accumulatedParams.emails?.length > 0 || accumulatedParams.phones?.length > 0;
+
+            if (isCreation && !alreadyHasData) {
+                console.log(`⏱️ [Performance] Starting proactive context scan for ${tool.name}...`);
+
+                // 🚀 ZENA EXPECTATION MANAGEMENT: Notify user immediately about the proactive scan
+                // Since web search timeout is now 45s, we must inform the user.
+                websocketService.broadcastAgentMessage(userId, "I'm checking various data sources to fill in missing property details... this might take a moment. 🔎");
+
+                const scanStartTime = Date.now();
+
+                const entityType = tool.domain as 'property' | 'contact' | 'deal' | 'task' | 'calendar';
+                const contextResult = await proactiveContextService.scanForContext(userId, 'create', entityType, accumulatedParams);
+
+                console.log(`⏱️ [Performance] Proactive scan took ${Date.now() - scanStartTime}ms`);
+
+                if (contextResult.hasMatches && contextResult.scanKey !== lastScanKey) {
+                    logger.agent('Found proactive context items', { tool: tool.name, matchCount: contextResult.matches.length, scanKey: contextResult.scanKey });
+
+                    // 🔥 AUTO-MERGE: If we found data point that user didn't provide, fill them in.
+                    // This allows auto-execution from web-lookup or email history.
+                    for (const [key, value] of Object.entries(contextResult.suggestedData)) {
+                        // 🚨 DATA INTEGRITY: Never silenty auto-enrich listingPrice.
+                        // The user MUST provide this or explicitly confirm a suggested value.
+                        if (key === 'listingPrice') continue;
+
+                        if (accumulatedParams[key] === undefined || accumulatedParams[key] === null || accumulatedParams[key] === '') {
+                            console.log(`   ✨ Auto-enriching ${key}: ${value}`);
+                            accumulatedParams[key] = value;
                         }
+                    }
 
-                        // 🧠 ZENA INTEL: Track entities globally for session memory
-                        this.trackEntitiesFromResult(session.sessionId, tool.domain, result.data);
+                    // Also store results for potential display in prompt if we ultimately fail to auto-execute
+                    accumulatedParams.__contextResult = contextResult;
+                }
+            } else if (!isCreation) {
+                console.log(`⚡ [Performance] Skipping proactive scan for ${tool.name} (not a creation tool)`);
+            } else if (alreadyHasData) {
+                console.log(`⚡ [Performance] Skipping proactive scan - data already provided`);
+            }
 
-                        // 🔥 ZENA INTEL: If we auto-executed and had context, mention it in the follow-up
-                        if (accumulatedParams.__contextResult) {
-                            sessionManager.addMessage(session.sessionId, {
-                                role: 'system',
-                                content: `Note: I used information found in your ${accumulatedParams.__contextResult.matches[0].source} to complete this.`
-                            });
-                        }
+            // 🧠 ZENA FRICTION REMOVAL: Auto-execute if all recommended fields are present
+            // OR if we've already prompted for them once and the user has replied.
+            // SPECIAL RULE: For "update" and "log" tools, auto-execute if ANY field is present and we're not deleting.
+            const isDestructive = tool.name.includes('delete') || tool.name.includes('remove');
+            const isUpdateOrLog = tool.name.includes('update') || tool.name.includes('add_note') || tool.name.includes('relationship_note');
 
-                        continue; // Keep going through actionCalls!
+            const hasAnyUpdateInfo = Object.keys(call.args).length > 0;
+            const hasAllRecommended = tool.recommendedFields && tool.recommendedFields.every(f =>
+                accumulatedParams[f] !== undefined &&
+                accumulatedParams[f] !== null &&
+                (typeof accumulatedParams[f] !== 'string' || accumulatedParams[f].trim() !== '')
+            );
+
+            const hasAllRequired = !tool.inputSchema.required || tool.inputSchema.required.every(f =>
+                accumulatedParams[f] !== undefined &&
+                accumulatedParams[f] !== null &&
+                (typeof accumulatedParams[f] !== 'string' || accumulatedParams[f].trim() !== '')
+            );
+
+            const wasAlreadyPrompted = existingPending?.wasPrompted || false;
+
+            // 🔥 ZENA FORCE-EXECUTE: Explicit override for property creation to guarantee immediacy
+            if (tool.name === 'property.create' && accumulatedParams.address) {
+                console.log('[AgentOrchestrator] FORCE-EXECUTE triggered for property.create');
+                // Bypass all other checks
+                const context: ToolExecutionContext = {
+                    userId,
+                    sessionId: session.sessionId,
+                    conversationId: session.conversationId,
+                    isVoiceMode: session.isVoiceMode,
+                    approvalConfirmed: true
+                };
+
+                console.log(`⚡ Force-executing action: ${tool.name}`);
+                const toolResult = await toolExecutionService.executeTool(tool.name, accumulatedParams, context);
+                const result = { success: toolResult.success, data: toolResult.result, error: toolResult.error };
+
+                if (result.success && tool.isAsync) {
+                    logger.info(`[AgentOrchestrator] ${tool.name} started as background job.`);
+                }
+
+                this.trackEntitiesFromResult(session.sessionId, tool.domain, result.data);
+
+                websocketService.broadcastToUser(userId, 'ask.status', {
+                    toolName: tool.name,
+                    status: result.success ? 'success' : 'error',
+                    result: result.data
+                });
+
+                sessionManager.addMessage(session.sessionId, {
+                    role: 'assistant',
+                    content: `(Auto-executed ${tool.name})`,
+                    toolName: tool.name
+                });
+
+                // Add tool result to history
+                sessionManager.addMessage(session.sessionId, {
+                    role: 'assistant',
+                    content: `[TOOL_RESULT] ${JSON.stringify(result.data)}`,
+                    toolName: tool.name
+                } as any);
+
+                if (result.success) {
+                    executedResults.push({ tool: tool.name, result });
+                    const id = result.data.id || result.data.property?.id;
+                    const name = result.data.address || result.data.property?.address;
+                    if (id && name) turnEntityMap.set(name.toLowerCase(), id);
+
+                    // Continue to next tool
+                    continue;
+                } else {
+                    return {
+                        answer: `I tried to create the property card immediately but encountered an error: ${result.error}`,
+                        sessionId: session.sessionId
+                    };
+                }
+            }
+
+            // 🔥 ZENA AGENT SUPER-INTEL: Auto-proceed if intent is clear
+            // Also auto-execute if we're in autoExecuteMode (user already confirmed one action in this conversation)
+            // NEW: Auto-execute .create tools if user explicitly said "create" in their query
+            const originalQuery = session.conversationHistory
+                .filter(m => m.role === 'user' && !m.content.startsWith('[TOOL_RESULT]'))
+                .pop()?.content?.toLowerCase() || '';
+            const hasExplicitCreateIntent = originalQuery.includes('create') ||
+                originalQuery.includes('add') ||
+                originalQuery.includes('book') ||
+                originalQuery.includes('schedule');
+            const isCreateTool = tool.name.includes('.create') || tool.name === 'contact.add';
+
+            const shouldAutoExecute = !isDestructive && hasAllRequired && (
+                tool.requiresApproval === false ||
+                hasAllRecommended ||
+                (isUpdateOrLog && hasAnyUpdateInfo) ||
+                session.autoExecuteMode === true ||
+                (hasExplicitCreateIntent && isCreateTool)
+            );
+
+            if (shouldAutoExecute) {
+                const context: ToolExecutionContext = {
+                    userId,
+                    sessionId: session.sessionId,
+                    conversationId: session.conversationId,
+                    isVoiceMode: session.isVoiceMode,
+                    approvalConfirmed: true
+                };
+
+                console.log(`⚡ Auto-executing action: ${tool.name}`);
+                const toolResult = await toolExecutionService.executeTool(tool.name, accumulatedParams, context);
+                const result = { success: toolResult.success, data: toolResult.result, error: toolResult.error };
+
+                if (result.success && tool.isAsync) {
+                    logger.info(`[AgentOrchestrator] ${tool.name} started as background job. result:`, result.data);
+                }
+
+                this.trackEntitiesFromResult(session.sessionId, tool.domain, result.data);
+
+                websocketService.broadcastToUser(userId, 'ask.status', {
+                    toolName: tool.name,
+                    status: result.success ? 'success' : 'error',
+                    result: result.data
+                });
+
+                sessionManager.addMessage(session.sessionId, {
+                    role: 'assistant',
+                    content: `(Auto-executed ${tool.name})`,
+                    toolName: tool.name
+                });
+
+                // 🔥 ZENA INTEL: Add tool result to history too!
+                sessionManager.addMessage(session.sessionId, {
+                    role: 'assistant',
+                    content: `[TOOL_RESULT] ${JSON.stringify(result.data)}`,
+                    toolName: tool.name
+                } as any);
+
+                if (result.success) {
+                    executedResults.push({ tool: tool.name, result });
+
+                    // 🧠 ZENA INTEL: Record created ID for turn-level propagation
+                    // Handle different tool response formats
+                    const id = result.data.id || result.data.contact?.id || result.data.property?.id || result.data.deal?.id || result.data.event?.id || result.data.task?.id;
+                    const name = result.data.name || result.data.contact?.name || result.data.address || result.data.property?.address || result.data.summary || result.data.event?.summary || accumulatedParams.name || accumulatedParams.propertyAddress || accumulatedParams.address;
+
+                    if (id && name) {
+                        turnEntityMap.set(name.toLowerCase(), id);
+                        console.log(`🧠 [Orchestrator] Turn Entity Map: Added ${name} -> ${id}`);
+                    }
+
+                    // 🧠 ZENA INTEL: Track entities globally for session memory
+                    this.trackEntitiesFromResult(session.sessionId, tool.domain, result.data);
+
+                    // 🔥 ZENA INTEL: If we auto-executed and had context, mention it in the follow-up
+                    if (accumulatedParams.__contextResult) {
+                        sessionManager.addMessage(session.sessionId, {
+                            role: 'assistant', // Use 'assistant' instead of 'system' for Zena-originated notes
+                            content: `Note: I used information found in your ${accumulatedParams.__contextResult.matches[0].source} to complete this.`
+                        });
+                    }
+
+                    continue; // Keep going through actionCalls!
+                } else {
+                    // Error during auto-execution - FALLBACK TO PROACTiveness/PROMPTING
+                    logger.error(`[AgentOrchestrator] Auto-execution failed for ${tool.name}: ${result.error}`);
+
+                    // If it failed and we haven't prompted before, treat it as a need for more info
+                    // We break out of the loop and fall through to the approval/prompting logic below
+                    // This allows Zena to ask for the missing field that caused the throw
+                    if (!wasAlreadyPrompted) {
+                        console.log(`🧠 [Orchestrator] Auto-execution failed for ${tool.name}. Falling back to proactive prompting.`);
+                        // We don't return here, we let it fall through to the prompt synthesis below
                     } else {
-                        // Error during auto-execution
                         return {
                             answer: `I tried to automatically execute ${tool.name} for you, but it failed: ${result.error}`,
                             sessionId: session.sessionId
                         };
                     }
                 }
-
-                // If we get here, this tool REQUIRES APPROVAL
-                // If we've already executed some tools, we stop and synthesize what we've done.
-                // Gemini will re-emit the next tools (including this one) in the next turn.
-                if (executedResults.length > 0) {
-                    console.log(`⏸️ Interrupted multi-action flow: ${tool.name} requires approval. Synthesizing existing results first.`);
-                    break;
-                }
-
-                // Standard approval flow for the first tool that needs it
-                let prompt = tool.confirmationPrompt ? tool.confirmationPrompt(accumulatedParams) : `I need your approval to execute ${tool.name}.`;
-
-                // 🧠 ZENA CONTEXT AWARENESS: Add scan results to prompt if available
-                if (accumulatedParams.__contextResult) {
-                    const contextResult = accumulatedParams.__contextResult;
-                    prompt = contextResult.summaryForUser + '\n\n---\n\n' + prompt;
-                }
-
-                // 🧠 ZENA COGNITIVE AWARENESS: Check for missing recommended fields
-                if (tool.recommendedFields && tool.recommendedFields.length > 0) {
-                    const missingFields = tool.recommendedFields.filter(f => !accumulatedParams[f] || (typeof accumulatedParams[f] === 'string' && accumulatedParams[f].trim() === ''));
-                    if (missingFields.length > 0) {
-                        const fieldLabels = missingFields.map(f => f.replace(/([A-Z])/g, ' $1').toLowerCase()).join(', ');
-
-                        // 🔥 ZENA SMART SYNTHESIS: Mention what we DID find vs what's missing
-                        const enrichedFields = Object.keys(accumulatedParams).filter(k =>
-                            tool.recommendedFields?.includes(k) &&
-                            accumulatedParams[k] !== undefined &&
-                            accumulatedParams[k] !== null &&
-                            (typeof accumulatedParams[k] !== 'string' || accumulatedParams[k].trim() !== '') &&
-                            k !== '__contextResult'
-                        );
-
-                        if (enrichedFields.length > 0) {
-                            const foundLabels = enrichedFields.map(f => f.replace(/([A-Z])/g, ' $1').toLowerCase()).join(', ');
-                            prompt += `\n\nI found the **${foundLabels}** on the web! 🌐`;
-                        }
-
-                        prompt += `\n\nI also noticed some details are still missing: **${fieldLabels}**. Would you like to add these now to make this record even richer?`;
-                    }
-                }
-
-                // Store in session as pending with accumulated params
-                // Get the original query from conversation history (since 'query' is not available in this scope)
-                const lastUserMsg = session.conversationHistory
-                    .filter(m => m.role === 'user' && !m.content.startsWith('[TOOL_RESULT]') && !['yes', 'no', 'y', 'n'].includes(m.content.toLowerCase().trim()))
-                    .pop();
-
-                sessionManager.setPendingConfirmation(session.sessionId, {
-                    toolName: tool.name,
-                    payload: call.args,
-                    confirmationPrompt: prompt,
-                    isDestructive: isDestructive,
-                    accumulatedParams, // Use the merged accumulated params
-                    originalQuery: lastUserMsg?.content,  // Store original query for multi-action completion
-                    wasPrompted: true, // Mark as prompted so we don't loop
-                    contextScannedKey: accumulatedParams.__contextResult?.scanKey // Store key of what we scanned
-                });
-
-                logger.agent('Tool requires approval', { tool: tool.name, prompt: prompt.substring(0, 100) });
-
-                sessionManager.addMessage(session.sessionId, {
-                    role: 'assistant',
-                    content: prompt
-                });
-
-                // 🚀 ZENA UX: If we've already executed some tools (e.g. created contact), 
-                // we should still show the buttons for those tools even while asking for approval for the next step.
-                const alreadyDoneButtons = executedResults.length > 0 ? this.generateProductButtons(executedResults) : '';
-                const finalPrompt = prompt + (alreadyDoneButtons ? `\n\n${alreadyDoneButtons}` : '');
-
-                return {
-                    answer: finalPrompt,
-                    requiresApproval: true,
-                    pendingAction: {
-                        toolName: tool.name,
-                        payload: accumulatedParams
-                    },
-                    sessionId: session.sessionId
-                };
-            } // End of actionCalls loop
-
-            // If we executed tools, synthesize the results
-            if (executedResults.length > 0) {
-                const combinedResult = executedResults.length === 1 ? executedResults[0] : { multipleActions: true, results: executedResults };
-                const allResults = [...previousResults, ...executedResults];
-                let response = await this.processFollowUp(userId, session, combinedResult, availableTools, systemPrompt, allResults);
-
-                // 🚀 ZENA PROACTIVENESS ENGINE: Check for gaps and suggest next steps
-                if (response.answer && !session.pendingConfirmation) {
-                    const lastResult = executedResults[executedResults.length - 1];
-                    const proactiveResult = proactivenessService.synthesizeProactiveStatement(lastResult.tool, lastResult.result.data);
-
-                    // 🛠️ PRODUCT NAVIGATION BUTTONS: Add "View Product" buttons for trust
-                    // Use allResults to include previously executed tools too
-                    const productButtons = this.generateProductButtons(allResults);
-
-                    // 🧠 DEDUPLICATION: Only append if not already in the synthesized answer
-                    let augmentation = (proactiveResult.text || ''); // Use .text property
-                    if (productButtons) {
-                        // Check if the buttons are already present in the response answer 
-                        // (Gemini occasionally learns to generate them itself)
-                        const buttonsToAppend: string[] = [];
-                        const existingButtons = response.answer.match(/\[PRODUCT_BUTTON:[^\]]+\]/g) || [];
-
-                        const newButtons = productButtons.match(/\[PRODUCT_BUTTON:[^\]]+\]/g) || [];
-                        for (const btn of newButtons) {
-                            if (!existingButtons.includes(btn)) {
-                                buttonsToAppend.push(btn);
-                            }
-                        }
-
-                        if (buttonsToAppend.length > 0) {
-                            augmentation += `\n\n${buttonsToAppend.join(' ')}`;
-                        }
-                    }
-
-                    if (augmentation.trim()) {
-                        response.answer += augmentation;
-
-                        // Upgrade response with structured actions
-                        if (proactiveResult.suggestedActions && proactiveResult.suggestedActions.length > 0) {
-                            response.suggestedActions = proactiveResult.suggestedActions;
-                        }
-
-                        // Update history with the fully augmented answer
-                        // Map the history and update the last assistant message
-                        const history = session.conversationHistory;
-                        const lastMsg = history[history.length - 1];
-                        if (lastMsg && lastMsg.role === 'assistant') {
-                            lastMsg.content = response.answer;
-                            lastMsg.suggestedActions = response.suggestedActions;
-                        }
-                    }
-                }
-
-                return response;
             }
 
-        } // End of if (toolCalls.length > 0)
+            // If we get here, this tool REQUIRES APPROVAL
+            // If we've already executed some tools, we stop and synthesize what we've done.
+            // Gemini will re-emit the next tools (including this one) in the next turn.
+            if (executedResults.length > 0) {
+                console.log(`⏸️ Interrupted multi-action flow: ${tool.name} requires approval. Synthesizing existing results first.`);
+                break;
+            }
+
+            // Standard approval flow for the first tool that needs it
+            let prompt = tool.confirmationPrompt ? tool.confirmationPrompt(accumulatedParams) : `I need your approval to execute ${tool.name}.`;
+
+            // 🧠 ZENA CONTEXT AWARENESS: Add scan results to prompt if available
+            if (accumulatedParams.__contextResult) {
+                const contextResult = accumulatedParams.__contextResult;
+                prompt = contextResult.summaryForUser + '\n\n---\n\n' + prompt;
+            }
+
+            // 🧠 ZENA COGNITIVE AWARENESS: Check for missing recommended/required fields
+            const checkFields = Array.from(new Set([...(tool.recommendedFields || []), ...(tool.inputSchema.required || [])]));
+
+            if (checkFields.length > 0) {
+                const missingFields = checkFields.filter(f => !accumulatedParams[f] || (typeof accumulatedParams[f] === 'string' && accumulatedParams[f].trim() === ''));
+                if (missingFields.length > 0) {
+                    const fieldLabels = missingFields.map(f => f.replace(/([A-Z])/g, ' $1').toLowerCase()).join(', ');
+
+                    // 🔥 ZENA SMART SYNTHESIS: Mention what we DID find vs what's missing
+                    const enrichedFields = Object.keys(accumulatedParams).filter(k =>
+                        tool.recommendedFields?.includes(k) &&
+                        accumulatedParams[k] !== undefined &&
+                        accumulatedParams[k] !== null &&
+                        (typeof accumulatedParams[k] !== 'string' || accumulatedParams[k].trim() !== '') &&
+                        k !== '__contextResult'
+                    );
+
+                    if (enrichedFields.length > 0) {
+                        const foundLabels = enrichedFields.map(f => f.replace(/([A-Z])/g, ' $1').toLowerCase()).join(', ');
+                        prompt += `\n\nI found the **${foundLabels}** on the web! 🌐`;
+                    }
+
+                    prompt += `\n\nI also noticed some details are still missing: **${fieldLabels}**. Would you like to add these now to make this record even richer?`;
+                }
+            }
+
+            // Store in session as pending with accumulated params
+            // Get the original query from conversation history (since 'query' is not available in this scope)
+            const lastUserMsg = session.conversationHistory
+                .filter(m => m.role === 'user' && !m.content.startsWith('[TOOL_RESULT]') && !['yes', 'no', 'y', 'n'].includes(m.content.toLowerCase().trim()))
+                .pop();
+
+            sessionManager.setPendingConfirmation(session.sessionId, {
+                toolName: tool.name,
+                payload: call.args,
+                confirmationPrompt: prompt,
+                isDestructive: isDestructive,
+                accumulatedParams, // Use the merged accumulated params
+                originalQuery: lastUserMsg?.content,  // Store original query for multi-action completion
+                wasPrompted: true, // Mark as prompted so we don't loop
+                contextScannedKey: accumulatedParams.__contextResult?.scanKey // Store key of what we scanned
+            });
+
+            logger.agent('Tool requires approval', { tool: tool.name, prompt: prompt.substring(0, 100) });
+
+            sessionManager.addMessage(session.sessionId, {
+                role: 'assistant',
+                content: prompt
+            });
+
+            // 🚀 ZENA UX: If we've already executed some tools (e.g. created contact), 
+            // we should still show the buttons for those tools even while asking for approval for the next step.
+            const alreadyDoneButtons = executedResults.length > 0 ? this.generateProductButtons(executedResults) : '';
+            const finalPrompt = prompt + (alreadyDoneButtons ? `\n\n${alreadyDoneButtons}` : '');
+
+            return {
+                answer: finalPrompt,
+                requiresApproval: true,
+                pendingAction: {
+                    toolName: tool.name,
+                    payload: accumulatedParams
+                },
+                sessionId: session.sessionId
+            };
+        } // End of actionCalls loop
+
+        // If we executed tools, synthesize the results
+        if (executedResults.length > 0) {
+            const combinedResult = executedResults.length === 1 ? executedResults[0] : { multipleActions: true, results: executedResults };
+            const allResults = [...previousResults, ...executedResults];
+            let response = await this.processFollowUp(userId, session, combinedResult, availableTools, systemPrompt, allResults);
+
+            // 🚀 ZENA AUGMENTATION: Apply proactive suggestions and product buttons
+            const augmented = this.augmentResponse(session, response, executedResults, allResults);
+            return augmented;
+        }
+
 
         // No tool calls, just return text
         let finalResponseText = parts.map((p: any) => p.text || '').join('\n').trim();
@@ -1029,15 +1191,22 @@ class AgentOrchestratorService {
         }
 
         if (finalResponseText) {
-            sessionManager.addMessage(session.sessionId, {
-                role: 'assistant',
-                content: finalResponseText
-            });
-
-            return {
+            const response: OrchestratorResponse = {
                 answer: finalResponseText,
                 sessionId: session.sessionId
             };
+
+            // 🚀 ZENA LATE AUGMENTATION: Even if no tools were executed in THIS turn,
+            // check if we have results from previous turns (in a multi-turn flow) to represent.
+            const augmented = this.augmentResponse(session, response, [], previousResults);
+
+            sessionManager.addMessage(session.sessionId, {
+                role: 'assistant',
+                content: augmented.answer,
+                suggestedActions: augmented.suggestedActions
+            });
+
+            return augmented;
         }
 
         // Final fallback to avoid hang if absolutely nothing was generated
@@ -1047,6 +1216,128 @@ class AgentOrchestratorService {
         };
     }
 
+
+
+    /**
+     * Augment a response with proactive suggestions and navigation buttons
+     */
+    private augmentResponse(
+        session: AgentSession,
+        response: OrchestratorResponse,
+        executedResults: any[],
+        allResults: any[]
+    ): OrchestratorResponse {
+        if (!response.answer || session.pendingConfirmation) return response;
+
+        let augmentation = '';
+        let suggestedActions: any[] = [];
+
+        // 🧠 ZENA PROACTIVITY: Check for Property Creation without Vendor
+        const propertyCreation = executedResults.find(r => r.tool === 'property.create' && r.result.success);
+        if (propertyCreation) {
+            const data = propertyCreation.result.data.property || propertyCreation.result.data;
+            const hasVendor = data.vendors && data.vendors.length > 0;
+            // Check for missing price (treat 0 or null as missing)
+            const hasPrice = data.listingPrice && data.listingPrice > 0;
+
+            if (!hasVendor) {
+                console.log('[AgentOrchestrator] Proactive: Detected property creation without vendor.');
+                let prompt = "I've created the property card. Who is the vendor for this property? I can add them now.";
+
+                // 🧠 ZENA PROACTIVE QUERY: Ask for price too if missing
+                if (!hasPrice) {
+                    prompt += " (And let me know the listing price if you have it!)";
+                }
+
+                augmentation += (augmentation ? '\n\n' : '') + prompt;
+                suggestedActions.push({
+                    label: 'Add Vendor',
+                    action: `update property ${data.address} add vendor`,
+                    type: 'suggestion'
+                });
+            } else if (!hasPrice) {
+                // Has vendor but no price
+                const prompt = "Property created. Do you have a listing price in mind for this campaign?";
+                augmentation += (augmentation ? '\n\n' : '') + prompt;
+            }
+        }
+
+        // 🧠 ZENA CASCADE STEP 2: Vendor Added -> Suggest Deal Flow
+        // Check if we just created a contact that is a vendor, or linked a vendor
+        const contactCreation = executedResults.find(r => r.tool === 'contact.create' || (r.tool === 'contact.update' && r.result.data.role === 'vendor'));
+        // We also check if we have a recent property focused (from previous turn)
+        const recentProperty = session.recentEntities.properties[0];
+
+        if (contactCreation && recentProperty) {
+            const contact = contactCreation.result.data.contact || contactCreation.result.data;
+            // Only suggest if "vendor" role involved
+            if (contact.role === 'vendor' || contactCreation.tool === 'contact.create') {
+                console.log('[AgentOrchestrator] Proactive: Vendor added, suggesting Deal Flow.');
+
+                // Suggest Deal Creation
+                const prompt = `I've linked ${contact.name} as the vendor to ${recentProperty.address}. Shall I start a Deal Flow for this property at the 'Appraisal' stage?`;
+
+                augmentation += (augmentation ? '\n\n' : '') + prompt;
+                suggestedActions.push({
+                    label: 'Start Deal Flow',
+                    action: `create seller deal "Sale of ${recentProperty.address}" for address "${recentProperty.address}" linked to ${contact.name}`,
+                    type: 'suggestion'
+                });
+            }
+        }
+
+        // 1. Proactive Suggestions (Gaps)
+        if (executedResults.length > 0) {
+            const lastResult = executedResults[executedResults.length - 1];
+            try {
+                const proactiveResult = proactivenessService.synthesizeProactiveStatement(lastResult.tool, lastResult.result.data);
+                if (proactiveResult.text) {
+                    augmentation += proactiveResult.text;
+                }
+                if (proactiveResult.suggestedActions) {
+                    suggestedActions = proactiveResult.suggestedActions;
+                }
+            } catch (err) {
+                logger.error('[AgentOrchestrator] Error calling Gemini', err as any);
+            }
+        }
+
+        // 2. Product Navigation Buttons
+        const productButtons = this.generateProductButtons(allResults);
+        if (productButtons) {
+            const buttonsToAppend: string[] = [];
+            const existingButtons = response.answer.match(/\[PRODUCT_BUTTON:[^\]]+\]/g) || [];
+            const newButtons = productButtons.match(/\[PRODUCT_BUTTON:[^\]]+\]/g) || [];
+
+            for (const btn of (newButtons as any[])) {
+                if (!(existingButtons as any[]).includes(btn)) {
+                    buttonsToAppend.push(btn);
+                }
+            }
+
+            if (buttonsToAppend.length > 0) {
+                augmentation += (augmentation ? '\n\n' : '') + buttonsToAppend.join(' ');
+            }
+        }
+
+        if (augmentation.trim()) {
+            response.answer += (response.answer.includes(augmentation) ? '' : '\n\n' + augmentation);
+            if (suggestedActions.length > 0) {
+                response.suggestedActions = suggestedActions;
+            }
+
+            // Update history if the last message matches
+            const history = session.conversationHistory;
+            const lastMsg = history[history.length - 1];
+            if (lastMsg && lastMsg.role === 'assistant') {
+                lastMsg.content = response.answer;
+                (lastMsg as any).suggestedActions = response.suggestedActions;
+            }
+        }
+
+        return response;
+    }
+
     /**
      * Generate product navigation buttons for the UI
      */
@@ -1054,59 +1345,44 @@ class AgentOrchestratorService {
         const buttons: string[] = [];
         const seen = new Set<string>();
 
-        // DEBUG: Log input to button generation
-        console.log(`[AgentOrchestrator] Generating buttons for ${results.length} results...`);
-
         for (const res of results) {
             const tool = res.tool;
-            let data = res.result.data;
+            let data = res.result?.data || res.result;
             if (!data) continue;
 
-            // 🧠 ZENA NORMALIZATION: Some tools return { data: { ... } }
+            // 🧠 ZENA NORMALIZATION: Extract data from common wrappers
             if (data.data && typeof data.data === 'object' && !data.id && !data.name) {
                 data = data.data;
             }
 
             if (tool.includes('contact')) {
-                const contact = data.contact || data;
+                const contact = data.contact || (data.id && data.name ? data : null);
                 if (contact && contact.id && !seen.has(`contact:${contact.id}`)) {
-                    console.log(`[AgentOrchestrator] Adding Contact Button for ${contact.id}`);
                     buttons.push(`[PRODUCT_BUTTON: View Contact, /contacts/${contact.id}, ${contact.id}]`);
                     seen.add(`contact:${contact.id}`);
                 }
             } else if (tool.includes('property')) {
-                const property = data.property || data;
+                const property = data.property || (data.id && data.address ? data : null);
                 if (property && property.id && !seen.has(`property:${property.id}`)) {
-                    console.log(`[AgentOrchestrator] Adding Property Button for ${property.id}`);
                     buttons.push(`[PRODUCT_BUTTON: View Property Card, /properties/${property.id}, ${property.id}]`);
                     seen.add(`property:${property.id}`);
                 }
             } else if (tool.includes('task')) {
-                const task = data.task || data;
+                const task = data.task || (data.id && data.label ? data : null);
                 if (task && task.id && !seen.has(`task:${task.id}`)) {
-                    console.log(`[AgentOrchestrator] Adding Task Button for ${task.id}`);
                     buttons.push(`[PRODUCT_BUTTON: View Task, /tasks, ${task.id}]`);
                     seen.add(`task:${task.id}`);
                 }
             } else if (tool.includes('calendar')) {
-                const event = data.event || data;
+                const event = data.event || (data.id && (data.summary || data.title) ? data : null);
                 if (event && event.id && !seen.has(`event:${event.id}`)) {
-                    console.log(`[AgentOrchestrator] Adding Event Button for ${event.id}`);
                     buttons.push(`[PRODUCT_BUTTON: View Appointment, /calendar, ${event.id}]`);
                     seen.add(`event:${event.id}`);
                 }
             }
-
         }
 
-        const buttonString = buttons.join(' ');
-        if (buttonString) {
-            console.log(`[AgentOrchestrator] Generated Buttons: ${buttonString}`);
-        } else {
-            console.log(`[AgentOrchestrator] No buttons generated.`);
-        }
-
-        return buttonString;
+        return buttons.join(' ');
     }
 
     /**
@@ -1353,7 +1629,7 @@ class AgentOrchestratorService {
             const event = data.event || data;
             if (event && event.id && (event.summary || event.title)) {
                 sessionManager.trackEntity(sessionId, 'calendar_event', event);
-                sessionManager.setFocus(sessionId, { type: 'calendar_event', id: event.id, metadata: { summary: event.summary || event.title } });
+                sessionManager.setFocus(sessionId, { type: 'calendar_event', id: (event as any).id, metadata: { name: (event as any).summary || (event as any).title } });
             }
         }
     }
@@ -1445,7 +1721,7 @@ GENERAL GUIDELINES:
         // 3. Domain-less match (e.g. "create" -> "contact.create" if in contact-heavy context)
         // For now, just look for any tool that ends with the requested name
         if (!name.includes('.')) {
-            tool = availableTools.find(t => t.name.endsWith(`.${name} `) || t.name.endsWith(`.${snakeName} `));
+            tool = availableTools.find(t => t.name.endsWith(`.${name}`) || t.name.endsWith(`.${snakeName}`));
             if (tool) return tool;
         }
 
@@ -1475,6 +1751,61 @@ GENERAL GUIDELINES:
                 };
             default:
                 return searchArgs;
+        }
+    }
+    /**
+     * Extract CRM intents from a diarized transcript using Gemini 3 Flash
+     */
+    async extractIntentsFromTranscript(userId: string, transcript: string, timelineSummary: string): Promise<any[]> {
+        const prompt = `
+Role: Zena CRM Orchestrator (Powered by Gemini 3 Flash).
+Task: Analyze this diarized voice note transcript and extract high-granularity CRM intents.
+
+TRANSCRIPT:
+${transcript}
+
+SUMMARY:
+${timelineSummary}
+
+CONTEXT:
+Current Date: ${getNZDateTime().full}
+Available Tools: contact.create, contact.update, property.create, property.update, task.create, calendar.create_event, deal.update_stage.
+
+INSTRUCTIONS:
+1. Identify specific actionable intents that can be executed as CRM tool calls.
+2. For each intent, determine the best tool and prepare the parameters.
+3. Be aggressive about identifying updates (e.g., if a contact is mentioned with a new detail, use contact.update).
+4. For property mentions, use LINK_TO_PROPERTY logic.
+5. ZERO-GUESWORK: Do NOT propose an action if the intent is ambiguous or missing parameters. 
+6. FACTUAL GROUNDING: Every proposed tool call MUST have direct supporting evidence in the TRANSCRIPT. If it's not in the text, it's not a real intent.
+7. SILENCE: If the transcript is empty or incoherent, return an empty array [].
+
+JSON OUTPUT ONLY:
+[
+  {
+    "type": "proposed_action",
+    "toolName": "contact.update",
+    "label": "Update Sarah's role to 'Vendor'",
+    "params": { "name": "Sarah", "role": "vendor" },
+    "confidence": 0.95
+  },
+  {
+    "type": "proposed_action",
+    "toolName": "task.create",
+    "label": "Follow up Tuesday",
+    "params": { "label": "Call John about viewing", "dueDate": "..." },
+    "confidence": 0.9
+  }
+]
+`;
+
+        try {
+            const response = await this.callGemini(userId, 'voice-note-extraction', transcript, prompt, [], []);
+            const jsonMatch = response.match(/\[[\s\S]*\]/);
+            return JSON.parse(jsonMatch ? jsonMatch[0] : '[]');
+        } catch (error) {
+            logger.error(`[AgentOrchestrator] Error extracting intents from transcript:`, error as any);
+            return [];
         }
     }
 }

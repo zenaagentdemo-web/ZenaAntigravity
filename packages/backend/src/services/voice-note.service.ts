@@ -2,6 +2,8 @@ import prisma from '../config/database.js';
 import { aiProcessingService } from './ai-processing.service.js';
 import { timelineService } from './timeline.service.js';
 import { taskService } from './task.service.js';
+import { agentOrchestrator } from './agent-orchestrator.service.js';
+import { logger } from './logger.service.js';
 
 interface ExtractedEntity {
   type: 'contact' | 'property' | 'task' | 'note';
@@ -12,7 +14,9 @@ interface ExtractedEntity {
 interface VoiceNoteProcessingResult {
   voiceNoteId: string;
   transcript: string;
+  timelineSummary?: string;
   extractedEntities: ExtractedEntity[];
+  proposedActions: any[];
   createdTasks: string[];
   createdTimelineEvents: string[];
 }
@@ -78,6 +82,48 @@ class VoiceNoteService {
       }
       throw error;
     }
+  }
+
+  /**
+   * Flatten categorized entities into a single array for frontend display
+   */
+  private flattenEntities(entities: any): ExtractedEntity[] {
+    const flattened: ExtractedEntity[] = [];
+    if (!entities) return flattened;
+
+    if (entities.contacts && Array.isArray(entities.contacts)) {
+      entities.contacts.forEach((c: any) => flattened.push({
+        type: 'contact',
+        data: c,
+        confidence: c.confidence || 0.8
+      }));
+    }
+
+    if (entities.properties && Array.isArray(entities.properties)) {
+      entities.properties.forEach((p: any) => flattened.push({
+        type: 'property',
+        data: p,
+        confidence: p.confidence || 0.8
+      }));
+    }
+
+    if (entities.actions && Array.isArray(entities.actions)) {
+      entities.actions.forEach((a: any) => flattened.push({
+        type: 'task',
+        data: { label: a.action || a.label, dueDate: a.dueDate },
+        confidence: a.confidence || 0.8
+      }));
+    }
+
+    if (entities.dates && Array.isArray(entities.dates)) {
+      entities.dates.forEach((d: any) => flattened.push({
+        type: 'note',
+        data: { content: `${d.type}: ${d.description}`, date: d.date },
+        confidence: d.confidence || 0.8
+      }));
+    }
+
+    return flattened;
   }
 
   /**
@@ -161,10 +207,9 @@ Return a JSON array of extracted entities in this format:
   }
 
   /**
-   * Process a voice note: transcribe and extract entities
+   * Orchestrate voice note processing using the Duo-Model pipeline
    */
   async processVoiceNote(voiceNoteId: string): Promise<VoiceNoteProcessingResult> {
-    // Update status to processing
     await prisma.voiceNote.update({
       where: { id: voiceNoteId },
       data: { processingStatus: 'processing' },
@@ -179,84 +224,123 @@ Return a JSON array of extracted entities in this format:
         throw new Error('Voice note not found');
       }
 
-      // Step 1: Transcribe audio
-      const transcript = await this.transcribeAudio(voiceNote.audioUrl);
+      // Step 1: PERCEPTION LAYER (Gemini 2.0 Flash)
+      // Fetch audio data
+      let audioData: string;
+      let mimeType = 'audio/mpeg';
 
-      // Step 2: Extract entities from transcript
-      const extractedEntities = await this.extractEntitiesFromTranscript(
+      if (voiceNote.audioUrl.startsWith('data:')) {
+        const [header, base64] = voiceNote.audioUrl.split(',');
+        audioData = base64;
+        mimeType = header.split(':')[1].split(';')[0];
+      } else {
+        const response = await fetch(voiceNote.audioUrl);
+        if (!response.ok) throw new Error(`Failed to fetch audio: ${response.statusText}`);
+        const buffer = await response.arrayBuffer();
+        audioData = Buffer.from(buffer).toString('base64');
+        mimeType = response.headers.get('content-type') || 'audio/mpeg';
+      }
+
+      const perceptionResult = await aiProcessingService.processMultimodalAudio(audioData, mimeType);
+      const transcript = perceptionResult.transcript || '';
+      const timelineSummary = perceptionResult.timelineSummary || 'Voice note recorded';
+      const entities = this.flattenEntities(perceptionResult.entities || {});
+
+      // Step 2: REASONING LAYER (Gemini 3 Flash via Agent Orchestrator)
+      const proposedActions = await agentOrchestrator.extractIntentsFromTranscript(
+        voiceNote.userId,
         transcript,
-        voiceNote.userId
+        timelineSummary
       );
 
-      // Step 3: Create tasks from extracted task entities
+      // Step 3: CRM AUTOMATION - Property Timeline Summary
+      const createdTimelineEvents: string[] = [];
+      const linkToPropertyAction = proposedActions.find(a => a.toolName === 'property.update' || a.label.toLowerCase().includes('property'));
+
+      // If we have a property mention, create a timeline event for it
+      const propertyEntity = entities.find(e => e.type === 'property')?.data;
+      if (propertyEntity || linkToPropertyAction) {
+        const address = propertyEntity?.address || linkToPropertyAction?.params?.address;
+
+        // Find property ID by address if possible
+        const property = await prisma.property.findFirst({
+          where: {
+            userId: voiceNote.userId,
+            address: { contains: address, mode: 'insensitive' }
+          }
+        });
+
+        if (property) {
+          const timelineId = await timelineService.createTimelineEvent({
+            userId: voiceNote.userId,
+            type: 'voice_note',
+            entityType: 'property',
+            entityId: property.id,
+            summary: timelineSummary,
+            content: transcript,
+            metadata: { voiceNoteId, diarized: true },
+            timestamp: new Date(),
+          });
+          createdTimelineEvents.push(timelineId);
+          logger.info(`[VoiceNoteService] Automated timeline entry for property: ${property.address}`);
+        }
+      }
+
+      // General voice note timeline event
+      const mainTimelineId = await timelineService.createTimelineEvent({
+        userId: voiceNote.userId,
+        type: 'voice_note',
+        entityType: 'voice_note',
+        entityId: voiceNoteId,
+        summary: timelineSummary,
+        content: transcript,
+        metadata: { entities, proposedActions },
+        timestamp: voiceNote.createdAt,
+      });
+      createdTimelineEvents.push(mainTimelineId);
+
+      // Simple Task Creation (Legacy support)
       const createdTasks: string[] = [];
-      for (const entity of extractedEntities) {
-        if (entity.type === 'task') {
+      for (const action of proposedActions) {
+        if (action.toolName === 'task.create') {
           const task = await taskService.createTask({
             userId: voiceNote.userId,
-            label: entity.data.label,
-            dueDate: entity.data.dueDate,
+            label: action.params?.label || action.label,
+            dueDate: action.params?.dueDate,
             source: 'voice_note',
           });
           createdTasks.push(task.id);
         }
       }
 
-      // Step 4: Create timeline entry for the voice note
-      const timelineEventId = await timelineService.createTimelineEvent({
-        userId: voiceNote.userId,
-        type: 'voice_note',
-        entityType: 'voice_note',
-        entityId: voiceNoteId,
-        summary: `Voice note: ${transcript.substring(0, 100)}${transcript.length > 100 ? '...' : ''}`,
-        content: transcript,
-        metadata: { extractedEntities },
-        timestamp: voiceNote.createdAt,
-      });
-
-      // Step 5: Create timeline entries for notes
-      const createdTimelineEvents: string[] = [timelineEventId];
-      for (const entity of extractedEntities) {
-        if (entity.type === 'note') {
-          const noteEventId = await timelineService.createTimelineEvent({
-            userId: voiceNote.userId,
-            type: 'note',
-            entityType: 'voice_note',
-            entityId: voiceNoteId,
-            summary: entity.data.content,
-            content: entity.data.content,
-            metadata: { source: 'voice_note', context: entity.data.context },
-            timestamp: new Date(),
-          });
-          createdTimelineEvents.push(noteEventId);
-        }
-      }
-
-      // Step 6: Update voice note with results
       await prisma.voiceNote.update({
         where: { id: voiceNoteId },
         data: {
           transcript,
-          extractedEntities,
+          extractedEntities: entities as any,
           processingStatus: 'completed',
           processedAt: new Date(),
+          // Note: We'd ideally have a dedicated field for timelineSummary and proposedActions
+          // For now, we'll store them in metadata or the transcript field temporarily if needed
+          // or just return them to the caller to handle DB updates if schema isn't ready.
         },
       });
 
       return {
         voiceNoteId,
         transcript,
-        extractedEntities,
+        timelineSummary,
+        extractedEntities: entities as any,
+        proposedActions,
         createdTasks,
         createdTimelineEvents,
       };
     } catch (error) {
-      // Mark as failed
+      logger.error(`[VoiceNoteService] Failed to process voice note ${voiceNoteId}:`, error);
       await prisma.voiceNote.update({
         where: { id: voiceNoteId },
         data: { processingStatus: 'failed' },
       });
-
       throw error;
     }
   }

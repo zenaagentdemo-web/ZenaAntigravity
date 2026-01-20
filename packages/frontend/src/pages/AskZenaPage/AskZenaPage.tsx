@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../../utils/apiClient';
 import { VoiceRecorder } from '../../components/VoiceRecorder/VoiceRecorder';
 import ReactMarkdown from 'react-markdown';
@@ -147,8 +147,23 @@ export const AskZenaPage: React.FC = () => {
     return 'idle' as const;
   };
 
+  const location = useLocation();
+
   // 🧠 ZENA RESILIENCE: Restore active conversation ID from sessionStorage on mount
   useEffect(() => {
+    // Check for explicit reset request from navigation (e.g. clicking the Global Avatar)
+    const state = location.state as { reset?: boolean } | null;
+    if (state?.reset) {
+      console.log('[AskZena] Reset requested via navigation. Clearing active conversation session.');
+      sessionStorage.removeItem('zena_active_conversation_id');
+      setActiveConversationId(undefined);
+      setAvatarMode('hero');
+
+      // Clear the reset flag from history so it doesn't persist on reload
+      window.history.replaceState({}, document.title);
+      return;
+    }
+
     const savedId = sessionStorage.getItem('zena_active_conversation_id');
     if (savedId && !activeConversationIdRef.current) {
       console.log('[AskZena] Restoring active conversation from sessionStorage:', savedId);

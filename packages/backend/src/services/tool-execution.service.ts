@@ -165,7 +165,7 @@ export class ToolExecutionService {
                 return { success: false, error: executionResult.error };
             }
         } catch (error: any) {
-            logger.error(`[ToolExc] Failed to execute ${tool.name}:`, error);
+            logger.error(`[ToolExc] Failed to execute ${toolName}:`, error);
             return {
                 success: false,
                 error: error.message || 'Unknown tool execution error'

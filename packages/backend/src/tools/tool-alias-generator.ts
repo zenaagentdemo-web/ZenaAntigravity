@@ -127,6 +127,16 @@ class ToolAliasGenerator {
         for (const domainSyn of domainSynonyms) {
             aliases.push(`${domainSyn}.${action}`);              // person.create (for contact)
             aliases.push(`${action}_${domainSyn}`);              // create_person
+            aliases.push(`${action}${this.capitalize(domainSyn)}`); // createPerson
+        }
+
+        // 🔥 ZENA MAX COVERAGE: Cross-multiply Action and Domain synonyms
+        // This ensures "add_person" works for "contact.create"
+        for (const actSyn of actionSynonyms) {
+            for (const domSyn of domainSynonyms) {
+                aliases.push(`${actSyn}_${domSyn}`);             // add_person
+                aliases.push(`${actSyn}${this.capitalize(domSyn)}`); // addPerson
+            }
         }
 
         // Pattern 6: Just the action (for unambiguous cases)

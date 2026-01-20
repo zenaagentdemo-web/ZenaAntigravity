@@ -48,32 +48,31 @@ toolRegistry.register({ ...searchMemoryTool, name: 'core.search' });
 
 // --- DEALS ---
 toolRegistry.register({ ...getDealBriefTool, name: 'deal.generate_report' });
-toolRegistry.register({ ...analyzeDealTool, name: 'deal.update_risk' });
+toolRegistry.register({ ...analyzeDealTool, name: 'deal.update' });
 
 // --- CALENDAR ---
 toolRegistry.register({ ...listCalendarEventsTool, name: 'calendar.list_events' });
 toolRegistry.register({ ...getCalendarEventTool, name: 'calendar.get_event' });
-toolRegistry.register({ ...createCalendarEventTool, name: 'calendar.create_event' });
-toolRegistry.register({ ...updateCalendarEventTool, name: 'calendar.update_event' });
-toolRegistry.register({ ...deleteCalendarEventTool, name: 'calendar.delete_event' });
+toolRegistry.register({ ...createCalendarEventTool, name: 'calendar.create' });
+toolRegistry.register({ ...updateCalendarEventTool, name: 'calendar.update' });
+toolRegistry.register({ ...deleteCalendarEventTool, name: 'calendar.delete' });
 toolRegistry.register({ ...updateCalendarEventTool, name: 'calendar.reschedule' });
 
 // --- TASKS ---
 toolRegistry.register({ ...listTasksTool, name: 'task.list_tasks' });
-toolRegistry.register({ ...createTaskTool, name: 'task.create_task' });
-toolRegistry.register({ ...updateTaskTool, name: 'task.update_task' });
+toolRegistry.register({ ...createTaskTool, name: 'task.create' });
+toolRegistry.register({ ...updateTaskTool, name: 'task.update' });
 toolRegistry.register({ ...updateTaskTool, name: 'task.link_to_deal' });
 
 // --- CONTACTS ---
 toolRegistry.register({ ...listContactsTool, name: 'contact.list_contacts' });
-toolRegistry.register({ ...createContactTool, name: 'contact.create_contact' });
-toolRegistry.register({ ...updateContactTool, name: 'contact.update_contact' });
+toolRegistry.register({ ...createContactTool, name: 'contact.create' });
+toolRegistry.register({ ...updateContactTool, name: 'contact.update' });
 
 // --- PROPERTIES ---
 toolRegistry.register({ ...listPropertiesTool, name: 'property.list_properties' });
-toolRegistry.register({ ...createPropertyTool, name: 'property.create_property' });
-toolRegistry.register({ ...createPropertyTool, name: 'property.create_property' });
-toolRegistry.register({ ...updatePropertyTool, name: 'property.update_property' });
+toolRegistry.register({ ...createPropertyTool, name: 'property.create' });
+toolRegistry.register({ ...updatePropertyTool, name: 'property.update' });
 
 // --- MARKETING & REPORTING ---
 import { generateCampaignTool } from './marketing/generate-campaign.tool.js';

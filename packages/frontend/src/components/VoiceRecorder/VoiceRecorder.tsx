@@ -180,26 +180,14 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     }, 2000);
   };
 
-  const handleMouseDown = () => {
-    if (!disabled && voiceState === 'idle') {
-      startRecording();
-    }
-  };
+  const handleToggleRecording = () => {
+    if (disabled || voiceState === 'processing') return;
 
-  const handleMouseUp = () => {
-    if (voiceState === 'listening') {
+    if (voiceState === 'idle') {
+      startRecording();
+    } else if (voiceState === 'listening') {
       stopRecording();
     }
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    e.preventDefault();
-    handleMouseDown();
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    e.preventDefault();
-    handleMouseUp();
   };
 
   const formatDuration = (seconds: number): string => {
@@ -230,7 +218,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       case 'speaking':
         return 'Speaking...';
       default:
-        return 'Hold to talk';
+        return 'Tap to record';
     }
   };
 
@@ -240,11 +228,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       {showButton && (
         <button
           className={`voice-recorder__button voice-recorder__button--${voiceState}`}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
+          onClick={handleToggleRecording}
           disabled={disabled || voiceState === 'processing'}
           type="button"
           aria-label={getStateLabel()}

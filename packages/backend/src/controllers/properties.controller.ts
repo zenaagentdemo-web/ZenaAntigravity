@@ -911,7 +911,8 @@ export class PropertiesController {
       // Validate milestone type
       const validTypes = [
         'listing', 'first_open', 'open_home', 'viewing', 'auction', 'offer_received', 'conditional', 'unconditional', 'settled',
-        'listed', 'first_viewing', 'contract_signed', 'settlement', 'custom'
+        'listed', 'first_viewing', 'contract_signed', 'settlement', 'custom',
+        'meeting', 'personal', 'other'
       ];
       if (!validTypes.includes(type)) {
         res.status(400).json({
@@ -1324,6 +1325,19 @@ export class PropertiesController {
       if (milestoneIndex === -1) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Milestone not found' } });
         return;
+      }
+
+      // Validate type if provided
+      if (type) {
+        const validTypes = [
+          'listing', 'first_open', 'open_home', 'viewing', 'auction', 'offer_received', 'conditional', 'unconditional', 'settled',
+          'listed', 'first_viewing', 'contract_signed', 'settlement', 'custom',
+          'meeting', 'personal', 'other'
+        ];
+        if (!validTypes.includes(type)) {
+          res.status(400).json({ error: { code: 'VALIDATION_FAILED', message: `type must be one of: ${validTypes.join(', ')}` } });
+          return;
+        }
       }
 
       // Validate date if provided

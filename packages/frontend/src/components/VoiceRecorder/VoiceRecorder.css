@@ -43,28 +43,65 @@
 .voice-recorder__button--listening {
   border-color: var(--color-error, #dc3545);
   background: rgba(220, 53, 69, 0.1);
-  animation: pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+  animation: breathing-glow 1.5s ease-in-out infinite;
 }
 
 .voice-recorder__button--processing {
   border-color: var(--color-warning, #ffc107);
   background: rgba(255, 193, 7, 0.1);
+  animation: pulse-subtle 2s linear infinite;
 }
 
 .voice-recorder__button--speaking {
   border-color: var(--color-success, #28a745);
   background: rgba(40, 167, 69, 0.1);
-  animation: pulse 1s ease-in-out infinite;
+  animation: breathing-glow-success 1.5s ease-in-out infinite;
 }
 
-@keyframes pulse {
-  0%, 100% {
+@keyframes breathing-glow {
+  0% {
     transform: scale(1);
-    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
   }
+
   50% {
     transform: scale(1.05);
-    opacity: 0.8;
+    box-shadow: 0 0 20px 10px rgba(220, 53, 69, 0.2);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+  }
+}
+
+@keyframes breathing-glow-success {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px 10px rgba(40, 167, 69, 0.2);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4);
+  }
+}
+
+@keyframes pulse-subtle {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
   }
 }
 
@@ -93,22 +130,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  height: 80px;
+  gap: 3px;
+  height: 60px;
   width: 100%;
-  max-width: 400px;
-  padding: var(--spacing-md, 16px);
-  background: var(--color-background-secondary, #f8f9fa);
-  border-radius: 8px;
+  max-width: 320px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .voice-recorder__waveform-bar {
   flex: 1;
-  min-width: 4px;
-  max-width: 8px;
-  background: var(--color-primary, #007bff);
-  border-radius: 2px;
-  transition: height 0.1s ease;
+  min-width: 3px;
+  max-width: 6px;
+  background: linear-gradient(to top, var(--color-primary, #007bff), #00d4ff);
+  border-radius: 4px;
+  transition: height 0.08s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* Processing Indicator */
@@ -144,34 +183,44 @@
 /* Transcription Display */
 .voice-recorder__transcription {
   width: 100%;
-  padding: var(--spacing-md, 16px);
-  background: var(--color-background-secondary, #f8f9fa);
-  border-radius: 8px;
-  border-left: 4px solid var(--color-primary, #007bff);
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.voice-recorder__transcription:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
 }
 
 .voice-recorder__transcription-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-secondary, #6c757d);
-  margin: 0 0 var(--spacing-sm, 8px) 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #00d4ff;
+  margin: 0 0 12px 0;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
 .voice-recorder__transcription-text {
   font-size: 16px;
-  line-height: 1.5;
-  color: var(--color-text, #333333);
+  line-height: 1.6;
+  color: var(--color-text, #e0e0e0);
   margin: 0;
 }
 
 /* Extracted Entities */
 .voice-recorder__entities {
   width: 100%;
-  padding: var(--spacing-md, 16px);
-  background: var(--color-background-secondary, #f8f9fa);
-  border-radius: 8px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .voice-recorder__entities-title {
@@ -217,15 +266,15 @@
     min-width: 100px;
     min-height: 100px;
   }
-  
+
   .voice-recorder__icon {
     font-size: 40px;
   }
-  
+
   .voice-recorder__label {
     font-size: 12px;
   }
-  
+
   .voice-recorder__waveform {
     height: 60px;
   }

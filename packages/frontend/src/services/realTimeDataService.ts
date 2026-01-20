@@ -46,6 +46,7 @@ class RealTimeDataService {
   private agentToolCallCallbacks: Set<AgentToolCallCallback> = new Set();
   private agentMessageCallbacks: Set<AgentMessageCallback> = new Set();
   private systemNotificationCallbacks: Set<SystemNotificationCallback> = new Set();
+  private propertyIntelligenceCallbacks: Set<(data: any) => void> = new Set();
 
   private currentData: DashboardData | null = null;
   private isConnected = false;
@@ -242,6 +243,10 @@ class RealTimeDataService {
 
         case 'deal_update':
           // Refresh context logic if needed
+          break;
+
+        case 'property.intelligence':
+          this.notifyPropertyIntelligence(message.payload);
           break;
 
         case 'voice.live.system_notification':
@@ -745,6 +750,18 @@ class RealTimeDataService {
 
   private notifyAgentMessage(payload: any): void {
     this.agentMessageCallbacks.forEach(cb => cb(payload));
+  }
+
+  /**
+   * Subscribe to property intelligence updates
+   */
+  onPropertyIntelligence(callback: (data: any) => void): () => void {
+    this.propertyIntelligenceCallbacks.add(callback);
+    return () => this.propertyIntelligenceCallbacks.delete(callback);
+  }
+
+  private notifyPropertyIntelligence(payload: any): void {
+    this.propertyIntelligenceCallbacks.forEach(cb => cb(payload));
   }
 
   /**

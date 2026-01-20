@@ -62,6 +62,8 @@ interface Property {
   bathrooms?: number;
   landSize?: string;
   floorSize?: string;
+  lastSalePrice?: number;
+  lastSaleDate?: string;
   dealId?: string;
   milestones: Milestone[];
   riskOverview?: string;
@@ -859,10 +861,21 @@ export const PropertyDetailPage: React.FC = () => {
 
             <div className="intel-card">
               <div className="intel-card-header">
-                <Clock size={14} /> Last Activity
+                <Clock size={14} /> Last Sold
               </div>
               <div className="intel-card-value">
-                {timeline.length > 0 ? formatDate(timeline[0].timestamp) : 'No activity'}
+                {property.lastSaleDate ? (
+                  <>
+                    <div style={{ fontWeight: 600 }}>{formatDate(property.lastSaleDate)}</div>
+                    {property.lastSalePrice && (
+                      <div style={{ fontSize: '11px', opacity: 0.8, marginTop: '2px' }}>
+                        {formatPrice(property.lastSalePrice)}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  'No sale history'
+                )}
               </div>
             </div>
 

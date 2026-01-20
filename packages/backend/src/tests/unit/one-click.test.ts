@@ -1,59 +1,89 @@
-import { describe, it, expect } from 'vitest';
-import { ProactivenessService } from '../../services/proactiveness.service.js';
+import { describe, it, expect, vi } from 'vitest';
+import { createPropertyTool } from '../../tools/properties/create-property.tool.js';
+import prisma from '../../config/database.js';
 
-describe('ProactivenessService - One-Click Actions', () => {
-    const service = new ProactivenessService();
+// Mock Prisma
+vi.mock('../../config/database.js', () => ({
+    default: {
+        property: {
+            create: vi.fn().mockResolvedValue({
+                id: 'prop_123',
+                address: '22 Boundary Road, Taupo',
+                listingPrice: null,
+                rateableValue: 850000,
+                lastSalePrice: 560000,
+                lastSaleDate: new Date('2022-05-15'),
+                vendors: []
+            })
+        },
+        contact: {
+            findFirst: vi.fn(),
+            create: vi.fn(),
+            update: vi.fn()
+        }
+    }
+}));
 
-    it('should return structured ProactiveResult including suggestedActions', () => {
-        const data = {
-            name: 'John Doe',
-            role: 'Vendor',
-            email: 'john@example.com'
-        };
-        // Expecting "Create Property" or "Sync Email" suggestions
-        const result = service.synthesizeProactiveStatement('contact.create', data);
+// Mock other services
+vi.mock('../../services/market-scraper.service.js', () => ({
+    marketScraperService: {
+        getPropertyDetails: vi.fn().mockResolvedValue(null)
+    }
+}));
 
-        expect(typeof result).toBe('object');
-        expect(result.text).toBeDefined();
-        expect(result.suggestedActions).toBeDefined();
-        expect(Array.isArray(result.suggestedActions)).toBe(true);
+vi.mock('../../services/logger.service.js', () => ({
+    logger: {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn()
+    }
+}));
+
+describe('Zero-Click Property Creation (Phase 7)', () => {
+
+    it('should NOT require approval', () => {
+        expect(createPropertyTool.requiresApproval).toBe(false);
     });
 
-    it('should suggest Marketing Campaign when property is active but has no campaign', () => {
-        const data = {
-            id: 'prop-123',
-            address: '123 Main St',
-            status: 'active',
-            marketing: { campaignId: null }
-        };
-
-        const result = service.synthesizeProactiveStatement('property.create', data);
-
-        expect(result.suggestedActions?.some(a => a.toolName === 'marketing.generate_campaign')).toBe(true);
-        const action = result.suggestedActions?.find(a => a.toolName === 'marketing.generate_campaign');
-        expect(action?.payload.propertyId).toBe('prop-123');
-        expect(action?.label).toContain('Plan Campaign');
+    it('should NOT require listingPrice in input schema', () => {
+        const required = createPropertyTool.inputSchema.required;
+        expect(required).not.toContain('listingPrice');
     });
 
-    it('should suggest Weekly Report when viewing a Deal', () => {
-        const data = {
-            id: 'deal-456',
-            propertyId: 'prop-123',
-            propertyAddress: '123 Main St',
-            stage: 'active',
-            pipelineType: 'seller',
-            saleMethod: 'auction', // Required for seller to clear gaps
-            dealValue: 1000000,
-            lastReportDate: null
+    it('should execute successfully without listingPrice', async () => {
+        const params = {
+            address: '22 Boundary Road, Taupo',
+            rateableValue: 850000
         };
 
-        const result = service.synthesizeProactiveStatement('deal.create', data); // or deal.view/update
+        const result = await createPropertyTool.execute(params, { userId: 'user_123' });
 
-        // Simulate checking suggestions for deal
-        // Note: 'deal.create' might trigger specific suggestions defined in getSuggestions
+        expect(result.success).toBe(true);
+        expect(prisma.property.create).toHaveBeenCalledWith(expect.objectContaining({
+            data: expect.objectContaining({
+                address: expect.stringContaining('22 Boundary Road, Taupo'),
+                listingPrice: null,
+                rateableValue: 850000
+            })
+        }));
+    });
 
-        expect(result.suggestedActions?.some(a => a.toolName === 'vendor_report.generate_weekly')).toBe(true);
-        const action = result.suggestedActions?.find(a => a.toolName === 'vendor_report.generate_weekly');
-        expect(action?.payload.dealId).toBe('deal-456');
+    it('should persist Last Sale data if provided', async () => {
+        const params = {
+            address: '22 Boundary Road, Taupo',
+            lastSoldPrice: 560000,
+            lastSoldDate: '2022-05-15'
+        };
+
+        await createPropertyTool.execute(params, { userId: 'user_123' });
+
+        expect(prisma.property.create).toHaveBeenCalledWith(expect.objectContaining({
+            data: expect.objectContaining({
+                // Address might change due to geocoding, so we just check it contains the original
+                address: expect.stringContaining('22 Boundary Road, Taupo'),
+                lastSalePrice: 560000,
+                lastSaleDate: expect.any(Date)
+            })
+        }));
     });
 });

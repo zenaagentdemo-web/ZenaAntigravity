@@ -15,7 +15,10 @@ export const createPropertyTool: ZenaToolDefinition = {
             address: { type: 'string', description: 'Full address of the property' },
             type: { type: 'string', enum: ['residential', 'commercial', 'land'], default: 'residential' },
             status: { type: 'string', enum: ['active', 'under_contract', 'sold', 'withdrawn'], default: 'active' },
-            listingPrice: { type: 'number', description: 'Listing price in dollars' },
+            listingPrice: { type: 'number', description: 'Listing price in dollars (optional, can be added later)' },
+            rateableValue: { type: 'number', description: 'Rateable Value (RV)' },
+            lastSoldPrice: { type: 'number', description: 'Last sold price' },
+            lastSoldDate: { type: 'string', description: 'Last sold date (ISO or text)' },
             bedrooms: { type: 'number', description: 'Number of bedrooms' },
             bathrooms: { type: 'number', description: 'Number of bathrooms' },
             landSize: { type: 'string', description: 'Land size (e.g., "650m²")' },
@@ -37,12 +40,7 @@ export const createPropertyTool: ZenaToolDefinition = {
     },
 
     permissions: ['properties:write'],
-    requiresApproval: true,
-    confirmationPrompt: (input) => {
-        const price = Number(input.listingPrice);
-        const priceStr = !isNaN(price) && price > 0 ? ` with a listing price of **$${price.toLocaleString()}**` : '';
-        return `I'm ready to create a new residential listing at **${input.address}**${priceStr}. Shall I proceed?`;
-    },
+    requiresApproval: false,
 
     execute: async (params, context) => {
         const userId = context.userId;
@@ -51,10 +49,10 @@ export const createPropertyTool: ZenaToolDefinition = {
             vendorName, vendorEmail, vendorPhone
         } = params;
 
-        // 🚨 DATA INTEGRITY: listingPrice is mandatory for creation.
-        // It must be provided by the user or confirmed via suggested data.
+        // 🚨 DATA INTEGRITY: listingPrice is optional now (Zero-Click).
+        // If missing, we create it anyway and prompt later.
         if (listingPrice === undefined || listingPrice === null) {
-            throw new Error("Listing price is required for property creation. Please provide a price or confirm a suggested one.");
+            logger.info(`[property.create] Creating property without listing price (Zero-Click flow)`);
         }
 
         let finalAddress = address;
@@ -63,6 +61,9 @@ export const createPropertyTool: ZenaToolDefinition = {
         let inferredLandSize = landSize;
         let inferredFloorSize = floorSize;
         let inferredType = type || 'residential';
+        let inferredRateableValue = params.rateableValue;
+        let inferredLastSoldPrice = params.lastSoldPrice;
+        let inferredLastSoldDate = params.lastSoldDate;
         let inferredFromWeb = false;
 
         // 🧠 ZENA SUPER-INTEL: Step 1 & 2 - Parallel Geocoding and Enrichment
@@ -118,7 +119,18 @@ export const createPropertyTool: ZenaToolDefinition = {
                 if (!type && webDetails.type) {
                     inferredType = webDetails.type;
                 }
-                logger.info(`[property.create] Enriched from web: ${inferredBeds} beds, ${inferredBaths} baths`);
+                if (!inferredRateableValue && webDetails.rateableValue) {
+                    inferredRateableValue = webDetails.rateableValue;
+                }
+                if (!inferredLastSoldPrice && webDetails.lastSoldPrice) {
+                    // Normalize price string to number ("$595,000" -> 595000)
+                    const priceStr = webDetails.lastSoldPrice.toString().replace(/[^0-9]/g, '');
+                    inferredLastSoldPrice = priceStr ? parseInt(priceStr) : undefined;
+                }
+                if (!inferredLastSoldDate && webDetails.lastSoldDate) {
+                    inferredLastSoldDate = webDetails.lastSoldDate;
+                }
+                logger.info(`[property.create] Enriched from web: ${inferredBeds} beds, ${inferredBaths} baths, RV: ${inferredRateableValue}`);
             }
         } catch (err) {
             logger.warn(`[property.create] Intelligence Phase failed: ${err}`);
@@ -209,6 +221,9 @@ export const createPropertyTool: ZenaToolDefinition = {
                 landSize: inferredLandSize,
                 floorSize: inferredFloorSize,
                 inferredFromWeb,
+                rateableValue: inferredRateableValue,
+                lastSalePrice: inferredLastSoldPrice ? Number(inferredLastSoldPrice) : null,
+                lastSaleDate: inferredLastSoldDate ? new Date(inferredLastSoldDate) : null,
                 ...vendorConnect
             },
             include: {
